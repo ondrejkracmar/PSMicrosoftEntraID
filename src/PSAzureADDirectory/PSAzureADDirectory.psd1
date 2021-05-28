@@ -39,7 +39,14 @@
 	# FormatsToProcess = @('xml\PSAzureADDirectory.Format.ps1xml')
 	
 	# Functions to export from this module
-	FunctionsToExport = ''
+	FunctionsToExport = @(
+		'Receive-PSAADAuthorizationToken',
+		'Write-PSAADAuthorizationToken',
+		'Get-PSAADLicenseServicePlan',
+		'Disable-PSAADLicenseServicePlan',
+		'Enable-PSAADLicenseServicePlan',
+		'Get-PSAADUser'
+	)
 	
 	# Cmdlets to export from this module
 	CmdletsToExport = ''
