@@ -1,0 +1,22 @@
+﻿
+# ignore the settings folder and files for VSCode and PSS
+.vscode/*
+*.psproj
+*TempPoint*
+
+# Ignore staging info from Visual Studio
+library/PSAzureADDirectory/.vs/*
+library/PSAzureADDirectory/PSAzureADDirectory/bin/*
+library/PSAzureADDirectory/PSAzureADDirectory/obj/*
+
+# ignore PowerShell Studio MetaData
+PSAzureADDirectory/PSAzureADDirectory.psproj
+PSAzureADDirectory/PSAzureADDirectory.psproj.bak
+PSAzureADDirectory/PSAzureADDirectory.psprojs
+PSAzureADDirectory/PSAzureADDirectory.psproj
+
+# ignore the TestResults
+TestResults/*
+
+# ignore the publishing Directory
+publish/*

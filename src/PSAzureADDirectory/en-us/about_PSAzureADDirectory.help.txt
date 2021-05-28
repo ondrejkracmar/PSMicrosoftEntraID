@@ -1,0 +1,11 @@
+﻿TOPIC
+	about_PSAzureADDirectory
+	
+SHORT DESCRIPTION
+	Explains how to use the PSAzureADDirectory powershell module
+	
+LONG DESCRIPTION
+	<Insert Content here>
+
+KEYWORDS
+	PSAzureADDirectory
