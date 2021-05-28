@@ -11,6 +11,15 @@ function Disable-PSAADLicenseServicePlan {
             Position = 0,
             ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                    $true
+            } 
+            catch {
+                    $false
+            }
+        })]
         [string]$UserId,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $true,
@@ -19,6 +28,15 @@ function Disable-PSAADLicenseServicePlan {
             Position = 1,
             ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                    $true
+            } 
+            catch {
+                    $false
+            }
+        })]
         [string]$SkuId,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
