@@ -45,16 +45,7 @@ function Enable-PSAADLicenseServicePlan {
             Position = 2,
             ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                    $true
-            } 
-            catch {
-                    $false
-            }
-        })]
-        [Array]$ServicePlanId
+        [string[]]$ServicePlanId
     )
     begin
     {
@@ -73,17 +64,39 @@ function Enable-PSAADLicenseServicePlan {
             $graphApiParameters=@{
                 Method = 'Post'
                 AuthorizationToken = "Bearer $authorizationToken"
-                Uri = Join-UriPath -Uri $url -ChildPath ("{0}{1}" -f $UserId,'activateServicePlan')
+                #Uri = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId,'activateServicePlan')
+                Uri = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId,'assignLicense')                
             }
-            foreach ($itemServicePlanId in $ServicePlanId) {
+
+            <#foreach ($itemServicePlanId in $ServicePlanId) {
                 $body = @{
-                    "servicePlanId" = $SkuId
-                    "skuId" = $itemServicePlanId
+                    "servicePlanId" = $itemServicePlanId
+                    "skuId" = $SkuId
                 } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
                 $graphApiParameters['Body'] = $body
                 Invoke-GraphApiQuery @graphApiParameters
+            }#>
+            $userServicePlanList = Get-PSAADLicenseServicePlan -UserId $UserId -SkuId $SkuId | Select-Object -ExpandProperty ServicePlans | Where-Object {$_.provisioningStatus -in @('PendingProvisioning','Disabled')}
+            if (-not [object]::equals($userServicePlanList,$null)) {
+                [array]$disabledServicePlanList = $userServicePlanList | Where-Object {$_.ServicePlanId -notin $ServicePlanId } | Select-Object -Property ServicePlanId 
+                if (-not [object]::equals($disabledServicePlanList,$null)) {
+                    [array]$servicePlanList += $disabledServicePlanList.servicePlanId 
+                    
+                    $body = @{
+                            
+                        addLicenses = @(
+                            @{
+                                'disabledPlans'= $servicePlanList
+                                "skuId"= $skuId
+                            }
+                        )
+                        "removeLicenses" = @()
+                    } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) } 
+                    $graphApiParameters['Body'] = $body
+                    Invoke-GraphApiQuery @graphApiParameters
+                }
             }
-                    }
+        }
         catch {
 			Stop-PSFFunction -String 'FailedEnableAssignLicense' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Get
 		}

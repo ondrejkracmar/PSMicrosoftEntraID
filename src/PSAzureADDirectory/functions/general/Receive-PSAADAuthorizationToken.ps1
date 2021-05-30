@@ -12,11 +12,11 @@
         try{
             if(Test-PSFParameterBinding -ParameterName AuthorizationTokenDetail)
             {
-                $jwtToken = (Get-PSFConfig -Module $Env:ModuleName -Name 'Settings.AuthorizationToken')  | Get-JWTDetails
+                $jwtToken = (Get-PSFConfig -Module PSAzureADDirectory -Name 'Settings.AuthorizationToken').Value  | Get-JWTDetails
                 return  $jwtToken                
             }
             else {
-                return (Get-PSFConfigValue -Module $Env:ModuleName -Name 'Settings.AuthorizationToken')
+                return (Get-PSFConfig -Module PSAzureADDirectory -Name 'Settings.AuthorizationToken').Value
             }
         }
         catch{

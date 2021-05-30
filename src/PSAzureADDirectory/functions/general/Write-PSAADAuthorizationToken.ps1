@@ -8,7 +8,7 @@
     process {
         try{
             $jwtToken = $AuthorizationToken | Get-JWTDetails     
-            Set-PSFConfig -Module $Env:ModuleName -Name 'Settings.AuthorizationToken' -Value $AuthorizationToken
+            Set-PSFConfig -Module PSAzureADDirectory -Name 'Settings.AuthorizationToken' -Value $AuthorizationToken
             return $jwtToken
         }
         catch{

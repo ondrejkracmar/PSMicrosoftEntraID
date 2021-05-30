@@ -1,5 +1,5 @@
 ﻿function Get-PSAADLicenseServicePlan {
-    [CmdletBinding(DefaultParameterSetName = 'Default',
+    [CmdletBinding(DefaultParameterSetName = 'SkuId',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
@@ -8,8 +8,7 @@
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            Position = 0,
-            ParameterSetName = 'Default')]
+            Position = 0)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
             try {
@@ -21,12 +20,12 @@
             }
         })]
         [string]$UserId,
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
             Position = 1,
-            ParameterSetName = 'Default')]
+            ParameterSetName = 'SkuId')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({
             try {
@@ -37,7 +36,15 @@
                     $false
             }
         })]
-        [string]$SkuId
+        [string]$SkuId,
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            Position = 1,
+            ParameterSetName = 'SkuId')]
+        [ValidateNotNullOrEmpty()]
+        [string]$SkuPartNumber
     )
     begin
     {
@@ -51,16 +58,24 @@
     }
     process {        
         if (Test-PSFFunctionInterrupt) { return }
-        
         try
         {
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"
-                Uri = Join-UriPath -Uri $url -ChildPath ("{0}{1}" -f $UserId,'assignLicense')
+                Uri = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId,'licenseDetails')
             }
-            Invoke-GraphApiQuery @graphApiParameters
-            $resultLicenseList.value | Where-Object { $_.SkuId -eq $SkuId }
+            if(Test-PSFParameterBinding -Parameter SkuId)
+            {
+                Invoke-GraphApiQuery @graphApiParameters | Where-Object {$_.SkuId -eq $SkuId}
+            }
+            elseif (Test-PSFParameterBinding -Parameter SkuId) {
+                Invoke-GraphApiQuery @graphApiParameters | Where-Object {$_.SkuPartNumber -eq $SkuPartNumber}
+            }
+            else
+            {
+                Invoke-GraphApiQuery @graphApiParameters
+            }
         }
         catch {
 			Stop-PSFFunction -String 'FailedGetAssignLicense' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Get

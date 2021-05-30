@@ -53,8 +53,8 @@ function Get-PSAADUser
     {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User
+            $authorizationToken = Receive-PSAADAuthorizationToken
+            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.User).Value
 	    } catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
@@ -99,7 +99,7 @@ function Get-PSAADUser
             }
 
             $userResult = Invoke-GraphApiQuery @graphApiParameters
-            $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
+            $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.User"
         }
         catch
         {

@@ -45,7 +45,7 @@ function Disable-PSAADLicenseServicePlan {
             Position = 2,
             ParameterSetName = 'Default')]
         [ValidateNotNullOrEmpty()]
-        [Array]$DisabledServicePlan
+        [string[]]$ServicePlanId
     )
     begin
     {
@@ -64,27 +64,27 @@ function Disable-PSAADLicenseServicePlan {
             $graphApiParameters=@{
                 Method = 'Post'
                 AuthorizationToken = "Bearer $authorizationToken"
-                Uri = Join-UriPath -Uri $url -ChildPath ("{0}{1}" -f $UserId,'assignLicense')
+                Uri = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId,'assignLicense')
             }
 
-            $userServicePlanList = Get-Office365ServicePlan -UserId $UserId -SkuId $SkuId
-            [array]$disabledServicePlanList=$DisabledServicePlan
+            $userServicePlanList = Get-PSAADLicenseServicePlan -UserId $UserId -SkuId $SkuId
             if (-not [object]::equals($userServicePlanList,$null)) {
-                $userServicePlanDisabledList = $userServicePlanList.servicePlans | Where-Object { $_.provisioningStatus -eq 'Disabled' }
+                $userServicePlanDisabledList = $userServicePlanList | Select-Object -ExpandProperty ServicePlans | Where-Object { $_.provisioningStatus -in @('PendingProvisioning','Disabled')} | Select-Object -Property ServicePlanId
                 if (-not [object]::equals($userServicePlanDisabledList,$null)) {
-                    [array]$disabledServicePlanList += $userServicePlanDisabledList.servicePlanId
+                    [array]$disabledServicePlanList = $userServicePlanDisabledList.ServicePlanId
+                    $disabledServicePlanList += $ServicePlanId
+                    $body = @{
+                        "addLicenses"    = @(
+                            @{
+                                "disabledPlans" = ($disabledServicePlanList | Select-Object -Unique)
+                                "skuId"         = $SkuId
+                            }
+                        )
+                        "removeLicenses" = @()
+                    } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
+                    $graphApiParameters['Body'] = $body
+                    Invoke-GraphApiQuery @graphApiParameters
                 }
-                $body = @{
-                    "addLicenses"    = @(
-                        @{
-                            "disabledPlans" = ($disabledServicePlanList | Select-Object -Unique)
-                            "skuId"         = $SkuId
-                        }
-                    )
-                    "removeLicenses" = @()
-                } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
-                $graphApiParameters['Body'] = $body
-                Invoke-GraphApiQuery @graphApiParameters
             }
         }
         catch {

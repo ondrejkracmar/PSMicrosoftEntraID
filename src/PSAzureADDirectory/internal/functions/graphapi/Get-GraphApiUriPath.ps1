@@ -10,10 +10,10 @@
     
     if(Test-PSFParameterBinding -ParameterName  GraphApiVersion)
     {
-        return Join-UriPath -Uri (Get-PSFConfigValue -FullName PSOffice365Reports.Settings.GraphApiUrl) -ChildPath $GraphApiVersion
+        return Join-UriPath -Uri (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiUrl).Value -ChildPath $GraphApiVersion
     }
     else 
     {
-        return Join-UriPath -Uri (Get-PSFConfigValue -FullName PSOffice365Reports.Settings.GraphApiUrl) -ChildPath (Get-PSFConfigValue -FullName PSOffice365Reports.Settings.GraphApiVersion)
+        return Join-UriPath -Uri (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiUrl).Value -ChildPath (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiVersion).Value
     }
 }

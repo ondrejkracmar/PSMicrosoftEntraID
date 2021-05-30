@@ -10,4 +10,6 @@
 	'FailedGetAssignLicense' 		= "Failed to get assign service plan '{0}'."
 	'FailedEnableAssignLicense' 	= "Failed to enable license '{0}'."
 	'FailedDisableAssignLicense' 	= "Failed to disable license '{0}'. '{0}'."
+	'FailedGetUser' 				= "Failed to receive Id of  UserPrincipalName '{0}'."
+	'FailedGetUsers' 				= "Failed to receive uri '{0}'."
 }
