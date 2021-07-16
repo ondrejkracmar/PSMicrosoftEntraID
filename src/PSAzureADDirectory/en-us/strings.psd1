@@ -12,4 +12,5 @@
 	'FailedDisableAssignLicense' 	= "Failed to disable license '{0}'. '{0}'."
 	'FailedGetUser' 				= "Failed to receive Id of  UserPrincipalName '{0}'."
 	'FailedGetUsers' 				= "Failed to receive uri '{0}'."
+	'FailedGetSubscribedSkus'		= "Failed to get subscribed skus."
 }
