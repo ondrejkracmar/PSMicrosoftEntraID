@@ -46,7 +46,7 @@
 		'Disable-PSAADLicenseServicePlan',
 		'Enable-PSAADLicenseServicePlan',
 		'Get-PSAADAssignedLicense',
-		'Get-PSAADSubscribedSkus',
+		'Get-PSAADSubscribedSku',
 		'Get-PSAADUser'
 	)
 	

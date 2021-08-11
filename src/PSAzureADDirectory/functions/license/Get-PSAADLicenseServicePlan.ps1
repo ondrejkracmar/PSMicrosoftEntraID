@@ -41,8 +41,8 @@
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            Position = 1,
-            ParameterSetName = 'SkuId')]
+            Position = 2,
+            ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string]$SkuPartNumber
     )
@@ -50,6 +50,7 @@
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
             $authorizationToken = Get-PSAADAuthorizationToken
+            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.ServicePlan).Value
         }
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
@@ -61,16 +62,18 @@
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
             Uri                = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId, 'licenseDetails')
+            Select             = $property -join ","
         }
         if (Test-PSFParameterBinding -Parameter SkuId) {
-            Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuId -eq $SkuId }
+            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuId -eq $SkuId }
         }
-        elseif (Test-PSFParameterBinding -Parameter SkuId) {
-            Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }
+        elseif (Test-PSFParameterBinding -Parameter SkuPartNumber) {
+            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }
         }
         else {
-            Invoke-GraphApiQuery @graphApiParameters
+            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters
         }
+        $userServicePlanResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.User.ServicePlan"
     }  
     end
     {}

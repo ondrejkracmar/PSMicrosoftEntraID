@@ -1,4 +1,4 @@
-function Get-PSAADSubscribedSkus {
+function Get-PSAADSubscribedSku {
     [CmdletBinding(DefaultParameterSetName = 'SkuId',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
@@ -10,6 +10,7 @@ function Get-PSAADSubscribedSkus {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "subscribedSkus"
             $authorizationToken = Get-PSAADAuthorizationToken
+            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.SubscribedSku).Value
         }
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
@@ -21,10 +22,10 @@ function Get-PSAADSubscribedSkus {
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
             Uri                = $url
-        }
-            
-        Invoke-GraphApiQuery @graphApiParameters
-            
+            Select = $property -join ","
+        }    
+        $subscribedSkuResult = Invoke-GraphApiQuery @graphApiParameters
+        $subscribedSkuResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.SubscribedSku"
     }  
     end
     {}

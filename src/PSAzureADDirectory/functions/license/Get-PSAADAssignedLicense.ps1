@@ -52,7 +52,7 @@ function Get-PSAADAssignedLicense {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
             $authorizationToken = Get-PSAADAuthorizationToken
-            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.AssignedLicenses).Value
+            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.AssignedLicense).Value
         }
         catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
@@ -64,12 +64,12 @@ function Get-PSAADAssignedLicense {
         $graphApiParameters = @{
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
+            Select = $property -join ","
         }
 
         if (Test-PSFParameterBinding -Parameter UserPrincipalName) {
             $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
             $graphApiParameters['Uri'] = $urlUser
-            $graphApiParameters['Select'] = $property -join ","
         }
         else {
             $graphApiParameters['Uri'] = $url
@@ -92,6 +92,6 @@ function Get-PSAADAssignedLicense {
         }
 
         $userResult = Invoke-GraphApiQuery @graphApiParameters
-        $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.AssignedLicense"
+        $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.User.AssignedLicense"
     }    
 }

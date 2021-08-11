@@ -64,12 +64,12 @@ function Get-PSAADUser {
         $graphApiParameters = @{
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
+            Select = $property -join ","
         }
 
         if (Test-PSFParameterBinding -Parameter UserPrincipalName) {
             $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
-            $graphApiParameters['Uri'] = $urlUser
-            $graphApiParameters['Select'] = $property -join ","
+            $graphApiParameters['Uri'] = $urlUser            
         }
         else {
             $graphApiParameters['Uri'] = $url
