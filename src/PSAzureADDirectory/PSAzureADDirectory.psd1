@@ -40,11 +40,12 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Receive-PSAADAuthorizationToken',
-		'Write-PSAADAuthorizationToken',
+		'Connect-PSAzureADDirectory',
+		'Disconnect-PSAzureADDirectory',
 		'Get-PSAADLicenseServicePlan',
 		'Disable-PSAADLicenseServicePlan',
 		'Enable-PSAADLicenseServicePlan',
+		'Get-PSAADAssignedLicense',
 		'Get-PSAADSubscribedSkus',
 		'Get-PSAADUser'
 	)

@@ -6,11 +6,10 @@ function Get-PSAADSubscribedSkus {
     param (
         
     )
-    begin
-    {
+    begin {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "subscribedSkus"
-            $authorizationToken = Receive-PSAADAuthorizationToken
+            $authorizationToken = Get-PSAADAuthorizationToken
         }
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
@@ -18,21 +17,14 @@ function Get-PSAADSubscribedSkus {
     }
     process {        
         if (Test-PSFFunctionInterrupt) { return }
-        try
-        {
-            $graphApiParameters=@{
-                Method = 'Get'
-                AuthorizationToken = "Bearer $authorizationToken"
-                Uri = $url 
-            }
-            
-            Invoke-GraphApiQuery @graphApiParameters
-            
+        $graphApiParameters = @{
+            Method             = 'Get'
+            AuthorizationToken = "Bearer $authorizationToken"
+            Uri                = $url
         }
-        catch {
-			Stop-PSFFunction -String 'FailedGetSubscribedSkus' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Get
-		}
-        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
+            
+        Invoke-GraphApiQuery @graphApiParameters
+            
     }  
     end
     {}

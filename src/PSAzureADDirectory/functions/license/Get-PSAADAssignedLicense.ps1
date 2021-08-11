@@ -1,4 +1,4 @@
-function Get-PSAADUser {
+function Get-PSAADAssignedLicense {
     <#
     .SYNOPSIS
         Get the properties of the specified user.
@@ -52,7 +52,7 @@ function Get-PSAADUser {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
             $authorizationToken = Get-PSAADAuthorizationToken
-            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.User).Value
+            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.AssignedLicenses).Value
         }
         catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
@@ -92,6 +92,6 @@ function Get-PSAADUser {
         }
 
         $userResult = Invoke-GraphApiQuery @graphApiParameters
-        $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.User"
+        $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.AssignedLicense"
     }    
 }
