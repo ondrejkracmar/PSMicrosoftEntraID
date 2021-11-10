@@ -34,30 +34,30 @@
             'Content-Type'  = $ContentType
             'Authorization' = $AuthorizationToken
         }
-        $numberOFRetries = (Get-PSFConfigValue -FullName PSAzureADDirectory.Settings.InvokeRestMethodRetryCount)
-        $retryTimeSec = (Get-PSFConfigValue -FullName PSAzureADDirectory.Settings.InvokeRestMethodRetryTimeSec)
+        $numberOFRetries = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+        $retryTimeSec = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
     }
 
     process {
         if (Test-PSFFunctionInterrupt) { return }
         if (Test-PSFParameterBinding -Parameter Filter) {
-            $queryFlter = "`$filter={0}" -f [System.Net.WebUtility]::UrlEncode($Filter)
+            $queryFlter = '{0}filter={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Filter)
         }
 
         if (Test-PSFParameterBinding -Parameter Select) {
-            $querySelect = "`$select={0}" -f [System.Net.WebUtility]::UrlEncode($Select)
+            $querySelect = "{0}select={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Select)
         }
 
         if (Test-PSFParameterBinding -Parameter Expand) {
-            $queryExpand = "`$expand={0}" -f [System.Net.WebUtility]::UrlEncode($Expand)
+            $queryExpand = "{0}expand={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Expand)
         }
 
         if (Test-PSFParameterBinding -Parameter Format) {
-            $queryFormat = "`$format={0}" -f [System.Net.WebUtility]::UrlEncode($Format)
+            $queryFormat = "{0}format={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Format)
         }
             
         if (Test-PSFParameterBinding -Parameter Top) {
-            $queryTop = "`$top={0}" -f [System.Net.WebUtility]::UrlEncode($Top)
+            $queryTop = '{0}top={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Top)
         }
             
         $queryString = (($queryTop, $queryFlter, $querySelect, $queryExpand, $queryFormat -ne $nul) -join "&")

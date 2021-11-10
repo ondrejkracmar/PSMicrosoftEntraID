@@ -14,7 +14,7 @@ function Connect-PSAzureADDirectory {
     
     process {
         Switch ($PSCmdlet.ParameterSetName) {
-            'AuthorizationTokenAuthorizationToken' {                               
+            'AuthorizationToken' {                               
                 $accessToken = $AuthorizationToken
             }
             'Application' {
