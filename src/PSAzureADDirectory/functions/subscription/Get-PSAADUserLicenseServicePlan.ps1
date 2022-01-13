@@ -1,4 +1,4 @@
-﻿function Get-PSAADLicenseServicePlan {
+﻿function Get-PSAADUserServicePlan {
     [CmdletBinding(DefaultParameterSetName = 'SkuId',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
@@ -41,7 +41,7 @@
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            Position = 2,
+            Position = 1,
             ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string]$SkuPartNumber
@@ -61,14 +61,16 @@
         $graphApiParameters = @{
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
-            Uri                = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId, 'licenseDetails')
-            Select             = $property -join ","
+            Uri                = Uri                = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId, 'licenseDetails')
+            Select             = $property -join ","                        
         }
         if (Test-PSFParameterBinding -Parameter SkuId) {
-            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuId -eq $SkuId }
+
+            
+            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters
         }
         elseif (Test-PSFParameterBinding -Parameter SkuPartNumber) {
-            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }
+            $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters
         }
         else {
             $userServicePlanResult = Invoke-GraphApiQuery @graphApiParameters

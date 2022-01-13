@@ -3,30 +3,30 @@
 	RootModule = 'PSAzureADDirectory.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '0.0.3'
+	ModuleVersion = '0.0.4'
 	
 	# ID used to uniquely identify this module
 	GUID = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
 	
 	# Author of this module
-	Author = 'KracmarOndrej'
+	Author = 'Ondrej Kracmar'
 	
 	# Company or vendor of this module
-	CompanyName = 'MyCompany'
+	CompanyName = 'i-system'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2021 KracmarOndrej'
+	Copyright = 'Copyright (c) 2022 i-system'
 	
 	# Description of the functionality provided by this module
 	Description = 'Powershell modue represents an Azure Active Directory object'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '5.0'
+	PowerShellVersion = '5.1'
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.6.198' }
+		@{ ModuleName='PSFramework'; ModuleVersion='1.6.214' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -43,11 +43,12 @@
 		'Connect-PSAzureADDirectory',
 		'Disconnect-PSAzureADDirectory',
 		'Get-PSAADLicenseServicePlan',
-		'Disable-PSAADLicenseServicePlan',
-		'Enable-PSAADLicenseServicePlan',
-		'Get-PSAADAssignedLicense',
+		'Disable-PSAADUserLicenseServicePlan',
+		'Enable-PSAADUserLicenseServicePlan',
+		'Get-PSAADUserAssignedLicense',
 		'Get-PSAADSubscribedSku',
-		'Get-PSAADUser'
+		'Get-PSAADUser',
+		'Get-PSAADUserLicenseServicePlan'
 	)
 	
 	# Cmdlets to export from this module

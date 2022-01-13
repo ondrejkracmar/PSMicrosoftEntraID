@@ -15,6 +15,7 @@
         [string]$Method = "Get",
         [string]$Accept = 'application/json',
         [string]$ContentType = 'application/json',
+        [string]$ConsistencyLevel = 'eventual',
         [switch]$Status,
         [ValidateRange(5, 1000)]
         [int]$Top,
@@ -34,33 +35,47 @@
             'Content-Type'  = $ContentType
             'Authorization' = $AuthorizationToken
         }
-        $numberOFRetries = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-        $retryTimeSec = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+        
+        $numberOFRetries = (Get-PSFConfigValue -FullName PSAzureADDirectory.Settings.InvokeRestMethodRetryCount)
+        $retryTimeSec = (Get-PSFConfigValue -FullName PSAzureADDirectory.Settings.InvokeRestMethodRetryTimeSec)
     }
 
     process {
         if (Test-PSFFunctionInterrupt) { return }
         if (Test-PSFParameterBinding -Parameter Filter) {
-            $queryFlter = '{0}filter={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Filter)
+            $queryFlter = '{0}filter={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Filter)
+
+            if((Get-PSFConfigValue -FullName PSAzureADDirectory.Settings.GraphApiQuery.Query.Level) -eq 'Advanced' -or (Test-PSFParameterBinding -Parameter ConsistencyLevel) )
+            {
+                if($ConsistencyLevel -eq 'eventual')
+                {
+                    $authHeader['ConsistencyLevel'] = 'eventual'
+                    $queryCount = '{0}count={1}' -f '$',[System.Net.WebUtility]::UrlEncode('true')
+                }          
+            }
         }
 
         if (Test-PSFParameterBinding -Parameter Select) {
-            $querySelect = "{0}select={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Select)
+            $querySelect = "{0}select={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Select)
         }
 
         if (Test-PSFParameterBinding -Parameter Expand) {
-            $queryExpand = "{0}expand={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Expand)
+            $queryExpand = "{0}expand={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Expand)
         }
 
         if (Test-PSFParameterBinding -Parameter Format) {
-            $queryFormat = "{0}format={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Format)
+            $queryFormat = "{0}format={1}" -f '$',[System.Net.WebUtility]::UrlEncode($Format)
         }
             
         if (Test-PSFParameterBinding -Parameter Top) {
-            $queryTop = '{0}top={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Top)
+            $queryTop = '{0}top={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Top)
         }
-            
-        $queryString = (($queryTop, $queryFlter, $querySelect, $queryExpand, $queryFormat -ne $nul) -join "&")
+
+        if ($Count.IsPresent) {
+            $queryCount = '{0}count={1}' -f '$',[System.Net.WebUtility]::UrlEncode('true')
+        }
+
+        $queryString = (($queryCount,$queryTop, $queryFlter, $querySelect, $queryExpand, $queryFormat -ne $nul) -join "&")
 
         if ([string]::IsNullOrEmpty($queryString)) {
             $queryUri = $Uri

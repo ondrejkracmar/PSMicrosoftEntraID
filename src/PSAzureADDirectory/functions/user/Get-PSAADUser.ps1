@@ -1,4 +1,4 @@
-function Get-PSAADUser {
+﻿function Get-PSAADUser {
     <#
     .SYNOPSIS
         Get the properties of the specified user.

@@ -1,4 +1,4 @@
-function Disable-PSAADLicenseServicePlan {
+function Enable-PSAADUserLicenseServicePlan {
     [CmdletBinding(DefaultParameterSetName = 'Default',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
@@ -39,8 +39,8 @@ function Disable-PSAADLicenseServicePlan {
             })]
         [string]$SkuId,
         [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
             Position = 2,
             ParameterSetName = 'Default')]
@@ -58,27 +58,29 @@ function Disable-PSAADLicenseServicePlan {
     }
     process {        
         if (Test-PSFFunctionInterrupt) { return }
+
         $graphApiParameters = @{
             Method             = 'Post'
             AuthorizationToken = "Bearer $authorizationToken"
-            Uri                = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId, 'assignLicense')
+            Uri                = Join-UriPath -Uri $url -ChildPath ("{0}/{1}" -f $UserId, 'assignLicense')                
         }
 
-        $userServicePlanList = Get-PSAADLicenseServicePlan -UserId $UserId -SkuId $SkuId
+        $userServicePlanList = Get-PSAADLicenseServicePlan -UserId $UserId -SkuId $SkuId | Select-Object -ExpandProperty ServicePlans | Where-Object { $_.provisioningStatus -in @('PendingProvisioning', 'Disabled') }
         if (-not [object]::equals($userServicePlanList, $null)) {
-            $userServicePlanDisabledList = $userServicePlanList | Select-Object -ExpandProperty ServicePlans | Where-Object { $_.provisioningStatus -in @('PendingProvisioning', 'Disabled') } | Select-Object -Property ServicePlanId
-            if (-not [object]::equals($userServicePlanDisabledList, $null)) {
-                [array]$disabledServicePlanList = $userServicePlanDisabledList.ServicePlanId
-                $disabledServicePlanList += $ServicePlanId
+            [array]$disabledServicePlanList = $userServicePlanList | Where-Object { $_.ServicePlanId -notin $ServicePlanId } | Select-Object -Property ServicePlanId 
+            if (-not [object]::equals($disabledServicePlanList, $null)) {
+                [array]$servicePlanList += $disabledServicePlanList.servicePlanId 
+                    
                 $body = @{
-                    "addLicenses"    = @(
+                            
+                    addLicenses      = @(
                         @{
-                            "disabledPlans" = ($disabledServicePlanList | Select-Object -Unique)
-                            "skuId"         = $SkuId
+                            'disabledPlans' = $servicePlanList
+                            "skuId"         = $skuId
                         }
                     )
                     "removeLicenses" = @()
-                } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
+                } | ConvertTo-Json -Depth 3 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) } 
                 $graphApiParameters['Body'] = $body
                 Invoke-GraphApiQuery @graphApiParameters
             }

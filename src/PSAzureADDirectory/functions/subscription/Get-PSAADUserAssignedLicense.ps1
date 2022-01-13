@@ -1,4 +1,4 @@
-function Get-PSAADAssignedLicense {
+function Get-PSAADUserAssignedLicense {
     <#
     .SYNOPSIS
         Get the properties of the specified user.
