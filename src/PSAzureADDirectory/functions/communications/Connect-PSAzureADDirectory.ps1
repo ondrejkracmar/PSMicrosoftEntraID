@@ -1,10 +1,10 @@
 ﻿function Connect-PSAzureADDirectory {
 	<#
 	.SYNOPSIS
-		Connect to the Microsoft Defender for Cloud Apps API
+		Connect to the Azure AD object via Microsoft Graph API
 	
 	.DESCRIPTION
-		Connect to the Microsoft Defender for Cloud Apps API
+		Connect to the Azure AD object via Microsoft Graph API
 	
 	.PARAMETER ClientID
         ID of the registered/enterprise application used for authentication.
