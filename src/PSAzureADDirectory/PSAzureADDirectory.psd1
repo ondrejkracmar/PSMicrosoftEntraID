@@ -3,7 +3,7 @@
 	RootModule = 'PSAzureADDirectory.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '0.0.4'
+	ModuleVersion = '0.0.9.1'
 	
 	# ID used to uniquely identify this module
 	GUID = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -18,7 +18,7 @@
 	Copyright = 'Copyright (c) 2022 i-system'
 	
 	# Description of the functionality provided by this module
-	Description = 'Powershell modue represents an Azure Active Directory object'
+	Description = 'Powershell module represents an Azure Active Directory object'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
 	PowerShellVersion = '5.1'
@@ -27,6 +27,7 @@
 	# this module
 	RequiredModules = @(
 		@{ ModuleName='PSFramework'; ModuleVersion='1.6.214' }
+		@{ ModuleName='RestConnect'; ModuleVersion='1.0.9' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -41,14 +42,15 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
 		'Connect-PSAzureADDirectory',
-		'Disconnect-PSAzureADDirectory',
-		'Get-PSAADLicenseServicePlan',
+		'Disable-PSAADUserLicense',
 		'Disable-PSAADUserLicenseServicePlan',
+		'Enable-PSAADUserLicense',		
 		'Enable-PSAADUserLicenseServicePlan',
-		'Get-PSAADUserAssignedLicense',
-		'Get-PSAADSubscribedSku',
+		'Get-PSAADUserLicense',
+		'Get-PSAADUserLicenseServicePlan',
 		'Get-PSAADUser',
-		'Get-PSAADUserLicenseServicePlan'
+		'Get-PSAADSubscribedSku',
+		'Get-PSAADLicenseServicePlan'
 	)
 	
 	# Cmdlets to export from this module
@@ -73,7 +75,7 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			# Tags = @()
+			Tags = @('rest','Azure')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''

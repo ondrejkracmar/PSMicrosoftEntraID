@@ -1,31 +1,28 @@
 function Get-PSAADSubscribedSku {
-    [CmdletBinding(DefaultParameterSetName = 'SkuId',
-        SupportsShouldProcess = $false,
-        PositionalBinding = $true,
-        ConfirmImpact = 'Medium')]
+    <#
+	.SYNOPSIS
+		Get the list of commercial subscriptions that an organization has acquired..
+	
+	.DESCRIPTION
+		Get the list of commercial subscriptions that an organization has acquired. For the mapping of license names as displayed on the Azure portal or the Microsoft 365 admin center against their Microsoft Graph skuId and skuPartNumber properties.
+	
+	.EXAMPLE
+		PS C:\> Get-PSAADSubscribedSku
+		Get the list of commercial subscriptions
+	#>
+    [OutputType('PSAzureADDirectory.License')]
+    [CmdletBinding()]
     param (
         
     )
-    begin {
-        try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "subscribedSkus"
-            $authorizationToken = Get-PSAADAuthorizationToken
-            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.SubscribedSku).Value
-        }
-        catch {
-            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
-        }
+    begin {        
+        Assert-RestConnection -Service graph -Cmdlet $PSCmdlet
     }
-    process {        
-        if (Test-PSFFunctionInterrupt) { return }
-        $graphApiParameters = @{
-            Method             = 'Get'
-            AuthorizationToken = "Bearer $authorizationToken"
-            Uri                = $url
-            Select = $property -join ","
-        }    
-        $subscribedSkuResult = Invoke-GraphApiQuery @graphApiParameters
-        $subscribedSkuResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.SubscribedSku"
+    process {
+        $query = @{
+            '$select' = ((Get-PSFConfig -Module $sript:ModuleName -Name Settings.GraphApiQuery.Select.SubscribedSku).Value -join ',')
+        }
+        Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestSubscribedSku
     }  
     end
     {}
