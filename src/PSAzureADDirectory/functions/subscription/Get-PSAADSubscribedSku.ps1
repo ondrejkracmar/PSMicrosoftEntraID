@@ -1,10 +1,10 @@
-function Get-PSAADSubscribedSku {
+﻿function Get-PSAADSubscribedSku {
     <#
 	.SYNOPSIS
 		Get the list of commercial subscriptions that an organization has acquired
 	
 	.DESCRIPTION
-		Get the list of commercial subscriptions that an organization has acquired. For the mapping of license names as displayed on the Azure portal or the Microsoft 365 admin center against their Microsoft Graph skuId and skuPartNumber properties
+		Get the list of commercial subscriptions that an organization has acquired
 	
 	.EXAMPLE
 		PS C:\> Get-PSAADSubscribedSku

@@ -1,4 +1,24 @@
 ﻿function Get-PSAADUserLicenseServicePlan {
+    <#
+	.SYNOPSIS
+		Get users who are assigned licenses
+	
+	.DESCRIPTION
+		Get users who are assigned licenses with disabled and enabled service plans
+	
+	.PARAMETER UserPrincipalName
+        UserPrincipalName attribute populated in tenant/directory.
+
+    .PARAMETER UserId
+        The ID of the user in tenant/directory.
+	
+	.EXAMPLE
+		PS C:\> Get-PSAADUserLicenseServicePlan -UserPrincipalName username@contoso.com
+
+		Get licenses of user username@contoso.com with service plans
+
+	#>
+    [OutputType('PSAzureADDirectory.User.License')]
     [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserPrincipalName')]
@@ -11,7 +31,8 @@
                     $false
                 }
             })]
-        [string]$UserPrincipalName,
+        [string]
+        $UserPrincipalName,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
@@ -23,7 +44,8 @@
                     $false
                 }
             })]
-        [string]$UserId
+        [string]
+        $UserId
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet

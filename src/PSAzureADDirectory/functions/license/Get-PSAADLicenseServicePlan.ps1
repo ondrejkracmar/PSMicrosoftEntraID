@@ -1,4 +1,22 @@
 ﻿function Get-PSAADLicenseServicePlan {
+    <#
+	.SYNOPSIS
+		Get service plans of license
+	
+	.DESCRIPTION
+		Get service plans of license
+
+	.PARAMETER SkuId
+		Office 365 product GUID is identified using a GUID of subscribedSku.
+
+    .PARAMETER SkuPartNumber
+        Friendly name Office 365 product of subscribedSku.
+
+	.EXAMPLE
+		PS C:\> Get-PSAADLicenseServicePlan -SkuPartNumber ENTERPRISEPACK
+
+		Get service plans of ENTERPRISEPACK license
+	#>
     [OutputType('PSAzureADDirectory.License.ServicePlan')]
     [CmdletBinding(DefaultParameterSetName = 'SkuPartNumber')]
     param (
@@ -13,10 +31,12 @@
                     $false
                 }
             })]
-        [string]$SkuId,
+        [string]
+        $SkuId,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string]$SkuPartNumber
+        [string]
+        $SkuPartNumber
     )
     begin {        
         Assert-RestConnection -Service graph -Cmdlet $PSCmdlet

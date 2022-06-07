@@ -1,4 +1,37 @@
 ﻿function Get-PSAADUserLicense {
+    <#
+	.SYNOPSIS
+		Get users who are assigned licenses
+	
+	.DESCRIPTION
+		Get users who are assigned licenses
+	
+	.PARAMETER UserPrincipalName
+        UserPrincipalName attribute populated in tenant/directory.
+
+    .PARAMETER UserId
+        The ID of the user in tenant/directory.
+
+	.PARAMETER SkuId
+		Office 365 product GUID is identified using a GUID of subscribedSku.
+
+    .PARAMETER SkuPartNumber
+        Friendly name Office 365 product of subscribedSku.
+
+    .PARAMETER PageSize
+        Value of returned result set contains multiple pages of data.
+	
+	.EXAMPLE
+		PS C:\> Get-PSAADUserLicense -UserPrincipalName username@contoso.com
+
+		Get licenses of user username@contoso.com
+
+	.EXAMPLE
+		PS C:\> Get-PSAADUserLicense -SkuPartNumber ENTERPRISEPACK
+
+		Get userse with ENTERPRISEPACK licenses
+	#>
+    [OutputType('PSAzureADDirectory.User.License')]
     [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserPrincipalName')]
@@ -11,7 +44,8 @@
                     $false
                 }
             })]
-        [string]$UserPrincipalName,
+        [string]
+        $UserPrincipalName,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
@@ -23,7 +57,8 @@
                     $false
                 }
             })]
-        [string]$UserId,
+        [string]
+        $UserId,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
@@ -35,15 +70,18 @@
                     $false
                 }
             })]
-        [string]$SkuId,
+        [string]
+        $SkuId,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string]$SkuPartNumber,
+        [string]
+        $SkuPartNumber,
         [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumber')]
         [Parameter(Mandatory = $false, ParameterSetName = 'SkuId')]
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
-        [int]$PageSize = 100
+        [int]
+        $PageSize = 100
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet

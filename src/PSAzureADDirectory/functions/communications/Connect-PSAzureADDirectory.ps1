@@ -70,12 +70,12 @@
 		These tokens are deprecated and should be avoided, but not every migration can be accomplished instantaneously...
 	
 	.EXAMPLE
-		PS C:\> Connect-MdcaService -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
+		PS C:\> Connect-PSAzureADDirectory -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
 
 		Connect to the specified tenant using a certificate
 
 	.EXAMPLE
-		PS C:\> Connect-MdcaService -ClientID $clientID -TenantID $tenantID -TenantName contoso -DeviceCode
+		PS C:\> Connect-PSAzureADDirectory -ClientID $clientID -TenantID $tenantID -TenantName contoso -DeviceCode
 
 		Connect to the specified tenant using the DeviceCode flow
 	#>
