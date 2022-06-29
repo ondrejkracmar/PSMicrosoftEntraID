@@ -44,7 +44,7 @@
                     $false
                 }
             })]
-        [string]
+        [string[]]
         $UserPrincipalName,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
         [ValidateNotNullOrEmpty()]
@@ -57,7 +57,7 @@
                     $false
                 }
             })]
-        [string]
+        [string[]]
         $UserId,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
         [ValidateNotNullOrEmpty()]
@@ -88,12 +88,20 @@
         $query = @{
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
-        Get-PSAADSubscribedSku | Set-PSFResultCache -DisableCache $true
+        Get-PSAADSubscribedSku | Set-PSFResultCache
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Userprincipalname' { Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $UserPrincipalName) -Query $query -Method Get | ConvertFrom-RestUserLicense } 
-            'UserId' { Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get | ConvertFrom-RestUserLicense }
+            'Userprincipalname' { 
+                foreach ($user in $UserPrincipalName) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense 
+                } 
+            }
+            'UserId' {
+                foreach ($user in $UserId) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense 
+                } 
+            }
             'SkuId' {
                 $query['$count'] = 'true'
                 $query['$top'] = $PageSize

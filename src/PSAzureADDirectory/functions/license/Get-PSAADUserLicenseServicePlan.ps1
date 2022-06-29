@@ -31,7 +31,7 @@
                     $false
                 }
             })]
-        [string]
+        [string[]]
         $UserPrincipalName,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
         [ValidateNotNullOrEmpty()]
@@ -44,7 +44,7 @@
                     $false
                 }
             })]
-        [string]
+        [string[]]
         $UserId
     )
     begin {
@@ -52,12 +52,20 @@
         $query = @{
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
-        Get-PSAADSubscribedSku | Set-PSFResultCache -DisableCache $true
+        Get-PSAADSubscribedSku | Set-PSFResultCache
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Userprincipalname' { Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $UserPrincipalName) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan} 
-            'UserId' { Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan}
+            'Userprincipalname' { 
+                foreach ($user in $UserPrincipalName) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
+                } 
+            }
+            'UserId' { 
+                foreach ($user in $UserId) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan 
+                }
+            }
         }
     }
     end

@@ -1,8 +1,7 @@
 ﻿function Enable-PSAADUserLicenseServicePlan {
-    [CmdletBinding(DefaultParameterSetName = 'UPNSkuPartNumberPlanName',
-        SupportsShouldProcess = $false,
-        PositionalBinding = $true,
-        ConfirmImpact = 'Medium')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [CmdletBinding(SupportsShouldProcess = $true,
+        DefaultParameterSetName = 'UPNSkuPartNumberPlanName')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanName')]
@@ -77,39 +76,51 @@
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        
-        Get-PSAADSubscribedSku | Set-PSFResultCache -DisableCache $true
+        Get-PSAADSubscribedSku | Set-PSFResultCache
     }
-    process {        
-        $userServicePlanList = Get-PSAADLicenseServicePlan -UserId $UserId -SkuId $SkuId | Select-Object -ExpandProperty ServicePlans | Where-Object { $_.provisioningStatus -in @('PendingProvisioning', 'Disabled') }
-        if (-not [object]::equals($userServicePlanList, $null)) {
-            [array]$disabledServicePlanList = $userServicePlanList | Where-Object { $_.ServicePlanId -notin $ServicePlanId } | Select-Object -Property ServicePlanId 
-            if (-not [object]::equals($disabledServicePlanList, $null)) {
-                [array]$servicePlanList += $disabledServicePlanList.servicePlanId 
-                    
-                $body = @{
-                            
-                    addLicenses      = @(
-                        @{
-                            'disabledPlans' = $servicePlanList
-                            "skuId"         = $skuId
-                        }
-                    )
-                    "removeLicenses" = @()
-                } 
+    process {
                 
-                
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            'UPN\w' {
+                $userLicenseDetail = Get-PSAADUserLicenseServicePlan -UserPrincipalName $UserPrinciplaName
+                $path = ("{0}/{1}" -f $UserPrinciplaName, 'assignLicense')
+            }
+            'UserId\w' {
+                $userLicenseDetail = Get-PSAADUserLicenseServicePlan -UserPrincipalName $UserId
+                $path = ("{0}/{1}" -f $UserId, 'assignLicense')
+            }
+            '\wSkuId\w' {
+                $bodySkuId = $SkuId
+            }
+            '\wSkuPartNumber\w' {
+                $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+            }
+            'w\PlanId' {
+                [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuPartNumber -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+            }
+            'w\PlanName' {
+                [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuPartNumber -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
             }
         }
-        
-		Invoke-PSFProtectedCommand -ActionString 'New-MdcaSubnet.Create' -ActionStringValues $Name -Target $Name -ScriptBlock {
-			$userLicenseServicePlan = Invoke-RestRequest -Method Post -Path "subnet/create_rule/" -Body $body
-            $userLicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path ("{0}/{1}" -f $UserId, 'assignLicense') -Body $body -Method Post
-            $userLicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path ("{0}/{1}" -f $UserPrinciplaName, 'assignLicense') -Body $body -Method Post
-		} -EnableException $EnableException -PSCmdlet $PSCmdlet
 
-        Invoke-RestRequest -Service 'graph' -Path ("{0}/{1}" -f $UserId, 'assignLicense') -Body $body -Method Post
-        Invoke-RestRequest -Service 'graph' -Path ("{0}/{1}" -f $UserPrinciplaName, 'assignLicense') -Body $body -Method Post
+        $body = @{
+                            
+            addLicenses      = @(
+                @{
+                    'disabledPlans' = $bodyServicePlanList
+                    "skuId"         = $bodySkuId
+                }
+            )
+            "removeLicenses" = @()
+        }
+        
+        Invoke-PSFProtectedCommand -ActionString 'New-MdcaSubnet.Create' -ActionStringValues $Name -Target $Name -ScriptBlock {
+            #Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            $body
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet
+
+        
+        
     }
     end
     {}
