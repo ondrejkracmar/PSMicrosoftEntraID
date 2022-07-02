@@ -57,11 +57,23 @@ if ($importIndividualFiles)
 	foreach ($path in (& "$ModuleRoot\internal\scripts\preimport.ps1")) {
 		. Import-ModuleFile -Path $path
 	}
+
+	# Import all internal classes
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
+	}
 	
 	# Import all internal functions
 	foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
 	{
 		. Import-ModuleFile -Path $function.FullName
+	}
+
+	# Import all public classes
+	foreach ($class in (Get-ChildItem "$ModuleRoot\classes" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
 	}
 	
 	# Import all public functions

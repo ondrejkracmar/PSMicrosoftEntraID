@@ -1,6 +1,8 @@
 ﻿# This is where the strings go, that are written by
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
+	'ValidIdentityException'		= "This is not valid identity format '{0}'."
+	
 	'QueryMoreData' 				= 'The query contains more data, use recursive to get all!'
 	'QueryCommandOutput' 			= 'The command executed successfully'
 	'QueryBatchCommandOutput' 		= 'The batch command'
