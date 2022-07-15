@@ -34,7 +34,7 @@ RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 
 RUN useradd --create-home vscode
 
-RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v8.5.2/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v8.15.3/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
 RUN chmod +x /usr/local/bin/oh-my-posh
 
 RUN apt-get update;apt-get install openssh-client -y
@@ -53,3 +53,4 @@ USER vscode
 # RUN Install-Module -Name PSReadLine -Force -AllowPreRelease
 # RUN Install-Module PSDepend -Force
 # RUN Invoke-PSDepend /workspace/powershell/requirements.psd1 -Force
+

@@ -59,7 +59,12 @@ if ($importIndividualFiles)
 	}
 
 	# Import all internal classes
-	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\exceptions" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
+	}
+
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\attributes" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
 	{
 		. Import-ModuleFile -Path $class.FullName
 	}
@@ -75,7 +80,7 @@ if ($importIndividualFiles)
 	{
 		. Import-ModuleFile -Path $class.FullName
 	}
-	
+
 	# Import all public functions
 	foreach ($function in (Get-ChildItem "$ModuleRoot\functions" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
 	{

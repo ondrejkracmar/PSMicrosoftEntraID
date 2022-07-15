@@ -7,7 +7,7 @@
 	// Set *default* container specific settings.json values on container create.
     // 2022-06: This is deprecated, the new recommended way to configure your default shell is by creating a terminal profile in `#terminal.integrated.profiles.linux
 	"settings": {
-		"terminal.integrated.shell.linux": "/opt/microsoft/powershell/7/pwsh"
+		re"terminal.integrated.shell.linux": "/opt/microsoft/powershell/7/pwsh"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -20,7 +20,7 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
     //"postCreateCommand": "uname -a",
 
-	"mounts": ["source=contoso-data,target=/contoso-data,type=volume"],
+	"mounts": ["source=i-system-data,target=/i-system-data,type=volume"],
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",

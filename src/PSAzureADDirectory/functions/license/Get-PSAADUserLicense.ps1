@@ -6,11 +6,8 @@
 	.DESCRIPTION
 		Get users who are assigned licenses
 	
-	.PARAMETER UserPrincipalName
-        UserPrincipalName attribute populated in tenant/directory.
-
-    .PARAMETER UserId
-        The ID of the user in tenant/directory.
+	.PARAMETER Identity
+        UserPrincipalName or Id of the user attribute populated in tenant/directory.
 
 	.PARAMETER SkuId
 		Office 365 product GUID is identified using a GUID of subscribedSku.
@@ -22,7 +19,7 @@
         Value of returned result set contains multiple pages of data.
 	
 	.EXAMPLE
-		PS C:\> Get-PSAADUserLicense -UserPrincipalName username@contoso.com
+		PS C:\> Get-PSAADUserLicense -Identity username@contoso.com
 
 		Get licenses of user username@contoso.com
 
@@ -32,33 +29,12 @@
 		Get userse with ENTERPRISEPACK licenses
 	#>
     [OutputType('PSAzureADDirectory.User.License')]
-    [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
+    [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserPrincipalName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                If ($_ -match '@') {
-                    $True
-                }
-                else {
-                    $false
-                }
-            })]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [ValidateIdentity()]
         [string[]]
-        $UserPrincipalName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
-        [string[]]
-        $UserId,
+        $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
@@ -92,13 +68,8 @@
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Userprincipalname' { 
-                foreach ($user in $UserPrincipalName) {
-                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense 
-                } 
-            }
-            'UserId' {
-                foreach ($user in $UserId) {
+            'Identity' { 
+                foreach ($user in $Identity) {
                     Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense 
                 } 
             }

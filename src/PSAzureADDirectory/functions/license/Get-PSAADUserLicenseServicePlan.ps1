@@ -6,8 +6,8 @@
 	.DESCRIPTION
 		Get users who are assigned licenses with disabled and enabled service plans
 	
-	.PARAMETER UserPrincipalName
-        UserPrincipalName attribute populated in tenant/directory.
+	.PARAMETER Identity
+        UserPrincipalName or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER UserId
         The ID of the user in tenant/directory.
@@ -19,33 +19,12 @@
 
 	#>
     [OutputType('PSAzureADDirectory.User.License')]
-    [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
+    [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserPrincipalName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                If ($_ -match '@') {
-                    $True
-                }
-                else {
-                    $false
-                }
-            })]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [ValidateIdentity()]
         [string[]]
-        $UserPrincipalName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserId')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
-        [string[]]
-        $UserId
+        $Identity
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
@@ -56,15 +35,10 @@
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Userprincipalname' { 
-                foreach ($user in $UserPrincipalName) {
+            'Identity' { 
+                foreach ($user in $Identity) {
                     Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
                 } 
-            }
-            'UserId' { 
-                foreach ($user in $UserId) {
-                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan 
-                }
             }
         }
     }
