@@ -27,7 +27,7 @@
 	# this module
 	RequiredModules = @(
 		@{ ModuleName='PSFramework'; ModuleVersion='1.6.214' }
-		@{ ModuleName='RestConnect'; ModuleVersion='1.0.9' }
+		@{ ModuleName='RestConnect'; ModuleVersion='1.0.10' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
