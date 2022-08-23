@@ -1,33 +1,33 @@
 ﻿@{
 	# Script module or binary module file associated with this manifest
-	RootModule = 'PSAzureADDirectory.psm1'
+	RootModule        = 'PSAzureADDirectory.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '0.0.9.1'
+	ModuleVersion     = '0.0.9.1'
 	
 	# ID used to uniquely identify this module
-	GUID = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
+	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
 	
 	# Author of this module
-	Author = 'Ondrej Kracmar'
+	Author            = 'Ondrej Kracmar'
 	
 	# Company or vendor of this module
-	CompanyName = 'i-system'
+	CompanyName       = 'i-system'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2022 i-system'
+	Copyright         = 'Copyright (c) 2022 i-system'
 	
 	# Description of the functionality provided by this module
-	Description = 'Powershell module represents an Azure Active Directory object'
+	Description       = 'Powershell module represents an Azure Active Directory object'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
 	PowerShellVersion = '5.1'
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.6.214' }
-		@{ ModuleName='RestConnect'; ModuleVersion='1.0.10' }
+	RequiredModules   = @(
+		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.6.214' }
+		@{ ModuleName = 'RestConnect'; ModuleVersion = '1.0.10' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -40,10 +40,7 @@
 	# FormatsToProcess = @('xml\PSAzureADDirectory.Format.ps1xml')
 	
 	# cript (.ps1) files that are run in the caller's session state when the module is imported.
-	ScriptsToProcess = @(
-		'internal\classes\exceptions\ValidIdentityException.ps1',
-		'internal\classes\attributes\ValidateIdentityAttribute.ps1'
-	)
+	#ScriptsToProcess   = ""
 
 	# Functions to export from this module
 	FunctionsToExport = @(
@@ -60,28 +57,28 @@
 	)
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = ''
+	CmdletsToExport   = ''
 	
 	# Variables to export from this module
 	VariablesToExport = ''
 	
 	# Aliases to export from this module
-	AliasesToExport = ''
+	AliasesToExport   = ''
 	
 	# List of all modules packaged with this module
-	ModuleList = @()
+	ModuleList        = @()
 	
 	# List of all files packaged with this module
-	FileList = @()
+	FileList          = @()
 	
 	# Private data to pass to the module specified in ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-	PrivateData = @{
+	PrivateData       = @{
 		
 		#Support for PowerShellGet galleries.
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('rest','Azure')
+			Tags = @('rest', 'Azure')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''
