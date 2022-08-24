@@ -22,14 +22,18 @@ using System.Text.RegularExpressions;
     {
         protected override void Validate(object strGuid, EngineIntrinsics engineEntrinsics)
         {
-            if(String.IsNullOrWhiteSpace(strGuid.ToString())) {
-                throw new ArgumentNullException();
-            }
+            string[] strGuidList = (string[])strGuid;
+            foreach (string itemGuidList in strGuidList)
+            {
+                if(String.IsNullOrWhiteSpace(itemGuidList.ToString())) {
+                    throw new ArgumentNullException();
+                }
 
-            var regexGuid = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
+                var regexGuid = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
 
-            if(!regexGuid.IsMatch(strGuid.ToString())) {
-                throw new ValidGuidException(strGuid.ToString());
+                if(!regexGuid.IsMatch(itemGuidList.ToString())) {
+                    throw new ValidGuidException(itemGuidList.ToString());
+                }
             }
         }
     }

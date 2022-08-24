@@ -49,21 +49,21 @@ using System.Text.RegularExpressions;
     {
         protected override void Validate(object identityList, EngineIntrinsics engineEntrinsics)
         {
-            IEnumerable enumerableIdentityList = identityList as IEnumerable;
-            foreach (string identity in enumerableIdentityList)
+            string[] strIdentityList = (string[])identityList;
+            foreach (string identity in strIdentityList)
             {
-                if (String.IsNullOrWhiteSpace(identity.ToString())) {
+                if (String.IsNullOrWhiteSpace(identity.ToString()))
+                {
                     throw new ArgumentNullException();
                 }
 
                 var regexId = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
                 var regexUUPN = new Regex(@"@");
 
-                if(!regexId.IsMatch(identity) && !regexUUPN.IsMatch(identity))
+                if (!regexId.IsMatch(identity) && !regexUUPN.IsMatch(identity))
                 {
                     throw new ValidIdentityException(identity);
                 }
-                
             }
         }
     }

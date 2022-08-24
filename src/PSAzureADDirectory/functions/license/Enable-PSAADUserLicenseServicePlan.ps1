@@ -1,73 +1,32 @@
 ﻿function Enable-PSAADUserLicenseServicePlan {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'UPNSkuPartNumberPlanName')]
+        DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                If ($_ -match '@') {
-                    $True
-                }
-                else {
-                    $false
-                }
-            })]
-        [string]
-        $UserPrincipalName,    
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
-        [string]
-        $UserId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
+        [ValidateIdentity()]
+        [string[]]
+        $Identity,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [ValidateGuid()]
         [string]
         $SkuId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string]
         $SkuPartNumber,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanId')]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [ValidateGuid()]
         [string[]]
         $ServicePlanId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UPNSkuPartNumberPlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserIdSkuPartNumberPlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string[]]
         $ServicePlanName,
@@ -79,48 +38,41 @@
         Get-PSAADSubscribedSku | Set-PSFResultCache
     }
     process {
-                
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            'UPN\w' {
-                $userLicenseDetail = Get-PSAADUserLicenseServicePlan -UserPrincipalName $UserPrinciplaName
-                $path = ("{0}/{1}" -f $UserPrinciplaName, 'assignLicense')
-            }
-            'UserId\w' {
-                $userLicenseDetail = Get-PSAADUserLicenseServicePlan -UserPrincipalName $UserId
-                $path = ("{0}/{1}" -f $UserId, 'assignLicense')
-            }
-            '\wSkuId\w' {
-                $bodySkuId = $SkuId
-            }
-            '\wSkuPartNumber\w' {
-                $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-            }
-            'w\PlanId' {
-                [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuPartNumber -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
-            }
-            'w\PlanName' {
-                [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuPartNumber -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
-            }
-        }
-
-        $body = @{
-                            
-            addLicenses      = @(
-                @{
-                    'disabledPlans' = $bodyServicePlanList
-                    "skuId"         = $bodySkuId
+        foreach ($user in  $Identity) {
+            switch -Regex ($PSCmdlet.ParameterSetName) {
+                'Identity\w' {
+                    $userLicenseDetail = Get-PSAADUserLicenseServicePlan -Identity $user
+                    $path = ("users/{0}/{1}" -f $user, 'assignLicense')
                 }
-            )
-            "removeLicenses" = @()
-        }
-        
-        Invoke-PSFProtectedCommand -ActionString 'New-MdcaSubnet.Create' -ActionStringValues $Name -Target $Name -ScriptBlock {
-            #Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
-            $body
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet
+                '\wSkuId\w' {
+                    $bodySkuId = $SkuId
+                }
+                '\wSkuPartNumber\w' {
+                    $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                }
+                '\wPlanId' {
+                    [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                }
+                '\wPlanName' {
+                    [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                }
+            }
 
-        
-        
+            $body = @{
+                            
+                addLicenses    = @(
+                    @{
+                        disabledPlans = $bodyDisabledServicePlans
+                        skuId         = $bodySkuId
+                    }
+                )
+                removeLicenses = @()
+            }
+            
+            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
+                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet
+        }
     }
     end
     {}

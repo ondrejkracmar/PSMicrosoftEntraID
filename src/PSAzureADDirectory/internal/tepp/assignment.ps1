@@ -18,3 +18,14 @@ Register-PSFTeppArgumentCompleter -Command Enable-PSAADUserLicenseServicePlan -P
 Register-PSFTeppArgumentCompleter -Command Enable-PSAADUserLicenseServicePlan -Parameter ServicePlanName -Name 'subscribed.skuid.serviceplanName'
 Register-PSFTeppArgumentCompleter -Command Enable-PSAADUserLicenseServicePlan -Parameter ServicePlanId -Name 'subscribed.skupartnumber.serviceplanid'
 Register-PSFTeppArgumentCompleter -Command Enable-PSAADUserLicenseServicePlan -Parameter ServicePlanName -Name 'subscribed.skupartnumber.serviceplanName'
+
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter SkuId -Name 'subscribed.skuid'
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
+
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter ServicePlanId -Name 'subscribed.skuid.serviceplanid'
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter ServicePlanName -Name 'subscribed.skuid.serviceplanName'
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter ServicePlanId -Name 'subscribed.skupartnumber.serviceplanid'
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicenseServicePlan -Parameter ServicePlanName -Name 'subscribed.skupartnumber.serviceplanName'
+
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicense -Parameter SkuId -Name 'subscribed.skuid'
+Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
