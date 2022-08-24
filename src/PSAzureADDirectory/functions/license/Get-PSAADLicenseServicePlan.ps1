@@ -21,17 +21,7 @@
     [CmdletBinding(DefaultParameterSetName = 'SkuPartNumber')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
-        [string]
+        [ValidateGuid()]
         $SkuId,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]

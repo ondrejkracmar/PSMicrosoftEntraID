@@ -6,92 +6,79 @@
     .DESCRIPTION
         Get the properties of the specified user.
                 
-    .PARAMETER UserPrincipalName
-        UserPrincipalName
+    .PARAMETER Identity
+        UserPrincipalName or Id of the user attribute populated in tenant/directory.
+    
+    .PARAMETER Name
+        DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
+
+    .PARAMETER Mail
+        Mail of the user attribute populated in tenant/directory.
+    
+    .PARAMETER Filter
+        Filter expression of Graph API  of the user attribute populated in tenant/directory.
 #>
-    [CmdletBinding(DefaultParameterSetName = 'FilterByName',
+    [CmdletBinding(DefaultParameterSetName = 'Identity',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ValueFromRemainingArguments = $false,
-            ParameterSetName = 'FilterByUserPrincipalName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [ValidateIdentity()]
+        [string[]]
+        $Identity,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Name')]
         [ValidateNotNullOrEmpty()]
-        [string]$UserPrincipalName,
-        [Parameter(Mandatory = $false,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            ParameterSetName = 'FilterByName')]
+        [string[]]$Name,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Mail')]
         [ValidateNotNullOrEmpty()]
-        [string]$Name,
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            ParameterSetName = 'Filter')]
+        [string[]]$Mail,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $false,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false)]
-        [switch]$All,
-        [Parameter(Mandatory = $false,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false)]
-        [ValidateRange(5, 1000)]
-        [int]$PageSize
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Name')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Mail')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
+        [ValidateNotNullOrEmpty()]
+        [ValidateRange(1, 999)]
+        [int]
+        $PageSize = 100
     )
      
     begin {
-        try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
-            $authorizationToken = Get-PSAADAuthorizationToken
-            $property = (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiQuery.Select.User).Value
-        }
-        catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $query = @{
+            '$count'  = 'true'
+            '$top'    = $PageSize
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
     }
     
     process {
-        if (Test-PSFFunctionInterrupt) { return }
-        $graphApiParameters = @{
-            Method             = 'Get'
-            AuthorizationToken = "Bearer $authorizationToken"
-            Select = $property -join ","
+        switch ($PSCmdlet.ParameterSetName) {
+            'Identity' {
+                foreach ($user in $Identity) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUser
+                }
+            }
+            'Name' {
+                foreach ($user in $Name) {
+                    $query['$Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}')" -f $User)
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                }
+            }
+            'Mail' {
+                foreach ($user in $Mail) {
+                    $query['$Filter'] = ("startswith(mail,'{0}')" -f $User)
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                }
+            }
+            'Filter' {
+                $query['$Filter'] = $Filter
+                Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+            }
         }
-
-        if (Test-PSFParameterBinding -Parameter UserPrincipalName) {
-            $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
-            $graphApiParameters['Uri'] = $urlUser            
-        }
-        else {
-            $graphApiParameters['Uri'] = $url
-        }
-
-        if (Test-PSFParameterBinding -Parameter Name) {
-            $graphApiParameters['Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}') or startswith(mail,'{0}') or startswith(userPrincipalName,'{0}')" -f $Name)
-        }
-
-        if (Test-PSFParameterBinding -Parameter Filter) {
-            $graphApiParameters['Filter'] = $Filter
-        }
-
-        if (Test-PSFParameterBinding -Parameter All) {
-            $graphApiParameters['All'] = $true
-        }
-
-        if (Test-PSFParameterBinding -Parameter PageSize) {
-            $graphApiParameters['Top'] = $PageSize
-        }
-
-        $userResult = Invoke-GraphApiQuery @graphApiParameters
-        $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName "PSAzureADDirectory.User"
-    }    
+    }
+    end {}
 }

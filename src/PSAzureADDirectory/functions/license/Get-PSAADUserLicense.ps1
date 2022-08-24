@@ -36,16 +36,7 @@
         [string[]]
         $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                } 
-                catch {
-                    $false
-                }
-            })]
+        [ValidateGuid()]
         [string]
         $SkuId,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]

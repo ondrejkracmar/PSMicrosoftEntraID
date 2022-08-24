@@ -9,11 +9,8 @@
 	.PARAMETER Identity
         UserPrincipalName or Id of the user attribute populated in tenant/directory.
 
-    .PARAMETER UserId
-        The ID of the user in tenant/directory.
-	
 	.EXAMPLE
-		PS C:\> Get-PSAADUserLicenseServicePlan -UserPrincipalName username@contoso.com
+		PS C:\> Get-PSAADUserLicenseServicePlan -Identity username@contoso.com
 
 		Get licenses of user username@contoso.com with service plans
 

@@ -26,5 +26,6 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 "$moduleRoot\internal\scripts\license.ps1"
 
 # Load all internal classes
-#"$moduleRoot\internal\classes\exceptions\ValidIdentityException.ps1"
+
 "$moduleRoot\internal\classes\attributes\ValidateIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateGuidAttribute.ps1"
