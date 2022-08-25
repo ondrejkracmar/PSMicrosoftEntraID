@@ -52,9 +52,15 @@
                 }
                 '\wPlanId' {
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                    if ([object]::Equals($bodyDisabledServicePlans, $null)) {
+                        [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                    }
                 }
                 '\wPlanName' {
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                    if ([object]::Equals($bodyDisabledServicePlans, $null)) {
+                        [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                    }
                 }
             }
 
