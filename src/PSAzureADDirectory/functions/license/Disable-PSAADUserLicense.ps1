@@ -1,4 +1,4 @@
-function Disable-PSAADUserLicense {
+﻿function Disable-PSAADUserLicense {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
@@ -43,9 +43,10 @@ function Disable-PSAADUserLicense {
                 )
                 removeLicenses = $bodySkuId
             }            
-            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
-               Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
+               $disableLicense = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
             } -EnableException $EnableException -PSCmdlet $PSCmdlet
+            $disableLicense  | ConvertFrom-RestUser
         }
     }
     end

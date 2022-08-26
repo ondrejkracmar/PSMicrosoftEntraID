@@ -1,4 +1,4 @@
-function Disable-PSAADUserLicenseServicePlan {
+﻿function Disable-PSAADUserLicenseServicePlan {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
@@ -53,17 +53,15 @@ function Disable-PSAADUserLicenseServicePlan {
                 '\wPlanId' {
                     [string[]]$enabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanId -in $ServicePlanId }).ServicePlanId
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
-                    if(-not [object]::Equals($enabledServicePlans,$null))
-                    {
-                        $bodyDisabledServicePlans+=$enabledServicePlans
+                    if (-not [object]::Equals($enabledServicePlans, $null)) {
+                        $bodyDisabledServicePlans += $enabledServicePlans
                     }
                 }
                 '\wPlanName' {
                     [string[]]$enabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName }).ServicePlanId
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
-                    if(-not [object]::Equals($enabledServicePlans,$null))
-                    {
-                        $bodyDisabledServicePlans+=$enabledServicePlans
+                    if (-not [object]::Equals($enabledServicePlans, $null)) {
+                        $bodyDisabledServicePlans += $enabledServicePlans
                     }
                 }
             }
@@ -80,8 +78,9 @@ function Disable-PSAADUserLicenseServicePlan {
             }
             
             Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
-                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+                $disableLicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
             } -EnableException $EnableException -PSCmdlet $PSCmdlet
+            $disableLicenseServicePlan | ConvertFrom-RestUser
         }
     }
     end

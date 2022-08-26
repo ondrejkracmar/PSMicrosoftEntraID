@@ -22,18 +22,33 @@ using System.Text.RegularExpressions;
     {
         protected override void Validate(object strGuid, EngineIntrinsics engineEntrinsics)
         {
-            string[] strGuidList = (string[])strGuid;
-            foreach (string itemGuidList in strGuidList)
-            {
-                if(String.IsNullOrWhiteSpace(itemGuidList.ToString())) {
+            if(strGuid.GetType().IsArray) {
+                string[] strGuidList = (string[])strGuid;
+                foreach (string itemGuidList in strGuidList)
+                {
+                    if(String.IsNullOrWhiteSpace(itemGuidList.ToString())) {
+                        throw new ArgumentNullException();
+                    }
+
+                    var regexGuid = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
+
+                    if(!regexGuid.IsMatch(itemGuidList.ToString())) {
+                        throw new ValidGuidException(itemGuidList.ToString());
+                    }
+                }
+            }
+            else{
+                string itemGuid = (string)strGuid;
+                if(String.IsNullOrWhiteSpace(itemGuid.ToString())) {
                     throw new ArgumentNullException();
                 }
 
                 var regexGuid = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
 
-                if(!regexGuid.IsMatch(itemGuidList.ToString())) {
-                    throw new ValidGuidException(itemGuidList.ToString());
+                if(!regexGuid.IsMatch(itemGuid.ToString())) {
+                    throw new ValidGuidException(itemGuid.ToString());
                 }
+
             }
         }
     }
