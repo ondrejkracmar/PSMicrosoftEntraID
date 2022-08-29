@@ -1,4 +1,32 @@
 ﻿function Enable-PSAADUserLicenseServicePlan {
+    <#
+	.SYNOPSIS
+		Enable serivce plan of users's sku subscription
+	
+	.DESCRIPTION
+		Enable serivce plan of users's sku subscription
+	
+	.PARAMETER Identity
+        UserPrincipalName or Id of the user attribute populated in tenant/directory.
+
+	.PARAMETER SkuId
+		Office 365 product GUID is identified using a GUID of subscribedSku.
+
+    .PARAMETER SkuPartNumber
+        Friendly name Office 365 product of subscribedSku.
+    
+    .PARAMETER ServicePlanId
+		Service plan Id of subscribedSku.
+
+    .PARAMETER ServicePlanName
+        Friendly servcie plan name of subscribedSku.
+
+	.EXAMPLE
+		PS C:\> Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
+
+		Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
+        
+	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]

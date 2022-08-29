@@ -1,4 +1,26 @@
 ﻿function Disable-PSAADUserLicense {
+    <#
+	.SYNOPSIS
+		Disable user's license 
+	
+	.DESCRIPTION
+		Disable user's Office 365 subscription  
+	
+	.PARAMETER Identity
+        UserPrincipalName or Id of the user attribute populated in tenant/directory.
+
+	.PARAMETER SkuId
+		Office 365 product GUID is identified using a GUID of subscribedSku.
+
+    .PARAMETER SkuPartNumber
+        Friendly name Office 365 product of subscribedSku.
+
+	.EXAMPLE
+		PS C:\> Disable-PSAADUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK
+
+		Disable license (subscription) ENTERPRISEPACK of user username@contoso.com
+
+	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]

@@ -14,6 +14,6 @@
     }
     else 
     {
-        return Join-UriPath -Uri (Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiUrl).Value -ChildPath (Get-PSFConfig -Module PSAzureADDirectory -Name Settings.GraphApiVersion).Value
+        return Join-UriPath -Uri (Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiUrl).Value -ChildPath (Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiVersion).Value
     }
 }
