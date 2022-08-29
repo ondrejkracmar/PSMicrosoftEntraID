@@ -77,7 +77,7 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('rest', 'Azure')
+			Tags = @('rest', 'Azure','Azure Active Directory')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''
