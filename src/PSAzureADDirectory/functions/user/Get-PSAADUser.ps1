@@ -36,10 +36,14 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
+        [ValidateNotNullOrEmpty()]
+        [switch]$All,
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Name')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Mail')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
         [int]
@@ -77,6 +81,11 @@
             'Filter' {
                 $query['$Filter'] = $Filter
                 Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+            }
+            'All' {
+                if ($All.IsPresent) {
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser    
+                }
             }
         }
     }
