@@ -26,7 +26,7 @@
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	RequiredModules   = @(
-		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.7.237' }
+		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.7.249' }
 		@{ ModuleName = 'RestConnect'; ModuleVersion = '1.0.10' }
 	)
 	
