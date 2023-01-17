@@ -7,13 +7,22 @@
 		Get users who are assigned licenses
 	
 	.PARAMETER Identity
-        UserPrincipalName or Id of the user attribute populated in tenant/directory.
+        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
+    
+    .PARAMETER ComanyName
+        CompanyName of the user attribute populated in tenant/directory.
 
 	.PARAMETER SkuId
 		Office 365 product GUID is identified using a GUID of subscribedSku.
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
+    
+    .PARAMETER Filter
+        Filter expressions of accounts in tenant/directory.
+
+    .PARAMETER AdvancedFilter
+        Switch advanced filter for filtering accounts in tenant/directory.
 
     .PARAMETER PageSize
         Value of returned result set contains multiple pages of data.
@@ -35,16 +44,33 @@
         [ValidateIdentity()]
         [string[]]
         $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [string[]]
+        $CompanyName,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuIdCompanyName')]
         [ValidateGuid()]
-        [string]
+        [string[]]
         $SkuId,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
         [ValidateNotNullOrEmpty()]
-        [string]
+        [string[]]
         $SkuPartNumber,
-        [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [ValidateNotNullOrEmpty()]
+        [string]$Filter,
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [ValidateNotNullOrEmpty()]
+        [switch]$AdvancedFilter,
+        [Parameter(Mandatory = $false, ParameterSetName = 'CompanyName')]
         [Parameter(Mandatory = $false, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'SkuIdCompanyName')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
         [int]
@@ -52,7 +78,10 @@
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $query = @{
+            '$count'  = 'true'
+            '$top'    = $PageSize
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
         Get-PSAADSubscribedSku | Set-PSFResultCache
@@ -61,21 +90,77 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' { 
                 foreach ($user in $Identity) {
-                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense 
+                    $mailQuery = @{
+                        '$count'  = 'true'
+                        '$top'    = $PageSize
+                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
+                    }
+                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
+                    $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get | ConvertFrom-RestUser
+                    if ([object]::Equals($userMail, $null)) {
+                        Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense
+                    }
+                    else {
+                        $user = $userMail[0].id
+                        Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense
+                    }
                 } 
             }
             'SkuId' {
-                $query['$count'] = 'true'
-                $query['$top'] = $PageSize
-                $query['$filter'] = ('assignedLicenses/any(x:x/skuId eq {0})' -f $SkuId)
-                Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get | ConvertFrom-RestUserLicense
+                foreach ($itemSkuId in $SkuId) {
+                    $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $itemSkuId
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense
+                }
             }
             'SkuPartNumber' {
-                $query['$count'] = 'true'
-                $query['$top'] = $PageSize
-                $SkuId = (Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-                $query['$filter'] = ('assignedLicenses/any(x:x/skuId eq {0})' -f $SkuId)
-                Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get | ConvertFrom-RestUserLicense
+                foreach ($itemSkuPartNumber in $SkuPartNumber) {
+                    $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    if (-not([object]::Equals($singleSkuPartNumber, $null))) {
+                        $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber.SkuId
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense
+                    }
+                }
+            }
+            'SkuIdCompanyName' {
+                $header = @{}
+                $header['ConsistencyLevel'] = 'eventual'
+                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                foreach ($itemSkuId in $SkuId) {
+                    $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})" -f $companyNameList, $itemSkuId
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
+                }
+                
+            }
+            'SkuPartNumberCompanyName' {
+                $header = @{}
+                $header['ConsistencyLevel'] = 'eventual'
+                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                foreach ($itemSkuPartNumber in $SkuPartNumber) {
+                    $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    if (-not([object]::Equals($singleSkuPartNumber, $null))) {                        
+                        $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1}) " -f $companyNameList, $singleSkuPartNumber.SkuId
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense 
+                    }
+                }
+                
+            }
+            'CompanyName' {
+                $header = @{}
+                $header['ConsistencyLevel'] = 'eventual'
+                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                $query['$Filter'] = "companyName in ({0})" -f $companyNameList
+                Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
+            }
+            'Filter' {
+                $query['$Filter'] = $Filter
+                if ($AdvancedFilter.IsPresent) {
+                    $header = @{}
+                    $header['ConsistencyLevel'] = 'eventual'
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUserLicense             
+                }
+                else {
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense
+                }
             }
         }
     }

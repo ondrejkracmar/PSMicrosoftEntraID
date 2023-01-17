@@ -34,6 +34,7 @@ function ConvertFrom-RestUser {
 			MailNickname      = $InputObject.mailNickname
 			ProxyAddresses    = $InputObject.proxyAddresses
 			UserType          = $InputObject.userType
+			AccountEnabled    = $InputObject.accountEnabled
 			GivenName         = $InputObject.givenName
 			Surname           = $InputObject.surname
 			DisplayName       = $InputObject.displayName

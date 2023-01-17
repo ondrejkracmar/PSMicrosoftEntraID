@@ -31,6 +31,7 @@
 				Id                = $InputObject.id
 				UserPrincipalName = $InputObject.userPrincipalName
 				UserType          = $InputObject.userType
+				AccountEnabled    = $InputObject.accountEnabled
 				DisplayName       = $InputObject.displayName
 				Mail              = $InputObject.mail
 				CompanyName       = $InputObject.companyName
@@ -43,6 +44,7 @@
 				Id                = $InputObject.id
 				UserPrincipalName = $InputObject.userPrincipalName
 				UserType          = $InputObject.userType
+				AccountEnabled    = $InputObject.accountEnabled
 				DisplayName       = $InputObject.displayName
 				Mail              = $InputObject.mail
 				CompanyName       = $InputObject.companyName

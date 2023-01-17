@@ -7,7 +7,7 @@
 		Disable user's Office 365 subscription  
 	
 	.PARAMETER Identity
-        UserPrincipalName or Id of the user attribute populated in tenant/directory.
+        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
 	.PARAMETER SkuId
 		Office 365 product GUID is identified using a GUID of subscribedSku.
