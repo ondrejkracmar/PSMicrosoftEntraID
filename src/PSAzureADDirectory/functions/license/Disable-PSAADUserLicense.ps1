@@ -24,7 +24,7 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSAzureADDirectory.User')]
     [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
+        DefaultParameterSetName = 'IdentitySkuPartNumber')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]

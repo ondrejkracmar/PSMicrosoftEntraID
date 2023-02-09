@@ -124,7 +124,12 @@
             'SkuIdCompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
                 foreach ($itemSkuId in $SkuId) {
                     $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})" -f $companyNameList, $itemSkuId
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
@@ -134,7 +139,12 @@
             'SkuPartNumberCompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                }
+                else { 
+                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ',' 
+                }
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
                     $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {                        
@@ -142,12 +152,16 @@
                         Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense 
                     }
                 }
-                
             }
             'CompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
                 $query['$Filter'] = "companyName in ({0})" -f $companyNameList
                 Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
             }

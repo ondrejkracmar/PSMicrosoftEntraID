@@ -118,12 +118,18 @@
             'CompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
                 if ($Disabled.IsPresent) {
-                    $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
                 }
                 else {
-                    $query['$Filter'] = 'companyName in ({0})' -f ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
                 }
             }

@@ -3,7 +3,7 @@
 	RootModule        = 'PSAzureADDirectory.psm1'
 	
 	# Version number of this module.
-	ModuleVersion     = '0.9.9.0'
+	ModuleVersion     = '0.9.9.2'
 	
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -78,6 +78,7 @@
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
 			Tags = @('rest', 'Azure','Azure Active Directory')
+			ExternalModuleDependencies = @('PSFramework','RestConnect')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''

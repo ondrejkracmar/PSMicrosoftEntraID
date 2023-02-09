@@ -30,15 +30,9 @@
 			[PSCustomObject]@{
 				PSTypeName           = 'PSAzureADDirectory.User.License.ServicePlan'
 				SkuId                = $InputObject.skuId
-				SkuPartNumber        = ($subscribedSkList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
-				DisabledServicePlans = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans 
-				| Where-Object -Property servicePlanId -In -Value $InputObject.disabledPlans 
-				| Select-Object -Property ServicePlanId, ServicePlanName
-				| ConvertFrom-RestServicePlan -User
-				EnabledServicePlans  = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans
-				| Where-Object -Property servicePlanId -NotIn -Value $InputObject.disabledPlans
-				| Select-Object -Property ServicePlanId, ServicePlanName
-				| ConvertFrom-RestServicePlan -User
+				SkuPartNumber        = ($subscribedSkList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber 
+				DisabledServicePlans = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans | Where-Object -Property servicePlanId -In -Value $InputObject.disabledPlans | Select-Object -Property ServicePlanId, ServicePlanName | ConvertFrom-RestServicePlan -User
+				EnabledServicePlans  = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans | Where-Object -Property servicePlanId -NotIn -Value $InputObject.disabledPlans | Select-Object -Property ServicePlanId, ServicePlanName | ConvertFrom-RestServicePlan -User
 			}
 
 		}
