@@ -6,7 +6,8 @@ resources:
   repositories:
     - repository: DevOpsAutomation
       type: git
-      name: AutomationPlatform/DevOpsAutomation
+      name: i-system/DevOpsAutomation
+      ref: master
 steps:
   # - task: PowerShell@2
   #   displayName: Prerequisites
