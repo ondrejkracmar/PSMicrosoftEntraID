@@ -11,12 +11,12 @@
 	'StringAssemblyError'        = "Failed to assemble url '{0}'."
 	'FailedGetAssignLicense'     = "Failed to get assign service plan '{0}'."
 	'FailedEnableAssignLicense'  = "Failed to enable license '{0}'."
-	'FailedDisableAssignLicense' = "Failed to disable license '{0}'. '{0}'."
+	'FailedDisableAssignLicense' = "Failed to disable license '{0}'"
 	'FailedGetUser'              = "Failed to receive Id of  UserPrincipalName '{0}'."
 	'FailedGetUsers'             = "Failed to receive uri '{0}'."
 	'FailedGetSubscribedSkus'    = "Failed to get subscribed skus."
 
-	'LicenseServicePLan.Enable'  = 'Enable service plans for identity: {0}' # $Identity
-	'LicenseServicePLan.Disable' = 'Disable service plans for identity: {0}' # $Identity
-	'License.Disable'            = 'Disable license for identity: {0}' # $Identity
+	'LicenseServicePLan.Enable'  = "Enable service plans {0} in subscription '{1}'"
+	'LicenseServicePLan.Disable' = "Disable service plans {0} in subscription '{1}"
+	'License.Disable'            = "Disable license {0}"
 }

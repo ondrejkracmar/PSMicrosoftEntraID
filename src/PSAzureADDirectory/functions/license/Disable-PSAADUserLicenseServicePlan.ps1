@@ -70,14 +70,18 @@
         foreach ($user in  $Identity) {
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 'Identity\w' {
-                    $userLicenseDetail = Get-PSAADUserLicenseServicePlan -Identity $user
-                    $path = ("users/{0}/{1}" -f $user, 'assignLicense')
+                    $aADUser = Get-PSAADUser -Identity $user
+                    if (-not ([object]::Equals($aADUser,$null))) {
+                        $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                    }
                 }
                 '\wSkuId\w' {
                     $bodySkuId = $SkuId
+                    $skuTarget = $SkuId
                 }
                 '\wSkuPartNumber\w' {
                     $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                    $skuTarget = $SkuPartNumber
                 }
                 '\wPlanId' {
                     [string[]]$enabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanId -in $ServicePlanId }).ServicePlanId
@@ -85,12 +89,24 @@
                     if (-not [object]::Equals($enabledServicePlans, $null)) {
                         $bodyDisabledServicePlans += $enabledServicePlans
                     }
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    }
                 }
                 '\wPlanName' {
-                    [string[]]$enabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName }).ServicePlanId
+                    [string[]]$enabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName}).ServicePlanId
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
                     if (-not [object]::Equals($enabledServicePlans, $null)) {
                         $bodyDisabledServicePlans += $enabledServicePlans
+                    }
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                 }
             }
@@ -106,7 +122,7 @@
                 removeLicenses = @()
             }
             
-            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
+            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget  -Target $Identity -ScriptBlock {
                 $disableLicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
             } -EnableException $EnableException -PSCmdlet $PSCmdlet
             $disableLicenseServicePlan | ConvertFrom-RestUser

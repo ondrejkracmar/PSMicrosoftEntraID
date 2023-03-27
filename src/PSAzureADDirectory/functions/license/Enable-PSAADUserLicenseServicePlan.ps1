@@ -70,25 +70,41 @@
         foreach ($user in  $Identity) {
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 'Identity\w' {
-                    $userLicenseDetail = Get-PSAADUserLicenseServicePlan -Identity $user
-                    $path = ("users/{0}/{1}" -f $user, 'assignLicense')
+                    $aADUser = Get-PSAADUser -Identity $user
+                    if (-not ([object]::Equals($aADUser,$null))) {
+                        $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                    }
                 }
                 '\wSkuId\w' {
                     $bodySkuId = $SkuId
+                    $skuTarget = $SkuId
                 }
                 '\wSkuPartNumber\w' {
                     $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                    $skuTarget = $SkuPartNumber
                 }
                 '\wPlanId' {
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
                     if ([object]::Equals($bodyDisabledServicePlans, $null)) {
                         [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
                     }
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    }
                 }
                 '\wPlanName' {
                     [string[]]$bodyDisabledServicePlans = (($userLicenseDetail.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
                     if ([object]::Equals($bodyDisabledServicePlans, $null)) {
                         [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                    }
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                 }
             }

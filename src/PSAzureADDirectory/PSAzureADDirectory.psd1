@@ -26,8 +26,8 @@
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	RequiredModules   = @(
-		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.7.249' }
-		@{ ModuleName = 'RestConnect'; ModuleVersion = '1.0.10' }
+		@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
+		@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -44,14 +44,15 @@
 
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Connect-PSAzureADDirectory',
-		'Disable-PSAADUserLicense',
-		'Disable-PSAADUserLicenseServicePlan',	
-		'Enable-PSAADUserLicenseServicePlan',
-		'Get-PSAADUserLicense',
-		'Get-PSAADUserLicenseServicePlan',
-		'Get-PSAADUser',
-		'Get-PSAADSubscribedSku',
+		'Connect-PSAzureADDirectory'
+		'Disable-PSAADUserLicense'
+		'Disable-PSAADUserLicenseServicePlan'
+		'Enable-PSAADUserLicenseServicePlan'
+		'Get-PSAADUserLicense'
+		'Get-PSAADUserLicenseServicePlan'
+		'Get-PSAADUser'
+		'Set-PSAADUserUsageLocation'
+		'Get-PSAADSubscribedSku'
 		'Get-PSAADLicenseServicePlan'
 	)
 	
