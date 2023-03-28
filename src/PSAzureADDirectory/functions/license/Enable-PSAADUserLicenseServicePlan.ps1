@@ -121,9 +121,9 @@
             }
             
             Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $Identity -Target $Identity -ScriptBlock {
-                $enableicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet
-            $enableicenseServicePlan | ConvertFrom-RestUser
+                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet | ConvertFrom-RestUser
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end

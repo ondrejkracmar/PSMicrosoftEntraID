@@ -123,9 +123,9 @@
             }
             
             Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget  -Target $Identity -ScriptBlock {
-                $disableLicenseServicePlan = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet
-            $disableLicenseServicePlan | ConvertFrom-RestUser
+                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet | ConvertFrom-RestUser
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end

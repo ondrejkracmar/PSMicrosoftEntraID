@@ -81,9 +81,9 @@
                 removeLicenses = $bodySkuId
             }            
             Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $Identity -ScriptBlock {
-                $disableLicense = Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet
-            $disableLicense | ConvertFrom-RestUser
+                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet | ConvertFrom-RestUser
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end
