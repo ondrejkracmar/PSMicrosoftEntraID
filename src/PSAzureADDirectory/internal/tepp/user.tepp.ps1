@@ -1,5 +1,2 @@
-
-$usageLocationHashTable = Get-UserUsageLocation
-$usageLocationHashTable
-Register-PSFTeppScriptblock -Name 'usagelocation.usagelocationcode' -ScriptBlock { $usageLocationHashTable.Values }
-Register-PSFTeppScriptblock -Name 'usagelocation.usagelocationcountry' -ScriptBlock { $usageLocationHashTable.Keys }
+Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
+Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }

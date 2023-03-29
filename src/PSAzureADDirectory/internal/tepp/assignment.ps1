@@ -33,5 +33,5 @@ Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicense -Parameter S
 Register-PSFTeppArgumentCompleter -Command Disable-PSAADUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
 
 
-Register-PSFTeppArgumentCompleter -Command Set-PSAADUserUsageLocation -Parameter UsageLocationCode -Name 'usagelocation.usagelocationcode'
-Register-PSFTeppArgumentCompleter -Command Set-PSAADUserUsageLocation -Parameter UsageLocationCountry -Name 'usagelocation.usagelocationcountry'
+Register-PSFTeppArgumentCompleter -Command Set-PSAADUserUsageLocation -Parameter UsageLocationCode -Name 'user.usagelocationcode'
+Register-PSFTeppArgumentCompleter -Command Set-PSAADUserUsageLocation -Parameter UsageLocationCountry -Name 'user.usagelocationcountry'

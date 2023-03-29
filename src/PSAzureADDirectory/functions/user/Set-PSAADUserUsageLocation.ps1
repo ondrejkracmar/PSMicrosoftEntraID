@@ -1,4 +1,4 @@
-function Set-PSAADUserUsageLocation {
+﻿function Set-PSAADUserUsageLocation {
     <#
     .SYNOPSIS
         Get the properties of the specified user.
@@ -39,6 +39,7 @@ function Set-PSAADUserUsageLocation {
      
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $usageLocationHashtable = Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable
     }
     
     process {
@@ -59,9 +60,9 @@ function Set-PSAADUserUsageLocation {
                     if (-not ([object]::Equals($aADUser, $null))) {
                         $path = ("users/{0}" -f $aADUser.Id)
                     }
-                    $usgaeLocationTarget = (Get-UserUsageLocation)[$UsageLocationCountry]
+                    $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
                     $body = @{
-                        usageLocation = (Get-UserUsageLocation)[$UsageLocationCountry]
+                        usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
                     }
                 }
             }
