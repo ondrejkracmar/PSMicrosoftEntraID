@@ -31,10 +31,8 @@
         Value of returned result set contains multiple pages of data.
 
 #>
-    [CmdletBinding(DefaultParameterSetName = 'Identity',
-        SupportsShouldProcess = $false,
-        PositionalBinding = $true,
-        ConfirmImpact = 'Medium')]
+    [OutputType('PSAzureADDirectory.User')]
+    [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateIdentity()]

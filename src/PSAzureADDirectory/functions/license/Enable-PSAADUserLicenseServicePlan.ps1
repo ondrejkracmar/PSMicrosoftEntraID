@@ -72,8 +72,6 @@
                 'Identity\w' {
                     $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
                     if (-not ([object]::Equals($aADUser, $null))) {
-                        $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                    }
                 }
                 '\wSkuId\w' {
                     $bodySkuId = $SkuId
