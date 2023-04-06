@@ -57,6 +57,16 @@ RUN unzip ~/.poshthemes/themes.zip -d ~/.poshthemes
 RUN chmod u+rw ~/.poshthemes/*.omp.*
 RUN rm ~/.poshthemes/themes.zip
 
+RUN mkdir ~/.dotfiles
+RUN wget https://github.com/ondrejkracmar/dotfiles/releases/download/v1.0.0/dotfiles.zip -O ~/.dotfiles/dotfiles.zip
+RUN unzip ~/.dotfiles/dotfiles.zip -d ~/.dotfiles
+RUN chmod u+rwx ~/.dotfiles/*install*
+RUN rm ~/.dotfiles/dotfiles.zip
+#RUN ~/.dotfiles/install.sh
+
+SHELL ["pwsh","-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN ~/.dotfiles/install.ps1
+
 # Not needed when using dotfiles
 # SHELL ["pwsh","-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 # RUN mkdir /home/vscode/.config;mkdir /home/vscode/.config/powershell
