@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 # https://docs.microsoft.com/en-gb/dotnet/core/install/linux-ubuntu#2004-
 
 # Download the powershell '.tar.gz' archive
-RUN curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.2-linux-x64.tar.gz
+RUN curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.3/powershell-7.3.3-linux-x64.tar.gz
 
 # Create the target folder where powershell will be placed
 RUN mkdir -p /opt/microsoft/powershell/7
