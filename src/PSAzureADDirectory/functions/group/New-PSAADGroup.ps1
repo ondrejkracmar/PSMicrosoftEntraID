@@ -1,5 +1,5 @@
 ﻿function New-PSMTGroup {
-    [CmdletBinding(DefaultParameterSetName = 'CreateTeam')]
+    [CmdletBinding(DefaultParameterSetName = 'CreateGroup')]
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
