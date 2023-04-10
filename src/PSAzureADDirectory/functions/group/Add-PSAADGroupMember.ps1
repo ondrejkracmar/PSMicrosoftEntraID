@@ -19,9 +19,9 @@
         Switch response header or result
 
 #>
-    [CmdletBinding(DefaultParameterSetName = 'AddSingleMember')]
+    [CmdletBinding(DefaultParameterSetName = 'AdGroupMember')]
     param(
-        [Parameter(ParameterSetName = 'AddSingleMember', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'AddGroupMember', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [Parameter(ParameterSetName = 'AddBulkMebers', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateScript( {
                 try {
