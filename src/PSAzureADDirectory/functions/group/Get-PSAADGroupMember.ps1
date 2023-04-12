@@ -13,7 +13,7 @@
         Type of Teams user Owner or Member
 
 #>
-    [CmdletBinding(DefaultParameterSetName = 'Default1',
+    [CmdletBinding(DefaultParameterSetName = 'Default',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]

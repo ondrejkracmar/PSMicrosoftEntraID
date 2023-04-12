@@ -34,7 +34,7 @@
 
     begin {
         try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "group"
             $authorizationToken = Get-PSMTAuthorizationToken
             $graphApiParameters = @{
                 Method             = 'Delete'
