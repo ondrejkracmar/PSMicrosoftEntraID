@@ -2,28 +2,28 @@
     <#
 	.SYNOPSIS
 		Get users who are assigned licenses
-	
+
 	.DESCRIPTION
 		Get users who are assigned licenses with disabled and enabled service plans
-	
+
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER ComanyName
         CompanyName of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER SkuId
 		Office 365 product GUID is identified using a GUID of SubscribedSku.
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of SubscribedSku.
-    
+
     .PARAMETER ServicePLanId
 		Office 365 product GUID is identified using a GUID of ServicePlan.
 
     .PARAMETER ServicePLanName
         Friendly name Office 365 product of ServicePlanName.
-    
+
     .PARAMETER Filter
         Filter expressions of accounts in tenant/directory.
 
@@ -103,11 +103,11 @@
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
         Get-PSAADSubscribedSku | Set-PSFResultCache
-        
+
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' { 
+            'Identity' {
                 foreach ($user in $Identity) {
                     $mailQuery = @{
                         '$count'  = 'true'
@@ -123,7 +123,7 @@
                         $user = $userMail[0].id
                         Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
                     }
-                } 
+                }
             }
             'SkuId' {
                 foreach ($itemSkuId in $SkuId) {
@@ -187,7 +187,7 @@
                     $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                         $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})" -f $companyNameList, $singleSkuPartNumber.SkuId
-                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan 
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
                     }
                 }
             }
@@ -239,7 +239,7 @@
                 if ($AdvancedFilter.IsPresent) {
                     $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUserLicense -ServicePlan                  
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUserLicense -ServicePlan
                 }
                 else {
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan

@@ -2,13 +2,13 @@
     <#
 	.SYNOPSIS
 		Converts subscribed Sku service plans to look nice.
-	
+
 	.DESCRIPTION
 		Converts subscribed Sku service plans to look nice.
-	
+
 	.PARAMETER InputObject
 		The rest response representing a subscribed Sku
-	
+
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
 		Retrieves the specified subscribed Sku service plans and converts it into something userfriendly

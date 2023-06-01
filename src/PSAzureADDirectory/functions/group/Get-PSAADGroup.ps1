@@ -38,19 +38,19 @@
     )
 
     begin {
-        
+
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'
             '$top'    = $PageSize
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value -join ',')
         }
-        
+
     }
-	
+
     process {
         if (Test-PSFFunctionInterrupt) { return }
-        
+
         $graphApiParameters = @{
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
@@ -62,11 +62,11 @@
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups/$($GroupId)"
             $graphApiParameters['Uri'] = $url
         }
-			
+
         if (Test-PSFParameterBinding -Parameter MailNickName) {
             $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("startswith(mailNickName,'{0}')" -f $MailNickName)
         }
-			
+
         if (Test-PSFParameterBinding -Parameter DisplayName) {
             $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("startswith(displayName,'{0}')" -f $DisplayName)
         }
@@ -88,7 +88,7 @@
             $teamResult | Where-Object { $_.Visibility -eq $Visibility } | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Group'
         }
         else {
-            $teamResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Group'	
+            $teamResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Group'
         }
     }
 

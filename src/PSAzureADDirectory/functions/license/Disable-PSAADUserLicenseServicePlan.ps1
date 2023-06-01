@@ -2,10 +2,10 @@
     <#
 	.SYNOPSIS
 		Disable serivce plan of users's sku subscription
-	
+
 	.DESCRIPTION
 		Disable serivce plan of users's sku subscription
-	
+
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
@@ -14,7 +14,7 @@
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
-    
+
     .PARAMETER ServicePlanId
 		Service plan Id of subscribedSku.
 
@@ -25,7 +25,7 @@
 		PS C:\> Disable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
 
 		Disable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
-        
+
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSAzureADDirectory.User')]
@@ -112,7 +112,7 @@
                 }
 
                 $body = @{
-                            
+
                     addLicenses    = @(
                         @{
                             disabledPlans = $bodyDisabledServicePlans

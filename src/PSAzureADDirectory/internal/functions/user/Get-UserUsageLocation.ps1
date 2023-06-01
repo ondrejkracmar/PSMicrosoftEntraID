@@ -4,16 +4,16 @@ function Get-UserUsageLocation {
 	<#
 	.SYNOPSIS
 		Get User Ysage Location hashtable.
-	
+
 	.DESCRIPTION
 		Get User Ysage Location hashtable.
-	
+
 	.EXAMPLE
 		PS C:\>Get-UserUsageLocation
 	#>
 	[CmdletBinding()]
 	param (
-		
+
 	)
 	begin {
         $usageLocationCode = @{
@@ -40,18 +40,18 @@ function Get-UserUsageLocation {
             "Belgium"                                                    = "BE"
             "Belize"                                                     = "BZ"
             "Benin"                                                      = "BJ"
-            "Bermuda"                                                    = "BM"	
-            "Bhutan"                                                     = "BT"	
+            "Bermuda"                                                    = "BM"
+            "Bhutan"                                                     = "BT"
             "Bolivia"                                                    = "BO"
-            "Bonaire, Sint Eustatius and Saba"                           = "BQ"	
-            "Bosnia and Herzegovina"                                     = "BA"	
-            "Botswana"                                                   = "BW"	
+            "Bonaire, Sint Eustatius and Saba"                           = "BQ"
+            "Bosnia and Herzegovina"                                     = "BA"
+            "Botswana"                                                   = "BW"
             "Bouvet Island"                                              = "BV"
-            "Brazil"                                                     = "BR"	
-            "British Indian Ocean Territory"                             = "IO"	
-            "Brunei Darussalam"                                          = "BN"	
+            "Brazil"                                                     = "BR"
+            "British Indian Ocean Territory"                             = "IO"
+            "Brunei Darussalam"                                          = "BN"
             "Bulgaria"                                                   =	"BG"
-            "Burkina Faso"                                               = "BF"	
+            "Burkina Faso"                                               = "BF"
             "Cabo Verde"                                                 = "CV"
             "Cambodia"                                                   =	"KH"
             "Cameroon"                                                   = "CM"
@@ -62,7 +62,7 @@ function Get-UserUsageLocation {
             "Chile"                                                      = "CL"
             "Christmas Island"                                           = "CX"
             "China"                                                      = "CN"
-            "Colombia"                                                   = "CO"	
+            "Colombia"                                                   = "CO"
             "Cocos (Keeling) Islands"                                    = "CC"
             "Congo (the Democratic Republic)"                            = "CD"
             "Comoros"                                                    = "KM"
@@ -74,10 +74,10 @@ function Get-UserUsageLocation {
             "Cuba"                                                       = "CU"
             "Czech Republic"                                             = "CZ"
             "Cyprus"                                                     = "CY"
-            "Denmark"                                                    = "DK"	
+            "Denmark"                                                    = "DK"
             "Côte d’Ivoire"                                              = "CI"
             "Dominica"                                                   = "DM"
-            "Djibouti"                                                   = "DJ"	
+            "Djibouti"                                                   = "DJ"
             "Ecuador"                                                    = "EC"
             "Dominican Republic"                                         = "DO"
             "El Salvador"                                                = "SV"

@@ -56,7 +56,7 @@ using System.Text.RegularExpressions;
 # compile c# code
 Try {
     if ( [ValidateGuidAttribute] -as [type]) {
-        
+
     }
 }
 catch {

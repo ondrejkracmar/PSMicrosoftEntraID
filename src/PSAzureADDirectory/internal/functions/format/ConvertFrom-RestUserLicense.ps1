@@ -2,13 +2,13 @@
 	<#
 	.SYNOPSIS
 		Converts license objects to look nice.
-	
+
 	.DESCRIPTION
 		Converts license objects to look nice.
-	
+
 	.PARAMETER InputObject
 		The rest response representing a license
-	
+
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestLicense
 		Retrieves the specified license and converts it into something userfriendly

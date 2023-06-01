@@ -2,19 +2,19 @@
     <#
     .SYNOPSIS
         Get the properties of the specified user.
-                
+
     .DESCRIPTION
         Get the properties of the specified user.
-                
+
     .PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER Name
         DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
 
     .PARAMETER ComanyName
         CompanyName of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER Disabled
         Return disabled accounts in tenant/directory.
 
@@ -26,7 +26,7 @@
 
     .PARAMETER All
         Return all accounts in tenant/directory.
-    
+
     .PARAMETER PageSize
         Value of returned result set contains multiple pages of data.
 
@@ -67,7 +67,7 @@
         [int]
         $PageSize = 100
     )
-     
+
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $query = @{
@@ -76,7 +76,7 @@
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
     }
-    
+
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
@@ -108,7 +108,7 @@
                 if ($AdvancedFilter.IsPresent) {
                     $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUser                    
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUser
                 }
                 else {
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser

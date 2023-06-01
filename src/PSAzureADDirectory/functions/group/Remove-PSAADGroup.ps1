@@ -2,10 +2,10 @@
     <#
     .SYNOPSIS
         Removed Team (Office 365 unified group).
-              
+
     .DESCRIPTION
         This cmdlet removes tam (Office 365 unified group).
-              
+
     .PARAMETER TeamId
         Id of Team (unified group)
 
@@ -41,12 +41,12 @@
                 AuthorizationToken = "Bearer $authorizationToken"
             }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-        } 
+        }
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
     }
-	
+
     process {
         if (Test-PSFFunctionInterrupt) { return }
 
@@ -55,10 +55,10 @@
             $graphApiParameters['Status'] = $true
         }
         Invoke-GraphApiQuery @graphApiParameters
-    
+
     }
-	
+
     end {
-	
+
     }
 }

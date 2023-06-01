@@ -2,7 +2,7 @@
     <#
 	.SYNOPSIS
 		Get service plans of license
-	
+
 	.DESCRIPTION
 		Get service plans of license
 
@@ -28,7 +28,7 @@
         [string]
         $SkuPartNumber
     )
-    begin {        
+    begin {
         Assert-RestConnection -Service graph -Cmdlet $PSCmdlet
     }
     process {
@@ -40,7 +40,7 @@
                 (Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).ServicePlans | ConvertFrom-RestServicePlan
             }
         }
-    }  
+    }
     end
     {}
 }

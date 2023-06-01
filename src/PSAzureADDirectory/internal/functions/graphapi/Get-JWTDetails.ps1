@@ -22,7 +22,7 @@ The JWT Access Token to decode and udpate with expiry time and time to expiry
 
 .INPUTS
 
-Token from Pipeline 
+Token from Pipeline
 
 .OUTPUTS
 
@@ -65,8 +65,8 @@ uti             : eoWKGl9uZ0Gnc13715Qdff
 ver             : 1.0
 wids            : {4a5d8f65-41da-4de4-c137-f035b65339ca, c4e39bd9-c137-46d3-8c65-fb160df0071a, 5d6b6bb7-c137-4623-bafa-96380f352509}
 xms_tcdt        : 1341026666
-sig             : PUpl4F61Ql12nfxkLDeTA2Tucb7KfzrfbmI1+gNDPFfbe8WD3wlfr0EK2M89JNPJ1Z8H7Z8/JVU9Jbat2u+657D8IM81+NhnCpMvEWyC5565ZmIgE3vQKlBK3wD24kSzEFj6J2yL 
-                  Zou1u/NrBvEakiiZdCJRKOB9nf4/euHHfYJNSKtPhLiPImyc137JxbPUG/MPjAQBkBPuUCyYtmFoBynGvsoSVvzZ6JQS5O2nxZPAqOFUzj5q3fjhh/oqPpu/6Qw1bdt3O37HgMLn 
+sig             : PUpl4F61Ql12nfxkLDeTA2Tucb7KfzrfbmI1+gNDPFfbe8WD3wlfr0EK2M89JNPJ1Z8H7Z8/JVU9Jbat2u+657D8IM81+NhnCpMvEWyC5565ZmIgE3vQKlBK3wD24kSzEFj6J2yL
+                  Zou1u/NrBvEakiiZdCJRKOB9nf4/euHHfYJNSKtPhLiPImyc137JxbPUG/MPjAQBkBPuUCyYtmFoBynGvsoSVvzZ6JQS5O2nxZPAqOFUzj5q3fjhh/oqPpu/6Qw1bdt3O37HgMLn
                   UrBK3psjwUfP/X6//L6S1FwomenNoFVeKcUNcM5Ne6loDwRSW1Ig8XHXmN4GnWQAw7OwMA==
 expiryDateTime  : 30/07/2019 6:42:57 PM
 timeToExpiry    : -00:32:56.1103767
@@ -74,7 +74,7 @@ timeToExpiry    : -00:32:56.1103767
 .EXAMPLE
 
 PS> Get-JWTDetails($myAccessToken)
-or 
+or
 PS> $myAccessToken | Get-JWTDetails
 
 tenant_id             : cd988f3c-710c-43eb-9e25-123456789
@@ -95,7 +95,7 @@ timeToExpiry          : -00:57:37.4457299
 .LINK
 
 https://blog.darrenjrobinson.com
-https://blog.darrenjrobinson.com/jwtdetails-powershell-module-for-decoding-jwt-access-tokens-with-readable-token-expiry-time/ 
+https://blog.darrenjrobinson.com/jwtdetails-powershell-module-for-decoding-jwt-access-tokens-with-readable-token-expiry-time/
 
 #>
 
@@ -111,7 +111,7 @@ https://blog.darrenjrobinson.com/jwtdetails-powershell-module-for-decoding-jwt-a
         }
     }
 
-    $decodedToken = [System.Text.Encoding]::UTF8.GetString([convert]::FromBase64String($data)) | ConvertFrom-Json 
+    $decodedToken = [System.Text.Encoding]::UTF8.GetString([convert]::FromBase64String($data)) | ConvertFrom-Json
     Write-Verbose "JWT Token:"
     Write-Verbose $decodedToken
 
@@ -134,9 +134,9 @@ https://blog.darrenjrobinson.com/jwtdetails-powershell-module-for-decoding-jwt-a
     $utcTime = $orig.AddSeconds($decodedToken.exp)
     $offset = $timeZone.GetUtcOffset($(Get-Date)).TotalMinutes #Daylight saving needs to be calculated
     $localTime = $utcTime.AddMinutes($offset)     # Return local time,
-    
+
     $decodedToken | Add-Member -Type NoteProperty -Name "expiryDateTime" -Value $localTime
-    
+
     # Time to Expiry
     $timeToExpiry = ($localTime - (get-date))
     $decodedToken | Add-Member -Type NoteProperty -Name "timeToExpiry" -Value $timeToExpiry

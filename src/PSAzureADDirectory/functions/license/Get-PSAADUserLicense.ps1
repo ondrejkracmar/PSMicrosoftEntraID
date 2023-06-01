@@ -2,13 +2,13 @@
     <#
 	.SYNOPSIS
 		Get users who are assigned licenses
-	
+
 	.DESCRIPTION
 		Get users who are assigned licenses
-	
+
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER ComanyName
         CompanyName of the user attribute populated in tenant/directory.
 
@@ -17,7 +17,7 @@
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
-    
+
     .PARAMETER Filter
         Filter expressions of accounts in tenant/directory.
 
@@ -26,7 +26,7 @@
 
     .PARAMETER PageSize
         Value of returned result set contains multiple pages of data.
-	
+
 	.EXAMPLE
 		PS C:\> Get-PSAADUserLicense -Identity username@contoso.com
 
@@ -88,7 +88,7 @@
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' { 
+            'Identity' {
                 foreach ($user in $Identity) {
                     $mailQuery = @{
                         '$count'  = 'true'
@@ -104,7 +104,7 @@
                         $user = $userMail[0].id
                         Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense
                     }
-                } 
+                }
             }
             'SkuId' {
                 foreach ($itemSkuId in $SkuId) {
@@ -134,7 +134,7 @@
                     $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})" -f $companyNameList, $itemSkuId
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
                 }
-                
+
             }
             'SkuPartNumberCompanyName' {
                 $header = @{}
@@ -142,14 +142,14 @@
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
                     $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
-                else { 
-                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ',' 
+                else {
+                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
                     $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
-                    if (-not([object]::Equals($singleSkuPartNumber, $null))) {                        
+                    if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                         $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1}) " -f $companyNameList, $singleSkuPartNumber.SkuId
-                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense 
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense
                     }
                 }
             }
@@ -170,7 +170,7 @@
                 if ($AdvancedFilter.IsPresent) {
                     $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUserLicense             
+                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUserLicense
                 }
                 else {
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense
@@ -181,4 +181,3 @@
     end
     {}
 }
-    

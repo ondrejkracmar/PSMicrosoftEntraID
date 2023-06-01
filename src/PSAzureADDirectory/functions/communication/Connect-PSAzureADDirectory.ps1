@@ -2,10 +2,10 @@
 	<#
 	.SYNOPSIS
 		Connect to the Azure AD object via Microsoft Graph API
-	
+
 	.DESCRIPTION
 		Connect to the Azure AD object via Microsoft Graph API
-	
+
 	.PARAMETER ClientID
         ID of the registered/enterprise application used for authentication.
 
@@ -68,7 +68,7 @@
 	.PARAMETER Token
 		A legacy token used to authorize API access.
 		These tokens are deprecated and should be avoided, but not every migration can be accomplished instantaneously...
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSAzureADDirectory -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
 
@@ -152,7 +152,7 @@
 				ExtraHeaderContent = @{ 'content-type' = 'application/json' }
 				GetHeaderCode      = {
 					param ($Data)
-					
+
 					$token = [PSCredential]::new("foo", $Data.Data.Token).GetNetworkCredential().Password
 					@{ Authorization = "Token $token" }
 				}

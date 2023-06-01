@@ -20,7 +20,7 @@ using System;
 '@
 Try{
     if(-not [ValidIdentityException] -as [type]){
-    
+
     }
 }
 catch{

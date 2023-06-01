@@ -55,10 +55,10 @@
             })]
         [string[]]
         $Members,
-        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string]
         $MembershipRule,
-        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string]
         [ValidateSet('On', 'Paused')]
         $MembershipRuleProcessingState,
@@ -82,7 +82,7 @@
                 Uri                = $url
             }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-        } 
+        }
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
@@ -96,12 +96,12 @@
             "groupTypes" : []
         }'
     }
-	
+
     process {
         if (Test-PSFFunctionInterrupt) { return }
 
         Switch ($PSCmdlet.ParameterSetName) {
-            'CreateGroupViaJson' {                               
+            'CreateGroupViaJson' {
                 $bodyParameters = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
             }
             'CreateGroup' {
@@ -122,7 +122,7 @@
                 if (Test-PSFParameterBinding -Parameter Visibility) {
                     $bodyParameters['visibility'] = $Visibility
                 }
-                    
+
                 if (Test-PSFParameterBinding -Parameter SecurityEnabled) {
                     $bodyParameters['securityEnabled'] = $SecurityEnabled
                 }
@@ -135,23 +135,23 @@
                     $bodyParameters['groupTypes'] = @($GroupTypes)
                 }
 
-                if (Test-PSFParameterBinding -Parameter Owners) { 
+                if (Test-PSFParameterBinding -Parameter Owners) {
                     $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($owner in $Owners) {
                         $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
                         $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $owner
                         [void]($userIdUriPathList.Add($userIdUriPath))
-                    }                        
-                    $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList 
+                    }
+                    $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList
                 }
 
-                if (Test-PSFParameterBinding -Parameter Members) {   
+                if (Test-PSFParameterBinding -Parameter Members) {
                     $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($member in $Members) {
                         $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
                         $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $member
                         [void]($userIdUriPathList.Add($userIdUriPath))
-                    }                                   
+                    }
                     $bodyParameters['members@odata.bind'] = [array]$userIdUriPathList
                 }
 
@@ -173,14 +173,14 @@
                 $bodyParameters = $requestBodyCreateGroupTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
             }
         }
-    
+
         [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 #| ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
         $graphApiParameters['body'] = $requestJSONQuery
-            
+
         If ($Status.IsPresent) {
             $graphApiParameters['Status'] = $true
         }
-        Invoke-GraphApiQuery @graphApiParameters        
+        Invoke-GraphApiQuery @graphApiParameters
     }
     end {
 

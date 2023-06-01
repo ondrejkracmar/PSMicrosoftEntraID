@@ -2,13 +2,13 @@ function ConvertFrom-RestUser {
 	<#
 	.SYNOPSIS
 		Converts license objects to look nice.
-	
+
 	.DESCRIPTION
 		Converts license objects to look nice.
-	
+
 	.PARAMETER InputObject
 		The rest response representing a license
-	
+
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestLicense
 		Retrieves the specified license and converts it into something userfriendly
@@ -24,7 +24,7 @@ function ConvertFrom-RestUser {
 	process {
 		if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) ) { return }
 
-		
+
 		[PSCustomObject]@{
 			PSTypeName        = 'PSAzureADDirectory.User'
 			Id                = $InputObject.id
@@ -50,6 +50,6 @@ function ConvertFrom-RestUser {
 			BusinessPhones    = $InputObject.businessPhones
 			FaxNumber         = $InputObject.faxNumber
 		}
-		
+
 	}
 }

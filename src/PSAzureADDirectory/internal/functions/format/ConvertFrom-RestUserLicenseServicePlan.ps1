@@ -2,13 +2,13 @@
 	<#
 	.SYNOPSIS
 		Converts subscribed Sku service plans to look nice.
-	
+
 	.DESCRIPTION
 		Converts subscribed Sku service plans to look nice.
-	
+
 	.PARAMETER InputObject
 		The rest response representing a subscribed Sku
-	
+
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
 		Retrieves the specified subscribed Sku service plans and converts it into something userfriendly
@@ -30,7 +30,7 @@
 			[PSCustomObject]@{
 				PSTypeName           = 'PSAzureADDirectory.User.License.ServicePlan'
 				SkuId                = $InputObject.skuId
-				SkuPartNumber        = ($subscribedSkList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber 
+				SkuPartNumber        = ($subscribedSkList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
 				DisabledServicePlans = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans | Where-Object -Property servicePlanId -In -Value $InputObject.disabledPlans | Select-Object -Property ServicePlanId, ServicePlanName | ConvertFrom-RestServicePlan -User
 				EnabledServicePlans  = (Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans | Where-Object -Property servicePlanId -NotIn -Value $InputObject.disabledPlans | Select-Object -Property ServicePlanId, ServicePlanName | ConvertFrom-RestServicePlan -User
 			}

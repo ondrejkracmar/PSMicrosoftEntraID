@@ -2,10 +2,10 @@
     <#
 	.SYNOPSIS
 		Enable serivce plan of users's sku subscription
-	
+
 	.DESCRIPTION
 		Enable serivce plan of users's sku subscription
-	
+
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
@@ -14,7 +14,7 @@
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
-    
+
     .PARAMETER ServicePlanId
 		Service plan Id of subscribedSku.
 
@@ -25,7 +25,7 @@
 		PS C:\> Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
 
 		Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
-        
+
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSAzureADDirectory.User')]
@@ -74,7 +74,7 @@
             $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
                 $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-            
+
                 switch -Regex ($PSCmdlet.ParameterSetName) {
                     '\wSkuId\w' {
                         $bodySkuId = $SkuId
@@ -111,7 +111,7 @@
                 }
 
                 $body = @{
-                            
+
                     addLicenses    = @(
                         @{
                             disabledPlans = $bodyDisabledServicePlans
@@ -125,7 +125,7 @@
                 if (Test-PSFFunctionInterrupt) { return }
             }
             else {}
-        }        
+        }
     }
     end
     {}

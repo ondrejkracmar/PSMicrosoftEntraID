@@ -1,11 +1,11 @@
 ﻿function Disable-PSAADUserLicense {
     <#
 	.SYNOPSIS
-		Disable user's license 
-	
+		Disable user's license
+
 	.DESCRIPTION
-		Disable user's Office 365 subscription  
-	
+		Disable user's Office 365 subscription
+
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
@@ -54,7 +54,7 @@
             $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
                 $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-            
+
                 switch -Regex ($PSCmdlet.ParameterSetName) {
                     '\wSkuId' {
                         [string[]]$bodySkuId = $SkuId
@@ -76,11 +76,11 @@
                     }
                 }
                 $body = @{
-                            
+
                     addLicenses    = @(
                     )
                     removeLicenses = $bodySkuId
-                }            
+                }
                 Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
                     [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
