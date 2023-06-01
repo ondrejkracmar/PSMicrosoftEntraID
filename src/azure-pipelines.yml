@@ -9,17 +9,17 @@ resources:
       name: AutomationPlatform/DevOpsAutomation
       ref: master
 steps:
-  # - task: PowerShell@2
-  #   displayName: Prerequisites
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: "./build/vsts-prerequisites.ps1"
+   - task: PowerShell@2
+     displayName: Prerequisites
+     inputs:
+       targetType: filePath
+       filePath: "./build/vsts-prerequisites.ps1"
 
-  # - task: PowerShell@2
-  #   displayName: Validate
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: "./build/vsts-validate.ps1"
+   - task: PowerShell@2
+     displayName: Validate
+     inputs:
+       targetType: filePath
+       filePath: "./build/vsts-validate.ps1"
 
   # - task: PublishTestResults@2
   #   displayName: "Publish Test Results **/TEST-*.xml"
@@ -27,7 +27,7 @@ steps:
   #     testResultsFormat: NUnit
   #   condition: always()
 
-  - template: SetupRepoTemplate.yml
-    parameters:
-      packageSourceUrl: "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzAPPSModules/nuget/v2"
-      pat: $(System.AccessToken)
+  #- template: SetupRepoTemplate.yml
+  #  parameters:
+  #    packageSourceUrl: "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzAPPSModules/nuget/v2"
+  #    pat: $(System.AccessToken)
