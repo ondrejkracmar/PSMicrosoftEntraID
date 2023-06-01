@@ -26,6 +26,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateIdentity()]
         [string[]]
+        [Alias("Id","UserPrincipalName","Mail")]
         $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True, ParameterSetName = 'IdentityUsageLocationCode')]
         [ValidateNotNullOrEmpty()]
@@ -40,37 +41,37 @@
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $usageLocationHashtable = Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable
+        $commandRetryCount = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryCount'
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryWaitIsSeconds')
     }
     
     process {
         foreach ($user in $Identity) {
-            switch ($PSCmdlet.ParameterSetName) { 
-                'IdentityUsageLocationCode' { 
-                    $aADUser = Get-PSAADUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        $path = ("users/{0}" -f $aADUser.Id)
+            $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
+            if (-not ([object]::Equals($aADUser, $null))) {
+                $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+
+                switch ($PSCmdlet.ParameterSetName) { 
+                    'IdentityUsageLocationCode' { 
+                        $usgaeLocationTarget = $usageLocationCode
+                        $body = @{
+                            usageLocation = $usageLocationCode
+                        }
                     }
-                    $usgaeLocationTarget = $usageLocationCode
-                    $body = @{
-                        usageLocation = $usageLocationCode
-                    }
-                }
-                'IdentityUsageLocationCountry' { 
-                    $aADUser = Get-PSAADUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        $path = ("users/{0}" -f $aADUser.Id)
-                    }
-                    $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
-                    $body = @{
-                        usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
+                    'IdentityUsageLocationCountry' {                         
+                        $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
+                        $body = @{
+                            usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
+                        }
                     }
                 }
+                Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
+                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch)
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
             }
-            Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $Identity -ScriptBlock {
-                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet | ConvertFrom-RestUser
-            if (Test-PSFFunctionInterrupt) { return }
-        }
+            else {}
+        }   
     }
     end {}
 }

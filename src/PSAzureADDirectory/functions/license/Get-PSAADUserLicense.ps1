@@ -43,6 +43,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateIdentity()]
         [string[]]
+        [Alias("Id","UserPrincipalName","Mail")]
         $Identity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
@@ -77,7 +78,6 @@
         $PageSize = 100
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'

@@ -30,6 +30,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateIdentity()]
         [string[]]
+        [Alias("Id","UserPrincipalName","Mail")]
         $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
@@ -45,45 +46,47 @@
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         Get-PSAADSubscribedSku | Set-PSFResultCache
+        $commandRetryCount = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryCount'
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryWaitIsSeconds')
     }
     process {
         foreach ($user in  $Identity) {
-            switch -Regex ($PSCmdlet.ParameterSetName) {
-                'Identity\w' {
-                    $aADUser = Get-PSAADUser -Identity $user
-                    if (-not ([object]::Equals($aADUser,$null))) {
-                        $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+            $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
+            if (-not ([object]::Equals($aADUser, $null))) {
+                $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+            
+                switch -Regex ($PSCmdlet.ParameterSetName) {
+                    '\wSkuId' {
+                        [string[]]$bodySkuId = $SkuId
+                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                            $skuTarget = ($SkuId | Join-String -SingleQuote -Separator ',')
+                        }
+                        else {
+                            $skuTarget = ($SkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                        }
+                    }
+                    '\wSkuPartNumber' {
+                        [string[]]$bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
+                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                            $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
+                        }
+                        else {
+                            $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                        }
                     }
                 }
-                '\wSkuId' {
-                    [string[]]$bodySkuId = $SkuId
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($SkuId | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $skuTarget = ($SkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
-                }
-                '\wSkuPartNumber' {
-                    [string[]]$bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
-                }
-            }
-            $body = @{
+                $body = @{
                             
-                addLicenses    = @(
-                )
-                removeLicenses = $bodySkuId
-            }            
-            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $Identity -ScriptBlock {
-                Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet | ConvertFrom-RestUser
-            if (Test-PSFFunctionInterrupt) { return }
+                    addLicenses    = @(
+                    )
+                    removeLicenses = $bodySkuId
+                }            
+                Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
+                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post)
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
+            }
+            else {}
         }
     }
     end

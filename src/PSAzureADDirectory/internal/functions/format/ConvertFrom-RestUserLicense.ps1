@@ -34,6 +34,7 @@
 				AccountEnabled    = $InputObject.accountEnabled
 				DisplayName       = $InputObject.displayName
 				Mail              = $InputObject.mail
+				UsageLocation 	  = $InputObject.usageLocation
 				CompanyName       = $InputObject.companyName
 				AssignedLicenses  = ($InputObject.assignedLicenses | ConvertFrom-RestUserLicenseServicePlan -ServicePlan)
 			}
@@ -47,6 +48,7 @@
 				AccountEnabled    = $InputObject.accountEnabled
 				DisplayName       = $InputObject.displayName
 				Mail              = $InputObject.mail
+				UsageLocation 	  = $InputObject.usageLocation
 				CompanyName       = $InputObject.companyName
 				AssignedLicenses  = ($InputObject.assignedLicenses | ConvertFrom-RestUserLicenseServicePlan)
 			}

@@ -25,9 +25,9 @@
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules   = @(
-		@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
-		@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
+	RequiredModules   = @('PSFramework', 'RestConnect'
+		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
+		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -78,8 +78,8 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('rest', 'Azure','Azure Active Directory')
-			ExternalModuleDependencies = @('PSFramework','RestConnect')
+			Tags                       = @('rest', 'Azure', 'Azure Active Directory')
+			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''
