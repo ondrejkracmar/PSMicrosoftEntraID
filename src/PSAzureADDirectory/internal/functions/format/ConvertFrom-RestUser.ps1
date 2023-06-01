@@ -1,4 +1,4 @@
-function ConvertFrom-RestUser {
+﻿function ConvertFrom-RestUser {
 	<#
 	.SYNOPSIS
 		Converts license objects to look nice.
