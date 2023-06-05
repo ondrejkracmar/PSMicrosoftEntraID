@@ -13,6 +13,7 @@
         Type of Teams user Owner or Member
 
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(DefaultParameterSetName = 'Default',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,

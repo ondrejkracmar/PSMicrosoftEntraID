@@ -1,4 +1,5 @@
 ﻿function Get-PSAADGroup {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSAzureADDirectory.User.License')]
     [CmdletBinding(DefaultParameterSetName = 'GroupId')]
     param(

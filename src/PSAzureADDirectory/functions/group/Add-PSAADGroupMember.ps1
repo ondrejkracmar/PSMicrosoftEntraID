@@ -19,6 +19,7 @@
         Switch response header or result
 
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(DefaultParameterSetName = 'AdGroupMember')]
     param(
         [Parameter(ParameterSetName = 'AddGroupMember', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
