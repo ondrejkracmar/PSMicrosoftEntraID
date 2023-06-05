@@ -11,6 +11,7 @@ function Get-UserUsageLocation {
 	.EXAMPLE
 		PS C:\>Get-UserUsageLocation
 	#>
+    [OutputType('System.Collections.Hashtable')]
 	[CmdletBinding()]
 	param (
 
