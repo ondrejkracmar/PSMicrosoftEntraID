@@ -1,6 +1,7 @@
-﻿function New-PSMTGroup {
+﻿function New-PSAADGroup {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'CreateGroup')]
+    [CmdletBinding(SupportsShouldProcess = $true,
+        DefaultParameterSetName = 'CreateGroup')]
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
