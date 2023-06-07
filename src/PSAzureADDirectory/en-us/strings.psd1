@@ -21,4 +21,6 @@
 	'License.Disable'            = "Disable license {0}"
 
 	'User.UsageLocation'         = "Set usagelocation '{0}'"
+
+	'Office365Group.New'		     = "Create new Office365 group '{0}'"
 }

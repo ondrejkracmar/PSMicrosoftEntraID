@@ -1,6 +1,6 @@
 ﻿function New-PSMTGroup {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [CmdletBinding(DefaultParameterSetName = 'CreateGroup')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'CreateGroup')]
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -33,27 +33,11 @@
         [string]
         $Visibility,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                }
-                catch {
-                    $false
-                }
-            })]
+        [ValidateIdentity()]
         [string[]]
         $Owners,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                }
-                catch {
-                    $false
-                }
-            })]
+        [ValidateIdentity()]
         [string[]]
         $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
@@ -69,24 +53,12 @@
         [string[]]
         $ResourceBehaviorOptions,
         [string]
-        $JsonRequest,
-        [switch]
-        $Status
+        $JsonRequest
     )
     begin {
-        try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
-            $authorizationToken = Get-PSMTAuthorizationToken
-            $graphApiParameters = @{
-                Method             = 'Post'
-                AuthorizationToken = "Bearer $authorizationToken"
-                Uri                = $url
-            }
-            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-        }
-        catch {
-            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
-        }
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $commandRetryCount = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryCount'
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryWaitIsSeconds')
         $requestBodyCreateGroupTemplateJSON = '{
             "displayName": "",
             "mailNickname" : "",
@@ -99,11 +71,10 @@
     }
 
     process {
-        if (Test-PSFFunctionInterrupt) { return }
-
+        
         Switch ($PSCmdlet.ParameterSetName) {
             'CreateGroupViaJson' {
-                $bodyParameters = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
+                $body = $JsonRequest 
             }
             'CreateGroup' {
                 $bodyParameters = $requestBodyCreateGroupTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
@@ -140,7 +111,8 @@
                     $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($owner in $Owners) {
                         $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
-                        $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $owner
+                        $aADUser = Get-PSAADUser -Identity $owner
+                        $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $aADUser.Id
                         [void]($userIdUriPathList.Add($userIdUriPath))
                     }
                     $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList
@@ -150,7 +122,8 @@
                     $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($member in $Members) {
                         $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
-                        $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $member
+                        $aADUser = Get-PSAADUser -Identity $member
+                        $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $aADUser.Id
                         [void]($userIdUriPathList.Add($userIdUriPath))
                     }
                     $bodyParameters['members@odata.bind'] = [array]$userIdUriPathList
@@ -169,19 +142,13 @@
                 if (Test-PSFParameterBinding -Parameter ResourceBehaviorOptions) {
                     $bodyParameters['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                 }
-            }
-            'Default' {
-                $bodyParameters = $requestBodyCreateGroupTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
+                $body = $bodyParameters | ConvertTo-Json
             }
         }
 
-        [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 #| ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
-        $graphApiParameters['body'] = $requestJSONQuery
-
-        If ($Status.IsPresent) {
-            $graphApiParameters['Status'] = $true
-        }
-        Invoke-GraphApiQuery @graphApiParameters
+        Invoke-PSFProtectedCommand -ActionString 'Office365Group.New' -ActionStringValues $DisplayName -Target 'Office 365 Groups' $aADUser.UserPrincipalName -ScriptBlock {
+            [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post) } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        if (Test-PSFFunctionInterrupt) { return }
     }
     end {
 
