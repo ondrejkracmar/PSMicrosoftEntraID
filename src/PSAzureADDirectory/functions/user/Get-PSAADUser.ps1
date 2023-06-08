@@ -37,7 +37,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateIdentity()]
         [string[]]
-        [Alias("Id","UserPrincipalName","Mail")]
+        [Alias("Id", "UserPrincipalName", "Mail")]
         $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Name')]
         [ValidateNotNullOrEmpty()]
@@ -133,14 +133,16 @@
                 }
             }
             'All' {
-                if ($Disabled.IsPresent) {
-                    $header = @{}
-                    $header['ConsistencyLevel'] = 'eventual'
-                    $query['$Filter'] = "accountEnabled eq false"
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
-                }
-                else {
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                if ($All.IsPresent) {
+                    if ($Disabled.IsPresent) {
+                        $header = @{}
+                        $header['ConsistencyLevel'] = 'eventual'
+                        $query['$Filter'] = "accountEnabled eq false"
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
+                    }
+                    else {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                    }
                 }
             }
         }
