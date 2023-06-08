@@ -3,24 +3,10 @@
 @{
 	'ValidIdentityException'     = "This is not valid identity format '{0}'."
 	
-	'QueryMoreData'              = 'The query contains more data, use recursive to get all!'
-	'QueryCommandOutput'         = 'The command executed successfully'
-	'QueryBatchCommandOutput'    = 'The batch command'
-	'TokenExpired'               = 'Access token has expired.'
-	'FailedInvokeRest'           = "Failed to invoke rest method '{0}' from '{1}'."
-	'StringAssemblyError'        = "Failed to assemble url '{0}'."
-	'FailedGetAssignLicense'     = "Failed to get assign service plan '{0}'."
-	'FailedEnableAssignLicense'  = "Failed to enable license '{0}'."
-	'FailedDisableAssignLicense' = "Failed to disable license '{0}'"
-	'FailedGetUser'              = "Failed to receive Id of  UserPrincipalName '{0}'."
-	'FailedGetUsers'             = "Failed to receive uri '{0}'."
-	'FailedGetSubscribedSkus'    = "Failed to get subscribed skus."
-
 	'LicenseServicePLan.Enable'  = "Enable service plans {0} in subscription '{1}'"
 	'LicenseServicePLan.Disable' = "Disable service plans {0} in subscription '{1}"
 	'License.Disable'            = "Disable license {0}"
 
 	'User.UsageLocation'         = "Set usagelocation '{0}'"
 
-	'Office365Group.New'		     = "Create new Office365 group '{0}'"
 }
