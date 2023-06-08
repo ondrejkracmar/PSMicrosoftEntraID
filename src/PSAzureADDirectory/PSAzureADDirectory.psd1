@@ -54,7 +54,7 @@
 		'Set-PSAADUserUsageLocation'
 		'Get-PSAADSubscribedSku'
 		'Get-PSAADLicenseServicePlan'
-		'New-PSAADGroup'
+		#'New-PSAADGroup'
 	)
 	
 	# Cmdlets to export from this module
