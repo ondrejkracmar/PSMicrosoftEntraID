@@ -11,7 +11,9 @@
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestSubscribedSku
+		
 		Retrieves the specified subscribed Sku and converts it into something userfriendly
+		
 	#>
 	[CmdletBinding()]
 	param (
