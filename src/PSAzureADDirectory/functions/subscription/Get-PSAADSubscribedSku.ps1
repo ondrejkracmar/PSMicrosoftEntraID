@@ -10,6 +10,7 @@
 		PS C:\> Get-PSAADSubscribedSku
         
 		Get the list of commercial subscriptions
+        
 	#>
     [OutputType('PSAzureADDirectory.License')]
     [CmdletBinding()]
