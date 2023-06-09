@@ -1,18 +1,22 @@
 ﻿
 function Join-UriPath {
     <#
+    .SYNOPSIS
+        Join-Path but for URL strings instead
+
     .DESCRIPTION
-    Join-Path but for URL strings instead
+        Join-Path but for URL strings instead
 
     .PARAMETER Uri
-    Base path string
+        Base path string
 
     .PARAMETER ChildPath
-    Child path or item name
+        Child path or item name
 
     .EXAMPLE
-    Join-Url -Path "https://www.contoso.local" -ChildPath "foo.htm"
-    returns "https://www.contoso.local/foo.htm"
+        PS C:\> Join-Url -Path "https://www.contoso.local" -ChildPath "foo.htm"
+        
+        returns "https://www.contoso.local/foo.htm"
 
     #>
     param (
