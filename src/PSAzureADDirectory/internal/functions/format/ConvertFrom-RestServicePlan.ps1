@@ -8,13 +8,13 @@
 
 	.PARAMETER InputObject
 		The rest response representing a subscribed Sku
-    
+
     .PARAMETER User
         Coverts for user object
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestServicePlan
-        
+
         Retrieves the specified subscribed ServicePlan and converts it into something userfriendly
 
 	#>
