@@ -10,13 +10,13 @@ resources:
       ref: master
 steps:
    - task: PowerShell@2
-     displayName: Deployment Prerequisites
+     displayName: Install Prerequisites For Validation
      inputs:
        targetType: filePath
        filePath: "./src//build/vsts-prerequisites.ps1"
 
    - task: PowerShell@2
-     displayName: Deployemnt Validation
+     displayName: Validation/Test Powershell Module
      inputs:
        targetType: filePath
        filePath: "./src/build/vsts-validate.ps1"
@@ -27,7 +27,8 @@ steps:
        testResultsFormat: NUnit
      condition: always()
 
-  #- template: SetupRepoTemplate.yml
-  #  parameters:
-  #    packageSourceUrl: "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzAPPSModules/nuget/v2"
-  #    pat: $(System.AccessToken)
+   - task: PowerShell@2
+     displayName: Build/Publish Powerhell module
+     inputs:
+       targetType: filePath
+       filePath: "./src/build/vsts-build.ps1"
