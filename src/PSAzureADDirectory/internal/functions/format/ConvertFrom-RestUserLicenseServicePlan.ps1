@@ -14,7 +14,9 @@
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
+		
 		Retrieves the specified subscribed Sku service plans and converts it into something userfriendly
+		
 	#>
 	[CmdletBinding()]
 	param (

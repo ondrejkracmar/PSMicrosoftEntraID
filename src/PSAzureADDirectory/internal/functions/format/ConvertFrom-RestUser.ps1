@@ -11,7 +11,9 @@
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+
 		Retrieves the specified license and converts it into something userfriendly
+		
 	#>
 	[CmdletBinding()]
 	param (
