@@ -5,6 +5,9 @@ Register-PSFTeppArgumentCompleter -Command Get-Alcohol -Parameter Type -Name PSA
 Register-PSFTeppArgumentCompleter -Command Get-PSAADUserLicense -Parameter SkuId -Name 'subscribed.skuid'
 Register-PSFTeppArgumentCompleter -Command Get-PSAADUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
 
+Register-PSFTeppArgumentCompleter -Command Get-PSAADUserSubscribedSku -Parameter SkuId -Name 'subscribed.skuid'
+Register-PSFTeppArgumentCompleter -Command Get-PSAADUserSubscribedSku -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
+
 Register-PSFTeppArgumentCompleter -Command Get-PSAADLicenseServicePlan -Parameter SkuId -Name 'subscribed.skuid'
 Register-PSFTeppArgumentCompleter -Command Get-PSAADLicenseServicePlan -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
 
