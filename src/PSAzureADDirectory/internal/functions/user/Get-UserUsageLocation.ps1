@@ -1,6 +1,4 @@
-﻿
-
-function Get-UserUsageLocation {
+﻿function Get-UserUsageLocation {
 	<#
 	.SYNOPSIS
 		Get User Ysage Location hashtable.
