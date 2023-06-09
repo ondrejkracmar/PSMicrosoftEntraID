@@ -10,6 +10,7 @@ function Get-UserUsageLocation {
 
 	.EXAMPLE
 		PS C:\>Get-UserUsageLocation
+        Get list of usage locations
 	#>
     [OutputType('System.Collections.Hashtable')]
 	[CmdletBinding()]
