@@ -26,7 +26,7 @@
 		if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) ) { return }
 
 		if ($ServicePlan.IsPresent) {
-			
+
 			[PSCustomObject]@{
 				PSTypeName        = 'PSAzureADDirectory.User.License'
 				Id                = $InputObject.id
@@ -41,7 +41,7 @@
 			}
 		}
 		else {
-			
+
 			[PSCustomObject]@{
 				PSTypeName        = 'PSAzureADDirectory.User.License'
 				Id                = $InputObject.id
@@ -53,7 +53,7 @@
 				UsageLocation     = $InputObject.usageLocation
 				CompanyName       = $InputObject.companyName
 				AssignedLicenses  = ($InputObject.assignedLicenses | ConvertFrom-RestUserLicenseServicePlan)
-			}		
+			}
 		}
 	}
 }
