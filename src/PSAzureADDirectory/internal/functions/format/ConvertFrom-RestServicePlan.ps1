@@ -10,8 +10,8 @@
 		The rest response representing a subscribed Sku
 
 	.EXAMPLE
-		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
-		Retrieves the specified subscribed Sku service plans and converts it into something userfriendly
+		Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
+	
 	#>
     [CmdletBinding()]
     param (
