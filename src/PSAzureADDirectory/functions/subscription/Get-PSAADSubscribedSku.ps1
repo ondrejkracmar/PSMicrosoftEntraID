@@ -7,7 +7,8 @@
 		Get the list of commercial subscriptions that an organization has acquired
 
 	.EXAMPLE
-		PS C:\> Get-PSAADSubscribedSku
+		PS C:\>Get-PSAADSubscribedSku
+        
 		Get the list of commercial subscriptions
 	#>
     [OutputType('PSAzureADDirectory.License')]
