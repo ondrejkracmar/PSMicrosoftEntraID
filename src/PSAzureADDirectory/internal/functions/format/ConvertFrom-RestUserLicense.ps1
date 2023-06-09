@@ -9,6 +9,9 @@
 	.PARAMETER InputObject
 		The rest response representing a license
 
+	.PARAMETER ServicePlan
+		Add list of service plans of subscription to Azure AD user object into something userfriendly
+
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestLicense
 		Retrieves the specified license and converts it into something userfriendly

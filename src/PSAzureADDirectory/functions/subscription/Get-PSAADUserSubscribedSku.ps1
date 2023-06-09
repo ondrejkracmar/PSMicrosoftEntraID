@@ -6,7 +6,7 @@
 	.DESCRIPTION
 		Get users who are assigned licenses
 
-    .PARAMETER ComanyName
+    .PARAMETER CompanyName
         CompanyName of the user attribute populated in tenant/directory.
 
 	.PARAMETER SkuId

@@ -8,6 +8,9 @@
 
 	.PARAMETER InputObject
 		The rest response representing a license
+    
+    .PARAMETER SkuId
+		Office 365 product GUID is identified using a GUID of subscribedSku.
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestLicense
