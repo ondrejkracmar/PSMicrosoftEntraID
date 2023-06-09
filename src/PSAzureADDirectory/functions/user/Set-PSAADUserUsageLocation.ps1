@@ -14,11 +14,14 @@
 
     .PARAMETER UsageLocationCountry
         The name of the country corresponding to its usagelocation.
-    
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
-    
+
+    .PARAMETER WhatIf
+        Test WhatIf
+
     .EXAMPLE
         PS C:\> Set-PSAADUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
 		Set usage location for Azure AD user user1@contoso.com
