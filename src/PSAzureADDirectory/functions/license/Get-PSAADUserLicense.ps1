@@ -9,7 +9,7 @@
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
-    .PARAMETER ComanyName
+    .PARAMETER CompanyName
         CompanyName of the user attribute populated in tenant/directory.
 
 	.PARAMETER SkuId

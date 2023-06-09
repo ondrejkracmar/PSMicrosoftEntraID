@@ -9,7 +9,8 @@ function Get-UserUsageLocation {
 		Get User Ysage Location hashtable.
 
 	.EXAMPLE
-		PS C:\>Get-UserUsageLocation
+		PS C:\> Get-UserUsageLocation
+
         Get list of usage locations
 	#>
     [OutputType('System.Collections.Hashtable')]

@@ -30,7 +30,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-        PS C:\> Set-PSAADUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
+        PS C:\>Set-PSAADUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
         
 		Set usage location for Azure AD user user1@contoso.com
 
