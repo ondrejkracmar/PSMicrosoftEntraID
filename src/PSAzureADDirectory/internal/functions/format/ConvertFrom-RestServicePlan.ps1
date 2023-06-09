@@ -16,6 +16,7 @@
 		Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
         
         Retrieves the specified subscribed ServicePlan and converts it into something userfriendly
+        
 	#>
     [CmdletBinding()]
     param (
