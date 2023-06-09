@@ -20,7 +20,7 @@
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
-        Test WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
 
     .EXAMPLE
         PS C:\> Set-PSAADUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB

@@ -14,10 +14,14 @@
 
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
-        
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
 
 	.EXAMPLE
 		PS C:\> Disable-PSAADUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK

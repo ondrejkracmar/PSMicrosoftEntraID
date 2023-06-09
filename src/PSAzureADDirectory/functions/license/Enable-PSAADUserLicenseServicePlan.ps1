@@ -24,6 +24,10 @@
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
+        
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
 
 	.EXAMPLE
 		PS C:\> Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
