@@ -20,6 +20,10 @@
 
     .PARAMETER ServicePlanName
         Friendly servcie plan name of subscribedSku.
+    
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        dly, but allows catching exceptions in calling scripts.
 
 	.EXAMPLE
 		PS C:\> Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
