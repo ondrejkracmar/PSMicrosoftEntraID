@@ -1,4 +1,4 @@
-﻿name: PowershellModule-PSAzureADDirectory-Deployment
+﻿name: Publish Powershell Module To Private Repository 
 trigger:
   - main
 
@@ -10,22 +10,22 @@ resources:
       ref: master
 steps:
    - task: PowerShell@2
-     displayName: Prerequisites
+     displayName: Deployment Prerequisites
      inputs:
        targetType: filePath
        filePath: "./src//build/vsts-prerequisites.ps1"
 
    - task: PowerShell@2
-     displayName: Validate
+     displayName: Deployemnt Validation
      inputs:
        targetType: filePath
        filePath: "./src/build/vsts-validate.ps1"
 
-  # - task: PublishTestResults@2
-  #   displayName: "Publish Test Results **/TEST-*.xml"
-  #   inputs:
-  #     testResultsFormat: NUnit
-  #   condition: always()
+   - task: PublishTestResults@2
+     displayName: "Publish Test Results **/TEST-*.xml"
+     inputs:
+       testResultsFormat: NUnit
+     condition: always()
 
   #- template: SetupRepoTemplate.yml
   #  parameters:
