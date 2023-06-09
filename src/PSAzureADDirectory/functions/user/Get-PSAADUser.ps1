@@ -29,6 +29,11 @@
 
     .PARAMETER PageSize
         Value of returned result set contains multiple pages of data.
+    
+    .EXAMPLE
+        PS C:\> Get-PSAADUser -Identity user1@contoso.com
+		Get properties of Azure AD user user1@contoso.com
+
 
 #>
     [OutputType('PSAzureADDirectory.User')]
