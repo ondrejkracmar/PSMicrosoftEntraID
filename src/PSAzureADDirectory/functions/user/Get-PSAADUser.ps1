@@ -12,7 +12,7 @@
     .PARAMETER Name
         DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
 
-    .PARAMETER ComanyName
+    .PARAMETER CompanyName
         CompanyName of the user attribute populated in tenant/directory.
 
     .PARAMETER Disabled
@@ -32,6 +32,7 @@
     
     .EXAMPLE
         PS C:\> Get-PSAADUser -Identity user1@contoso.com
+
 		Get properties of Azure AD user user1@contoso.com
 
 
