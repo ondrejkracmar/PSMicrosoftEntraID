@@ -31,6 +31,7 @@
 
     .EXAMPLE
         PS C:\> Set-PSAADUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
+        
 		Set usage location for Azure AD user user1@contoso.com
 
 
