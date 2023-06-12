@@ -36,11 +36,19 @@ steps:
           -WorkingDirectory "./src"
           -LocalRepo
 
-   - task: NuGetCommand@2
-     displayName: Publish Nuget To Repository
-     name: publishnuget
+   - task: PowerShell@2
+     displayName: Build Nuget For Powerhell module
      inputs:
-      command: push
-      packagesToPush: "./src/build/*.nupkg"
-      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
+        targetType: inline
+        script: |
+          Get-ChildItem -Path ./src -Recurse
+        
+     
+#   - task: NuGetCommand@2
+#     displayName: Publish Nuget To Repository
+#     name: publishnuget
+#     inputs:
+#      command: push
+#      packagesToPush: "./src/build/*.nupkg"
+#      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
