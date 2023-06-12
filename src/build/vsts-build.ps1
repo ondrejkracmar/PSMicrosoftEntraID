@@ -6,17 +6,17 @@ Insert any build steps you may need to take before publishing it here.
 #>
 param (
 	$ApiKey,
-	
+
 	$WorkingDirectory,
-	
+
 	$Repository = 'PSGallery',
-	
+
 	[switch]
 	$LocalRepo,
-	
+
 	[switch]
 	$SkipPublish,
-	
+
 	[switch]
 	$AutoVersion
 )
@@ -46,7 +46,7 @@ $processed = @()
 foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\scripts\preimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
-	
+
 	$item = Get-Item $filePath
 	if ($item.PSIsContainer) { continue }
 	if ($item.FullName -in $processed) { continue }
@@ -66,7 +66,7 @@ Get-ChildItem -Path "$($publishDir.FullName)\PSAzureADDirectory\functions\" -Rec
 foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\scripts\postimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
-	
+
 	$item = Get-Item $filePath
 	if ($item.PSIsContainer) { continue }
 	if ($item.FullName -in $processed) { continue }
@@ -109,8 +109,7 @@ if ($LocalRepo)
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSAzureADDirectory"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSAzureADDirectory" -PackagePath . -Verbose
-	Get-ChildItem -Path . -Recurse | fl
+	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSAzureADDirectory" -PackagePath .
 }
 else
 {

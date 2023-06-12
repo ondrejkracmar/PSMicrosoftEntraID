@@ -34,21 +34,13 @@ steps:
        filePath: "./src/build/vsts-build.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory "./src"
-          -LocalRepo
-
-   - task: PowerShell@2
-     displayName: Test Nuget For Powerhell module exists
-     inputs:
-        targetType: inline
-        script: |
-          Get-ChildItem -Path ./src -Recurse | fl
-        
+          -LocalRepo     
      
-#   - task: NuGetCommand@2
-#     displayName: Publish Nuget To Repository
-#     name: publishnuget
-#     inputs:
-#      command: push
-#      packagesToPush: "./src/build/*.nupkg"
-#      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
+   - task: NuGetCommand@2
+     displayName: Publish Nuget To Repository
+     name: publishnuget
+     inputs:
+      command: push
+      packagesToPush: "./src/*.nupkg"
+      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
