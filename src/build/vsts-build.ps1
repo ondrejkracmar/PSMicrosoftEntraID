@@ -110,6 +110,7 @@ if ($LocalRepo)
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSAzureADDirectory"
 	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSAzureADDirectory" -PackagePath . -Verbose
+	Get-ChildItem -Path . -Recurse | fl
 }
 else
 {
