@@ -30,6 +30,13 @@ steps:
           -WorkingDirectory "./src"
           -LocalRepo
 
+   - task: NuGetAuthenticate@1
+    
+   - task: NuGetAuthenticate@1
+     displayName: Authenticate To Artifact 
+     inputs:
+      nuGetServiceConnections: AzArtifactsPSModules
+
    - task: NuGetCommand@2
      displayName: Publish Nuget To Repository
      name: publishnuget
