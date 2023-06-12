@@ -36,7 +36,6 @@ steps:
         rootDirectory: $(Pipeline.Workspace)
         targetType: inline
         script: |
-          $accessToken = $env:SYSTEM_ACCESSTOKEN 
-          nuget source add -Name "AzArtifactsPSModules" -Source "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzArtifactsPSModules/nuget/v2" -username $accessToken  -password $accessToken
+          nuget source add -Name "AzArtifactsPSModules" -Source "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzArtifactsPSModules/nuget/v2" -username odrej.kracmar@email.cz" -password "cmx7uvg7gz7heq6r3fkkh54vcjy5frtobrk5irszfguigsds3juq"
           nuget push -Source "AzArtifactsPSModules" -ApiKey ((New-Guid).Guid)  "$(Pipeline.Workspace)/**/*.nupkg" 
      
