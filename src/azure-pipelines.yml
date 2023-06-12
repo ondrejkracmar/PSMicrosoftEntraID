@@ -29,18 +29,14 @@ steps:
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory "./src"
           -LocalRepo
-    
-   - task: NuGetAuthenticate@1
-     displayName: Authenticate To Artifact 
-     inputs:
-      nuGetServiceConnections: AzArtifactsPSModules
 
-   - task: NuGetCommand@2
-     displayName: Publish Nuget To Repository
-     name: publishnuget
+   - task: PowerShell@2
+     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
      inputs:
-      #rootDirectory: $(Pipeline.Workspace)
-      command: push
-      packagesToPush: "$(Pipeline.Workspace)/**/*.nupkg"
-      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
+        rootDirectory: $(Pipeline.Workspace)
+        targetType: inline
+        script: |
+          $accessToken = $env:SYSTEM_ACCESSTOKEN 
+          nuget source add -Name "AzArtifactsPSModules" -Source "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzArtifactsPSModules/nuget/v2" -username $accessToken  -password $accessToken
+          nuget push -Source "AzArtifactsPSModules" -ApiKey ((New-Guid).Guid)  "$(Pipeline.Workspace)/**/*.nupkg" 
      
