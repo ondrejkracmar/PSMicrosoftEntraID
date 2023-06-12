@@ -44,6 +44,6 @@ steps:
      inputs:
       rootDirectory: $(Pipeline.Workspace)
       command: push
-      packagesToPush: "$(Pipeline.Workspace)/*.nupkg"
+      packagesToPush: "*.nupkg"
       publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
