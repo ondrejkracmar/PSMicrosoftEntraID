@@ -41,6 +41,6 @@ steps:
      name: publishnuget
      inputs:
       command: push
-      packagesToPush: "./src/*.nupkg"
+      packagesToPush: "$(Build.SorceDirectory)/*.nupkg"
       publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
