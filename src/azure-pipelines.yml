@@ -29,10 +29,8 @@ steps:
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory "./src"
           -LocalRepo
-
-   - task: NuGetAuthenticate@1
     
-   - task: NuGetAuthenticate@1
+   - task: NuGetAuthenticate@0
      displayName: Authenticate To Artifact 
      inputs:
       nuGetServiceConnections: AzArtifactsPSModules
