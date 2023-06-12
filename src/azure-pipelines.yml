@@ -28,10 +28,19 @@ steps:
      condition: always()
 
    - task: PowerShell@2
-     displayName: Build/Publish Powerhell module
+     displayName: Build Nuget For Powerhell module
      inputs:
        targetType: filePath
        filePath: "./src/build/vsts-build.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory "./src"
           -LocalRepo
+
+   - task: NuGetCommand@2
+     displayName: Publish Nuget To Repository
+     name: publishnuget
+     inputs:
+      command: push
+      packagesToPush: './src/publish/PSAzureADDirectory/*.nupkg'
+      publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
+     
