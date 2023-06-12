@@ -33,6 +33,6 @@ steps:
        targetType: filePath
        filePath: "./src/build/vsts-build.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
-          -WorkingDirectory "./src/PSAzureADDirectory"
+          -WorkingDirectory "./src"
           -SkipPublish
           -LocalRepo
