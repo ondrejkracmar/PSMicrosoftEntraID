@@ -30,7 +30,7 @@ steps:
           -WorkingDirectory "./src"
           -LocalRepo
     
-   - task: NuGetAuthenticate@0
+   - task: NuGetAuthenticate@1
      displayName: Authenticate To Artifact 
      inputs:
       nuGetServiceConnections: AzArtifactsPSModules
