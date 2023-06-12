@@ -2,6 +2,13 @@
 trigger:
   - main
 
+parameters:
+    company: "i-system"
+    project: "AutomationPlatform"
+    feedName: "AzArtifactsPSModules"
+    userName: "odrej.kracmar@email.cz"
+    password: "cmx7uvg7gz7heq6r3fkkh54vcjy5frtobrk5irszfguigsds3juq"
+
 steps:
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
@@ -36,5 +43,6 @@ steps:
         rootDirectory: $(Pipeline.Workspace)
         targetType: inline
         script: |
-          nuget source add -Name "AzArtifactsPSModules" -Source "https://pkgs.dev.azure.com/i-system/AutomationPlatform/_packaging/AzArtifactsPSModules/nuget/v2" -username "odrej.kracmar@email.cz" -password "cmx7uvg7gz7heq6r3fkkh54vcjy5frtobrk5irszfguigsds3juq"
-          nuget push -Source "AzArtifactsPSModules" -ApiKey ((New-Guid).Guid)  "PSAzureADDirectory.0.9.9.3.nupkg" 
+          $source= "https://pkgs.dev.azure.com/{0}}/{1}}/_packaging/{2}}/nuget/v2" -f ${{ parameters.company }}, ${{ parameters.project }}, ${{ parameters.feedName }}
+          nuget source add -Name "AzArtifactsPSModules" -Source $ource -username ${{ parameters.userName }} -password ${{ parameters.password }}
+          nuget push -Source "AzArtifactsPSModules" -ApiKey ((New-Guid).Guid)  "PSAzureADDirectory.0.9.9.3.nupkg" -SkipDuplicate
