@@ -36,7 +36,7 @@ steps:
         rootDirectory: $(Pipeline.Workspace)
         targetType: inline
         script: |
-          Get-ChildItem -Path . -Recurse | ft
+          Get-ChildItem -Path . -Recurse | fl
         
    - task: NuGetCommand@2
      displayName: Publish Nuget To Repository
