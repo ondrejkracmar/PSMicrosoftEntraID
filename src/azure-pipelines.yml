@@ -29,13 +29,13 @@ steps:
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory "./src"
           -LocalRepo
-                  
+
    - task: NuGetCommand@2
      displayName: Publish Nuget To Repository
      name: publishnuget
      inputs:
-      rootDirectory: $(Pipeline.Workspace)
+      #rootDirectory: $(Pipeline.Workspace)
       command: push
-      packagesToPush: "*.nupkg"
+      #packagesToPush: "*.nupkg"
       publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
