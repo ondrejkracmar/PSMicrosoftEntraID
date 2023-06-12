@@ -42,6 +42,7 @@ steps:
      displayName: Publish Nuget To Repository
      name: publishnuget
      inputs:
+      rootDirectory: $(Pipeline.Workspace)
       command: push
       packagesToPush: "./src/build/*.nupkg"
       publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
