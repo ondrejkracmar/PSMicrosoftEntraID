@@ -41,6 +41,6 @@ steps:
      name: publishnuget
      inputs:
       command: push
-      packagesToPush: './src/publish/PSAzureADDirectory/*.nupkg'
+      packagesToPush: './src/build/*.nupkg'
       publishVstsFeed: AutomationPlatform/AzArtifactsPSModules
      
