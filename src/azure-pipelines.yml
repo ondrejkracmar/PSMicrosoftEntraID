@@ -37,11 +37,11 @@ steps:
           -LocalRepo
 
    - task: PowerShell@2
-     displayName: Build Nuget For Powerhell module
+     displayName: Test Nuget For Powerhell module exists
      inputs:
         targetType: inline
         script: |
-          Get-ChildItem -Path ./src -Recurse
+          Get-ChildItem -Path ./src -Recurse | fl
         
      
 #   - task: NuGetCommand@2
