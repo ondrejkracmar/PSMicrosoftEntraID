@@ -2,12 +2,6 @@
 trigger:
   - main
 
-resources:
-  repositories:
-    - repository: DevOpsAutomation
-      type: git
-      name: AutomationPlatform/DevOpsAutomation
-      ref: master
 steps:
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
