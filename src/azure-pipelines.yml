@@ -42,6 +42,6 @@ steps:
      inputs:
         targetType: inline
         script: |
-          $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f ${company}, ${project}, ${feedName}
-          nuget source add -Name ${feedName) -Source $ource -username ${userName} -password ${password}
-          nuget push -Source ${feedName) -ApiKey ((New-Guid).Guid)  'PSAzureADDirectory.0.9.9.3.nupkg' -SkipDuplicate
+          $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f $(company), $(project), $(feedName)
+          nuget source add -Name $(feedName) -Source $ource -username $(userName) -password $(password)
+          nuget push -Source $(feedName) -ApiKey ((New-Guid).Guid)  'PSAzureADDirectory.0.9.9.3.nupkg' -SkipDuplicate
