@@ -2,7 +2,7 @@
 trigger:
   - main
 
-parameters:
+variables:
   company: "i-system"
   project: "AutomationPlatform"
   feedName: "AzArtifactsPSModules"
@@ -40,9 +40,8 @@ steps:
    - task: PowerShell@2
      displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
      inputs:
-        rootDirectory: $(Pipeline.Workspace)
         targetType: inline
         script: |
-          $source= "https://pkgs.dev.azure.com/{0}}/{1}}/_packaging/{2}}/nuget/v2" -f ${{ parameters.company }}, ${{ parameters.project }}, ${{ parameters.feedName }}
-          nuget source add -Name "AzArtifactsPSModules" -Source $ource -username ${{ parameters.userName }} -password ${{ parameters.password }}
+          $source= "https://pkgs.dev.azure.com/{0}}/{1}}/_packaging/{2}}/nuget/v2" -f ${company}, ${project}, ${feedName}
+          nuget source add -Name "AzArtifactsPSModules" -Source $ource -username ${userName} -password ${userName}
           nuget push -Source "AzArtifactsPSModules" -ApiKey ((New-Guid).Guid)  "PSAzureADDirectory.0.9.9.3.nupkg" -SkipDuplicate
