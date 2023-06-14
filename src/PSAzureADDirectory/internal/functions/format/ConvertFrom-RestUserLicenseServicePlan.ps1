@@ -44,7 +44,7 @@
 			[PSCustomObject]@{
 				PSTypeName    = 'PSAzureADDirectory.User.License'
 				SkuId         = $InputObject.skuId
-				SkuPartNumber = ($subscribedSkList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
+				SkuPartNumber = ($subscribedSkuList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
 			}
 		}
 	}
