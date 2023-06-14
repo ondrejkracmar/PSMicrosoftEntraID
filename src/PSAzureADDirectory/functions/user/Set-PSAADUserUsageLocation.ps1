@@ -68,7 +68,7 @@
         foreach ($user in $Identity) {
             $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                $path = ("users/{0}" -f $aADUser.Id)
 
                 switch ($PSCmdlet.ParameterSetName) {
                     'IdentityUsageLocationCode' {
