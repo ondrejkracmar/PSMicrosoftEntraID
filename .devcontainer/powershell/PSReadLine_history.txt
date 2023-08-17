@@ -1,0 +1,5 @@
+ls
+pwq
+pwd
+./profile.ps1
+ks
