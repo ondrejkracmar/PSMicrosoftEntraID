@@ -1,13 +1,13 @@
 ﻿function Get-GraphApiUriPath {
 	<#
 	.SYNOPSIS
-        Retrun using Microsoft Graph API version.
+        Return using Microsoft Graph API version.
 
 	.DESCRIPTION
-		Retrun using Microsoft Graph API version.
+		Return using Microsoft Graph API version.
 
 	.PARAMETER GraphApiVersion
-		The rest response representing a license
+		Microsoft Graph API version
 
 	.EXAMPLE
 		PS C:\> Get-GraphApiUriPath -GraphApiVersion v1.0

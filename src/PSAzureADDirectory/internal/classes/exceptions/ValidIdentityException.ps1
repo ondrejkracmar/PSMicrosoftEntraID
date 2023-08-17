@@ -1,9 +1,4 @@
-﻿<#class ValidIdentityException: System.Exception {
-    ValidIdentityException([string] $identityException) :
-    base ((Get-PSFLocalizedString -Module $Env:ModuleName -Name ValidIdentityException) -f $identityException) {}
-}
-#>
-$validateIdentityExceptionCodeCode = @'
+﻿$validateIdentityExceptionCodeCode = @'
 using System;
     public class ValidIdentityException: Exception
     {

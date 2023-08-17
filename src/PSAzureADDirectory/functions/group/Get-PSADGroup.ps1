@@ -1,60 +1,19 @@
-﻿function Get-PSAADUser {
-    <#
-    .SYNOPSIS
-        Get the properties of the specified user.
-
-    .DESCRIPTION
-        Get the properties of the specified user.
-
-    .PARAMETER Identity
-        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
-
-    .PARAMETER Name
-        DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
-
-    .PARAMETER CompanyName
-        CompanyName of the user attribute populated in tenant/directory.
-
-    .PARAMETER Disabled
-        Return disabled accounts in tenant/directory.
-
-    .PARAMETER Filter
-        Filter expressions of accounts in tenant/directory.
-
-    .PARAMETER AdvancedFilter
-        Switch advanced filter for filtering accounts in tenant/directory.
-
-    .PARAMETER All
-        Return all accounts in tenant/directory.
-
-    .PARAMETER PageSize
-        Value of returned result set contains multiple pages of data.
-
-    .EXAMPLE
-        PS C:\> Get-PSAADUser -Identity user1@contoso.com
-
-		Get properties of Azure AD user user1@contoso.com
-
-
-#>
-    [OutputType('PSAzureADDirectory.User')]
+﻿function Get-PSADGroup {
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
-    param (
+    param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateIdentity()]
-        [string[]]
-        [Alias("Id", "UserPrincipalName", "Mail")]
+        [string]
+        [Alias("Id", "MailNickName", "Mail")]
         $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Name')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'DisplayName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]$Name,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
-        [ValidateNotNullOrEmpty()]
-        [string[]]$CompanyName,
+        $DisplayName,
         [Parameter(Mandatory = $false, ParameterSetName = 'CompanyName')]
         [Parameter(Mandatory = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
-        [switch]$Disabled,
+        [ValidateSet("Public", "Private")]
+        [string]$Visibility,
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
@@ -66,7 +25,6 @@
         [switch]$All,
         [Parameter(Mandatory = $false, ParameterSetName = 'Name')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
-        [Parameter(Mandatory = $false, ParameterSetName = 'CompanyName')]
         [Parameter(Mandatory = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
@@ -116,24 +74,6 @@
                 }
                 else {
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
-                }
-            }
-            'CompanyName' {
-                $header = @{}
-                $header['ConsistencyLevel'] = 'eventual'
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
-                if ($Disabled.IsPresent) {
-                    $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
-                }
-                else {
-                    $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
                 }
             }
             'All' {

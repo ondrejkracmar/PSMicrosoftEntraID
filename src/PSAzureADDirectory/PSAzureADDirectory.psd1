@@ -3,7 +3,7 @@
 	RootModule        = 'PSAzureADDirectory.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.9.9.5'
+	ModuleVersion     = '0.9.9.6'
 
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -20,8 +20,8 @@
 	# Description of the functionality provided by this module
 	Description       = 'Powershell module represents an Azure Active Directory object'
 
-	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '5.1'
+	# Minimum version of the PowerShell engine required by this module
+	PowerShellVersion = '7.2'
 
 	# Modules that must be imported into the global environment prior to importing
 	# this module
@@ -52,11 +52,17 @@
 		'Get-PSAADUserLicense'
 		'Get-PSAADUserLicenseServicePlan'
 		'Get-PSAADUser'
+		'Remove-PSAADUser'
+		'New-PSAADInvitation'
 		'Set-PSAADUserUsageLocation'
 		'Get-PSAADSubscribedSku'
 		'Get-PSAADUserSubscribedSku'
-
+		'Get-PSADGroup'
 		#'New-PSAADGroup'
+		#'Remove-PSAADGroup'
+		'Get-PSADGroupMember'
+		'Add-PSADGroupMember'
+		'Remove-PSADGroupMember'
 	)
 
 	# Cmdlets to export from this module
@@ -81,7 +87,7 @@
 		PSData = @{
 
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags                       = @('rest', 'Azure', 'AzureActiveDirectory')
+			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory')
 			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
 
 			# A URL to the license for this module.

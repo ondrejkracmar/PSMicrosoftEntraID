@@ -1,5 +1,5 @@
 ﻿function Get-UserUsageLocation {
-	<#
+    <#
 	.SYNOPSIS
 		Get User Ysage Location hashtable.
 
@@ -12,28 +12,28 @@
         Get list of usage locations
 	#>
     [OutputType('System.Collections.Hashtable')]
-	[CmdletBinding()]
-	param (
+    [CmdletBinding()]
+    param (
 
-	)
-	begin {
+    )
+    begin {
         $usageLocationCode = @{
-            'Afghanistan'                                                =	'AF'
-            'Albania'                                                    =	'AL'
-            'Algeria'                                                    = 'DZ'
+            'Afghanistan'                                                = "AF"
+            'Albania'                                                    = "AL"
+            'Algeria'                                                    = "DZ"
             "American Samao"                                             = "AS"
-            "Andorra"                                                    =	"AD"
-            "Angola"                                                     =	"AO"
+            "Andorra"                                                    = "AD"
+            "Angola"                                                     = "AO"
             "Anguilla"                                                   = "AI"
             "Antarctica"                                                 = "AQ"
             "Antigua and Barbuda"                                        = "AG"
             "Argentina"                                                  = "AR"
-            "Armenia"                                                    =	"AM"
+            "Armenia"                                                    = "AM"
             "Aruba"                                                      = "AW"
             "Australia"                                                  = "AU"
             "Austria"                                                    = "AT"
             "Azerbaijan"                                                 = "AZ"
-            "Bahamas"                                                    =	"BS"
+            "Bahamas"                                                    = "BS"
             "Bahrain"                                                    = "BH"
             "Bangladesh"                                                 = "BD"
             "Barbados"                                                   = "BB"
@@ -51,10 +51,10 @@
             "Brazil"                                                     = "BR"
             "British Indian Ocean Territory"                             = "IO"
             "Brunei Darussalam"                                          = "BN"
-            "Bulgaria"                                                   =	"BG"
+            "Bulgaria"                                                   = "BG"
             "Burkina Faso"                                               = "BF"
             "Cabo Verde"                                                 = "CV"
-            "Cambodia"                                                   =	"KH"
+            "Cambodia"                                                   = "KH"
             "Cameroon"                                                   = "CM"
             "Canada"                                                     = "CA"
             "Cayman Islands"                                             = "KY"
@@ -67,7 +67,7 @@
             "Cocos (Keeling) Islands"                                    = "CC"
             "Congo (the Democratic Republic)"                            = "CD"
             "Comoros"                                                    = "KM"
-            "Cook Islands"                                               =	"CK"
+            "Cook Islands"                                               = "CK"
             "Congo"                                                      = "CG"
             "Croatia"                                                    = "HR"
             "Costa Rica"                                                 = "CR"
@@ -264,8 +264,8 @@
             "Zambia"                                                     = "ZM"
             "Zimbabwe"                                                   = "ZW"
         }
-	}
-	process {
-		return $usageLocationCode
-	}
+    }
+    process {
+        return $usageLocationCode
+    }
 }
