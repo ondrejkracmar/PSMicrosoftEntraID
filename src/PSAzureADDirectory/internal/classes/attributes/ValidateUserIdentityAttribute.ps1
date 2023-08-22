@@ -25,7 +25,7 @@
     }
 }#>
 
-$validateIdentityAttributeCode= @'
+$ValidateUserIdentityAttributeCode= @'
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,13 +39,13 @@ using System.Text.RegularExpressions;
 
         }
 
-        public ValidIdentityException(string identityException): base(string.Format("This is not valid identity format '{0}'.", identityException))
+        public ValidIdentityException(string identityException): base(string.Format("This is not valid user identity format '{0}'.", identityException))
         {
 
         }
     }
 
-    public class ValidateIdentityAttribute : System.Management.Automation.ValidateArgumentsAttribute
+    public class ValidateUserIdentityAttribute : System.Management.Automation.ValidateArgumentsAttribute
     {
         protected override void Validate(object identityList, EngineIntrinsics engineEntrinsics)
         {
@@ -87,10 +87,10 @@ using System.Text.RegularExpressions;
 '@
 # compile c# code
 Try{
-    if( [ValidateIdentityAttribute] -as [type]){
+    if( [ValidateUserIdentityAttribute] -as [type]){
 
     }
 }
 catch{
-    Add-Type -TypeDefinition $validateIdentityAttributeCode
+    Add-Type -TypeDefinition $ValidateUserIdentityAttributeCode
 }

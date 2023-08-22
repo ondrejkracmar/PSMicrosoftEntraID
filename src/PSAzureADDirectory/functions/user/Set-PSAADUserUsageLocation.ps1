@@ -43,7 +43,7 @@
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCode')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
-        [ValidateIdentity()]
+        [ValidateUserIdentity()]
         [string[]]
         [Alias("Id","UserPrincipalName","Mail")]
         $Identity,

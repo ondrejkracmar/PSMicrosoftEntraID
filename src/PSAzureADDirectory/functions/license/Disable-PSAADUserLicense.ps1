@@ -42,7 +42,7 @@
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
-        [ValidateIdentity()]
+        [ValidateUserIdentity()]
         [string[]]
         [Alias("Id","UserPrincipalName","Mail")]
         $Identity,

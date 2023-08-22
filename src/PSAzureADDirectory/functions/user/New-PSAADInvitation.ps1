@@ -77,16 +77,16 @@ function New-PSAADInvitation {
     process {
         # Set Variables
         #Guest Details
-        $GuestUserName = "Michael Seidl (GMAIL)"
-        $GuestUserMail = "seidlmichael82@gmail.com"
+        #$GuestUserName = "Michael Seidl (GMAIL)"
+        #$GuestUserMail = "seidlmichael82@gmail.com"
 
         #Send Invitation CC to this USer
-        $CCRecipientName = "Michael Seidl"
-        $CCRecipientMail = "michael@techguy.at"
+        #$CCRecipientName = "Michael Seidl"
+        #$CCRecipientMail = "michael@techguy.at"
 
         #Add Personal Text do Invite Mail
-        $InviteMessage = "You have been invited to join the Tenant au2mator.com"
-        $InviteRedirectURL = "https://au2mator.com" #URL where the USer is redirected after Invite Acceptance
+        #$InviteMessage = "You have been invited to join the Tenant au2mator.com"
+        #$InviteRedirectURL = "https://au2mator.com" #URL where the USer is redirected after Invite Acceptance
 
         #Auth MS Graph API and Get Header
 
@@ -95,29 +95,25 @@ function New-PSAADInvitation {
 
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
-        if (Test-PSFParameterBinding "InvitedUserDisplayNameName")
-        {
+        if (Test-PSFParameterBinding "InvitedUserDisplayNameName") {
             $body['invitedUserDisplayName'] = $InvitedUserDisplayNameName
         }
 
-        if (Test-PSFParameterBinding "InviteRedirectUrl")
-        {
+        if (Test-PSFParameterBinding "InviteRedirectUrl") {
             $body['inviteRedirectUrl'] = $InviteRedirectUrl
         }
 
-        if (Test-PSFParameterBinding "SendInvitationMessage")
-        {
+        if (Test-PSFParameterBinding "SendInvitationMessage") {
             $body['sendInvitationMessage'] = $SendInvitationMessage
         }
-        else{
+        else {
             $body['sendInvitationMessage'] = $false
         }
 
-        if (Test-PSFParameterBinding "Language")
-        {
+        if (Test-PSFParameterBinding "Language") {
             $body['messageLanguage'] = $Language
         }
-        else{
+        else {
             $body['messageLanguage'] = $null
         }
         $body['invitedUserMessageInfo'] = @(
@@ -134,7 +130,7 @@ function New-PSAADInvitation {
         if (Test-PSFFunctionInterrupt) { return }
     }
 
-    $URL = "https://graph.microsoft.com/v1.0/invitations"
+    <#   $URL = "https://graph.microsoft.com/v1.0/invitations"
     $Method = "POST"
     $body = @"
 {
@@ -155,9 +151,6 @@ function New-PSAADInvitation {
         "customizedMessageBody": "$InviteMessage"
      }
 }
-"@
-
-
-}
+"@#>
 end {}
 }

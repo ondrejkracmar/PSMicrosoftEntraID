@@ -1,18 +1,18 @@
 ﻿function ConvertFrom-RestUser {
 	<#
 	.SYNOPSIS
-		Converts license objects to look nice.
+		Converts user objects to look nice.
 
 	.DESCRIPTION
-		Converts license objects to look nice.
+		Converts user objects to look nice.
 
 	.PARAMETER InputObject
-		The rest response representing a license
+		The rest response representing a user
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
 
-		Retrieves the specified license and converts it into something userfriendly
+		Retrieves the specified user and converts it into something userfriendly
 		
 	#>
 	[CmdletBinding()]

@@ -30,13 +30,14 @@
 		Delete user user username@contoso.com from Azure AD (Entra ID)
 
 	#>
+    
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateIdentity()]
+        [ValidateUserIdentity()]
         [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
         $Identity

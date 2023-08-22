@@ -41,7 +41,7 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateIdentity()]
+        [ValidateUserIdentity()]
         [string[]]
         [Alias("Id","UserPrincipalName","Mail")]
         $Identity,
@@ -75,6 +75,7 @@
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
         [int]
+        [Alias("Top")]
         $PageSize = 100
     )
     begin {
