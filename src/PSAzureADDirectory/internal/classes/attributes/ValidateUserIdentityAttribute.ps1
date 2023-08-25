@@ -32,14 +32,14 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 
-    public class ValidIdentityException: Exception
+    public class ValidUserIdentityException: Exception
     {
-        public ValidIdentityException()
+        public ValidUserIdentityException()
         {
 
         }
 
-        public ValidIdentityException(string identityException): base(string.Format("This is not valid user identity format '{0}'.", identityException))
+        public ValidUserIdentityException(string identityException): base(string.Format("This is not valid user identity format '{0}'.", identityException))
         {
 
         }
@@ -59,11 +59,11 @@ using System.Text.RegularExpressions;
                     }
 
                     var regexId = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-                    var regexUUPN = new Regex(@"@");
+                    var regexUPN = new Regex(@"@");
 
-                    if (!regexId.IsMatch(identity) && !regexUUPN.IsMatch(identity))
+                    if (!regexId.IsMatch(identity) && !regexUPN.IsMatch(identity))
                     {
-                        throw new ValidIdentityException(identity);
+                        throw new ValidUserIdentityException(identity);
                     }
                 }
             }
@@ -79,7 +79,7 @@ using System.Text.RegularExpressions;
 
                 if (!regexId.IsMatch(identity) && !regexUUPN.IsMatch(identity))
                 {
-                    throw new ValidIdentityException(identity);
+                    throw new ValidUserIdentityException(identity);
                 }
             }
         }

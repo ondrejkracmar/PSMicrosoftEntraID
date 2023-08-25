@@ -34,7 +34,7 @@ function ConvertFrom-RestGroup {
             MailNickname    = $InputObject.mailNickname
             Mail            = $InputObject.mail
             ProxyAddresses  = $InputObject.proxyAddresses
-            mailEnabled     = $InputObject.mailEnabled
+            MailEnabled     = $InputObject.mailEnabled
             Visibility      = $InputObject.visibility
             DisplayName     = $InputObject.displayName
             Description     = $InputObject.description

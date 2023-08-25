@@ -27,5 +27,7 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 
 # Load all internal classes
 
-"$moduleRoot\internal\classes\attributes\ValidateIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateGroupIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateMailAddressAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateUserIdentityAttribute.ps1"
 "$moduleRoot\internal\classes\attributes\ValidateGuidAttribute.ps1"

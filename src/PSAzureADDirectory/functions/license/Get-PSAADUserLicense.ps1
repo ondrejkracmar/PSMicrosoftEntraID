@@ -75,7 +75,6 @@
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
         [int]
-        [Alias("Top")]
         $PageSize = 100
     )
     begin {

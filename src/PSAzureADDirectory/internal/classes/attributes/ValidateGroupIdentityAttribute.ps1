@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 
-    public class ValidIdentityException: Exception
+    public class ValidGroupIdentityException: Exception
     {
-        public ValidIdentityException()
+        public ValidGroupIdentityException()
         {
 
         }
 
-        public ValidIdentityException(string identityException): base(string.Format("This is not valid user identity format '{0}'.", identityException))
+        public ValidGroupIdentityException(string identityException): base(string.Format("This is not valid group identity format '{0}'.", identityException))
         {
 
         }
@@ -32,11 +32,11 @@ using System.Text.RegularExpressions;
                     }
 
                     var regexId = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-                    var regexMailNickName = new Regex(@"^(@())\[]";:<>, )");
+                    var regexMailNickName = new Regex("[]@();:<>, \"[]");
 
-                    if (!regexId.IsMatch(identity) && !regexMailNickName.IsMatch(identity))
+                    if (!regexId.IsMatch(identity) && regexMailNickName.IsMatch(identity))
                     {
-                        throw new ValidIdentityException(identity);
+                        throw new ValidGroupIdentityException(identity);
                     }
                 }
             }
@@ -48,11 +48,11 @@ using System.Text.RegularExpressions;
                 }
 
                 var regexId = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-                var regexMailNickName = new Regex(@"^@())\[]";:<>, ");
+                var regexMailNickName = new Regex("[]@();:<>, \"[]");
 
-                if (!regexId.IsMatch(identity) && !regexMailNickName.IsMatch(identity))
+                if (!regexId.IsMatch(identity) && regexMailNickName.IsMatch(identity))
                 {
-                    throw new ValidIdentityException(identity);
+                    throw new ValidGroupIdentityException(identity);
                 }
             }
         }

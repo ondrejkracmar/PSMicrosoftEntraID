@@ -57,12 +57,12 @@
 		'Set-PSAADUserUsageLocation'
 		'Get-PSAADSubscribedSku'
 		'Get-PSAADUserSubscribedSku'
-		'Get-PSADGroup'
+		'Get-PSAADGroup'
 		#'New-PSAADGroup'
 		#'Remove-PSAADGroup'
-		'Get-PSADGroupMember'
-		'Add-PSADGroupMember'
-		'Remove-PSADGroupMember'
+		'Get-PSAADGroupMember'
+		'Add-PSAADGroupMember'
+		'Remove-PSAADGroupMember'
 	)
 
 	# Cmdlets to export from this module

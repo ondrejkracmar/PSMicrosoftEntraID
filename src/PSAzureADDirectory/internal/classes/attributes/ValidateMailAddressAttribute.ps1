@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
         }
 
-        public ValidMailAddressException(string mailAddress): base(string.Format("This is not valid mail address format '{0}'.", mailAddressException))
+        public ValidMailAddressException(string mailAddressException): base(string.Format("This is not valid mail address format '{0}'.", mailAddressException))
         {
 
         }
@@ -33,9 +33,9 @@ using System.Text.RegularExpressions;
 
                     var regexMailAddress = new Regex(@"@");
 
-                    if (!regexMailAddress.IsMatch(mailAddressy))
+                    if (!regexMailAddress.IsMatch(mailAddress))
                     {
-                        throw new ValidIdentityException(mailAddress);
+                        throw new ValidMailAddressException(mailAddress);
                     }
                 }
             }
@@ -46,11 +46,11 @@ using System.Text.RegularExpressions;
                     throw new ArgumentNullException();
                 }
 
-                var regexUMailAddress = new Regex(@"@");
+                var regexMailAddress = new Regex(@"@");
 
                 if (!regexMailAddress.IsMatch(mailAddress))
                 {
-                    throw new ValidIdentityException(mailAddress);
+                    throw new ValidMailAddressException(mailAddress);
                 }
             }
         }

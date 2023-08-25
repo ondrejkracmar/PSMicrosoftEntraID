@@ -71,7 +71,6 @@
         [ValidateNotNullOrEmpty()]
         [ValidateRange(1, 999)]
         [int]
-        [Alias("Top")]
         $PageSize = 100
     )
 
@@ -89,16 +88,20 @@
             'Identity' {
                 foreach ($user in $Identity) {
                     $mailQuery = @{
-                        '$count'  = 'true'
+                        #'$count'  = 'true'
                         '$top'    = $PageSize
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get | ConvertFrom-RestUser
                     if (-not([object]::Equals($userMail, $null))) {
-                        $user = $userMail[0].Id
-                        Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUser
+                        $userId = $userMail[0].Id
+                    
                     }
+                    else{
+                        $userId = $user
+                    }
+                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get | ConvertFrom-RestUser
                 }
             }
             'Name' {
