@@ -30,7 +30,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 	.EXAMPLE
-		PS C:\> Disable-PSAADUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK
+		PS C:\> Disable-PSEntraIDUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK
 
 		Disable license (subscription) ENTERPRISEPACK of user username@contoso.com
 
@@ -59,13 +59,13 @@
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        Get-PSAADSubscribedSku | Set-PSFResultCache
+        Get-PSEntraIDSubscribedSku | Set-PSFResultCache
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds') -f $script:ModuleName)
     }
     process {
         foreach ($user in  $Identity) {
-            $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
+            $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
                 $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
 

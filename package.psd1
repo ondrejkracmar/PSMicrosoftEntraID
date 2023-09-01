@@ -1,5 +1,5 @@
 @{
-    Root = 'c:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\functions\license\Enable-PSAADUserLicenseServicePlan.ps1'
+    Root = 'c:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\functions\license\Enable-PSEntraIDUserLicenseServicePlan.ps1'
     OutputPath = 'c:\Projects\PSModules\PSMicrosoftEntraID\out'
     Package = @{
         Enabled = $true

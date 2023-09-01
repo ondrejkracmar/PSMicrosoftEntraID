@@ -28,7 +28,7 @@
         Return all accounts in tenant/directory.
 
     .EXAMPLE
-        PS C:\> Get-PSAADUser -Identity user1@contoso.com
+        PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
 
 		Get properties of Azure AD user user1@contoso.com
 

@@ -65,14 +65,14 @@
     }
 
     process {
-        $group = Get-PSAADGroup -Identity $Identity
+        $group = Get-PSEntraIDGroup -Identity $Identity
         if (-not([object]::Equals($group, $null))) {
             $path = ("groups/{0}" -f $group.Id)
             if ($Identity.Count -gt 1) {
                 $identityUrlList = [System.Collections.ArrayList]::New()
             }
             foreach ($user in $Identity) {
-                $aADUser = Get-PSAADUser -Identity $user
+                $aADUser = Get-PSEntraIDUser -Identity $user
                 if (-not([object]::Equals($aADUser, $null))) {
                     if (Test-PSFParameterBinding -ParameterName Role) {
                         switch ($Role) {

@@ -25,7 +25,7 @@
             Value of returned result set contains multiple pages of data.
 
         .EXAMPLE
-            PS C:\> Get-PSAADGroup -Identity group1
+            PS C:\> Get-PSEntraIDGroup -Identity group1
 
             Get properties of Azure AD group group1
 

@@ -13,7 +13,7 @@
         Friendly name Office 365 product of subscribedSku.
 
 	.EXAMPLE
-		PS C:\> Get-PSAADLicenseServicePlan -SkuPartNumber ENTERPRISEPACK
+		PS C:\> Get-PSEntraIDLicenseServicePlan -SkuPartNumber ENTERPRISEPACK
 
 		Get service plans of ENTERPRISEPACK license
 	#>
@@ -34,10 +34,10 @@
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'SkuId' {
-                (Get-PSAADSubscribedSku | Where-Object -Property SkuId -EQ -Value $SkuId).ServicePlans | ConvertFrom-RestServicePlan
+                (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $SkuId).ServicePlans | ConvertFrom-RestServicePlan
             }
             'SkuPartNumber' {
-                (Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).ServicePlans | ConvertFrom-RestServicePlan
+                (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).ServicePlans | ConvertFrom-RestServicePlan
             }
         }
     }

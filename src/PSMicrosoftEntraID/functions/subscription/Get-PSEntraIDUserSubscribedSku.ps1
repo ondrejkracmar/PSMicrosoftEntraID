@@ -19,12 +19,12 @@
         Value of returned result set contains multiple pages of data.
 
 	.EXAMPLE
-		PS C:\> Get-PSAADUserLicense -Identity username@contoso.com
+		PS C:\> Get-PSEntraIDUserLicense -Identity username@contoso.com
 
 		Get licenses of user username@contoso.com
 
 	.EXAMPLE
-		PS C:\> Get-PSAADUserSubscribedSku -SkuPartNumber ENTERPRISEPACK
+		PS C:\> Get-PSEntraIDUserSubscribedSku -SkuPartNumber ENTERPRISEPACK
 
 		Get userse with ENTERPRISEPACK subscription
 	#>
@@ -54,7 +54,7 @@
             '$top'    = $PageSize
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
-        Get-PSAADSubscribedSku | Set-PSFResultCache
+        Get-PSEntraIDSubscribedSku | Set-PSFResultCache
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
@@ -63,7 +63,7 @@
                 Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserSubscribedSku -SkuId $SkuId
             }
             'SkuPartNumber' {
-                $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
+                $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
                 if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                     $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber.SkuId
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserSubscribedSku -SkuId $singleSkuPartNumber.SkuId
@@ -92,7 +92,7 @@
                 else {
                     $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
-                $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
+                $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
                 if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                     $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1}) " -f $companyNameList, $singleSkuPartNumber.SkuId
                     Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserSubscribedSku -SkuId $singleSkuPartNumber.SkuId

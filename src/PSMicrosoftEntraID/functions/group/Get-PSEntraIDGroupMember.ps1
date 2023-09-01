@@ -13,7 +13,7 @@
         Member type owner
 
     .EXAMPLE
-        PS C:\> Get-PSAADUser -Identity user1@contoso.com
+        PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
 
 		Get properties of Azure AD user user1@contoso.com
 
@@ -47,7 +47,7 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
-                    $group = Get-PSAADGroup -Identity $itemIdentity
+                    $group = Get-PSEntraIDGroup -Identity $itemIdentity
                     if (-not([object]::Equals($group, $null))) {
                         if ($Owner.IsPresent) {
                             $path = ('groups/{0}/owners' -f $group.Id)

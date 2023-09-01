@@ -7,7 +7,7 @@
 		Get the list of commercial subscriptions that an organization has acquired.
     
 	.EXAMPLE
-		PS C:\> Get-PSAADSubscribedSku
+		PS C:\> Get-PSEntraIDSubscribedSku
 
 		Get the list of commercial subscriptions
 

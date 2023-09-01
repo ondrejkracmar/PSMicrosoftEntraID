@@ -31,7 +31,7 @@
         Switch advanced filter for filtering accounts in tenant/directory.
 
 	.EXAMPLE
-		PS C:\> Get-PSAADUserLicenseServicePlan -Identity username@contoso.com
+		PS C:\> Get-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com
 
 		Get licenses of user username@contoso.com with service plans
 
@@ -86,7 +86,7 @@
             '$top'    = $pageSize
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.UserLicense).Value -join ',')
         }
-        Get-PSAADSubscribedSku | Set-PSFResultCache
+        Get-PSEntraIDSubscribedSku | Set-PSFResultCache
 
     }
     process {
@@ -117,7 +117,7 @@
             }
             'SkuPartNumber' {
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
-                    $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                         $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber.SkuId
                         Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
@@ -136,7 +136,7 @@
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 foreach ($itemServicePlanName in $ServicePlanName) {
-                    $singleServicePlan = (Get-PSAADSubscribedSku).Serviceplans | Where-Object -Property servicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
+                    $singleServicePlan = (Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property servicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
                     if (-not([object]::Equals($singleServicePlan, $null))) {
                         $query['$filter'] = ('assignedPlans/any(x:x/servicePlanId eq {0})' -f $singleServicePlan.ServicePlanId)
                         Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
@@ -168,7 +168,7 @@
                     $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
-                    $singleSkuPartNumber = Get-PSAADSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                         $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})" -f $companyNameList, $singleSkuPartNumber.SkuId
                         Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan
@@ -199,7 +199,7 @@
                     $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemServicePlanName in $ServicePlanName) {
-                    $singleServicePlan = (Get-PSAADSubscribedSku).Serviceplans | Where-Object -Property ServicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
+                    $singleServicePlan = (Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property ServicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
                     if (-not([object]::Equals($singleServicePlan, $null))) {
                         $query['$Filter'] = "companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})" -f $companyNameList, $singleServicePlan.servicePlanId
                         Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUserLicense -ServicePlan

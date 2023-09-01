@@ -9,14 +9,14 @@
     foreach ($item in $SyncDataOperation) {
         switch ($item.Crud) {
             'Create' {
-                $member = Get-PSAADUser -Identity $item.Fields.Identity
-                Add-PSAADGroupMember -Identity $Identity -User $member.Id
+                $member = Get-PSEntraIDUser -Identity $item.Fields.Identity
+                Add-PSEntraIDGroupMember -Identity $Identity -User $member.Id
             }
             'Update' {
             }
             'Delete' {
-                $member = Get-PSAADUser -Identity $item.Fields.Identity
-                Remove-PSAADGroupMember -Identity $Identity -User $member.Id
+                $member = Get-PSEntraIDUser -Identity $item.Fields.Identity
+                Remove-PSEntraIDGroupMember -Identity $Identity -User $member.Id
             }
             Default {}
         }

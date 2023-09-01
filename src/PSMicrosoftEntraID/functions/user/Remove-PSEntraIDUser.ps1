@@ -25,7 +25,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 	.EXAMPLE
-		PS C:\> Remove-PSAADUser -Identity username@contoso.com
+		PS C:\> Remove-PSEntraIDUser -Identity username@contoso.com
 
 		Delete user user username@contoso.com from Azure AD (Entra ID)
 
@@ -52,7 +52,7 @@
 
     process {
         foreach ($user in $Identity) {
-            $aADUser = Get-PSAADUser -Identity $user
+            $aADUser = Get-PSEntraIDUser -Identity $user
             $path = ("users/{0}" -f $aADUser.Id)
             Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete)

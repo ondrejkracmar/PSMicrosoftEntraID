@@ -82,7 +82,7 @@
     process {
         $referenceAADGroup = Get-PSADGroup -Identity $ReferenceIdentity
         if (-not ([object]::Equals($referenceAADGroup, $null))) {
-            $referenceMemberList = Get-PSAADGroupMember -Identity $referenceAADGroup.Id
+            $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceAADGroup.Id
             switch ($PSCmdlet.ParameterSetName) {
                 'UserIdentity' {
                     foreach ($itemUser in  $User) {
@@ -93,7 +93,7 @@
                     }
                 }
                 'GroupIdentity' {
-                    $differenceMemberList = (Get-PSAADGroupMember -Identity $DifferenceIdentity).Id
+                    $differenceMemberList = (Get-PSEntraIDGroupMember -Identity $DifferenceIdentity).Id
                 }
                 'QueryExpressionIdentity' {
 
@@ -112,14 +112,14 @@
                     foreach ($syncOperation in $syncOperationList) {
                         switch ($syncOperation.Crud) {
                             'Create' {
-                                $member = Get-PSAADUser -Identity $syncOperation.Fields.Id
-                                Add-PSAADGroupMember -Identity $referenceAADGroup.Id -User $member.Id
+                                $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                                Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id
                             }
                             'Update' {
                             }
                             'Delete' {
-                                $member = Get-PSAADUser -Identity $syncOperation.Fields.Id
-                                Remove-PSAADGroupMember -Identity $referenceAADGroup.Id-User $member.Id
+                                $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                                Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id
                             }
                             Default {}
                         }

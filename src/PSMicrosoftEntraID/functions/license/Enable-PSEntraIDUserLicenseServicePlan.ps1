@@ -38,7 +38,7 @@
 
 
 	.EXAMPLE
-		PS C:\> Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
+		PS C:\> Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
 
 		Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
 
@@ -81,13 +81,13 @@
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        Get-PSAADSubscribedSku | Set-PSFResultCache
+        Get-PSEntraIDSubscribedSku | Set-PSFResultCache
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds') -f $script:ModuleName)
     }
     process {
         foreach ($user in  $Identity) {
-            $aADUser = Get-PSAADUserLicenseServicePlan -Identity $user
+            $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
                 $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
 
