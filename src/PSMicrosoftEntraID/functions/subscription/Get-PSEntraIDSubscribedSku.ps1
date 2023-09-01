@@ -12,7 +12,7 @@
 		Get the list of commercial subscriptions
 
 	#>
-    [OutputType('PSAzureADDirectory.License')]
+    [OutputType('PSMicrosoftEntraID.License')]
     [CmdletBinding()]
     param (
 

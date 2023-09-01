@@ -1,6 +1,6 @@
 ﻿<#
 # Example:
-Register-PSFTeppArgumentCompleter -Command Get-Alcohol -Parameter Type -Name PSAzureADDirectory.alcohol
+Register-PSFTeppArgumentCompleter -Command Get-Alcohol -Parameter Type -Name PSMicrosoftEntraID.alcohol
 #>
 Register-PSFTeppArgumentCompleter -Command Get-PSAADUserLicense -Parameter SkuId -Name 'subscribed.skuid'
 Register-PSFTeppArgumentCompleter -Command Get-PSAADUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'

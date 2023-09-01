@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{871DF566-4EB3-4702-A170-88ADE34088B5}") = "PSAzureADDirectory", "PSAzureADDirectory\PSAzureADDirectory.csproj", "{09E7B831-F03A-4E4D-B75F-A7142650CDD6}"
+Project("{871DF566-4EB3-4702-A170-88ADE34088B5}") = "PSMicrosoftEntraID", "PSMicrosoftEntraID\PSMicrosoftEntraID.csproj", "{09E7B831-F03A-4E4D-B75F-A7142650CDD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

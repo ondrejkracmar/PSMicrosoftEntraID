@@ -33,7 +33,7 @@
 		if ($ServicePlan.IsPresent) {
 
 			[PSCustomObject]@{
-				PSTypeName        = 'PSAzureADDirectory.User.License'
+				PSTypeName        = 'PSMicrosoftEntraID.User.License'
 				Id                = $InputObject.id
 				UserPrincipalName = $InputObject.userPrincipalName
 				UserType          = $InputObject.userType
@@ -48,7 +48,7 @@
 		else {
 
 			[PSCustomObject]@{
-				PSTypeName        = 'PSAzureADDirectory.User.License'
+				PSTypeName        = 'PSMicrosoftEntraID.User.License'
 				Id                = $InputObject.id
 				UserPrincipalName = $InputObject.userPrincipalName
 				UserType          = $InputObject.userType

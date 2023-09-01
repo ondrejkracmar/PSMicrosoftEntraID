@@ -28,7 +28,7 @@
 
 
 		[PSCustomObject]@{
-			PSTypeName        = 'PSAzureADDirectory.User'
+			PSTypeName        = 'PSMicrosoftEntraID.User'
 			Id                = $InputObject.id
 			UserPrincipalName = $InputObject.userPrincipalName
 			CreatedDateTime   = $InputObject.createdDateTime

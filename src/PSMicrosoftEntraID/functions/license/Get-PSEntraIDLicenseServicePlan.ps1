@@ -17,7 +17,7 @@
 
 		Get service plans of ENTERPRISEPACK license
 	#>
-    [OutputType('PSAzureADDirectory.License.ServicePlan')]
+    [OutputType('PSMicrosoftEntraID.License.ServicePlan')]
     [CmdletBinding(DefaultParameterSetName = 'SkuPartNumber')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]

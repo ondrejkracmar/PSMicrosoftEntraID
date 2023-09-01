@@ -31,20 +31,20 @@
 	)
 
 	# Assemblies that must be loaded prior to importing this module
-	# RequiredAssemblies = @('bin\PSAzureADDirectory.dll')
+	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
 
 	# Type files (.ps1xml) to be loayded when importing this module
-	# TypesToProcess = @('xml\PSAzureADDirectory.Types.ps1xml')
+	# TypesToProcess = @('xml\PSMicrosoftEntraID.Types.ps1xml')
 
 	# Format files (.ps1xml) to be loaded when importing this module
-	# FormatsToProcess = @('xml\PSAzureADDirectory.Format.ps1xml')
+	# FormatsToProcess = @('xml\PSMicrosoftEntraID.Format.ps1xml')
 
 	# cript (.ps1) files that are run in the caller's session state when the module is imported.
 	#ScriptsToProcess   = ""
 
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Connect-PSMicrosoftEntraIDirectory'
+		'Connect-PSMicrosoftEntraID'
 		'Disable-PSEntraIDUserLicense'
 		'Disable-PSEntraIDUserLicenseServicePlan'
 		'Enable-PSEntraIDUserLicenseServicePlan'

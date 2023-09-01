@@ -24,7 +24,7 @@
 	process {
 		if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) ) { return }
 		[PSCustomObject]@{
-			PSTypeName    = 'PSAzureADDirectory.License'
+			PSTypeName    = 'PSMicrosoftEntraID.License'
 			Id            = $InputObject.id
 			SkuId         = $InputObject.skuId
 			SkuPartNumber = $InputObject.skuPartNumber

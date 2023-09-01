@@ -1,6 +1,6 @@
 @{
-    Root = 'c:\Projects\PSModules\PSAzureADDirectory\src\PSAzureADDirectory\functions\license\Enable-PSAADUserLicenseServicePlan.ps1'
-    OutputPath = 'c:\Projects\PSModules\PSAzureADDirectory\out'
+    Root = 'c:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\functions\license\Enable-PSAADUserLicenseServicePlan.ps1'
+    OutputPath = 'c:\Projects\PSModules\PSMicrosoftEntraID\out'
     Package = @{
         Enabled = $true
         Obfuscate = $false

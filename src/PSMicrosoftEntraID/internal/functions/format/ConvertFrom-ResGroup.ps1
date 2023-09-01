@@ -28,7 +28,7 @@ function ConvertFrom-RestGroup {
 
 
         [PSCustomObject]@{
-            PSTypeName      = 'PSAzureADDirectory.Group'
+            PSTypeName      = 'PSMicrosoftEntraID.Group'
             Id              = $InputObject.id            
             CreatedDateTime = $InputObject.createdDateTime
             MailNickname    = $InputObject.mailNickname

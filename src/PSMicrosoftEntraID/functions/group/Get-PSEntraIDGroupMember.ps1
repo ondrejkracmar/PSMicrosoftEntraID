@@ -19,7 +19,7 @@
 
 
 #>
-    [OutputType('PSAzureADDirectory.User')]
+    [OutputType('PSMicrosoftEntraID.User')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
@@ -35,7 +35,7 @@
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $pageSize = Get-PSFConfigValue -FullName ('{0}.GraphApiQuery.PageSize' -f $script:ModuleName)
+        $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
             '$count'  = 'true'
             '$top'    = $pageSize

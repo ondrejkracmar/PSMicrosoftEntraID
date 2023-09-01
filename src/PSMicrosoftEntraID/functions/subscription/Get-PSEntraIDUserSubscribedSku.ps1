@@ -28,7 +28,7 @@
 
 		Get userse with ENTERPRISEPACK subscription
 	#>
-    [OutputType('PSAzureADDirectory.User.SubscribedSku')]
+    [OutputType('PSMicrosoftEntraID.User.SubscribedSku')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
@@ -44,18 +44,11 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
         [ValidateNotNullOrEmpty()]
         [string]
-        $SkuPartNumber,
-        [Parameter(Mandatory = $false, ParameterSetName = 'SkuId')]
-        [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumber')]
-        [Parameter(Mandatory = $false, ParameterSetName = 'SkuIdCompanyName')]
-        [Parameter(Mandatory = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateRange(1, 999)]
-        [int]
-        $PageSize = 100
+        $SkuPartNumber
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
             '$count'  = 'true'
             '$top'    = $PageSize

@@ -37,7 +37,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('PSAzureADDirectory.User')]
+    [OutputType(('PSMicrosoftEntraID.User'))]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentityUsageLocationCode')]
     param (
@@ -59,9 +59,9 @@
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $usageLocationHashtable = Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable
-        $commandRetryCount = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryCount'
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName 'PSAzureADDirectory.Settings.Command.RetryWaitIsSeconds')
+        $usageLocationHashtable = Get-Content -Path( Get-PSFConfigValue -FullName ('{0}.Template.AzureADDirectory.UsageLocation' -f $script:ModuleName)) | ConvertFrom-Json | ConvertTo-PSFHashtable
+        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds') -f $script:ModuleName)
     }
 
     process {

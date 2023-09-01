@@ -1,11 +1,11 @@
 ﻿TOPIC
-	about_PSAzureADDirectory
+	about_PSMicrosoftEntraID
 	
 SHORT DESCRIPTION
-	Explains how to use the PSAzureADDirectory powershell module
+	Explains how to use the PSMicrosoftEntraID powershell module
 	
 LONG DESCRIPTION
 	<Insert Content here>
 
 KEYWORDS
-	PSAzureADDirectory
+	PSMicrosoftEntraID

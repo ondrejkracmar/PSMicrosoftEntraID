@@ -1,2 +1,2 @@
-﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
-Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSAzureADDirectory.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }
+﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSMicrosoftEntraID.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
+Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSMicrosoftEntraID.Template.AzureADDirectory.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }

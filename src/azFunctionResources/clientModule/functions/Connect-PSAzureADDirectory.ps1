@@ -1,29 +1,29 @@
-﻿function Connect-PSAzureADDirectory
+﻿function Connect-PSMicrosoftEntraID
 {
 <#
 	.SYNOPSIS
-		Configures the connection to the PSAzureADDirectory Azure Function.
+		Configures the connection to the PSMicrosoftEntraID Azure Function.
 	
 	.DESCRIPTION
-		Configures the connection to the PSAzureADDirectory Azure Function.
+		Configures the connection to the PSMicrosoftEntraID Azure Function.
 	
 	.PARAMETER Uri
-		Url to connect to the PSAzureADDirectory Azure function.
+		Url to connect to the PSMicrosoftEntraID Azure function.
 	
 	.PARAMETER UnprotectedToken
-		The unencrypted access token to the PSAzureADDirectory Azure function. ONLY use this from secure locations or non-sensitive functions!
+		The unencrypted access token to the PSMicrosoftEntraID Azure function. ONLY use this from secure locations or non-sensitive functions!
 	
 	.PARAMETER ProtectedToken
-		An encrypted access token to the PSAzureADDirectory Azure function. Use this to persist an access token in a way only the current user on the current system can access.
+		An encrypted access token to the PSMicrosoftEntraID Azure function. Use this to persist an access token in a way only the current user on the current system can access.
 	
 	.PARAMETER Register
 		Using this command, the module will remember the connection settings persistently across PowerShell sessions.
 		CAUTION: When using unencrypted token data (such as specified through the -UnprotectedToken parameter), the authenticating token will be stored in clear-text!
 	
 	.EXAMPLE
-		PS C:\> Connect-PSAzureADDirectory -Uri 'https://demofunctionapp.azurewebsites.net/api/'
+		PS C:\> Connect-PSMicrosoftEntraID -Uri 'https://demofunctionapp.azurewebsites.net/api/'
 	
-		Establishes a connection to PSAzureADDirectory
+		Establishes a connection to PSMicrosoftEntraID
 #>
 	[CmdletBinding()]
 	param (
@@ -44,18 +44,18 @@
 	{
 		if (Test-PSFParameterBinding -ParameterName UnprotectedToken)
 		{
-			Set-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.UnprotectedToken' -Value $UnprotectedToken
-			if ($Register) { Register-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.UnprotectedToken' }
+			Set-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.UnprotectedToken' -Value $UnprotectedToken
+			if ($Register) { Register-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.UnprotectedToken' }
 		}
 		if (Test-PSFParameterBinding -ParameterName Uri)
 		{
-			Set-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.Uri' -Value $Uri
-			if ($Register) { Register-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.Uri' }
+			Set-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.Uri' -Value $Uri
+			if ($Register) { Register-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.Uri' }
 		}
 		if (Test-PSFParameterBinding -ParameterName ProtectedToken)
 		{
-			Set-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.ProtectedToken' -Value $ProtectedToken
-			if ($Register) { Register-PSFConfig -Module 'PSAzureADDirectory' -Name 'Client.ProtectedToken' }
+			Set-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.ProtectedToken' -Value $ProtectedToken
+			if ($Register) { Register-PSFConfig -Module 'PSMicrosoftEntraID' -Name 'Client.ProtectedToken' }
 		}
 		
 	}

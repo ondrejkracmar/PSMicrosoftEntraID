@@ -29,14 +29,14 @@
         if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.servicePlanId)) ) { return }
         if ($User.IsPresent) {
             [PSCustomObject]@{
-                PSTypeName      = 'PSAzureADDirectory.License.ServicePlan'
+                PSTypeName      = 'PSMicrosoftEntraID.License.ServicePlan'
                 ServicePlanId   = $InputObject.servicePlanId
                 ServicePlanName = $InputObject.servicePlanName
             }
         }
         else {
             [PSCustomObject]@{
-                PSTypeName         = 'PSAzureADDirectory.License.ServicePlan'
+                PSTypeName         = 'PSMicrosoftEntraID.License.ServicePlan'
                 ServicePlanId      = $InputObject.servicePlanId
                 ServicePlanName    = $InputObject.servicePlanName
                 ProvisioningStatus = $InputObject.provisioningStatus

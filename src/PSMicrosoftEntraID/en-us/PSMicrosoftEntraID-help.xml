@@ -2,9 +2,9 @@
 <helpItems schema="maml" xmlns="http://msh">
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Connect-PSAzureADDirectory</command:name>
+      <command:name>Connect-PSMicrosoftEntraID</command:name>
       <command:verb>Connect</command:verb>
-      <command:noun>PSAzureADDirectory</command:noun>
+      <command:noun>PSMicrosoftEntraID</command:noun>
       <maml:description>
         <maml:para>Connect to the Azure AD object via Microsoft Graph API</maml:para>
       </maml:description>
@@ -14,7 +14,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Connect-PSAzureADDirectory</maml:name>
+        <maml:name>Connect-PSMicrosoftEntraID</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ClientID</maml:name>
           <maml:description>
@@ -66,7 +66,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Connect-PSAzureADDirectory</maml:name>
+        <maml:name>Connect-PSMicrosoftEntraID</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ClientID</maml:name>
           <maml:description>
@@ -118,7 +118,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Connect-PSAzureADDirectory</maml:name>
+        <maml:name>Connect-PSMicrosoftEntraID</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ClientID</maml:name>
           <maml:description>
@@ -222,7 +222,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Connect-PSAzureADDirectory</maml:name>
+        <maml:name>Connect-PSMicrosoftEntraID</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ClientID</maml:name>
           <maml:description>
@@ -272,7 +272,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Connect-PSAzureADDirectory</maml:name>
+        <maml:name>Connect-PSMicrosoftEntraID</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Scopes</maml:name>
           <maml:description>
@@ -462,14 +462,14 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Connect-PSAzureADDirectory -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert</dev:code>
+        <dev:code>Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert</dev:code>
         <dev:remarks>
           <maml:para>Connect to the specified tenant using a certificate</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Connect-PSAzureADDirectory -ClientID $clientID -TenantID $tenantID -TenantName contoso -DeviceCode</dev:code>
+        <dev:code>Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -DeviceCode</dev:code>
         <dev:remarks>
           <maml:para>Connect to the specified tenant using the DeviceCode flow</maml:para>
         </dev:remarks>
@@ -479,9 +479,9 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Disable-PSAADUserLicense</command:name>
+      <command:name>Disable-PSEntraIDUserLicense</command:name>
       <command:verb>Disable</command:verb>
-      <command:noun>PSAADUserLicense</command:noun>
+      <command:noun>PSEntraIDUserLicense</command:noun>
       <maml:description>
         <maml:para>Disable user's license</maml:para>
       </maml:description>
@@ -491,7 +491,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicense</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -551,7 +551,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicense</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -689,7 +689,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.User</maml:name>
+          <maml:name>PSMicrosoftEntraID.User</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -704,7 +704,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Disable-PSAADUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK</dev:code>
+        <dev:code>Disable-PSEntraIDUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK</dev:code>
         <dev:remarks>
           <maml:para>Disable license (subscription) ENTERPRISEPACK of user username@contoso.com</maml:para>
         </dev:remarks>
@@ -714,9 +714,9 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Disable-PSAADUserLicenseServicePlan</command:name>
+      <command:name>Disable-PSEntraIDUserLicenseServicePlan</command:name>
       <command:verb>Disable</command:verb>
-      <command:noun>PSAADUserLicenseServicePlan</command:noun>
+      <command:noun>PSEntraIDUserLicenseServicePlan</command:noun>
       <maml:description>
         <maml:para>Disable serivce plan of users's sku subscription</maml:para>
       </maml:description>
@@ -726,7 +726,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -798,7 +798,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -870,7 +870,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -942,7 +942,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Disable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Disable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1116,7 +1116,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.User</maml:name>
+          <maml:name>PSMicrosoftEntraID.User</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1131,7 +1131,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Disable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')</dev:code>
+        <dev:code>Disable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')</dev:code>
         <dev:remarks>
           <maml:para>Disable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com</maml:para>
         </dev:remarks>
@@ -1141,9 +1141,9 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Enable-PSAADUserLicenseServicePlan</command:name>
+      <command:name>Enable-PSEntraIDUserLicenseServicePlan</command:name>
       <command:verb>Enable</command:verb>
-      <command:noun>PSAADUserLicenseServicePlan</command:noun>
+      <command:noun>PSEntraIDUserLicenseServicePlan</command:noun>
       <maml:description>
         <maml:para>Enable serivce plan of users's sku subscription</maml:para>
       </maml:description>
@@ -1153,7 +1153,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Enable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Enable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1225,7 +1225,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Enable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Enable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1297,7 +1297,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Enable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Enable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1369,7 +1369,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Enable-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Enable-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1543,7 +1543,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.User</maml:name>
+          <maml:name>PSMicrosoftEntraID.User</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1558,7 +1558,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Enable-PSAADUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')</dev:code>
+        <dev:code>Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')</dev:code>
         <dev:remarks>
           <maml:para>Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com</maml:para>
         </dev:remarks>
@@ -1568,9 +1568,9 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-PSAADLicenseServicePlan</command:name>
+      <command:name>Get-PSEntraIDLicenseServicePlan</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>PSAADLicenseServicePlan</command:noun>
+      <command:noun>PSEntraIDLicenseServicePlan</command:noun>
       <maml:description>
         <maml:para>Get service plans of license</maml:para>
       </maml:description>
@@ -1580,7 +1580,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-PSAADLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>SkuId</maml:name>
           <maml:description>
@@ -1595,7 +1595,7 @@
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>SkuPartNumber</maml:name>
           <maml:description>
@@ -1640,7 +1640,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.License.ServicePlan</maml:name>
+          <maml:name>PSMicrosoftEntraID.License.ServicePlan</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1655,7 +1655,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-PSAADLicenseServicePlan -SkuPartNumber ENTERPRISEPACK</dev:code>
+        <dev:code>Get-PSEntraIDLicenseServicePlan -SkuPartNumber ENTERPRISEPACK</dev:code>
         <dev:remarks>
           <maml:para>Get service plans of ENTERPRISEPACK license</maml:para>
         </dev:remarks>
@@ -1665,9 +1665,9 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-PSAADSubscribedSku</command:name>
+      <command:name>Get-PSEntraIDSubscribedSku</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>PSAADSubscribedSku</command:noun>
+      <command:noun>PSEntraIDSubscribedSku</command:noun>
       <maml:description>
         <maml:para>Get the list of commercial subscriptions that an organization has acquired</maml:para>
       </maml:description>
@@ -1677,7 +1677,7 @@
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-PSAADSubscribedSku</maml:name>
+        <maml:name>Get-PSEntraIDSubscribedSku</maml:name>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
@@ -1685,7 +1685,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.License</maml:name>
+          <maml:name>PSMicrosoftEntraID.License</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1700,7 +1700,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-PSAADSubscribedSku
+        <dev:code>Get-PSEntraIDSubscribedSku
 Get the list of commercial subscriptions</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
@@ -1711,9 +1711,9 @@ Get the list of commercial subscriptions</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-PSAADUser</command:name>
+      <command:name>Get-PSEntraIDUser</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>PSAADUser</command:noun>
+      <command:noun>PSEntraIDUser</command:noun>
       <maml:description>
         <maml:para>Get the properties of the specified user.</maml:para>
       </maml:description>
@@ -1723,7 +1723,7 @@ Get the list of commercial subscriptions</dev:code>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUser</maml:name>
+        <maml:name>Get-PSEntraIDUser</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -1738,7 +1738,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUser</maml:name>
+        <maml:name>Get-PSEntraIDUser</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
@@ -1765,7 +1765,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUser</maml:name>
+        <maml:name>Get-PSEntraIDUser</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -1803,7 +1803,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUser</maml:name>
+        <maml:name>Get-PSEntraIDUser</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Disabled</maml:name>
           <maml:description>
@@ -1840,7 +1840,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUser</maml:name>
+        <maml:name>Get-PSEntraIDUser</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Filter</maml:name>
           <maml:description>
@@ -1996,9 +1996,9 @@ Get the list of commercial subscriptions</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-PSAADUserLicense</command:name>
+      <command:name>Get-PSEntraIDUserLicense</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>PSAADUserLicense</command:noun>
+      <command:noun>PSEntraIDUserLicense</command:noun>
       <maml:description>
         <maml:para>Get users who are assigned licenses</maml:para>
       </maml:description>
@@ -2008,7 +2008,7 @@ Get the list of commercial subscriptions</dev:code>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -2023,7 +2023,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2062,7 +2062,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2101,7 +2101,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2128,7 +2128,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SkuId</maml:name>
           <maml:description>
@@ -2155,7 +2155,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SkuPartNumber</maml:name>
           <maml:description>
@@ -2182,7 +2182,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicense</maml:name>
+        <maml:name>Get-PSEntraIDUserLicense</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Filter</maml:name>
           <maml:description>
@@ -2310,7 +2310,7 @@ Get the list of commercial subscriptions</dev:code>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.User.License</maml:name>
+          <maml:name>PSMicrosoftEntraID.User.License</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -2325,14 +2325,14 @@ Get the list of commercial subscriptions</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-PSAADUserLicense -Identity username@contoso.com</dev:code>
+        <dev:code>Get-PSEntraIDUserLicense -Identity username@contoso.com</dev:code>
         <dev:remarks>
           <maml:para>Get licenses of user username@contoso.com</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Get-PSAADUserLicense -SkuPartNumber ENTERPRISEPACK</dev:code>
+        <dev:code>Get-PSEntraIDUserLicense -SkuPartNumber ENTERPRISEPACK</dev:code>
         <dev:remarks>
           <maml:para>Get userse with ENTERPRISEPACK licenses</maml:para>
         </dev:remarks>
@@ -2342,9 +2342,9 @@ Get the list of commercial subscriptions</dev:code>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-PSAADUserLicenseServicePlan</command:name>
+      <command:name>Get-PSEntraIDUserLicenseServicePlan</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>PSAADUserLicenseServicePlan</command:noun>
+      <command:noun>PSEntraIDUserLicenseServicePlan</command:noun>
       <maml:description>
         <maml:para>Get users who are assigned licenses</maml:para>
       </maml:description>
@@ -2354,7 +2354,7 @@ Get the list of commercial subscriptions</dev:code>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
@@ -2369,7 +2369,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2408,7 +2408,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2447,7 +2447,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2486,7 +2486,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2525,7 +2525,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
           <maml:name>CompanyName</maml:name>
           <maml:description>
@@ -2552,7 +2552,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SkuId</maml:name>
           <maml:description>
@@ -2579,7 +2579,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>SkuPartNumber</maml:name>
           <maml:description>
@@ -2606,7 +2606,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ServicePlanId</maml:name>
           <maml:description>
@@ -2633,7 +2633,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ServicePlanName</maml:name>
           <maml:description>
@@ -2660,7 +2660,7 @@ Get the list of commercial subscriptions</dev:code>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
-        <maml:name>Get-PSAADUserLicenseServicePlan</maml:name>
+        <maml:name>Get-PSEntraIDUserLicenseServicePlan</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Filter</maml:name>
           <maml:description>
@@ -2812,7 +2812,7 @@ Get the list of commercial subscriptions</dev:code>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSAzureADDirectory.User.License</maml:name>
+          <maml:name>PSMicrosoftEntraID.User.License</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -2827,7 +2827,7 @@ Get the list of commercial subscriptions</dev:code>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-PSAADUserLicenseServicePlan -Identity username@contoso.com</dev:code>
+        <dev:code>Get-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com</dev:code>
         <dev:remarks>
           <maml:para>Get licenses of user username@contoso.com with service plans</maml:para>
         </dev:remarks>

@@ -1,6 +1,6 @@
 ﻿<#
 # Example:
-Register-PSFTeppScriptblock -Name "PSAzureADDirectory.alcohol" -ScriptBlock { 'Beer','Mead','Whiskey','Wine','Vodka','Rum (3y)', 'Rum (5y)', 'Rum (7y)' }
+Register-PSFTeppScriptblock -Name "PSMicrosoftEntraID.alcohol" -ScriptBlock { 'Beer','Mead','Whiskey','Wine','Vodka','Rum (3y)', 'Rum (5y)', 'Rum (7y)' }
 #>
 
 Register-PSFTeppScriptblock -Name 'subscribed.skuid' -ScriptBlock { (Get-PSAADSubscribedSku | Select-Object -Property SkuId).SkuId }

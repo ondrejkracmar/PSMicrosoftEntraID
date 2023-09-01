@@ -34,7 +34,7 @@
 
 		Get userse with ENTERPRISEPACK licenses
 	#>
-    [OutputType('PSAzureADDirectory.User.License')]
+    [OutputType('PSMicrosoftEntraID.User.License')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
@@ -66,7 +66,7 @@
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $pageSize = Get-PSFConfigValue -FullName ('{0}.GraphApiQuery.PageSize' -f $script:ModuleName)
+        $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
             '$count'  = 'true'
             '$top'    = $pageSize

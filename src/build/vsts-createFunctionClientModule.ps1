@@ -67,11 +67,11 @@ if (-not $WorkingDirectory)
 #endregion Handle Working Directory Defaults
 
 Write-PSFMessage -Level Host -Message 'Starting Build: Client Module'
-$parentModule = 'PSAzureADDirectory'
-if (-not $ModuleName) { $ModuleName = 'PSAzureADDirectory.Client' }
+$parentModule = 'PSMicrosoftEntraID'
+if (-not $ModuleName) { $ModuleName = 'PSMicrosoftEntraID.Client' }
 Write-PSFMessage -Level Host -Message 'Creating Folder Structure'
 $workingRoot = New-Item -Path $WorkingDirectory -Name $ModuleName -ItemType Directory
-$publishRoot = Join-Path -Path $WorkingDirectory -ChildPath 'publish\PSAzureADDirectory'
+$publishRoot = Join-Path -Path $WorkingDirectory -ChildPath 'publish\PSMicrosoftEntraID'
 Copy-Item -Path "$($WorkingDirectory)\azFunctionResources\clientModule\functions" -Destination "$($workingRoot.FullName)\" -Recurse
 Copy-Item -Path "$($WorkingDirectory)\azFunctionResources\clientModule\internal" -Destination "$($workingRoot.FullName)\" -Recurse
 Copy-Item -Path "$($publishRoot)\en-us" -Destination "$($workingRoot.FullName)\" -Recurse
@@ -139,7 +139,7 @@ $functionsToExport = (Get-ChildItem -Path $functionFolder.FullName -Recurse -Fil
 
 #region Create Core Module Files
 # Get Manifest of published version, in order to catch build-phase changes such as module version.
-$originalManifestData = Import-PowerShellDataFile -Path "$publishRoot\PSAzureADDirectory.psd1"
+$originalManifestData = Import-PowerShellDataFile -Path "$publishRoot\PSMicrosoftEntraID.psd1"
 $prereqHash = @{
 	ModuleName    = 'PSFramework'
 	ModuleVersion = (Get-Module PSFramework).Version
@@ -189,13 +189,13 @@ if ($LocalRepo)
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath . -WarningAction SilentlyContinue
-	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSAzureADDirectory"
+	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftEntraID"
 	New-PSMDModuleNugetPackage -ModulePath $workingRoot.FullName -PackagePath . -EnableException
 }
 else
 {
 	# Publish to Gallery
-	Write-PSFMessage -Level Important -Message "Publishing the PSAzureADDirectory module to $($Repository)"
+	Write-PSFMessage -Level Important -Message "Publishing the PSMicrosoftEntraID module to $($Repository)"
 	Publish-Module -Path $workingRoot.FullName -NuGetApiKey $ApiKey -Force -Repository $Repository
 }
 #endregion Publish

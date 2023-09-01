@@ -32,7 +32,7 @@
         $assignedLicenses = ($InputObject.assignedLicenses | ConvertFrom-RestUserLicenseServicePlan -ServicePlan) | Where-Object -Property skuId -Value $SkuId -EQ
         if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) -or (([object]::Equals($null, ($assignedLicenses))))) { return }
         [PSCustomObject]@{
-            PSTypeName           = 'PSAzureADDirectory.User.SubscribedSku'
+            PSTypeName           = 'PSMicrosoftEntraID.User.SubscribedSku'
             Id                   = $InputObject.id
             UserPrincipalName    = $InputObject.userPrincipalName
             UserType             = $InputObject.userType

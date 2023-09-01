@@ -33,7 +33,7 @@
 		if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.SkuId)) ) { return }
 		if ($ServicePlan.IsPresent) {
 			[PSCustomObject]@{
-				PSTypeName           = 'PSAzureADDirectory.User.License.ServicePlan'
+				PSTypeName           = 'PSMicrosoftEntraID.User.License.ServicePlan'
 				SkuId                = $InputObject.skuId
 				SkuPartNumber        = ($subscribedSkuList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
 				DisabledServicePlans = ($subscribedSkuList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).ServicePlans | Where-Object -Property servicePlanId -In -Value $InputObject.disabledPlans | Select-Object -Property ServicePlanId, ServicePlanName | ConvertFrom-RestServicePlan -User
@@ -42,7 +42,7 @@
 		}
 		else {
 			[PSCustomObject]@{
-				PSTypeName    = 'PSAzureADDirectory.User.License'
+				PSTypeName    = 'PSMicrosoftEntraID.User.License'
 				SkuId         = $InputObject.skuId
 				SkuPartNumber = ($subscribedSkuList | Where-Object -Property SkuId -EQ -Value $InputObject.skuId).SkuPartNumber
 			}
