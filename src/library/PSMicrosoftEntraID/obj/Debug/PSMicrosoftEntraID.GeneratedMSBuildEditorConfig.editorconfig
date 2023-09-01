@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = PSMicrosoftEntraID
+build_property.ProjectDir = c:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\
