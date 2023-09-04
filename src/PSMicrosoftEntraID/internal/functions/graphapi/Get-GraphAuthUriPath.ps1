@@ -1,4 +1,4 @@
-function Get-GraphAuthUriPath {
+﻿function Get-GraphAuthUriPath {
     <#
 	.SYNOPSIS
         Return using Microsoft Graph authorization API version.

@@ -1,4 +1,4 @@
-function ConvertFrom-RestGroup {
+﻿function ConvertFrom-RestGroup {
     <#
 	.SYNOPSIS
 		Converts group objects to look nice.
