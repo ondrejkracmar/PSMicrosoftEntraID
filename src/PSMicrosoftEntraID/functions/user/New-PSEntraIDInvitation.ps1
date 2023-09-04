@@ -77,7 +77,7 @@
     }
 
     process {
-        
+
         $body = @{}
 
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
@@ -103,15 +103,15 @@
         else {
             $body['messageLanguage'] = $null
         }
-        
+
         if (Test-PSFParameterBinding -ParameterName 'CCRecipient') {
             foreach ($itemCCRecipient in $CCRecipient) {
                 [void]$cCRecipientList.Add($itemCCRecipient)
-            }            
+            }
         }
 
         if (Test-PSFParameterBinding -ParameterName CustomizedMessage) {
-            
+
         }
 
         $body['invitedUserMessageInfo'] = @(
@@ -119,7 +119,7 @@
             ccRecipients = $cCRecipientList
             customizedMessageBody = $InviteMessage
         )
-        
+
         Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post)
         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait

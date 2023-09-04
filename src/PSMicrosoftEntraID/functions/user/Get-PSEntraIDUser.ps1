@@ -62,7 +62,7 @@
         [switch]$All
     )
 
-    begin { 
+    begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
@@ -85,7 +85,7 @@
                     $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get | ConvertFrom-RestUser
                     if (-not([object]::Equals($userMail, $null))) {
                         $userId = $userMail[0].Id
-                    
+
                     }
                     else{
                         $userId = $user

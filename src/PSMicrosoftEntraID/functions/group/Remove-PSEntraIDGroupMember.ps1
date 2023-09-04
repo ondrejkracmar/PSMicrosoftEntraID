@@ -11,7 +11,7 @@
 
     .PARAMETER User
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
-    
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
@@ -63,7 +63,7 @@
 
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 'Identity' {
-                    foreach ($itemUser in  $User) {                        
+                    foreach ($itemUser in  $User) {
                         $aADUser = Get-PSADUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("groups/{0}/members/{1}/$ref" -f $aADGroup.Id, $aADUser.Id)

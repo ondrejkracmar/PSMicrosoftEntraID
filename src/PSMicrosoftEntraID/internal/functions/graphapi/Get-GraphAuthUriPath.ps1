@@ -16,6 +16,6 @@ function Get-GraphAuthUriPath {
     param(
     )
 
-    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.AuthUrl').Value 
+    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.AuthUrl').Value
 
 }

@@ -13,7 +13,7 @@
 		PS C:\> Get-GraphApiUriPath -GraphApiVersion v1.0
 
 		Return url path https://graph.microsoft.com/v1.0
-		
+
 	#>
     [CmdletBinding(DefaultParametersetName="Uri")]
     param(

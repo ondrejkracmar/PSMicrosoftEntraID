@@ -15,7 +15,7 @@ function Join-UriPath {
 
     .EXAMPLE
         PS C:\> Join-Url -Path "https://www.contoso.local" -ChildPath "foo.htm"
-        
+
         returns "https://www.contoso.local/foo.htm"
 
     #>

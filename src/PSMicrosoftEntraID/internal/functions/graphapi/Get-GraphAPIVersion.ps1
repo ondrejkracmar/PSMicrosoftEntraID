@@ -1,4 +1,4 @@
-function Get-GraphAPIVersion {
+﻿function Get-GraphAPIVersion {
     <#
 	.SYNOPSIS
         Return using Microsoft Graph API version.
@@ -16,6 +16,6 @@ function Get-GraphAPIVersion {
     param(
     )
 
-    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApi.Version').Value 
+    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApi.Version').Value
 
 }

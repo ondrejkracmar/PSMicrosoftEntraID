@@ -13,7 +13,7 @@ function ConvertFrom-RestGroup {
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path users -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestGroup
 
 		Retrieves the specified group and converts it into something userfriendly
-		
+
 	#>
     [CmdletBinding()]
     param (
@@ -29,7 +29,7 @@ function ConvertFrom-RestGroup {
 
         [PSCustomObject]@{
             PSTypeName      = 'PSMicrosoftEntraID.Group'
-            Id              = $InputObject.id            
+            Id              = $InputObject.id
             CreatedDateTime = $InputObject.createdDateTime
             MailNickname    = $InputObject.mailNickname
             Mail            = $InputObject.mail
@@ -40,7 +40,7 @@ function ConvertFrom-RestGroup {
             Description     = $InputObject.description
             GropupTypes     = $InputObject.groupTypes
             CreatedByAppId  = $InputObject.createdByAppId
-            
+
         }
 
     }

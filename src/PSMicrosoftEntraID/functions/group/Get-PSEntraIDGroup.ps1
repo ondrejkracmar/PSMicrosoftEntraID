@@ -76,7 +76,7 @@
                     $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f $group)
                     $mailNickName = Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $mailNickNameQuery -Method Get | ConvertFrom-RestGroup
                     if (-not([object]::Equals($mailNickName, $null))) {
-                        $groupId = $mailNickName[0].Id                        
+                        $groupId = $mailNickName[0].Id
                     }
                     else {
                         $groupId = $group
@@ -85,7 +85,7 @@
                 }
             }
             'DisplayName' {
-                foreach ($group in $DisplayName) {       
+                foreach ($group in $DisplayName) {
                     $query['$Filter'] = ("startswith(displayName,'{0}')" -f $group)
                     Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get | ConvertFrom-RestGroup
                 }

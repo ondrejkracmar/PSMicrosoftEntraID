@@ -72,7 +72,7 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet        
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $referenceMemberList = [System.Collections.ArrayList]::New()
         $differenceMemberList = [System.Collections.ArrayList]::New()
     }
@@ -97,8 +97,8 @@
 
                 }
             }
-            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id 
-            
+            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
+
             if ($SyncView.IsPresent) {
                 if (-not ([object]::Equals($syncOperationList, $null))) {
                     $syncOperationList
