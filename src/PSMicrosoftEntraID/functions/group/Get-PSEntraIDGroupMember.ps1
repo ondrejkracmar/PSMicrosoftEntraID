@@ -30,7 +30,13 @@
         [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch]
-        $Owner
+        $Owner,
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [ValidateNotNullOrEmpty()]
+        [string]$Filter,
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [ValidateNotNullOrEmpty()]
+        [switch]$AdvancedFilter
     )
 
     begin {
@@ -41,6 +47,7 @@
             '$top'    = $pageSize
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
+        $header = @{}
     }
 
     process {
@@ -55,7 +62,14 @@
                         else {
                             $path = ('groups/{0}/members' -f $group.Id)
                         }
-                        Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Method Get | ConvertFrom-RestUser
+                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                            $query['$Filter'] = $Filter
+                            if ($AdvancedFilter.IsPresent) {
+                                $header['ConsistencyLevel'] = 'eventual'
+                            }
+                            
+                        }
+                        Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get | ConvertFrom-RestUser
                     }
                 }
             }

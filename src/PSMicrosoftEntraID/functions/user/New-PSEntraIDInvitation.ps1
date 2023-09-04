@@ -51,14 +51,14 @@
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
-        [string]$InviteRedirectUrl,
+        [bool]$InviteRedirectUrl,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [ValidateNotNullOrEmpty()]
         [string]$SendInvitationMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("Message")]
         [ValidateNotNullOrEmpty()]
-        [string]$CustomizedMessage,
+        [string]$InviteMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("Language")]
         [string]$MessageLanguage,
@@ -73,99 +73,57 @@
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds') -f $script:ModuleName)
         $path = 'invitations'
+        $cCRecipientList = [System.Collections.ArrayList]::New()
     }
 
     process {
-        # Set Variables
-        #Guest Details
-        #$GuestUserName = "Michael Seidl (GMAIL)"
-        #$GuestUserMail = "seidlmichael82@gmail.com"
-
-        #Send Invitation CC to this USer
-        #$CCRecipientName = "Michael Seidl"
-        #$CCRecipientMail = "michael@techguy.at"
-
-        #Add Personal Text do Invite Mail
-        #$InviteMessage = "You have been invited to join the Tenant au2mator.com"
-        #$InviteRedirectURL = "https://au2mator.com" #URL where the USer is redirected after Invite Acceptance
-
-        #Auth MS Graph API and Get Header
-
         
         $body = @{}
 
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
-        if (Test-PSFParameterBinding -ParameterName "InvitedUserDisplayNameName") {
+        if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayNameName') {
             $body['invitedUserDisplayName'] = $InvitedUserDisplayNameName
         }
 
-        if (Test-PSFParameterBinding -ParameterName "InviteRedirectUrl") {
+        if (Test-PSFParameterBinding -ParameterName 'InviteRedirectUrl') {
             $body['inviteRedirectUrl'] = $InviteRedirectUrl
         }
 
-        if (Test-PSFParameterBinding -ParameterName "SendInvitationMessage") {
+        if (Test-PSFParameterBinding -ParameterName 'SendInvitationMessage') {
             $body['sendInvitationMessage'] = $SendInvitationMessage
         }
         else {
             $body['sendInvitationMessage'] = $false
         }
 
-        if (Test-PSFParameterBinding -ParameterName "Language") {
+        if (Test-PSFParameterBinding -ParameterName 'Language') {
             $body['messageLanguage'] = $Language
         }
         else {
             $body['messageLanguage'] = $null
         }
         
-        if (Test-PSFParameterBinding -ParameterName $CCRecipient)  {
+        if (Test-PSFParameterBinding -ParameterName 'CCRecipient') {
             foreach ($itemCCRecipient in $CCRecipient) {
-
+                [void]$cCRecipientList.Add($itemCCRecipient)
             }            
-
         }
 
-        if($CustomizedMessage){
+        if (Test-PSFParameterBinding -ParameterName CustomizedMessage) {
             
         }
 
         $body['invitedUserMessageInfo'] = @(
-            @{
-                messageLanguage = $MessageLanguage
-                customizedMessageBody           = $CustomizedMessage
-            }
-
+            messageLanguage = $MessageLanguage
+            ccRecipients = $cCRecipientList
+            customizedMessageBody = $InviteMessage
         )
         
-
         Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post)
         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
-
-<#   $URL = "https://graph.microsoft.com/v1.0/invitations"
-    $Method = "POST"
-    $body = @"
-{
-    "invitedUserEmailAddress":"$GuestUserMail",
-    "inviteRedirectUrl":"$InviteRedirectURL",
-    "invitedUserDisplayName":"$GuestUserName",
-    "sendInvitationMessage": true,
-    "invitedUserMessageInfo": {
-        "messageLanguage": null,
-        "ccRecipients": [
-             {
-                "emailAddress": {
-                    "name": "$CCRecipientName",
-                    "address": "$CCRecipientMail"
-                 }
-             }
-        ],
-        "customizedMessageBody": "$InviteMessage"
-     
-    }
-}
-"@#>
-end {}
+    end {}
 }

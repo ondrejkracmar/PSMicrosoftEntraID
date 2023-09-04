@@ -49,14 +49,12 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [ValidateGroupIdentity()]
         [string]
-        [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         $ReferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
         [ValidateGroupIdentity()]
         [string]
-        [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         $DifferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
@@ -64,7 +62,7 @@
         [Alias("UserId", "UserPrincipalName", "Mail")]
         $User,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
-        [ValidateNotNullOrEmptyy()]
+        [ValidateNotNullOrEmpty()]
         [string]
         $QueryExpression,
         [switch]
@@ -80,31 +78,30 @@
     }
 
     process {
-        $referenceAADGroup = Get-PSADGroup -Identity $ReferenceIdentity
+        $referenceAADGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
         if (-not ([object]::Equals($referenceAADGroup, $null))) {
-            $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceAADGroup.Id
+            $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceAADGroup.Id | Select-Object -Property Id
             switch ($PSCmdlet.ParameterSetName) {
                 'UserIdentity' {
                     foreach ($itemUser in  $User) {
-                        $aADUser = Get-PSADUser -Identity $itemUser
+                        $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
                             [void]$differenceMemberList.Add($aADUser.Id)
                         }
                     }
                 }
                 'GroupIdentity' {
-                    $differenceMemberList = (Get-PSEntraIDGroupMember -Identity $DifferenceIdentity).Id
+                    $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
                 }
                 'QueryExpressionIdentity' {
 
                 }
             }
-
-            $syncOperationList = Sync-DataOperation -ReferenceObjectList $referenceMemberList -DifferenceObject $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id 
+            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id 
             
             if ($SyncView.IsPresent) {
-                if (-not ([object]::Equals($syncOperation, $null))) {
-                    $syncOperation
+                if (-not ([object]::Equals($syncOperationList, $null))) {
+                    $syncOperationList
                 }
             }
             else {
@@ -113,13 +110,13 @@
                         switch ($syncOperation.Crud) {
                             'Create' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id
+                                #Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id
                             }
                             'Update' {
                             }
                             'Delete' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id
+                                #Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id
                             }
                             Default {}
                         }
