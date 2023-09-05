@@ -30,6 +30,11 @@
     .FUNCTIONALITY
         The functionality that best describes this cmdlet
 
+    .EXAMPLE
+            PS C:\> Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
+
+            Get sync operation
+
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '')]
