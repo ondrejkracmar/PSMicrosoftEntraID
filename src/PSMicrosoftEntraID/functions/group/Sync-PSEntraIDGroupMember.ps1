@@ -110,13 +110,13 @@
                         switch ($syncOperation.Crud) {
                             'Create' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                #Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id
+                                Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id -EnableException $EnableException
                             }
                             'Update' {
                             }
                             'Delete' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                #Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id
+                                Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id -EnableException $EnableException
                             }
                             Default {}
                         }
