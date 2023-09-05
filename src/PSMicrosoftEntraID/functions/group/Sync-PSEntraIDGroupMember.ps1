@@ -15,9 +15,6 @@
     .PARAMETER User
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
-    .PARAMETER QueryExpression
-        List user identities via query expression
-
     .PARAMETER SyncView
         List user identities via query expression
 
@@ -61,10 +58,10 @@
         [string[]]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         $User,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $QueryExpression,
+        #[Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
+        #[ValidateNotNullOrEmpty()]
+        #[string]
+        #$QueryExpression,
         [switch]
         $SyncView,
         [switch]
@@ -92,9 +89,6 @@
                 }
                 'GroupIdentity' {
                     $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
-                }
-                'QueryExpressionIdentity' {
-                    $QueryExpression
                 }
             }
             $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
