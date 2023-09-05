@@ -94,7 +94,7 @@
                     $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
                 }
                 'QueryExpressionIdentity' {
-
+                    $QueryExpression
                 }
             }
             $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
