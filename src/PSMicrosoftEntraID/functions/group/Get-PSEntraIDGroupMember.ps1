@@ -7,10 +7,16 @@
         This cmdlet get an owner or member of the team, and to the unified group which backs the team.
 
     .PARAMETER Identity
-        MailNickName or Id of group or team
+        MailNickName or Id of group or team.
 
     .PARAMETER Owner
-        Member type owner
+        Member type owner.
+    
+    .PARAMETER Filter
+        Filter expressions of groups in tenant/directory.
+
+    .PARAMETER AdvancedFilter
+        Switch advanced filter for filtering groups in tenant/directory.
 
     .EXAMPLE
         PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
