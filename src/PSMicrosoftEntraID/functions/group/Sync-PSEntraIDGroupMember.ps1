@@ -110,13 +110,19 @@
                         switch ($syncOperation.Crud) {
                             'Create' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id -EnableException $EnableException
+                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
+                                    [void](Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
+                                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
                             }
                             'Update' {
                             }
                             'Delete' {
                                 $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id-User $member.Id -EnableException $EnableException
+                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
+                                    [void](Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
+                                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
                             }
                             Default {}
                         }

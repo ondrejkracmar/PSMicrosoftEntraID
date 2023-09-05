@@ -11,10 +11,10 @@
 	'User.Delete'                = "Delete user '{0}'"
 	'User.Invitation'            = "Invite user '{0}'"
 
-	'Group.Delete'                = "Delete group '{0}'"
+	#'Group.Delete'                = "Delete group '{0}'"
 
 	'GroupMember.Add'            = "Add members '{0}' to the group '{1}'"
 	'GroupMember.Delete'         = "Remove members '{0}' to the group '{1}'"
-	'GroupMember.List'           = "Get members from the group '{0}'"
-	'GroupMember.Sync'			 = "Sync members of group '{0}'"
+	#'GroupMember.List'           = "Get members from the group '{0}'"
+	'GroupMember.Sync'			 = "Sync members of group"
 }
