@@ -1,34 +1,37 @@
 ﻿function Get-SyncDataOperation {
     <#
-    .Synopsis
-        Short description
+	.SYNOPSIS
+		Disable user's license
 
-    .DESCRIPTION
-        Long description
+	.DESCRIPTION
+		Disable user's Office 365 subscription
 
-    .EXAMPLE
-        Example of how to use this cmdlet
+	.PARAMETER ReferenceObjectList
+        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
-    .EXAMPLE
-        Another example of how to use this cmdlet
+	.PARAMETER DiferenceObjectList
+		Office 365 product GUID is identified using a GUID of subscribedSku.
 
-    .INPUTS
-        Inputs to this cmdlet (if any)
+    .PARAMETER MatchProperty
+        Friendly name Office 365 product of subscribedSku.
 
-    .OUTPUTS
-        Output from this cmdlet (if any)
+    .PARAMETER DiferenceObjectUniqueKeyName
+        Friendly name Office 365 product of subscribedSku.
 
-    .NOTES
-        General notes
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        dly, but allows catching exceptions in calling scripts.
 
-    .COMPONENT
-        The component this cmdlet belongs to
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
 
-    .ROLE
-        The role this cmdlet belongs to
+    .PARAMETER Confirm
+        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
 
-    .FUNCTIONALITY
-        The functionality that best describes this cmdlet
 
     .EXAMPLE
             PS C:\> Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
