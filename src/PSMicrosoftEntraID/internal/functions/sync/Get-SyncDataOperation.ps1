@@ -32,6 +32,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '')]
     [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true, PositionalBinding = $false, HelpUri = 'http://www.microsoft.com/', ConfirmImpact = 'Medium')]
     [Alias()]
     [OutputType([String])]
