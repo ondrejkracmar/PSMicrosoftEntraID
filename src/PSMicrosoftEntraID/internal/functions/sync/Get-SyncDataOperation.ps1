@@ -206,6 +206,6 @@
         }
     }
     End {
-        Write-Output $changeList
+        $changeList
     }
 }
