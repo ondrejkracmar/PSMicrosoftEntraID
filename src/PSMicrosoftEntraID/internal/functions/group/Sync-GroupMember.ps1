@@ -1,5 +1,5 @@
 ﻿function Sync-GroupMember {
-    param( 
+    param(
         [ValidateGroupIdentity()]
         [string]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]

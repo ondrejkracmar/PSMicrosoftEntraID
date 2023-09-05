@@ -2,8 +2,6 @@
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
 	'Identity.Platform'          = "Microsoft Entra ID (Azure AD)"
-	'GraphAPI.LoadAPIData'       = "Load API data for '{0}'"
-	'GraphAPI.Description'       = "Description: '{0}'"
 
 	'LicenseServicePLan.Enable'  = "Enable service plans {0} in subscription '{1}'"
 	'LicenseServicePLan.Disable' = "Disable service plans {0} in subscription '{1}"
