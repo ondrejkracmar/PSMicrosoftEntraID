@@ -43,7 +43,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [ValidateEmailAddres()]
         [string]
-        [Alias("UserEmailAddress", "EmailAddres", "Mail")]
+        [Alias("UserEmailAddress", "EmailAddres", "Mail","UserPrincipalName","InvitedUserPrincipalName")]
         $InvitedUserEmailAddress,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]

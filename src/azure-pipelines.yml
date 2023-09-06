@@ -1,4 +1,4 @@
-﻿name: Publish Powershell Module To Private Repository 
+﻿name: Publish Powershell Module To Private Repository
 trigger:
   - main
 
@@ -43,5 +43,5 @@ steps:
         targetType: inline
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)
-          nuget source add -Name '$(feedName)' -Source $ource -username '$(userName)' -password '$(password)'
-          nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.9.9.3.nupkg' -SkipDuplicate
+          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$(ource)' -username '$(userName)' -password '$(password)'"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.0.1.nupkg' -SkipDuplicate"
