@@ -43,5 +43,5 @@ steps:
         targetType: inline
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)
-          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$(ource)' -username '$(userName)' -password '$(password)'"
+          Invoke-Expression "nuget source add -Name '$(feedName)' -Source $source -username '$(userName)' -password '$(password)'"
           Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.0.1.nupkg' -SkipDuplicate"
