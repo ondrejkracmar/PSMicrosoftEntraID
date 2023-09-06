@@ -5,15 +5,15 @@
 *TempPoint*
 
 # Ignore staging info from Visual Studio
-library/PSAzureADDirectory/.vs/*
-library/PSAzureADDirectory/PSAzureADDirectory/bin/*
-library/PSAzureADDirectory/PSAzureADDirectory/obj/*
+library/PSMicrosoftEntraID/.vs/*
+library/PSMicrosoftEntraID/PSMicrosoftEntraID/bin/*
+library/PSMicrosoftEntraID/PSMicrosoftEntraID/obj/*
 
 # ignore PowerShell Studio MetaData
-PSAzureADDirectory/PSAzureADDirectory.psproj
-PSAzureADDirectory/PSAzureADDirectory.psproj.bak
-PSAzureADDirectory/PSAzureADDirectory.psprojs
-PSAzureADDirectory/PSAzureADDirectory.psproj
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj.bak
+PSMicrosoftEntraID/PSMicrosoftEntraID.psprojs
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
 
 # ignore the TestResults
 TestResults/*

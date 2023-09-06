@@ -36,14 +36,14 @@ if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 # Prepare publish folder
 Write-PSFMessage -Level Important -Message "Creating and populating publishing directory"
 $publishDir = New-Item -Path $WorkingDirectory -Name publish -ItemType Directory -Force
-Copy-Item -Path "$($WorkingDirectory)\PSAzureADDirectory" -Destination $publishDir.FullName -Recurse -Force
+Copy-Item -Path "$($WorkingDirectory)\PSMicrosoftEntraID" -Destination $publishDir.FullName -Recurse -Force
 
 #region Gather text data to compile
 $text = @()
 $processed = @()
 
 # Gather Stuff to run before
-foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\scripts\preimport.ps1"))
+foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftEntraID\internal\scripts\preimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
 
@@ -55,15 +55,15 @@ foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\script
 }
 
 # Gather commands
-Get-ChildItem -Path "$($publishDir.FullName)\PSAzureADDirectory\internal\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
+Get-ChildItem -Path "$($publishDir.FullName)\PSMicrosoftEntraID\internal\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
 	$text += [System.IO.File]::ReadAllText($_.FullName)
 }
-Get-ChildItem -Path "$($publishDir.FullName)\PSAzureADDirectory\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
+Get-ChildItem -Path "$($publishDir.FullName)\PSMicrosoftEntraID\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
 	$text += [System.IO.File]::ReadAllText($_.FullName)
 }
 
 # Gather stuff to run afterwards
-foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\scripts\postimport.ps1"))
+foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftEntraID\internal\scripts\postimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
 
@@ -76,28 +76,28 @@ foreach ($filePath in (& "$($PSScriptRoot)\..\PSAzureADDirectory\internal\script
 #endregion Gather text data to compile
 
 #region Update the psm1 file
-$fileData = Get-Content -Path "$($publishDir.FullName)\PSAzureADDirectory\PSAzureADDirectory.psm1" -Raw
+$fileData = Get-Content -Path "$($publishDir.FullName)\PSMicrosoftEntraID\PSMicrosoftEntraID.psm1" -Raw
 $fileData = $fileData.Replace('"<was not compiled>"', '"<was compiled>"')
 $fileData = $fileData.Replace('"<compile code into here>"', ($text -join "`n`n"))
-[System.IO.File]::WriteAllText("$($publishDir.FullName)\PSAzureADDirectory\PSAzureADDirectory.psm1", $fileData, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText("$($publishDir.FullName)\PSMicrosoftEntraID\PSMicrosoftEntraID.psm1", $fileData, [System.Text.Encoding]::UTF8)
 #endregion Update the psm1 file
 
 #region Updating the Module Version
 if ($AutoVersion)
 {
 	Write-PSFMessage -Level Important -Message "Updating module version numbers."
-	try { [version]$remoteVersion = (Find-Module 'PSAzureADDirectory' -Repository $Repository -ErrorAction Stop).Version }
+	try { [version]$remoteVersion = (Find-Module 'PSMicrosoftEntraID' -Repository $Repository -ErrorAction Stop).Version }
 	catch
 	{
 		Stop-PSFFunction -Message "Failed to access $($Repository)" -EnableException $true -ErrorRecord $_
 	}
 	if (-not $remoteVersion)
 	{
-		Stop-PSFFunction -Message "Couldn't find PSAzureADDirectory on repository $($Repository)" -EnableException $true
+		Stop-PSFFunction -Message "Couldn't find PSMicrosoftEntraID on repository $($Repository)" -EnableException $true
 	}
 	$newBuildNumber = $remoteVersion.Build + 1
-	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\PSAzureADDirectory\PSAzureADDirectory.psd1").ModuleVersion
-	Update-ModuleManifest -Path "$($publishDir.FullName)\PSAzureADDirectory\PSAzureADDirectory.psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
+	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\PSMicrosoftEntraID\PSMicrosoftEntraID.psd1").ModuleVersion
+	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftEntraID\PSMicrosoftEntraID.psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
 }
 #endregion Updating the Module Version
 
@@ -108,13 +108,13 @@ if ($LocalRepo)
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
-	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSAzureADDirectory"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSAzureADDirectory" -PackagePath .
+	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftEntraID"
+	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftEntraID" -PackagePath .
 }
 else
 {
 	# Publish to Gallery
-	Write-PSFMessage -Level Important -Message "Publishing the PSAzureADDirectory module to $($Repository)"
-	Publish-Module -Path "$($publishDir.FullName)\PSAzureADDirectory" -NuGetApiKey $ApiKey -Force -Repository $Repository
+	Write-PSFMessage -Level Important -Message "Publishing the PSMicrosoftEntraID module to $($Repository)"
+	Publish-Module -Path "$($publishDir.FullName)\PSMicrosoftEntraID" -NuGetApiKey $ApiKey -Force -Repository $Repository
 }
 #endregion Publish

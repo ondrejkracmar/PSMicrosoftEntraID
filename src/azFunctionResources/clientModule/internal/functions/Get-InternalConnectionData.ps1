@@ -31,13 +31,13 @@
 	
 	process
 	{
-		try { $uri = '{0}{1}' -f (Get-PSFConfigValue -FullName 'PSAzureADDirectory.Client.Uri' -NotNull), $FunctionName }
+		try { $uri = '{0}{1}' -f (Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Client.Uri' -NotNull), $FunctionName }
 		catch { $PSCmdlet.ThrowTerminatingError($_) }
 		$header = @{ }
 		
 		#region Authentication
-		$unprotectedToken = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Client.UnprotectedToken'
-		$protectedToken = Get-PSFConfigValue -FullName 'PSAzureADDirectory.Client.ProtectedToken'
+		$unprotectedToken = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Client.UnprotectedToken'
+		$protectedToken = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Client.ProtectedToken'
 		
 		$authenticationDone = $false
 		if ($protectedToken -and -not $authenticationDone)
