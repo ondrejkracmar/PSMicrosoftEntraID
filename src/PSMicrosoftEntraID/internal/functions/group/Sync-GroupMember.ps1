@@ -10,7 +10,7 @@
         Id, TeamId, MailNickname or Id of the group attribute populated in tenant/directory.
 
     .PARAMETER SyncDataOperation
-
+        Sync object structure
 
     .EXAMPLE
         PS C:\> Sync-GroupMember -Identity group1 -SyncDataOperation $SyncDataOperation
