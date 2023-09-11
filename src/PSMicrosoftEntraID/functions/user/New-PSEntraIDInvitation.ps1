@@ -95,7 +95,7 @@
 
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
-        if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayNameName') {
+        if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayName') {
             $body['invitedUserDisplayName'] = $InvitedUserDisplayName
         }
 
