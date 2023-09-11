@@ -83,7 +83,7 @@
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         Get-PSEntraIDSubscribedSku | Set-PSFResultCache
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds') -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
     }
     process {
         foreach ($user in  $Identity) {
