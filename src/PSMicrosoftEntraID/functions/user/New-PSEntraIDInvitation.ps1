@@ -60,7 +60,7 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
-        [string]$InvitedUserDisplayNameName,
+        [string]$InvitedUserDisplayName,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
