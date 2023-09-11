@@ -96,7 +96,7 @@
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
         if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayNameName') {
-            $body['invitedUserDisplayName'] = $InvitedUserDisplayNameName
+            $body['invitedUserDisplayName'] = $InvitedUserDisplayName
         }
 
         if (Test-PSFParameterBinding -ParameterName 'InviteRedirectUrl') {
