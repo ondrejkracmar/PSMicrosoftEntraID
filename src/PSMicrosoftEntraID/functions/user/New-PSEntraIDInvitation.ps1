@@ -14,9 +14,12 @@
 
     .PARAMETER InviteRedirectUrl
         The URL that the user will be redirected to after redemption.
-    
+
     .PARAMETER SendInvitationMessage
-        The invitation message        
+        Switch if senf invitation message
+
+    .PARAMETER InviteMessage
+        The invitation message
 
     .PARAMETER MessageLanguage
         Langueage of invite message.
@@ -61,10 +64,10 @@
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
-        [bool]$InviteRedirectUrl,
+        [string]$InviteRedirectUrl,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [ValidateNotNullOrEmpty()]
-        [string]$SendInvitationMessage,
+        [bool]$SendInvitationMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
         [Alias("Message")]
         [ValidateNotNullOrEmpty()]
