@@ -9,7 +9,7 @@
     .PARAMETER InvitedUserEmailAddress
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
-    .PARAMETER InvitedUserDisplayNameName
+    .PARAMETER InvitedUserDisplayName
         DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
 
     .PARAMETER InviteRedirectUrl
@@ -61,7 +61,7 @@
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
         [string]$InvitedUserDisplayName,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
         [string]$InviteRedirectUrl,
