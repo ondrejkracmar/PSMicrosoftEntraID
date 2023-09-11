@@ -57,25 +57,25 @@
         [string]
         [Alias("UserEmailAddress", "EmailAddres", "Mail","UserPrincipalName","InvitedUserPrincipalName")]
         $InvitedUserEmailAddress,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
         [string]$InvitedUserDisplayNameName,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
         [string]$InviteRedirectUrl,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [ValidateNotNullOrEmpty()]
         [bool]$SendInvitationMessage,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("Message")]
         [ValidateNotNullOrEmpty()]
         [string]$InviteMessage,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("Language")]
         [string]$MessageLanguage,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddres')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [psobject[]]$CCRecipient,
         [switch]
         $EnableException
@@ -127,11 +127,11 @@
 
         }
 
-        $body['invitedUserMessageInfo'] = @(
+        $body['invitedUserMessageInfo'] = @{
             messageLanguage = $MessageLanguage
             ccRecipients = $cCRecipientList
             customizedMessageBody = $InviteMessage
-        )
+        }
 
         Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post)
