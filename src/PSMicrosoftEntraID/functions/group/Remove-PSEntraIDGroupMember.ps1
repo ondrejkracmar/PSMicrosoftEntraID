@@ -64,7 +64,7 @@
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 'Identity' {
                     foreach ($itemUser in  $User) {
-                        $aADUser = Get-PSADUser -Identity $itemUser
+                        $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("groups/{0}/members/{1}/$ref" -f $aADGroup.Id, $aADUser.Id)
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName, $aADGroup.MailNickName -Target $aADGroup.MailNickName -ScriptBlock {
