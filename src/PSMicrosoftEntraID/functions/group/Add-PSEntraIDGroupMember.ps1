@@ -145,7 +145,7 @@
             }
             foreach ($memberItem in $memberList) {
                 Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($memberItem.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $memberItem.UrlPath -Method $memberItem.Method)
+                    [void](Invoke-RestRequest -Service 'graph' -Path $memberItem.UrlPath -Body $memberItem.Body -Method $memberItem.Method)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

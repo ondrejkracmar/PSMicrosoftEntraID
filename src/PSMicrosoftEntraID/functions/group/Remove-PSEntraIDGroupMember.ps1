@@ -68,7 +68,7 @@
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("groups/{0}/members/{1}/$ref" -f $aADGroup.Id, $aADUser.Id)
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName, $aADGroup.MailNickName -Target $aADGroup.MailNickName -ScriptBlock {
-                                [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Delete)
+                                [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete)
                             } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
