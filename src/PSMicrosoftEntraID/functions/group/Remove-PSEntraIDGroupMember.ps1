@@ -58,7 +58,7 @@
     }
 
     process {
-        $aADGroup = Get-PSADGroup -Identity $Identity
+        $aADGroup = Get-PSEntraIDGroup -Identity $Identity
         if (-not ([object]::Equals($aADGroup, $null))) {
 
             switch -Regex ($PSCmdlet.ParameterSetName) {
