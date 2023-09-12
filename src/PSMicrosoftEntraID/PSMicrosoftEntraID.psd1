@@ -3,7 +3,7 @@
 	RootModule        = 'PSMicrosoftEntraID.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.5.0.7'
+	ModuleVersion     = '0.5.0.8'
 
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'

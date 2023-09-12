@@ -47,7 +47,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateUserIdentity()]
         [string[]]
-        [Alias("UserId","UserPrincipalName", "Mail")]
+        [Alias("UserId", "UserPrincipalName", "Mail")]
         $User,
         [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateSet('Member', 'Owner')]
@@ -71,13 +71,14 @@
             if ($Identity.Count -gt 1) {
                 $identityUrlList = [System.Collections.ArrayList]::New()
             }
-            foreach ($user in $Identity) {
-                $aADUser = Get-PSEntraIDUser -Identity $user
+            foreach ($itemUser in $User) {
+                $aADUser = Get-PSEntraIDUser -Identity $itemUser
                 if (-not([object]::Equals($aADUser, $null))) {
                     if (Test-PSFParameterBinding -ParameterName Role) {
                         switch ($Role) {
                             'Owner' {
                                 $memberHash = @{
+                                    UserId            = $aADUser.Id
                                     UserPrincipalName = $aADUser.UserPrincipalName
                                     Role              = $Role
                                     UrlPath           = Join-UriPath -Uri $path -ChildPath 'owners/$ref'
@@ -93,6 +94,7 @@
                                 if ($Identity.Count -gt 1) {
                                     [void]$identityUrlList.Add((Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('directoryObjects/{0}' -f $aADUser.Id )))
                                     $memberHash = @{
+                                        UserId            = $aADUser.Id
                                         UserPrincipalName = $aADUser.UserPrincipalName
                                         Role              = $Role
                                         UrlPath           = $path
@@ -107,6 +109,7 @@
                                 }
                                 else {
                                     $memberHash = @{
+                                        UserId            = $aADUser.Id
                                         UserPrincipalName = $aADUser.UserPrincipalName
                                         Role              = $Role
                                         UrlPath           = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('members/$ref')
@@ -126,6 +129,7 @@
                     }
                     else {
                         $memberHash = @{
+                            UserId            = $aADUser.Id
                             UserPrincipalName = $aADUser.UserPrincipalName
                             Role              = $Role
                             UrlPath           = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('members/$ref')
@@ -140,7 +144,7 @@
                 }
             }
             foreach ($memberItem in $memberList) {
-                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($memberItem.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','),$group.MailNickName) -Target $group.MailNickName -ScriptBlock {
+                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($memberItem.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
                     [void](Invoke-RestRequest -Service 'graph' -Path $memberItem.UrlPath -Method $memberItem.Method)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
