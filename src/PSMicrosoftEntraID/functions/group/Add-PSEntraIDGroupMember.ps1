@@ -76,7 +76,7 @@
                     foreach ($itemUser in $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add( '{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                            [void]$memberUrlList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
                             [void]$memberObjectIdList.Add($aADUser.Id)
                             [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void]$memberMailList.Add($aADUser.Mail)
@@ -87,7 +87,7 @@
                         UserPrincipalName = $memberUserPrincipalNameList
                         Mail              = $memberMailList
                         Role              = 'Owner'
-                        UrlPath           = ("groups/{0}/owners/$ref" -f $group.Id)
+                        UrlPath           = ('groups/{0}/owners/$ref' -f $group.Id)
                         Metohd            = 'Post'
                         MemberUrlList     = $memberUrlList
                     }
@@ -95,7 +95,7 @@
                 'Member' {
                     if ($User.count -eq 1) {
                         $aADUser = Get-PSEntraIDUser -Identity $User
-                        [void]$memberUrlList.Add('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                        [void]$memberUrlList.Add(('/directoryObjects/{1}'-f (Get-GraphApiUriPath), $aADUser.Id))
                         $requestHash = @{
                             ObjectId          = $memberObjectIdList
                             UserPrincipalName = $memberUserPrincipalNameList
@@ -110,7 +110,7 @@
                         foreach ($itemUser in $User) {
                             $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$memberUrlList.Add( '{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                                [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
                                 [void]$memberObjectIdList.Add($aADUser.Id)
                                 [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                                 [void]$memberMailList.Add($aADUser.Mail)
