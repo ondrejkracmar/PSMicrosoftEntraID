@@ -130,7 +130,7 @@
                 Default {
                 }
             }
-            if (($requestHash.Role -eq 'Member') -and ($requestHash.Method -eq 'Patch') -and ($requestHash.ObjectId.Count -gt 1)) {       
+            if (($requestHash.Role -eq 'Member') -and ($requestHash.Method -eq 'Patch') -and ($requestHash.ObjectId.Count -gt 1)) {
                 $bodyList = $requestHash.Body | Step-Array -Size $nextLoop
                 foreach ($bodyItem in $bodyList) {
                     $body = @{
@@ -152,7 +152,7 @@
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
-                
+
             }
         }
     }

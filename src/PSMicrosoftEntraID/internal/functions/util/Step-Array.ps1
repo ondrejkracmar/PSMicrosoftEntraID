@@ -1,4 +1,4 @@
-function Step-Array {
+﻿function Step-Array {
     <#
     .SYNOPSIS
         Slice a PowerShell array into groups of smaller arrays.
