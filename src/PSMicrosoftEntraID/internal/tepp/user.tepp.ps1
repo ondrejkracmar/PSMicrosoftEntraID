@@ -1,3 +1,2 @@
-﻿$usageLocationTemplate = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'aadtemplate' -ChildPath 'UsageLocation.json' )
-Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
-Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }
+﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-PSEntraIDUsageLocation).Values }
+Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-PSEntraIDUsageLocation).Keys }
