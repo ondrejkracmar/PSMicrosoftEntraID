@@ -1,2 +1,3 @@
-﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSMicrosoftEntraID.Template.MicrosoftEntraID.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
-Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path( Get-PSFConfigValue -FullName PSMicrosoftEntraID.Template.MicrosoftEntraID.UsageLocation) | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }
+﻿$usageLocationTemplate = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'aadtemplate' -ChildPath 'UsageLocation.json' )
+Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable).Values }
+Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable).Keys }
