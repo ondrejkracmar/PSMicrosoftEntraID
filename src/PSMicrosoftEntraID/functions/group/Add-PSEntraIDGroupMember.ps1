@@ -14,7 +14,7 @@
 
     .PARAMETER Role
         user's role (Member or Owner)
-            
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
@@ -39,17 +39,17 @@
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(ParameterSetName = 'UserIdentity', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
         [string]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateUserIdentity()]
         [string[]]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         $User,
-        [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateSet('Member', 'Owner')]
         [string]
         $Role,
@@ -61,93 +61,98 @@
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
-        $memberList = [System.Collections.ArrayList]::New()
+        $nextLoop = 20
     }
 
     process {
+        $memberUrlList = [System.Collections.ArrayList]::new()
+        $memberObjectIdList = [System.Collections.ArrayList]::new()
+        $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
+        $memberMailList = [System.Collections.ArrayList]::new()
         $group = Get-PSEntraIDGroup -Identity $Identity
         if (-not([object]::Equals($group, $null))) {
-            $path = ("groups/{0}" -f $group.Id)
-            if ($Identity.Count -gt 1) {
-                $identityUrlList = [System.Collections.ArrayList]::New()
-            }
-            foreach ($itemUser in $User) {
-                $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                if (-not([object]::Equals($aADUser, $null))) {
-                    if (Test-PSFParameterBinding -ParameterName Role) {
-                        switch ($Role) {
-                            'Owner' {
-                                $memberHash = @{
-                                    UserId            = $aADUser.Id
-                                    UserPrincipalName = $aADUser.UserPrincipalName
-                                    Role              = $Role
-                                    UrlPath           = Join-UriPath -Uri $path -ChildPath 'owners/$ref'
-                                    Body              = @{
-                                        "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('users' -f { $aADUser.Id })
-                                    }
-                                    Method            = 'Post'
-                                }
-                                $member = [pscustomobject]$memberHash
-                                [void]$memberList.Add($member)
-                            }
-                            'Member' {
-                                if ($Identity.Count -gt 1) {
-                                    [void]$identityUrlList.Add((Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('directoryObjects/{0}' -f $aADUser.Id )))
-                                    $memberHash = @{
-                                        UserId            = $aADUser.Id
-                                        UserPrincipalName = $aADUser.UserPrincipalName
-                                        Role              = $Role
-                                        UrlPath           = $path
-                                        Body              = @{
-                                            "members@odata.id" = $identityUrlList
-                                        }
-                                        Method            = 'Patch'
-                                    }
-                                    $member = [pscustomobject]$memberHash
-                                    [void]$memberList.Add($member)
-
-                                }
-                                else {
-                                    $memberHash = @{
-                                        UserId            = $aADUser.Id
-                                        UserPrincipalName = $aADUser.UserPrincipalName
-                                        Role              = $Role
-                                        UrlPath           = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('members/$ref')
-                                        Body              = @{
-                                            "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('directoryObjects/{0}' -f $aADUser.Id )
-                                        }
-                                        Method            = 'Post'
-                                    }
-                                    $member = [pscustomobject]$memberHash
-                                    [void]$memberList.Add($member)
-                                }
-                            }
-                            Default {
-
-                            }
+            switch ($Role) {
+                'Owner' {
+                    foreach ($itemUser in $User) {
+                        $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                        if (-not([object]::Equals($aADUser, $null))) {
+                            [void]$memberUrlList.Add( '{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                            [void]$memberObjectIdList.Add($aADUser.Id)
+                            [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                            [void]$memberMailList.Add($aADUser.Mail)
+                        }
+                    }
+                    $requestHash = @{
+                        ObjectId          = $memberObjectIdList
+                        UserPrincipalName = $memberUserPrincipalNameList
+                        Mail              = $memberMailList
+                        Role              = 'Owner'
+                        UrlPath           = ("groups/{0}/owners/$ref" -f $group.Id)
+                        Metohd            = 'Post'
+                        MemberUrlList     = $memberUrlList
+                    }
+                }
+                'Member' {
+                    if ($User.count -eq 1) {
+                        $aADUser = Get-PSEntraIDUser -Identity $User
+                        [void]$memberUrlList.Add('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                        $requestHash = @{
+                            ObjectId          = $memberObjectIdList
+                            UserPrincipalName = $memberUserPrincipalNameList
+                            Mail              = $memberMailList
+                            Role              = 'Member'
+                            UrlPath           = ("groups/{0}/members/$ref" -f $group.Id)
+                            Method            = 'Post'
+                            MemberUrlList     = $memberUrlList
                         }
                     }
                     else {
-                        $memberHash = @{
-                            UserId            = $aADUser.Id
-                            UserPrincipalName = $aADUser.UserPrincipalName
-                            Role              = $Role
-                            UrlPath           = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('members/$ref')
-                            Body              = @{
-                                "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('directoryObjects/{0}' -f $aADUser.Id )
+                        foreach ($itemUser in $User) {
+                            $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                            if (-not([object]::Equals($aADUser, $null))) {
+                                [void]$memberUrlList.Add( '{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                                [void]$memberObjectIdList.Add($aADUser.Id)
+                                [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                                [void]$memberMailList.Add($aADUser.Mail)
                             }
-                            Method            = 'Post'
                         }
-                        $member = [pscustomobject]$memberHash
-                        [void]$memberList.Add($member)
+                        $requestHash = @{
+                            ObjectId          = $memberObjectIdList
+                            UserPrincipalName = $memberUserPrincipalNameList
+                            Mail              = $memberMailList
+                            Role              = 'Member'
+                            UrlPath           = ("groups/{0}/members/$ref" -f $group.Id)
+                            Method            = 'Patch'
+                            MemberUrlList     = $memberUrlList
+                        }
                     }
                 }
+                Default {
+                }
             }
-            foreach ($memberItem in $memberList) {
-                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($memberItem.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $memberItem.UrlPath -Body $memberItem.Body -Method $memberItem.Method)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
+            if (($requestHash.Role -eq 'Member') -and ($requestHash.Method -eq 'Patch') -and ($requestHash.ObjectId.Count -gt 1)) {       
+                $bodyList = $requestHash.Body | Step-Array -Size $nextLoop
+                foreach ($bodyItem in $bodyList) {
+                    $body = @{
+                        'members@odata.bind' = $bodyItem
+                    }
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
+                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
+            else {
+                foreach ($membereUrl in $requestHash.MemberUrlList) {
+                    $body = @{
+                        '@odata.id' = $membereUrl
+                    }
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
+                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+                
             }
         }
     }
