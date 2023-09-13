@@ -150,7 +150,6 @@
                     $body = @{
                         '@odata.id' = $membereUrl
                     }
-                    $body
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
                         [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
