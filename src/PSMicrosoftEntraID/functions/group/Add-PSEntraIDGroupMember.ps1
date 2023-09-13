@@ -95,7 +95,7 @@
                 'Member' {
                     if ($User.count -eq 1) {
                         $aADUser = Get-PSEntraIDUser -Identity $User
-                        [void]$memberUrlList.Add(('/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
                         [void]$memberObjectIdList.Add($aADUser.Id)
                         [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$memberMailList.Add($aADUser.Mail)
