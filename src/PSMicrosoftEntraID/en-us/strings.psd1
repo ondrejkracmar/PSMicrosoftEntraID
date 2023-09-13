@@ -13,8 +13,8 @@
 
 	#'Group.Delete'                = "Delete group '{0}'"
 
-	'GroupMember.Add'            = "Add members '{0}' to the group '{1}'"
-	'GroupMember.Delete'         = "Remove members '{0}' to the group '{1}'"
+	'GroupMember.Add'            = "Add members '{0}'"
+	'GroupMember.Delete'         = "Remove members '{0}'"
 	#'GroupMember.List'           = "Get members from the group '{0}'"
 	'GroupMember.Sync'			 = "Sync members of group"
 }

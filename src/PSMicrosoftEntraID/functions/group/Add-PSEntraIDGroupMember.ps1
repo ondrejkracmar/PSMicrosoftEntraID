@@ -139,7 +139,7 @@
                     $body = @{
                         'members@odata.bind' = $bodyItem
                     }
-                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
                         [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
@@ -150,8 +150,8 @@
                     $body = @{
                         '@odata.id' = $membereUrl
                     }
-                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','), $group.MailNickName) -Target $group.MailNickName -ScriptBlock {
-                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method)
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
