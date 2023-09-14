@@ -1,4 +1,4 @@
-function  Remove-PSEntraIDGroupOwner {
+﻿function  Remove-PSEntraIDGroupOwner {
     <#
     .SYNOPSIS
         Remove a owner to a security or Microsoft 365 group.

@@ -98,7 +98,7 @@
                     UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
                     Method            = 'Patch'
                     MemberUrlList     = $memberUrlList
-                }        
+                }
             }
             if (($requestHash.Method -eq 'Patch') -and ($requestHash.ObjectId.Count -gt 1)) {
                 $bodyList = $requestHash.Body | Step-Array -Size $nextLoop

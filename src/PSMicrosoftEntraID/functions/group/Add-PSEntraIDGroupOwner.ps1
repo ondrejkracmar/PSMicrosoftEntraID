@@ -1,4 +1,4 @@
-function Add-PSEntraIDGroupMember {
+﻿function Add-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Add a owner to a security or Microsoft 365 group.
@@ -85,7 +85,7 @@ function Add-PSEntraIDGroupMember {
                 MemberUrlList     = $memberUrlList
             }
         }
-                
+
         foreach ($ownerUrl in $requestHash.$ownerUrlList) {
             $body = @{
                 '@odata.id' = $ownerUrl
