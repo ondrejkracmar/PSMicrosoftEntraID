@@ -16,6 +16,6 @@
     param(
     )
 
-    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApi.Version').Value
+    return (Get-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApiVersion').Value
 
 }

@@ -14,7 +14,9 @@
 	#'Group.Delete'                = "Delete group '{0}'"
 
 	'GroupMember.Add'            = "Add members '{0}'"
+	'GroupOwner.Add'            = "Add owners '{0}'"
 	'GroupMember.Delete'         = "Remove members '{0}'"
+	'GroupOwner.Delete'         = "Remove owners '{0}'"
 	#'GroupMember.List'           = "Get members from the group '{0}'"
 	'GroupMember.Sync'			 = "Sync members of group"
 }

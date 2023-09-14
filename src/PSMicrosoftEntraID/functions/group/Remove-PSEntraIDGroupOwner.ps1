@@ -1,10 +1,10 @@
-﻿function  Remove-PSEntraIDGroupMember {
+function  Remove-PSEntraIDGroupOwner {
     <#
     .SYNOPSIS
-        Remove a member/owner to a security or Microsoft 365 group.
+        Remove a owner to a security or Microsoft 365 group.
 
     .DESCRIPTION
-        Remove a member/owner to a security or Microsoft 365 group.
+        Remove a owner to a security or Microsoft 365 group.
 
     .PARAMETER Identity
         MailNickName or Id of group or team
@@ -29,7 +29,7 @@
     .EXAMPLE
             PS C:\> Remove-PSADGroupMember -Identity group1 -User user1,user2
 
-            Remove memebr to Azure AD group group1
+            Remove owner to Azure AD group group1
 
 
 #>
@@ -66,8 +66,8 @@
                     foreach ($itemUser in  $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ('groups/{0}/members/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
-                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $aADGroup.MailNickName -ScriptBlock {
+                            $path = ('groups/{0}/owners/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
+                            Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $aADGroup.MailNickName -ScriptBlock {
                                 [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete)
                             } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
