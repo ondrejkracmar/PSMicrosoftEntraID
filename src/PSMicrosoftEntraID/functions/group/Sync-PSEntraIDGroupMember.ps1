@@ -80,7 +80,8 @@
                 foreach ($itemUser in  $User) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser
                     if (-not ([object]::Equals($aADUser, $null))) {
-                        [void]$referenceMemberList.Add($aADUser.Id)
+                        $addUser = $aADUser | Select-Object -Property Id
+                        [void]$referenceMemberList.Add($addUser)
                     }
                 }
                 $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
