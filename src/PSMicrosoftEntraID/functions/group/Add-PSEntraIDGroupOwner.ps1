@@ -1,4 +1,4 @@
-﻿function Add-PSEntraIDGroupMember {
+﻿function Add-PSEntraIDGroupOwner {
     <#
     .SYNOPSIS
         Add a owner to a security or Microsoft 365 group.

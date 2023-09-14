@@ -100,7 +100,7 @@
                     MemberUrlList     = $memberUrlList
                 }
             }
-            if (($requestHash.Method -eq 'Patch') -and ($requestHash.ObjectId.Count -gt 1)) {
+            if ($requestHash.ObjectId.Count -gt 1) {
                 $bodyList = $requestHash.Body | Step-Array -Size $nextLoop
                 foreach ($bodyItem in $bodyList) {
                     $body = @{
@@ -113,9 +113,9 @@
                 }
             }
             else {
-                foreach ($membereUrl in $requestHash.MemberUrlList) {
+                foreach ($memberUrl in $requestHash.MemberUrlList) {
                     $body = @{
-                        '@odata.id' = $membereUrl
+                        '@odata.id' = $memberUrl
                     }
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
                         Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method
