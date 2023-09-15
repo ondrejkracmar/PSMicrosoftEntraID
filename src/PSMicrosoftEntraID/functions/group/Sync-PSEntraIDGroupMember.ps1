@@ -40,7 +40,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('PSMicrosoftEntraID.Sync')]
+    [OutputType('Array')]
     [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
