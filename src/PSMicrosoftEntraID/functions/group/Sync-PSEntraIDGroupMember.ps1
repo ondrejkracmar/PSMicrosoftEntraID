@@ -72,7 +72,7 @@
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'UserIdentity' {
-                foreach ($itemUser in  $DifferenceUserIdentity) {
+                foreach ($itemUser in  $ReferenceUserIdentity) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser
                     if (-not ([object]::Equals($aADUser, $null))) {
                         $addUser = $aADUser | Select-Object -Property Id
