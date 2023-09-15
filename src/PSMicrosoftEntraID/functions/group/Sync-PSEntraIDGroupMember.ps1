@@ -70,54 +70,53 @@
     }
 
     process {
-        switch ($PSCmdlet.ParameterSetName) {
-            'UserIdentity' {
-                foreach ($itemUser in  $ReferenceUserIdentity) {
-                    $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        $addUser = $aADUser | Select-Object -Property Id
-                        [void]$referenceMemberList.Add($addUser)
+        $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
+        if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
+            switch ($PSCmdlet.ParameterSetName) {
+                'UserIdentity' {
+                    foreach ($itemUser in  $ReferenceUserIdentity) {
+                        $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                        if (-not ([object]::Equals($aADUser, $null))) {
+                            $addUser = $aADUser | Select-Object -Property Id
+                            [void]$referenceMemberList.Add($addUser)
+                        }
                     }
                 }
-                $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
-                $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
+                'GroupIdentity' {
+                    $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
+                    $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
+                    $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
+                }
             }
-            'GroupIdentity' {
-                $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
-                $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
-                $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
-                $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
-                
-            }
-        }
-        $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
+            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
 
-        if ($SyncView.IsPresent) {
-            if (-not ([object]::Equals($syncOperationList, $null))) {
-                $syncOperationList
+            if ($SyncView.IsPresent) {
+                if (-not ([object]::Equals($syncOperationList, $null))) {
+                    $syncOperationList
+                }
             }
-        }
-        else {
-            if (-not ([object]::Equals($syncOperationList, $null))) {
-                foreach ($syncOperation in $syncOperationList) {
-                    switch ($syncOperation.Crud) {
-                        'Create' {
-                            $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                [void](Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
+            else {
+                if (-not ([object]::Equals($syncOperationList, $null))) {
+                    foreach ($syncOperation in $syncOperationList) {
+                        switch ($syncOperation.Crud) {
+                            'Create' {
+                                $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
+                                    [void](Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
+                                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
+                            'Update' {
+                            }
+                            'Delete' {
+                                $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
+                                    [void](Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
+                                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
+                            Default {}
                         }
-                        'Update' {
-                        }
-                        'Delete' {
-                            $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                [void](Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                        Default {}
                     }
                 }
             }
