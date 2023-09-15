@@ -40,7 +40,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('Ssytem.Collections.Array')]
+    [OutputType('System.Collections.ArrayList')]
     [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
