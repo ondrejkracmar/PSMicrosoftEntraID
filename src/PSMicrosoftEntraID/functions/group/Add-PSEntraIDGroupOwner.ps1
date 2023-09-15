@@ -30,9 +30,9 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-            PS C:\> Add-PSADGroupOwner -Identity group1 -User user1,user2
+            PS C:\> Add-PSEntraIDGroupOwner -Identity group1 -User user1,user2
 
-            Add owner to Azure AD group group1
+            Add owners user1,user2 to Azure group group1
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]

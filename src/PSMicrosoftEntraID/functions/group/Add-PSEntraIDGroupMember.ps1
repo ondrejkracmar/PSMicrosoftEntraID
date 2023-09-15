@@ -27,7 +27,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-            PS C:\> Add-PSADGroupMember -Identity group1 -User user1,user2
+            PS C:\> Add-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
             Add member to Azure AD group group1
 #>

@@ -27,7 +27,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-            PS C:\> Remove-PSADGroupMember -Identity group1 -User user1,user2
+            PS C:\> Remove-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
             Remove owner to Azure AD group group1
 
