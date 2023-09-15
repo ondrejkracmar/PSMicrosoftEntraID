@@ -12,7 +12,7 @@
     .PARAMETER DifferenceIdentity
         MailNickName or Id of difference group or team
 
-    .PARAMETER User
+    .PARAMETER ReferenceUserIdentity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER SyncView
