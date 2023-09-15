@@ -21,9 +21,6 @@
         .PARAMETER All
             Return all accounts in tenant/directory.
 
-        .PARAMETER PageSize
-            Value of returned result set contains multiple pages of data.
-
         .EXAMPLE
             PS C:\> Get-PSEntraIDGroup -Identity group1
 
