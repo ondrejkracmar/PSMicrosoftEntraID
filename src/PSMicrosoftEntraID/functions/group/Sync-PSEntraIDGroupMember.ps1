@@ -72,6 +72,7 @@
     process {
         $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
         if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
+            $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
             switch ($PSCmdlet.ParameterSetName) {
                 'UserIdentity' {
                     foreach ($itemUser in  $ReferenceUserIdentity) {
@@ -85,7 +86,6 @@
                 'GroupIdentity' {
                     $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
                     $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
-                    $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
                 }
             }
             $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
