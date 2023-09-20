@@ -11,7 +11,7 @@
 
     .PARAMETER Owner
         Member type owner.
-    
+
     .PARAMETER Filter
         Filter expressions of groups in tenant/directory.
 
@@ -46,7 +46,7 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet        
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
@@ -72,7 +72,7 @@
                             if ($AdvancedFilter.IsPresent) {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
-                            
+
                         }
                         Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get | ConvertFrom-RestUser
                     }
