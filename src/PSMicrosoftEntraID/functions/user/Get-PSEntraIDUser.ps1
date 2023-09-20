@@ -64,10 +64,9 @@
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
             '$count'  = 'true'
-            '$top'    = $pageSize
+            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
     }

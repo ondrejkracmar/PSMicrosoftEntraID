@@ -1,4 +1,4 @@
-﻿New-PSFLicense -Product 'PSAzureAADirectory' -Manufacturer 'KracmarOndrej' -ProductVersion $script:ModuleVersion -ProductType Module -Name MIT -Version "1.0.0.0" -Date (Get-Date "2021-05-28") -Text @"
+﻿New-PSFLicense -Product 'PSMicrosoftEntraID' -Manufacturer 'KracmarOndrej' -ProductVersion $script:ModuleVersion -ProductType Module -Name MIT -Version "1.0.0.0" -Date (Get-Date "2021-05-28") -Text @"
 Copyright (c) 2021 KracmarOndrej
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

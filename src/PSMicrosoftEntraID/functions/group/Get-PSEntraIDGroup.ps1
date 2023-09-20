@@ -21,9 +21,6 @@
         .PARAMETER All
             Return all accounts in tenant/directory.
 
-        .PARAMETER PageSize
-            Value of returned result set contains multiple pages of data.
-
         .EXAMPLE
             PS C:\> Get-PSEntraIDGroup -Identity group1
 
@@ -56,10 +53,9 @@
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $pageSize = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         $query = @{
             '$count'  = 'true'
-            '$top'    = $pageSize
+            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value -join ',')
         }
     }

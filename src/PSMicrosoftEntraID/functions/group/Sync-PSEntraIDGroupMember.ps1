@@ -12,7 +12,7 @@
     .PARAMETER DifferenceIdentity
         MailNickName or Id of difference group or team
 
-    .PARAMETER User
+    .PARAMETER ReferenceUserIdentity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER SyncView
@@ -33,9 +33,9 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-            PS C:\> Remove-PSADGroupMember -Identity group1 -User user1,user2
+            PS C:\> Sync-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
-            Remove memebr to Azure AD group group1
+            Sync memebrs between group1 and group2
 
 
 #>
@@ -47,9 +47,8 @@
         [ValidateGroupIdentity()]
         [string]
         $ReferenceIdentity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateGroupIdentity()]
         [string]
         $DifferenceIdentity,
@@ -57,11 +56,7 @@
         [ValidateUserIdentity()]
         [string[]]
         [Alias("UserId", "UserPrincipalName", "Mail")]
-        $User,
-        #[Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'QueryExpressionIdentity')]
-        #[ValidateNotNullOrEmpty()]
-        #[string]
-        #$QueryExpression,
+        $ReferenceUserIdentity,
         [switch]
         $SyncView,
         [switch]
@@ -75,20 +70,22 @@
     }
 
     process {
-        $referenceAADGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
-        if (-not ([object]::Equals($referenceAADGroup, $null))) {
-            $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceAADGroup.Id | Select-Object -Property Id
+        $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
+        if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
+            $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
             switch ($PSCmdlet.ParameterSetName) {
                 'UserIdentity' {
-                    foreach ($itemUser in  $User) {
+                    foreach ($itemUser in  $ReferenceUserIdentity) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
-                            [void]$differenceMemberList.Add($aADUser.Id)
+                            $addUser = $aADUser | Select-Object -Property Id
+                            [void]$referenceMemberList.Add($addUser)
                         }
                     }
                 }
                 'GroupIdentity' {
-                    $differenceMemberList = Get-PSEntraIDGroupMember -Identity $DifferenceIdentity | Select-Object -Property Id
+                    $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
+                    $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
                 }
             }
             $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id

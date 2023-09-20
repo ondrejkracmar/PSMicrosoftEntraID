@@ -15,9 +15,6 @@
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
 
-    .PARAMETER PageSize
-        Value of returned result set contains multiple pages of data.
-
 	.EXAMPLE
 		PS C:\> Get-PSEntraIDUserLicense -Identity username@contoso.com
 
