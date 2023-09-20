@@ -154,7 +154,7 @@
 					param ($Data)
 
 					$token = [PSCredential]::new("foo", $Data.Data.Token).GetNetworkCredential().Password
-					@{ Authorization = "Token $token" }
+					@{ Authorization = "Bearer $token" }
 				}
 			}
 
