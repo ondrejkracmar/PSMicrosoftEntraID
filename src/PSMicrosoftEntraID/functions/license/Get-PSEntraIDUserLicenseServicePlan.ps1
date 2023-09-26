@@ -94,7 +94,7 @@
                 foreach ($user in $Identity) {
                     $mailQuery = @{
                         '$count'  = 'true'
-                        '$top'    = $pageSize
+                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
