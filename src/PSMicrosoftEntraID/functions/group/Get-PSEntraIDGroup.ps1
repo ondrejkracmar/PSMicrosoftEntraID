@@ -66,7 +66,7 @@
                 foreach ($group in $Identity) {
                     $mailNickNameQuery = @{
                         #'$count'  = 'true'
-                        '$top'    = $pageSize
+                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value -join ',')
                     }
                     $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f $group)
