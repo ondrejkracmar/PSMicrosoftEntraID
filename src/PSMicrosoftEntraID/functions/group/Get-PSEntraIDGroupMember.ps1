@@ -18,6 +18,10 @@
     .PARAMETER AdvancedFilter
         Switch advanced filter for filtering groups in tenant/directory.
 
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
+
     .EXAMPLE
         PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
 
@@ -28,21 +32,20 @@
     [OutputType('PSMicrosoftEntraID.User')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
-        [string[]]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        $Identity,
+        [string[]]$Identity,
         [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]
-        $Owner,
+        [switch]$Owner,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter
+        [switch]$AdvancedFilter,
+        [switch]$EnableException
     )
 
     begin {
@@ -53,6 +56,8 @@
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
         $header = @{}
+        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
     }
 
     process {
@@ -72,9 +77,16 @@
                             if ($AdvancedFilter.IsPresent) {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
-
+                        }                        
+                        Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                         }
-                        Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get | ConvertFrom-RestUser
                     }
                 }
             }

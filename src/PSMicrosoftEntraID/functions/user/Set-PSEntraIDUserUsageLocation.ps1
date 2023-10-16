@@ -31,7 +31,7 @@
 
     .EXAMPLE
         PS C:\>Set-PSEntraIDUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
-        
+
 		Set usage location for Azure AD user user1@contoso.com
 
 
@@ -45,7 +45,7 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateUserIdentity()]
         [string[]]
-        [Alias("Id","UserPrincipalName","Mail")]
+        [Alias("Id", "UserPrincipalName", "Mail")]
         $Identity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'IdentityUsageLocationCode')]
         [ValidateNotNullOrEmpty()]
@@ -70,7 +70,6 @@
             $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
             if (-not ([object]::Equals($aADUser, $null))) {
                 $path = ("users/{0}" -f $aADUser.Id)
-
                 switch ($PSCmdlet.ParameterSetName) {
                     'IdentityUsageLocationCode' {
                         $usgaeLocationTarget = $usageLocationCode
@@ -86,11 +85,15 @@
                     }
                 }
                 Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch)
+                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch -ErrorAction Stop)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }
-            else {}
+            else {
+                if ($EnableException.IsPresent) {
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                }
+            }
         }
     }
     end {}

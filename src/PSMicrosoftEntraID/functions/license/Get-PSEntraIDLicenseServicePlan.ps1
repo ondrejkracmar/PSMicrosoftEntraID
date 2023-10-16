@@ -12,6 +12,10 @@
     .PARAMETER SkuPartNumber
         Friendly name Office 365 product of subscribedSku.
 
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
+
 	.EXAMPLE
 		PS C:\> Get-PSEntraIDLicenseServicePlan -SkuPartNumber ENTERPRISEPACK
 
@@ -26,7 +30,8 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string]
-        $SkuPartNumber
+        $SkuPartNumber,
+        [switch]$EnableException
     )
     begin {
         Assert-RestConnection -Service graph -Cmdlet $PSCmdlet
@@ -34,10 +39,26 @@
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'SkuId' {
-                (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $SkuId).ServicePlans | ConvertFrom-RestServicePlan
+                $subscribedSku = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $SkuId
+                if (-not([object]::Equals($subscribedSku, $null))) {
+                    $subscribedSku.ServicePlans | ConvertFrom-RestServicePlan
+                }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuId)
+                    }
+                }
             }
             'SkuPartNumber' {
-                (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).ServicePlans | ConvertFrom-RestServicePlan
+                $subscribedSku = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
+                if (-not([object]::Equals($subscribedSku, $null))) {
+                    $subscribedSku.ServicePlans | ConvertFrom-RestServicePlan
+                }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuPartNumber)
+                    }
+                }
             }
         }
     }

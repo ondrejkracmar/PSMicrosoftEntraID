@@ -30,7 +30,7 @@
 		Delete user user username@contoso.com from Azure AD (Entra ID)
 
 	#>
-    
+
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
@@ -53,11 +53,18 @@
     process {
         foreach ($user in $Identity) {
             $aADUser = Get-PSEntraIDUser -Identity $user
-            $path = ("users/{0}" -f $aADUser.Id)
-            Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete)
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-            if (Test-PSFFunctionInterrupt) { return }
+            if (-not([object]::Equals($aADUser, $null))) {
+                $path = ("users/{0}" -f $aADUser.Id)
+                Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
+            }
+            else {
+                if ($EnableException.IsPresent) {
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                }
+            }
         }
     }
 

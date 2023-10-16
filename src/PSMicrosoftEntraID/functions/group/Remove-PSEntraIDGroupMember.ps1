@@ -13,8 +13,8 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -38,16 +38,13 @@
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param([Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
-        [string]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        $Identity,
+        [string]$Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateUserIdentity()]
-        [string[]]
         [Alias("UserId", "UserPrincipalName", "Mail")]
-        $User,
-        [switch]
-        $EnableException
+        [string[]]$User,
+        [switch]$EnableException
     )
 
 
@@ -58,22 +55,26 @@
     }
 
     process {
-        $aADGroup = Get-PSEntraIDGroup -Identity $Identity
-        if (-not ([object]::Equals($aADGroup, $null))) {
-
+        $group = Get-PSEntraIDGroup -Identity $Identity
+        if (-not ([object]::Equals($group, $null))) {
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 'Identity' {
                     foreach ($itemUser in  $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ('groups/{0}/members/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
+                            $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $aADUser.Id)
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $aADGroup.MailNickName -ScriptBlock {
-                                [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete)
+                                [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
                             } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
                 }
+            }
+        }
+        else {
+            if ($EnableException.IsPresent) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
             }
         }
     }
