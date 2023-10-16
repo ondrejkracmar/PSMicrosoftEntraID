@@ -7,7 +7,7 @@
 
 	'SubscribedSku.List'           = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'     = "Get subscribed Sku '{0}' failed"
-	'SubscribedSku.Get'            = "Get subscribed Sku '{0}'"
+	#'SubscribedSku.Get'            = "Get subscribed Sku '{0}'"
 	'SubscribedSku.Filter'         = "List subscribed Sku with filter '{0}'"
 	'ServicePlan.Filter'           = "List service plan with filter '{0}'"
 	'ServicePlanName.Get.Failed'   = "Get service plan '{0}' failed"

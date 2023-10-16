@@ -69,7 +69,7 @@
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' {                
+            'Identity' {
                 foreach ($group in $Identity) {
                     $mailNickNameQuery = @{
                         #'$count'  = 'true'
