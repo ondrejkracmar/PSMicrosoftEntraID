@@ -1,4 +1,4 @@
-﻿function ConvertFrom-RestOrganizationAssignedPlans {
+﻿function ConvertFrom-RestOrganizationAssignedPlan {
     <#
 	.SYNOPSIS
 		Converts organization assigned plans to look nice.

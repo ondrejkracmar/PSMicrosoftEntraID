@@ -1,4 +1,4 @@
-﻿function ConvertFrom-RestOrganizationVerifiedDomains {
+﻿function ConvertFrom-RestOrganizationVerifiedDomain {
     <#
 	.SYNOPSIS
 		Converts organization verified domains to look nice.

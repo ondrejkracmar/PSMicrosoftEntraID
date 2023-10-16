@@ -1,4 +1,4 @@
-﻿function ConvertFrom-RestOrganizationProvisionedPlans {
+﻿function ConvertFrom-RestOrganizationProvisionedPlan {
     <#
 	.SYNOPSIS
 		Converts organization provisioned plans to look nice.

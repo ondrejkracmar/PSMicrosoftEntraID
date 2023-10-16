@@ -51,9 +51,9 @@ function ConvertFrom-RestOrganization {
             SecurityComplianceNotificationMails       = $InputObject.securityComplianceNotificationMails
             SecurityComplianceNotificationPhones      = $InputObject.securityComplianceNotificationPhones
             PrivacyProfile                            = $InputObject.privacyProfile
-            AssignedPlans                             = $InputObject.assignedPlans | ConvertFrom-RestOrganizationAssignedPlans
-            ProvisionedPlans                          = $InputObject.provisionedPlans | ConvertFrom-RestOrganizationProvisionedPlans
-            VerifiedDomains                           = $InputObject.verifiedDomains | ConvertFrom-RestOrganizationVerifiedDomains
+            AssignedPlans                             = $InputObject.assignedPlans | ConvertFrom-RestOrganizationAssignedPlan
+            ProvisionedPlans                          = $InputObject.provisionedPlans | ConvertFrom-RestOrganizationProvisionedPlan
+            VerifiedDomains                           = $InputObject.verifiedDomains | ConvertFrom-RestOrganizationVerifiedDomain
         }
     }
 }
