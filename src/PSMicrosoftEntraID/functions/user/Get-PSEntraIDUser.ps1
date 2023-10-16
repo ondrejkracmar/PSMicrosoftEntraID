@@ -27,6 +27,10 @@
     .PARAMETER All
         Return all accounts in tenant/directory.
 
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
+
     .EXAMPLE
         PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
 
@@ -59,7 +63,8 @@
         [switch]$AdvancedFilter,
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
-        [switch]$All
+        [switch]$All,
+        [switch]$EnableException
     )
 
     begin {
@@ -69,6 +74,8 @@
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
+        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
     }
 
     process {
@@ -81,21 +88,25 @@
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
-                    $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get | ConvertFrom-RestUser
-                    if (-not([object]::Equals($userMail, $null))) {
-                        $userId = $userMail[0].Id
+                    Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        if (-not([object]::Equals($userMail, $null))) {
+                            $userId = $userMail[0].Id
 
-                    }
-                    else{
-                        $userId = $user
-                    }
-                    Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get | ConvertFrom-RestUser
+                        }
+                        else {
+                            $userId = $user
+                        }
+                        Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             }
             'Name' {
                 foreach ($user in $Name) {
                     $query['$Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surName,'{0}')" -f $User)
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                    Invoke-PSFProtectedCommand -ActionString 'User.Name' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             }
             'Filter' {
@@ -103,10 +114,14 @@
                 if ($AdvancedFilter.IsPresent) {
                     $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header | ConvertFrom-RestUser
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -Header $header -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
                 else {
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             }
             'CompanyName' {
@@ -120,11 +135,15 @@
                 }
                 if ($Disabled.IsPresent) {
                     $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
                 else {
                     $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
-                    Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             }
             'All' {
@@ -133,10 +152,14 @@
                         $header = @{}
                         $header['ConsistencyLevel'] = 'eventual'
                         $query['$Filter'] = "accountEnabled eq false"
-                        Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get | ConvertFrom-RestUser
+                        Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues 'accountEnabled eq false' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-RestRequest -Service 'graph' -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     }
                     else {
-                        Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get | ConvertFrom-RestUser
+                        Invoke-PSFProtectedCommand -ActionString 'User.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-RestRequest -Service 'graph' -Path ('users') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     }
                 }
             }

@@ -16,8 +16,8 @@
         user's role (Member or Owner)
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -84,16 +84,20 @@
                 Metohd            = 'Post'
                 MemberUrlList     = $memberUrlList
             }
-        }
-
-        foreach ($ownerUrl in $requestHash.$ownerUrlList) {
-            $body = @{
-                '@odata.id' = $ownerUrl
+            foreach ($ownerUrl in $requestHash.$ownerUrlList) {
+                $body = @{
+                    '@odata.id' = $ownerUrl
+                }
+                Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
+                    [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
             }
-            Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
-                Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-            if (Test-PSFFunctionInterrupt) { return }
+        }
+        else {
+            if ($EnableException.IsPresent) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
+            }
         }
     }
     end {

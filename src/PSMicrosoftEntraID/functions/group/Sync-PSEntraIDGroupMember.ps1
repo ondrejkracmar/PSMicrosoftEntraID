@@ -19,8 +19,8 @@
         List user identities via query expression
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -45,31 +45,29 @@
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [ValidateGroupIdentity()]
-        [string]
-        $ReferenceIdentity,
+        [string]$ReferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateGroupIdentity()]
-        [string]
-        $DifferenceIdentity,
+        [string]$DifferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
-        [string[]]
         [Alias("UserId", "UserPrincipalName", "Mail")]
-        $ReferenceUserIdentity,
-        [switch]
-        $SyncView,
-        [switch]
-        $EnableException
+        [string[]]$ReferenceUserIdentity,
+        [switch]$SyncView,
+        [switch]$EnableException
     )
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $referenceMemberList = [System.Collections.ArrayList]::New()
         $differenceMemberList = [System.Collections.ArrayList]::New()
+        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
     }
 
     process {
+        
         $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
         if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
             $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
