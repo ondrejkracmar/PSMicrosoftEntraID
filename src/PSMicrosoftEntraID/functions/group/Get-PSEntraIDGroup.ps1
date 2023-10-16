@@ -101,16 +101,18 @@
             }
             'Filter' {
                 $query['$Filter'] = $Filter
-                Invoke-PSFProtectedCommand -ActionString 'Group.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    if ($AdvancedFilter.IsPresent) {
-                        $header = @{}
-                        $header['ConsistencyLevel'] = 'eventual'
+                if ($AdvancedFilter.IsPresent) {
+                    $header = @{}
+                    $header['ConsistencyLevel'] = 'eventual'
+                    Invoke-PSFProtectedCommand -ActionString 'Group.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -Header $header -ErrorAction Stop | ConvertFrom-RestGroup
-                    }
-                    else {
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                }
+                else {
+                    Invoke-PSFProtectedCommand -ActionString 'Group.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestGroup
-                    }
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                }
                 if (Test-PSFFunctionInterrupt) { return }
             }
             'All' {
