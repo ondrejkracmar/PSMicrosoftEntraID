@@ -28,7 +28,7 @@
             PSTypeName   = 'PSMicrosoftEntraID.Organization.VerifiedDomain'
             Capabilities = $InputObject.capabilities
             IsDefault    = $InputObject.isDefault
-            isInitial    = $InputObject.IsInitial
+            IsInitial    = $InputObject.IsInitial
             Name         = $InputObject.name
             Type         = $InputObject.type
         }

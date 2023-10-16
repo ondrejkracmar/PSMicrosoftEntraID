@@ -30,7 +30,6 @@
 
             Get properties of Azure AD group group1
 
-
     #>
     [OutputType('PSMicrosoftEntraID.Group')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]

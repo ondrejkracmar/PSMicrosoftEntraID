@@ -77,7 +77,7 @@
                             if ($AdvancedFilter.IsPresent) {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
-                        }                        
+                        }
                         Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestUser
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
