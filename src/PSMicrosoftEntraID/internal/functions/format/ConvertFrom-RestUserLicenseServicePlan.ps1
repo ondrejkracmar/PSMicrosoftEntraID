@@ -8,15 +8,15 @@
 
 	.PARAMETER InputObject
 		The rest response representing a subscribed Sku
-	
+
 	.PARAMETER ServicePlan
 		Add list of service plans of subscription to Azure AD user object into something userfriendly
 
 	.EXAMPLE
 		PS C:\> Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Method Get -ErrorAction Stop | ConvertFrom-RestLicenseServicePlan
-		
+
 		Retrieves the specified subscribed Sku service plans and converts it into something userfriendly
-		
+
 	#>
 	[CmdletBinding()]
 	param (
@@ -26,7 +26,7 @@
 	)
 
 	begin {
-		$subscribedSkuList = Get-PSFResultCache
+		$subscribedSkuList = Get-PSEntraIDSubscribedSku
 	}
 
 	process {

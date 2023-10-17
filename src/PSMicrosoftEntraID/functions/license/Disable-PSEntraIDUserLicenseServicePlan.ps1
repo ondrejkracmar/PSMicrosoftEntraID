@@ -95,7 +95,7 @@
                         $skuTarget = $SkuId
                     }
                     '\wSkuPartNumber\w' {
-                        $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                        $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
                         $skuTarget = $SkuPartNumber
                     }
                     '\wPlanId' {
