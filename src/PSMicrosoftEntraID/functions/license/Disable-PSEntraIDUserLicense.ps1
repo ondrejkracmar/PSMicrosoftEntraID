@@ -79,7 +79,7 @@
                         }
                     }
                     '\wSkuPartNumber' {
-                        [string[]]$bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
+                        [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
                         if (Test-PSFPowerShell -PSMinVersion 7.0) {
                             $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
                         }

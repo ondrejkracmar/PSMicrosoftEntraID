@@ -96,13 +96,13 @@
                         $skuTarget = $SkuId
                     }
                     '\wSkuPartNumber\w' {
-                        $bodySkuId = (Get-PSFResultCache | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                        $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
                         $skuTarget = $SkuPartNumber
                     }
                     '\wPlanId' {
                         [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
                         if ([object]::Equals($bodyDisabledServicePlans, $null)) {
-                            [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = ((Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
                         }
                         if (Test-PSFPowerShell -PSMinVersion 7.0) {
                             $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
@@ -114,7 +114,7 @@
                     '\wPlanName' {
                         [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
                         if ([object]::Equals($bodyDisabledServicePlans, $null)) {
-                            [string[]]$bodyDisabledServicePlans = ((Get-PSFResultCache | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = ((Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId).ServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
                         }
                         if (Test-PSFPowerShell -PSMinVersion 7.0) {
                             $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
