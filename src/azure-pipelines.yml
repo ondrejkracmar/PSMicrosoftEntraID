@@ -7,7 +7,7 @@ variables:
   project: "AutomationPlatform"
   feedName: "AzArtifactsPSModules"
   userName: "odrej.kracmar@email.cz"
-  password: "cmx7uvg7gz7heq6r3fkkh54vcjy5frtobrk5irszfguigsds3juq"
+  password: "kviayb4hm3b4dwrozyxjy2nvwevkyo5jtwv57e7s5rpe7qj5yp6a"
 
 steps:
    - task: PowerShell@2
