@@ -43,6 +43,7 @@
 			EmployeeId        = $InputObject.employeeId
 			JobTitle          = $InputObject.jobTitle
 			Department        = $InputObject.department
+			OfficeLocation    = $InputObject.officeLocation
 			CompanyName       = $InputObject.companyName
 			City              = $InputObject.city
 			PostalCode        = $InputObject.postalCode
