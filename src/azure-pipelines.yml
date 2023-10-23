@@ -6,7 +6,7 @@ variables:
   company: "i-system"
   project: "AutomationPlatform"
   feedName: "AzArtifactsPSModules"
-  userName: "odrej.kracmar@email.cz"
+  userName: "ondrej.kracmar@email.cz"
   password: "wqn6ebcxchstbr22p6qmmhyn3fsel3i5aabaplpxrrrn5zazqsqq"
 
 steps:
