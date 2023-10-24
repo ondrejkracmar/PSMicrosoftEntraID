@@ -6,8 +6,8 @@ variables:
   company: "i-system"
   project: "AutomationPlatform"
   feedName: "AzArtifactsPSModules"
-  userName: $(userName)
-  password: $(PAT)
+  userName: ${{ variables.userName }}
+  password: ${{ variables.PAT }}
 
 steps:
    - task: PowerShell@2
