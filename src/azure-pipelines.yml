@@ -3,11 +3,7 @@ trigger:
   - main
 
 variables:
-  company: "i-system"
-  project: "AutomationPlatform"
-  feedName: "AzArtifactsPSModules"
-  userName: "odrej.kracmar@email.cz"
-  password: "cmx7uvg7gz7heq6r3fkkh54vcjy5frtobrk5irszfguigsds3juq"
+  - group: "AzArtifactsPSModules"
 
 steps:
    - task: PowerShell@2
@@ -43,5 +39,5 @@ steps:
         targetType: inline
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
-          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(password)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.1.3.nupkg' -SkipDuplicate"
+          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.1.4.nupkg' -SkipDuplicate"
