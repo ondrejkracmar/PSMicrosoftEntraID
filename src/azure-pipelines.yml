@@ -6,6 +6,7 @@ variables:
   company: "i-system"
   project: "AutomationPlatform"
   feedName: "AzArtifactsPSModules"
+  group: PSMicrosoftEntraID
   #userName: ${{ variables.userName }}
   #password: ${{ variables.PAT }}
 
