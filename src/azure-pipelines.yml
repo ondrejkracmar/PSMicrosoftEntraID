@@ -3,11 +3,16 @@ trigger:
   - main
 
 variables:
-  company: "i-system"
-  project: "AutomationPlatform"
-  feedName: "AzArtifactsPSModules"
-  userName: $(userName)
-  password: $(PAT)
+  - group: "PSMicrosoftENtraID"
+  - name : "company"
+    value : "i-system"
+  - name : "project"
+    value : "AutomationPlatform"
+  - name : "feedName"
+    value :  "AzArtifactsPSModules"
+  #userName: $(userName)
+  #password: $(PAT)
+
 
 steps:
    - task: PowerShell@2
