@@ -3,8 +3,8 @@ trigger:
   - main
 
 variables:
-  - group: "PSMicrosoftENtraID"
-  
+  - group: "AzArtifactsPSModules"
+
 steps:
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
