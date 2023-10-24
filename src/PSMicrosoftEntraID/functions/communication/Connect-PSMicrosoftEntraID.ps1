@@ -166,4 +166,5 @@
 		catch { $PSCmdlet.ThrowTerminatingError($_) }
 		Set-RestConnection -Service graph -ExtraHeaderContent @{ 'content-type' = 'application/json' }
 	}
+	end { Register-PSEntraIDSubscribedSku }
 }
