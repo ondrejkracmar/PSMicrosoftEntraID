@@ -4,16 +4,7 @@ trigger:
 
 variables:
   - group: "PSMicrosoftENtraID"
-  - name : "company"
-    value : "i-system"
-  - name : "project"
-    value : "AutomationPlatform"
-  - name : "feedName"
-    value :  "AzArtifactsPSModules"
-  #userName: $(userName)
-  #password: $(PAT)
-
-
+  
 steps:
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
