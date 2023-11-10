@@ -85,8 +85,9 @@
                 foreach ($user in $Identity) {
                     $aADUser = Get-PSEntraIDUser -Identity $user
                     if (-not([object]::Equals($aADUser, $null))) {
+                        $userId = $aADUser.Id
                         Invoke-PSFProtectedCommand -ActionString 'User.License.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $user) -Query $query -Method Get | ConvertFrom-RestUserLicense
+                            Invoke-RestRequest -Service 'graph' -Path ('users/{0}' -f $userId) -Query $query -Method Get | ConvertFrom-RestUserLicense
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     }
                     else {
