@@ -23,16 +23,16 @@
 
     .PARAMETER SecurityEnabled
         Specifies whether the group is a security group. Required.
-    
+
     .PARAMETER Classification
         Describes a classification for the group.
-    
+
     .PARAMETER GroupTypes
         Specifies the group type and its membership.
 
     .PARAMETER Visibility
         Specifies the group join policy and group content visibility for groups. Possible values are: Private, Public, or HiddenMembership.
-    
+
     .PARAMETER Owners
         List of owners of new group.
 
@@ -43,7 +43,7 @@
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
 
     .PARAMETER ResourceBehaviorOptions
-    	Specifies the group behaviors that can be set for a Microsoft 365 group during creation. 
+    	Specifies the group behaviors that can be set for a Microsoft 365 group during creation.
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
@@ -141,6 +141,9 @@
                 }
                 if (Test-PSFParameterBinding -Parameter IsAssignableToRole) {
                     $body['isAssignableToRole'] = $IsAssignableToRole
+                }
+                if(Test-PSFParameterBinding -Parameter Classification){
+                    $body['classification'] = $Classification
                 }
                 if (Test-PSFParameterBinding -Parameter GroupTypes) {
                     $body['groupTypes'] = @($GroupTypes)
