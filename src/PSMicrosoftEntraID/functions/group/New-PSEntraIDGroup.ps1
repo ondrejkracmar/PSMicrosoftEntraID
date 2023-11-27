@@ -41,6 +41,9 @@
 
     .PARAMETER MembersmembershipRule
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
+    
+    .PARAMETER MembershipRuleProcessingState
+        Indicates whether the dynamic membership processing is on or paused. Possible values are On or Paused.
 
     .PARAMETER ResourceBehaviorOptions
     	Specifies the group behaviors that can be set for a Microsoft 365 group during creation.
