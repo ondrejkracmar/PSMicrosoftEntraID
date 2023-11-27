@@ -103,8 +103,7 @@
         [Parameter(ParameterSetName = 'CreateGroupViaJson')]
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
-        [string[]]$ResourceBehaviorOptions,
-        [string]$JsonRequest
+        [string[]]$ResourceBehaviorOptions
     )
 
     begin {
@@ -122,11 +121,10 @@
                 if (Test-PSFParameterBinding -Parameter MailNickname) {
                     $group = Get-PSEntraIDGroup -Identity $MailNickname
                     if (([object]::Equals($group, $null))) {
-                        $body['mailNickName'] = $MailNickname
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $MailNickname)
-                            }
+                        $body['mailNickName'] = $MailNickname                    }
+                    else{
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Test) -f $MailNickname)
                         }
                     }
                 }
