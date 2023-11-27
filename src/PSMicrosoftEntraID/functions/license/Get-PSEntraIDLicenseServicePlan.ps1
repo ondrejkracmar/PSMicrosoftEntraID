@@ -24,13 +24,12 @@
     [OutputType('PSMicrosoftEntraID.License.ServicePlan')]
     [CmdletBinding(DefaultParameterSetName = 'SkuPartNumber')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuId')]
         [ValidateGuid()]
-        $SkuId,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
+        [string]$SkuId,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $SkuPartNumber,
+        [string]$SkuPartNumber,
         [switch]$EnableException
     )
     begin {

@@ -30,22 +30,20 @@
 		Get userse with ENTERPRISEPACK subscription
 	#>
     [OutputType('PSMicrosoftEntraID.User.SubscribedSku')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'SkuPartNumberCompanyName')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
-        [string[]]
-        $CompanyName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuId')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuIdCompanyName')]
+        [Alias("Company")]
+        [string[]]$CompanyName,
+        [Parameter(Mandatory = $True, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuIdCompanyName')]
         [ValidateGuid()]
-        [string]
-        $SkuId,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumber')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [string]$SkuId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $SkuPartNumber,
+        [string]$SkuPartNumber,
         [switch]$EnableException
     )
     begin {

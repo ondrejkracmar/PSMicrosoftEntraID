@@ -31,6 +31,9 @@
 	'Group.Get.Failed'             = "Get group '{0}' failed"
 	'Group.Filter'                 = "List groups with filter '{0}'"
 	'Group.List'                   = "List groups '{0}'"
+	'Group.New'                    = "Create new group '{0}'"
+	'Group.Delete'                 = "Delete group '{0}'"
+	'Group.Test'                   = "The new group '{0}' exists"
 
 	'GroupMember.Add'              = "Add members '{0}'"
 	'GroupOwner.Add'               = "Add owners '{0}'"

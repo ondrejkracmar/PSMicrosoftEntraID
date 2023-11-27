@@ -40,7 +40,7 @@
         [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [string]$Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [string[]]$User,

@@ -23,7 +23,7 @@
 
     .PARAMETER AdvancedFilter
         Switch advanced filter for filtering accounts in tenant/directory.
-    
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
@@ -42,29 +42,26 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
-        [string[]]
-        $CompanyName,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuId')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuIdCompanyName')]
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [Alias("Company")]
+        [string[]]$CompanyName,
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuIdCompanyName')]
         [ValidateGuid()]
-        [string[]]
-        $SkuId,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumber')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [string[]]$SkuId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $SkuPartNumber,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [string[]]$SkuPartNumber,
+        [Parameter(Mandatory = $True, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
         [switch]$EnableException

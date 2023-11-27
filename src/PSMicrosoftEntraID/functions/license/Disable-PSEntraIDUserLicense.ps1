@@ -42,20 +42,16 @@
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
-        [string[]]
-        $SkuId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+        [string[]]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $SkuPartNumber,
-        [switch]
-        $EnableException
+        [string[]]$SkuPartNumber,
+        [switch]$EnableException
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet

@@ -85,54 +85,31 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[string]
-		$ClientID,
-
+		[string]$ClientID,
 		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[string]
-		$TenantID,
-
-		[string[]]
-		$Scopes,
-
+		[string]$TenantID,
+		[string[]]$Scopes,
 		[Parameter(ParameterSetName = 'DeviceCode')]
-		[switch]
-		$DeviceCode,
-
+		[switch]$DeviceCode,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[System.Security.Cryptography.X509Certificates.X509Certificate2]
-		$Certificate,
-
+		[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificateThumbprint,
-
+		[string]$CertificateThumbprint,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificateName,
-
+		[string]$CertificateName,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificatePath,
-
+		[string]$CertificatePath,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[System.Security.SecureString]
-		$CertificatePassword,
-
+		[System.Security.SecureString]$CertificatePassword,
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-		[System.Security.SecureString]
-		$ClientSecret,
-
+		[System.Security.SecureString]$ClientSecret,
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[PSCredential]
-		$Credential,
-
+		[PSCredential]$Credential,
 		[Parameter(Mandatory = $true, ParameterSetName = 'LegacyToken')]
-		[System.Security.SecureString]
-		$Token
+		[System.Security.SecureString]$Token
 	)
 
 	begin {

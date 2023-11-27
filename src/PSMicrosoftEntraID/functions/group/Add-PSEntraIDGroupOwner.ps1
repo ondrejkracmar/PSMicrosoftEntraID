@@ -38,19 +38,15 @@
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param(
-        [Parameter(ParameterSetName = 'UserIdentity', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateGroupIdentity()]
-        [string]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        $Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateUserIdentity()]
-        [string[]]
+        [ValidateGroupIdentity()]
+        [string]$Identity,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
-        $User,
-        [switch]
-        $EnableException
+        [ValidateUserIdentity()]
+        [string[]]$User,
+        [switch]$EnableException
     )
 
     begin {

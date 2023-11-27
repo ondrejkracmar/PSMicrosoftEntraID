@@ -35,21 +35,19 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateGroupIdentity()]
-        [string[]]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        $Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'DisplayName')]
+        [ValidateGroupIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'DisplayName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $DisplayName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [string[]]$DisplayName,
+        [Parameter(Mandatory = $True, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch]$All,
         [switch]$EnableException

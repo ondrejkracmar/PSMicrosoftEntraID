@@ -44,41 +44,36 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'ServicePlanIdCompanyName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'ServicePlanNameCompanyName')]
-        [string[]]
-        $CompanyName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuId')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuIdCompanyName')]
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuIdCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'ServicePlanIdCompanyName')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'ServicePlanNameCompanyName')]
+        [Alias("Company")]
+        [string[]]$CompanyName,
+        [Parameter(Mandatory = $True, ParameterSetName = 'SkuId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuIdCompanyName')]
         [ValidateGuid()]
-        [string[]]
-        $SkuId,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumber')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'SkuPartNumberCompanyName')]
+        [string[]]$SkuId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumber')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'SkuPartNumberCompanyName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $SkuPartNumber,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'ServicePlanId')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'ServicePlanIdCompanyName')]
+        [string[]]$SkuPartNumber,
+        [Parameter(Mandatory = $True, ParameterSetName = 'ServicePlanId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ServicePlanIdCompanyName')]
         [ValidateGuid()]
-        [string[]]
-        $ServicePlanId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'ServicePlanName')]
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'ServicePlanNameCompanyName')]
+        [string[]]$ServicePlanId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'ServicePlanName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ServicePlanNameCompanyName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $ServicePlanName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [string[]]$ServicePlanName,
+        [Parameter(Mandatory = $True, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
         [switch]$EnableException

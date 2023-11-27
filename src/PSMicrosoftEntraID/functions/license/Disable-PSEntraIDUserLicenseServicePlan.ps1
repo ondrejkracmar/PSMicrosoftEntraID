@@ -52,32 +52,26 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanName')]
         [ValidateGuid()]
-        [string]
-        $SkuId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
+        [string]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $SkuPartNumber,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [string]$SkuPartNumber,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanId')]
         [ValidateGuid()]
-        [string[]]
-        $ServicePlanId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
+        [string[]]$ServicePlanId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $ServicePlanName,
-        [switch]
-        $EnableException
+        [string[]]$ServicePlanName,
+        [switch]$EnableException
     )
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet

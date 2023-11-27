@@ -43,18 +43,16 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCode')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'IdentityUsageLocationCode')]
         [ValidateNotNullOrEmpty()]
         [string]$UsageLocationCode,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateNotNullOrEmpty()]
         [string]$UsageLocationCountry,
-        [switch]
-        $EnableException
+        [switch]$EnableException
     )
 
     begin {

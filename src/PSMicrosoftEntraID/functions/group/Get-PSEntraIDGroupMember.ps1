@@ -33,16 +33,16 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
+        [ValidateGroupIdentity()]
         [string[]]$Identity,
-        [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $False, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch]$Owner,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
         [switch]$EnableException

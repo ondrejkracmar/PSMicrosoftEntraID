@@ -41,10 +41,9 @@
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Name')]
         [ValidateNotNullOrEmpty()]
         [string[]]$Name,

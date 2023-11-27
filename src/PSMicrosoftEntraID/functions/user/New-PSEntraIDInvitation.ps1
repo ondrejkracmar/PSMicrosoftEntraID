@@ -53,10 +53,9 @@
     [CmdletBinding(DefaultParameterSetName = 'UserEmailAddres')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
-        [ValidateMailAddress()]
-        [string]
         [Alias("UserEmailAddress", "EmailAddres", "Mail","UserPrincipalName","InvitedUserPrincipalName")]
-        $InvitedUserEmailAddress,
+        [ValidateMailAddress()]
+        [string]$InvitedUserEmailAddress,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
@@ -77,8 +76,7 @@
         [string]$MessageLanguage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [psobject[]]$CCRecipient,
-        [switch]
-        $EnableException
+        [switch]$EnableException
     )
 
     begin {
@@ -90,9 +88,7 @@
     }
 
     process {
-
         $body = @{}
-
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
         if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayName') {
