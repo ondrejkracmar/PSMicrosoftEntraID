@@ -84,7 +84,7 @@
                 }
                 Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
                     [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }
             else {

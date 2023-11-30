@@ -37,7 +37,7 @@
         DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [Alias("Id", "GroupId", "TeamId", "MailNickName")]
+        [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string[]]$Identity,
         [switch]$EnableException
@@ -50,19 +50,19 @@
 
     process {
         foreach ($group in $Identity) {
-            $aADGroup = Get-PSEntraIDGroup -Identity $group
-            if (-not([object]::Equals($aADGroup, $null))) {
-                $path = ("groups/{0}" -f $aADGroup.Id)
-                Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $aADGroup.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+            Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $aADGroup = Get-PSEntraIDGroup -Identity $group
+                if (-not([object]::Equals($aADGroup, $null))) {
+                    $path = ("groups/{0}" -f $aADGroup.Id)
                     [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
                 }
-            }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $group)
+                    }
+                }
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
 

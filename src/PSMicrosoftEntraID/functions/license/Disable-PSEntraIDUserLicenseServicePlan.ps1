@@ -80,64 +80,91 @@
     }
     process {
         foreach ($user in  $Identity) {
-            $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
-            if (-not ([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                switch -Regex ($PSCmdlet.ParameterSetName) {
-                    '\wSkuId\w' {
-                        $bodySkuId = $SkuId
-                        $skuTarget = $SkuId
+            switch -Regex ($PSCmdlet.ParameterSetName) {
+                '\wSkuId\w' {
+                    $bodySkuId = $SkuId
+                    $skuTarget = $SkuId
+                }
+                '\wSkuPartNumber\w' {
+                    $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                    $skuTarget = $SkuPartNumber
+                }
+                '\wPlanId' {
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
                     }
-                    '\wSkuPartNumber\w' {
-                        $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-                        $skuTarget = $SkuPartNumber
+                    else {
+                        $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
-                    '\wPlanId' {
-                        [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanId -in $ServicePlanId }).ServicePlanId
-                        [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
-                        if (-not [object]::Equals($enabledServicePlans, $null)) {
-                            $bodyDisabledServicePlans += $enabledServicePlans
-                        }
-                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                            $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
+                    Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                        $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
+                        if (-not ([object]::Equals($aADUser, $null))) {
+                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                            
+                            [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanId -in $ServicePlanId }).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                            if (-not [object]::Equals($enabledServicePlans, $null)) {
+                                $bodyDisabledServicePlans += $enabledServicePlans
+                            }
+                            $body = @{
+
+                                addLicenses    = @(
+                                    @{
+                                        disabledPlans = $bodyDisabledServicePlans
+                                        skuId         = $bodySkuId
+                                    }
+                                )
+                                removeLicenses = @()
+                            }
+                
+                            [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
+                        
                         }
                         else {
-                            $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                            }
                         }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+                '\wPlanName' {
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
                     }
-                    '\wPlanName' {
-                        [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName }).ServicePlanId
-                        [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
-                        if (-not [object]::Equals($enabledServicePlans, $null)) {
-                            $bodyDisabledServicePlans += $enabledServicePlans
-                        }
-                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                            $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
+                    else {
+                        $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    }
+                    Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                        $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
+                        if (-not ([object]::Equals($aADUser, $null))) {
+                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                            [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName }).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                            if (-not [object]::Equals($enabledServicePlans, $null)) {
+                                $bodyDisabledServicePlans += $enabledServicePlans
+                            }
+                            $body = @{
+
+                                addLicenses    = @(
+                                    @{
+                                        disabledPlans = $bodyDisabledServicePlans
+                                        skuId         = $bodySkuId
+                                    }
+                                )
+                                removeLicenses = @()
+                            }
+        
+                            [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
+                
                         }
                         else {
-                            $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                            }
                         }
-                    }
-                }
-
-                $body = @{
-
-                    addLicenses    = @(
-                        @{
-                            disabledPlans = $bodyDisabledServicePlans
-                            skuId         = $bodySkuId
-                        }
-                    )
-                    removeLicenses = @()
-                }
-                Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }

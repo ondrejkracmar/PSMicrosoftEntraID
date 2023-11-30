@@ -57,44 +57,56 @@
 
     process {
         $ownerUrlList = [System.Collections.ArrayList]::new()
-        $memberObjectIdList = [System.Collections.ArrayList]::new()
-        $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
-        $memberMailList = [System.Collections.ArrayList]::new()
-        $group = Get-PSEntraIDGroup -Identity $Identity
-        if (-not([object]::Equals($group, $null))) {
-            foreach ($itemUser in $User) {
-                $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                if (-not([object]::Equals($aADUser, $null))) {
-                    [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
-                    [void]$memberObjectIdList.Add($aADUser.Id)
-                    [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
-                    [void]$memberMailList.Add($aADUser.Mail)
+        $ownerObjectIdList = [System.Collections.ArrayList]::new()
+        $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
+        $ownerMailList = [System.Collections.ArrayList]::new()
+        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+            $group = Get-PSEntraIDGroup -Identity $Identity
+            if (-not([object]::Equals($group, $null))) {
+                foreach ($itemUser in $User) {
+                    $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                    if (-not([object]::Equals($aADUser, $null))) {
+                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                        [void]$ownerObjectIdList.Add($aADUser.Id)
+                        [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                        [void]$ownerMailList.Add($aADUser.Mail)
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                        }
+                    }
+                }
+                $requestHash = @{
+                    ObjectId          = $ownerObjectIdList
+                    UserPrincipalName = $ownerUserPrincipalNameList
+                    Mail              = $ownerMailList
+                    Role              = 'Owner'
+                    UrlPath           = ('groups/{0}/owners/$ref' -f $group.Id)
+                    Method            = 'Post'
+                    OwnerUrlList      = $ownerUrlList
+                }
+                foreach ($ownerUrl in $requestHash.OwnerUrlList) {
+                    $body = @{
+                        '@odata.id' = $ownerUrl
+                    }
+                    try {
+                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                    }
+                    catch {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name GroupOwner.Add.Failed) -f $Identity)
+                        }
+                    }
                 }
             }
-            $requestHash = @{
-                ObjectId          = $memberObjectIdList
-                UserPrincipalName = $memberUserPrincipalNameList
-                Mail              = $memberMailList
-                Role              = 'Owner'
-                UrlPath           = ('groups/{0}/owners/$ref' -f $group.Id)
-                Metohd            = 'Post'
-                MemberUrlList     = $memberUrlList
-            }
-            foreach ($ownerUrl in $requestHash.$ownerUrlList) {
-                $body = @{
-                    '@odata.id' = $ownerUrl
+            else {
+                if ($EnableException.IsPresent) {
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
                 }
-                Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $group.MailNickName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
             }
-        }
-        else {
-            if ($EnableException.IsPresent) {
-                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
-            }
-        }
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        if (Test-PSFFunctionInterrupt) { return }
     }
     end {
 

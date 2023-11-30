@@ -50,19 +50,19 @@
 
     process {
         foreach ($user in $Identity) {
-            $aADUser = Get-PSEntraIDUser -Identity $user
-            if (-not([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}" -f $aADUser.Id)
-                Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+            Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $aADUser = Get-PSEntraIDUser -Identity $user
+                if (-not([object]::Equals($aADUser, $null))) {
+                    $path = ("users/{0}" -f $aADUser.Id)
                     [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                 }
-            }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                    }
+                }
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
 

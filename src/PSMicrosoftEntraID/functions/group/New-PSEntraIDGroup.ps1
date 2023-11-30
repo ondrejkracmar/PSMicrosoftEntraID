@@ -41,7 +41,7 @@
 
     .PARAMETER MembersmembershipRule
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
-    
+
     .PARAMETER MembershipRuleProcessingState
         Indicates whether the dynamic membership processing is on or paused. Possible values are On or Paused.
 
@@ -76,15 +76,15 @@
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Displayname,
-        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string]$Description,
-        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string]$MailNickname,
-        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]]$MailEnabled,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]]$IsAssignableToRole,
-        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]]$SecurityEnabled = $true,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string]$Classification,
@@ -103,7 +103,6 @@
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('On', 'Paused')]
         [string]$MembershipRuleProcessingState,
-        [Parameter(ParameterSetName = 'CreateGroupViaJson')]
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]]$ResourceBehaviorOptions
@@ -113,23 +112,17 @@
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
+        $path = 'groups'
     }
 
     process {
         $body = @{}
         Switch ($PSCmdlet.ParameterSetName) {
             'CreateGroup' {
-                $body['displayName'] = $DisplayName
+                $body['displayName'] = $Displayname
                 $body['description'] = $Description
                 if (Test-PSFParameterBinding -Parameter MailNickname) {
-                    $group = Get-PSEntraIDGroup -Identity $MailNickname
-                    if (([object]::Equals($group, $null))) {
-                        $body['mailNickName'] = $MailNickname                    }
-                    else{
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Test) -f $MailNickname)
-                        }
-                    }
+                    $body['mailNickName'] = $MailNickname
                 }
                 if (Test-PSFParameterBinding -Parameter MailEnabled) {
                     $body['mailEnabled'] = $MailEnabled
@@ -143,7 +136,7 @@
                 if (Test-PSFParameterBinding -Parameter IsAssignableToRole) {
                     $body['isAssignableToRole'] = $IsAssignableToRole
                 }
-                if(Test-PSFParameterBinding -Parameter Classification){
+                if (Test-PSFParameterBinding -Parameter Classification) {
                     $body['classification'] = $Classification
                 }
                 if (Test-PSFParameterBinding -Parameter GroupTypes) {
@@ -180,7 +173,7 @@
                         }
                     }
                 }
-                Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }

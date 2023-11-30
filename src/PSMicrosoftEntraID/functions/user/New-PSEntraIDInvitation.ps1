@@ -50,10 +50,11 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [CmdletBinding(DefaultParameterSetName = 'UserEmailAddres')]
+    [CmdletBinding(SupportsShouldProcess = $true,
+        DefaultParameterSetName = 'UserEmailAddres')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
-        [Alias("UserEmailAddress", "EmailAddres", "Mail","UserPrincipalName","InvitedUserPrincipalName")]
+        [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]
         [ValidateMailAddress()]
         [string]$InvitedUserEmailAddress,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
@@ -124,8 +125,8 @@
         }
 
         $body['invitedUserMessageInfo'] = @{
-            messageLanguage = $MessageLanguage
-            ccRecipients = $cCRecipientList
+            messageLanguage       = $MessageLanguage
+            ccRecipients          = $cCRecipientList
             customizedMessageBody = $InviteMessage
         }
 
