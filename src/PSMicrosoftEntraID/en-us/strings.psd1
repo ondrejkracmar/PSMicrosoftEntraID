@@ -33,8 +33,7 @@
 	'Group.List'                   = "List groups '{0}'"
 	'Group.New'                    = "Create new group '{0}'"
 	'Group.Delete'                 = "Delete group '{0}'"
-	'Group.Test'                   = "The new group '{0}' exists"
-
+	
 	'GroupMember.Add'              = "Add members '{0}'"
 	'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"
 	'GroupMember.Delete'           = "Remove members '{0}'"
