@@ -99,7 +99,7 @@
                 }
             } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
-        } 
+        }
     }
     end
     {}
