@@ -1,4 +1,4 @@
-function ConvertTo-Base64 {
+﻿function ConvertTo-Base64 {
     <#
     .SYNOPSIS
         Converts input string to base 64.

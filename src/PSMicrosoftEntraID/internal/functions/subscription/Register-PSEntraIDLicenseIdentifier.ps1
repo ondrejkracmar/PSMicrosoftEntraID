@@ -1,4 +1,4 @@
-function Register-PSEntraIDLicenseIdentifier {
+﻿function Register-PSEntraIDLicenseIdentifier {
     <#
 	.SYNOPSIS
 		Register the list of product names and service plan identifiers for licensing.

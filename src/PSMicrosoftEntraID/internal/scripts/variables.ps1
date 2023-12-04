@@ -1,4 +1,4 @@
-# Graph Token used for connections
+﻿# Graph Token used for connections
 $script:token = $null
 
 # Endpoint used for queries
