@@ -1,4 +1,4 @@
-function Connect-GraphRefreshToken {
+﻿function Connect-GraphRefreshToken {
     <#
 	.SYNOPSIS
 		Connect with the refresh token provided previously.

@@ -1,4 +1,4 @@
-function Connect-GraphBrowser {
+﻿function Connect-GraphBrowser {
     <#
 	.SYNOPSIS
 		Interactive logon using the Authorization flow and browser. Supports SSO.

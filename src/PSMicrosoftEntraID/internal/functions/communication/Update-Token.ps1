@@ -1,4 +1,4 @@
-function Update-Token {
+﻿function Update-Token {
     <#
 	.SYNOPSIS
 		Automatically reconnects if necessary, using the previous method of connecting.

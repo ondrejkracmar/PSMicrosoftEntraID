@@ -1,4 +1,4 @@
-function ConvertTo-SignedString {
+﻿function ConvertTo-SignedString {
     <#
     .SYNOPSIS
         Signs a string.

@@ -1,4 +1,4 @@
-function Set-ReconnectInfo {
+﻿function Set-ReconnectInfo {
     <#
 	.SYNOPSIS
 		Helper Utility to set the automatic reconnection information.
