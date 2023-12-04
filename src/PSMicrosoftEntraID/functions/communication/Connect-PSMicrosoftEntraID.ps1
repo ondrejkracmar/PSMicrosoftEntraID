@@ -85,11 +85,13 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Interactive')]
 		[string]$ClientID,
 		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Interactive')]
 		[string]$TenantID,
 		[string[]]$Scopes,
 		[Parameter(ParameterSetName = 'DeviceCode')]
@@ -109,7 +111,11 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
 		[PSCredential]$Credential,
 		[Parameter(Mandatory = $true, ParameterSetName = 'LegacyToken')]
-		[System.Security.SecureString]$Token
+		[System.Security.SecureString]$Token,
+		[Parameter(ParameterSetName = 'Interactive')]
+		[switch]$Interactive,
+		[Parameter(ParameterSetName = 'Interactive')]
+		[switch]$SelectAccount
 	)
 
 	begin {
@@ -139,9 +145,16 @@
 			return
 		}
 
+		if($Interactive){
+			Connect-GraphBrowser $param
+			Set-RestConnection @param
+			return
+		}
+
 		try { Connect-RestService @param -ErrorAction Stop }
 		catch { $PSCmdlet.ThrowTerminatingError($_) }
+		Set-ReconnectInfo -BoundParameters $param
 		Set-RestConnection -Service graph -ExtraHeaderContent @{ 'content-type' = 'application/json' }
 	}
-	end { Register-PSEntraIDSubscribedSku }
+	end { }
 }
