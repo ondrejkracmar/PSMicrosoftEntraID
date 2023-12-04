@@ -110,7 +110,7 @@
             $pair.Key, ([System.Web.HttpUtility]::UrlEncode($pair.Value)) -join '='
         }
         $uriFinal = $uri + ($paramStrings -join '&')
-        Write-Verbose "Authorize Uri: $uriFinal"
+        #Write-Verbose "Authorize Uri: $uriFinal"
 
         $redirectTo = 'https://raw.githubusercontent.com/FriedrichWeinmann/MiniGraph/master/nothing-to-see-here.txt'
         if ((Get-Random -Minimum 10 -Maximum 99) -eq 66) {

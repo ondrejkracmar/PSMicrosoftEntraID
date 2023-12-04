@@ -69,6 +69,14 @@
 		A legacy token used to authorize API access.
 		These tokens are deprecated and should be avoided, but not every migration can be accomplished instantaneously...
 
+	.PARAMETER Interactive
+		Interactive logon using the Authorization flow and browser. Supports SSO.
+
+	.PARAMETER SelectAccount
+		Forces account selection on logon.
+		As this flow supports single-sign-on, it will otherwise not prompt for anything if already signed in.
+		This could be a problem if you want to connect using another (e.g. an admin) account.
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
 
