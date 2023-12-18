@@ -105,7 +105,8 @@
         [string]$MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
-        [string[]]$ResourceBehaviorOptions
+        [string[]]$ResourceBehaviorOptions,
+        [switch]$EnableException
     )
 
     begin {
