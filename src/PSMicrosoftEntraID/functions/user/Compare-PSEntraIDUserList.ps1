@@ -25,12 +25,10 @@
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
-        [string[]]
-        $ReferenceIdentity,
+        [string[]]$ReferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
-        [string[]]
-        $DifferenceIdentity
+        [string[]]$DifferenceIdentity
     )
 
     begin {

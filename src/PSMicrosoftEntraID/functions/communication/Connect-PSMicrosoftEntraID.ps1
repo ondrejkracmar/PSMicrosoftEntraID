@@ -69,6 +69,14 @@
 		A legacy token used to authorize API access.
 		These tokens are deprecated and should be avoided, but not every migration can be accomplished instantaneously...
 
+	.PARAMETER Interactive
+		Interactive logon using the Authorization flow and browser. Supports SSO.
+
+	.PARAMETER SelectAccount
+		Forces account selection on logon.
+		As this flow supports single-sign-on, it will otherwise not prompt for anything if already signed in.
+		This could be a problem if you want to connect using another (e.g. an admin) account.
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
 
@@ -85,54 +93,37 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[string]
-		$ClientID,
-
+		[Parameter(Mandatory = $true, ParameterSetName = 'Interactive')]
+		[string]$ClientID,
 		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[string]
-		$TenantID,
-
-		[string[]]
-		$Scopes,
-
+		[Parameter(Mandatory = $true, ParameterSetName = 'Interactive')]
+		[string]$TenantID,
+		[string[]]$Scopes,
 		[Parameter(ParameterSetName = 'DeviceCode')]
-		[switch]
-		$DeviceCode,
-
+		[switch]$DeviceCode,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[System.Security.Cryptography.X509Certificates.X509Certificate2]
-		$Certificate,
-
+		[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificateThumbprint,
-
+		[string]$CertificateThumbprint,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificateName,
-
+		[string]$CertificateName,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[string]
-		$CertificatePath,
-
+		[string]$CertificatePath,
 		[Parameter(ParameterSetName = 'AppCertificate')]
-		[System.Security.SecureString]
-		$CertificatePassword,
-
+		[System.Security.SecureString]$CertificatePassword,
 		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-		[System.Security.SecureString]
-		$ClientSecret,
-
+		[System.Security.SecureString]$ClientSecret,
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-		[PSCredential]
-		$Credential,
-
+		[PSCredential]$Credential,
 		[Parameter(Mandatory = $true, ParameterSetName = 'LegacyToken')]
-		[System.Security.SecureString]
-		$Token
+		[System.Security.SecureString]$Token,
+		[Parameter(ParameterSetName = 'Interactive')]
+		[switch]$Interactive,
+		[Parameter(ParameterSetName = 'Interactive')]
+		[switch]$SelectAccount
 	)
 
 	begin {
@@ -162,9 +153,16 @@
 			return
 		}
 
+		if($Interactive){
+			Connect-GraphBrowser $param
+			Set-RestConnection @param
+			return
+		}
+
 		try { Connect-RestService @param -ErrorAction Stop }
 		catch { $PSCmdlet.ThrowTerminatingError($_) }
+		Set-ReconnectInfo -BoundParameters $param
 		Set-RestConnection -Service graph -ExtraHeaderContent @{ 'content-type' = 'application/json' }
 	}
-	end { Register-PSEntraIDSubscribedSku }
+	end { }
 }

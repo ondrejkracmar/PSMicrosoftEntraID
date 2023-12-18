@@ -50,13 +50,13 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [CmdletBinding(DefaultParameterSetName = 'UserEmailAddres')]
+    [CmdletBinding(SupportsShouldProcess = $true,
+        DefaultParameterSetName = 'UserEmailAddres')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
+        [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]
         [ValidateMailAddress()]
-        [string]
-        [Alias("UserEmailAddress", "EmailAddres", "Mail","UserPrincipalName","InvitedUserPrincipalName")]
-        $InvitedUserEmailAddress,
+        [string]$InvitedUserEmailAddress,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
@@ -77,22 +77,19 @@
         [string]$MessageLanguage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [psobject[]]$CCRecipient,
-        [switch]
-        $EnableException
+        [switch]$EnableException
     )
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $path = 'invitations'
         $cCRecipientList = [System.Collections.ArrayList]::New()
     }
 
     process {
-
         $body = @{}
-
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
         if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayName') {
@@ -128,8 +125,8 @@
         }
 
         $body['invitedUserMessageInfo'] = @{
-            messageLanguage = $MessageLanguage
-            ccRecipients = $cCRecipientList
+            messageLanguage       = $MessageLanguage
+            ccRecipients          = $cCRecipientList
             customizedMessageBody = $InviteMessage
         }
 

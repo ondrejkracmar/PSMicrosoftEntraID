@@ -1,3 +1,5 @@
 is_global = true
 build_property.RootNamespace = PSMicrosoftEntraID
 build_property.ProjectDir = C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

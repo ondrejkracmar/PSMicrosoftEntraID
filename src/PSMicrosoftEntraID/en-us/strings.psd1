@@ -31,11 +31,17 @@
 	'Group.Get.Failed'             = "Get group '{0}' failed"
 	'Group.Filter'                 = "List groups with filter '{0}'"
 	'Group.List'                   = "List groups '{0}'"
-
+	'Group.New'                    = "Create new group '{0}'"
+	'Group.Delete'                 = "Delete group '{0}'"
+	
 	'GroupMember.Add'              = "Add members '{0}'"
-	'GroupOwner.Add'               = "Add owners '{0}'"
+	'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"
 	'GroupMember.Delete'           = "Remove members '{0}'"
+	'GroupMember.Delete.Failed'    = "Delete members to the group '{0}' failed"
+	'GroupOwner.Add'               = "Add owners '{0}'"
+	'GroupOwner.Add.Failed'        = "Add owners to the group '{0}' failed"
 	'GroupOwner.Delete'            = "Remove owners '{0}'"
+	'GroupOwner.Delete.Failed'     = "Delete owners to the group '{0}' failed"
 	'GroupMember.List'             = "List members from the group '{0}'"
 	'GroupMember.Sync'             = "Sync members of group"
 }
