@@ -34,7 +34,7 @@ $MdHelpParams = @{
 	ExcludeDontShow       = $false
 	Encoding              = [System.Text.Encoding]::UTF8
 }
-
+$MdHelpParams
 $ExtHelpParams = @{
 	Path       = $MarkdownPath
 	OutputPath = $MamlPath
