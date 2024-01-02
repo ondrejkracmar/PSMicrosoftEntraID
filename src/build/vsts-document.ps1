@@ -9,10 +9,10 @@ if (-not $WorkingDirectory) {
 }
 if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 #endregion Handle Working Directory Defaults
-Get-ChildItem -Recurse
+
 #define module for documentation
 $ModuleName = 'PSMicrosoftEntraID'
-$MarkdownPath = "$($WorkingDirectory)\PSMicrosoftEntraID\docs"
+$MarkdownPath = "$($WorkingDirectory)\docs"
 $MamlPath = "$($WorkingDirectory)\PSMicrosoftEntraID\en-us"
 
 $MdHelpParams = @{
