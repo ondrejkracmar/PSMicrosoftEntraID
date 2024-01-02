@@ -12,8 +12,8 @@ if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 
 #define module for documentation
 $ModuleName = 'PSMicrosoftEntraID'
-$MarkdownPath = "$($WorkingDirectory)\src\docs"
-$MamlPath = "$($WorkingDirectory)\src\PSMicrosoftEntraID\en-us"
+$MarkdownPath = "$($WorkingDirectory)/src/docs"
+$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
 
 $MdHelpParams = @{
 	Module                = $ModuleName
@@ -32,13 +32,13 @@ $ExtHelpParams = @{
 
 $ExtHelpCabParams = @{
     CabFilesFolder = $MamlPath
-    LandingPagePath = "$MarkdownPath/$ModuleName.md"
-    OutputFolder = "$MamlPath/cab"
+    LandingPagePath = "$($MarkdownPath)/$($ModuleName).md"
+    OutputFolder = "$($MamlPath)/cab"
 }
 
 # Generate documentation
 
-$MDFiles= Get-ChildItem -Path "$MarkdownPath\*" -Filter *.md
+$MDFiles= Get-ChildItem -Path "$($MarkdownPath)\*" -Filter *.md
 if ($MDFiles.Count -eq 0) {
     Write-PSFMessage -Level Important -Message "Generate initial Markdown help"
 	New-MarkdownHelp $MdHelpParams
