@@ -16,7 +16,7 @@ if (Test-Path -Path "$($WorkingDirectory)/src/docs") {
 	$MarkdownPath = "$($WorkingDirectory)/src/docs"
 }
 else {
-	$MarkdownPath = New-Item -Path $WorkingDirectory -Name 'docs' -ItemType Directory -Force
+	$MarkdownPath = New-Item -Path "$($WorkingDirectory)/src/" -Name 'docs' -ItemType Directory -Force
 }
 
 if (Test-Path -Path "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us") {
