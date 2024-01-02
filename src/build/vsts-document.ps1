@@ -63,7 +63,7 @@ Write-PSFMessage -Level Important -Message "Creating about help topics"
 New-MarkdownAboutHelp -OutputFolder $MarkdownPath -AboutName $ModuleName
 
 Write-PSFMessage -Level Important -Message "Creating external help"
-New-ExternalHelp @ExtHelpParams
+New-ExternalHelp @ExtHelpParams -force
 
 #New-ExternalHelpCab is only supported on Windows because it relies on makecab.exe to create CAB files.
 #New-ExternalHelpCab @extHelpCabParams
