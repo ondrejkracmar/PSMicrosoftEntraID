@@ -37,8 +37,8 @@ $ExtHelpCabParams = @{
 }
 
 # Generate documentation
-
-$MDFiles= Get-ChildItem -Path "$($MarkdownPath)\*" -Filter *.md
+Get-ChildItem
+$MDFiles= Get-ChildItem -Path "$($MarkdownPath)/*" -Filter *.md
 if ($MDFiles.Count -eq 0) {
     Write-PSFMessage -Level Important -Message "Generate initial Markdown help"
 	New-MarkdownHelp $MdHelpParams
