@@ -11,6 +11,7 @@ if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 #endregion Handle Working Directory Defaults
 
 #define module for documentation
+
 $ModuleName = 'PSMicrosoftEntraID'
 if (Test-Path -Path "$($WorkingDirectory)/src/docs") {
 	$MarkdownPath = "$($WorkingDirectory)/src/docs"
@@ -18,7 +19,7 @@ if (Test-Path -Path "$($WorkingDirectory)/src/docs") {
 else {
 	$MarkdownPath = New-Item -Path "$($WorkingDirectory)/src/" -Name 'docs' -ItemType Directory -Force
 }
-
+Import-Module -Path "$($WorkingDirectory)/src/$($ModuleName)/$($ModuleName).psd1"
 if (Test-Path -Path "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us") {
 	$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
 }else {
