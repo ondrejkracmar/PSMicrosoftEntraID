@@ -22,7 +22,7 @@ else {
 if (Test-Path -Path "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us") {
 	$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
 }else {
-	$MamlPath = New-Item -Path $WorkingDirectory -Name 'en-us' -ItemType Directory -Force
+	$MamlPath = New-Item -Path "$($WorkingDirectory)/src/" -Name 'en-us' -ItemType Directory -Force
 }
 
 $MdHelpParams = @{
@@ -34,7 +34,7 @@ $MdHelpParams = @{
 	ExcludeDontShow       = $false
 	Encoding              = [System.Text.Encoding]::UTF8
 }
-$MdHelpParams
+
 $ExtHelpParams = @{
 	Path       = $MarkdownPath
 	OutputPath = $MamlPath
@@ -50,7 +50,7 @@ $ExtHelpCabParams = @{
 $MDFiles = Get-ChildItem -Path "$($MarkdownPath)/*" -Filter *.md
 if ($MDFiles.Count -eq 0) {
 	Write-PSFMessage -Level Important -Message "Generate initial Markdown help"
-	New-MarkdownHelp $MdHelpParams
+	New-MarkdownHelp @MdHelpParams
 }
 else {
 	Write-PSFMessage -Level Important -Message "Updating Markdown files"
