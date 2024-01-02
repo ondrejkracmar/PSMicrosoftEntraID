@@ -28,7 +28,7 @@ steps:
      displayName: Generate documentation
      inputs:
        targetType: filePath
-       filePath: "./src/build/vsts-documentation.ps1"
+       filePath: "./src/build/vsts-document.ps1"
 
    - task: PowerShell@2
      displayName: Build Nuget For Powerhell module
