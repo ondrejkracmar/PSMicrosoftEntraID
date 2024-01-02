@@ -12,8 +12,18 @@ if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 
 #define module for documentation
 $ModuleName = 'PSMicrosoftEntraID'
-$MarkdownPath = "$($WorkingDirectory)/src/docs"
-$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
+if (Test-Path -Path "$($WorkingDirectory)/src/docs") {
+	$MarkdownPath = "$($WorkingDirectory)/src/docs"
+}
+else {
+	$MarkdownPath = New-Item -Path $WorkingDirectory -Name 'docs' -ItemType Directory -Force
+}
+
+if (Test-Path -Path "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us") {
+	$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
+}else {
+	$MamlPath = New-Item -Path $WorkingDirectory -Name 'en-us' -ItemType Directory -Force
+}
 
 $MdHelpParams = @{
 	Module                = $ModuleName
@@ -26,23 +36,23 @@ $MdHelpParams = @{
 }
 
 $ExtHelpParams = @{
-	Path = $MarkdownPath
+	Path       = $MarkdownPath
 	OutputPath = $MamlPath
 }
 
 $ExtHelpCabParams = @{
-    CabFilesFolder = $MamlPath
-    LandingPagePath = "$($MarkdownPath)/$($ModuleName).md"
-    OutputFolder = "$($MamlPath)/cab"
+	CabFilesFolder  = $MamlPath
+	LandingPagePath = "$($MarkdownPath)/$($ModuleName).md"
+	OutputFolder    = "$($MamlPath)/cab"
 }
 
 # Generate documentation
-(Get-ChildItem).Fullname
-$MDFiles= Get-ChildItem -Path "$($MarkdownPath)/*" -Filter *.md
+$MDFiles = Get-ChildItem -Path "$($MarkdownPath)/*" -Filter *.md
 if ($MDFiles.Count -eq 0) {
-    Write-PSFMessage -Level Important -Message "Generate initial Markdown help"
+	Write-PSFMessage -Level Important -Message "Generate initial Markdown help"
 	New-MarkdownHelp $MdHelpParams
-} else {
+}
+else {
 	Write-PSFMessage -Level Important -Message "Updating Markdown files"
 	Update-MarkdownHelp -Path $MarkdownPath
 }
