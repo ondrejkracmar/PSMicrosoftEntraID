@@ -23,6 +23,12 @@ steps:
      inputs:
        testResultsFormat: NUnit
      condition: always()
+  
+   - task: PowerShell@2
+     displayName: Generate documentation
+     inputs:
+       targetType: filePath
+       filePath: "./src/build/vsts-documentation.ps1"
 
    - task: PowerShell@2
      displayName: Build Nuget For Powerhell module
@@ -40,4 +46,4 @@ steps:
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.3.2.nupkg' -SkipDuplicate"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.4.1.nupkg' -SkipDuplicate"

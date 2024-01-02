@@ -3,7 +3,7 @@
 	RootModule        = 'PSMicrosoftEntraID.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.5.3.2'
+	ModuleVersion     = '0.5.4.1'
 
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -55,6 +55,7 @@
 		'Get-PSEntraIDUser'
 		'Compare-PSEntraIDUserList'
 		'Remove-PSEntraIDUser'
+		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
 		'Set-PSEntraIDUserUsageLocation'
 		'Get-PSEntraIDUsageLocation'
