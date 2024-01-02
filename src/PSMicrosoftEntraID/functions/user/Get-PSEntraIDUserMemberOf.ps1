@@ -24,6 +24,8 @@
 
 #>
     [OutputType('PSMicrosoftEntraID.User')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Filter',
+        Justification = 'False positive as rule does not know that filter operates within the same scope')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
