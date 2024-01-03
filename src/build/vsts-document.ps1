@@ -55,7 +55,7 @@ if ($MDFiles.Count -eq 0) {
 }
 else {
 	Write-PSFMessage -Level Important -Message "Updating Markdown files"
-	Update-MarkdownHelp -Path $MarkdownPath
+	Update-MarkdownHelp -Path $MarkdownPath -Force
 }
 
 
