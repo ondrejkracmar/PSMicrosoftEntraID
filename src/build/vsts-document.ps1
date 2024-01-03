@@ -55,7 +55,7 @@ if ($MDFiles.Count -eq 0) {
 }
 else {
 	Write-PSFMessage -Level Important -Message "Updating Markdown files"
-	Remove-Item -Path $MarkdownPath -Include *.md -Force
+	Remove-Item -Path "$($MarkdownPath)/*" -Include *.md -Force
 	New-MarkdownHelp @MdHelpParams
 }
 
