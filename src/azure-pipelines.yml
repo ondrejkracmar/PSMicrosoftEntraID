@@ -6,6 +6,9 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
+   - checkout: self
+     persistCredentials: true
+     
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
      inputs:
