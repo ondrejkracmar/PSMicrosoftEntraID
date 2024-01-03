@@ -57,6 +57,6 @@ steps:
       git add *.md
       git commit -m "Generate documentation"
       git push origin HEAD:$(Build.SourceBranchName)
-     displayName: 'Commit and Push updated README.md files for TF modules'
+     displayName: 'Commit and Push updated markdown files for module'
      env:
       SYSTEM_ACCESSTOKEN: '$(PAT)'
