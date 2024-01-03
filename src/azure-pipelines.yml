@@ -47,16 +47,3 @@ steps:
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
           Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.4.1.nupkg' -SkipDuplicate"
-   
-   - checkout: self
-     persistCredentials: true
-
-   - powershell: |
-      git config --local user.email '$(userName)'
-      git config --local user.name "Azure Pipelines"
-      git add *.md
-      git commit -m "Generate documentation"
-      git push origin HEAD:$(Build.SourceBranchName)
-     displayName: 'Commit and Push updated README.md files for TF modules'
-     env:
-      SYSTEM_ACCESSTOKEN: '$(PAT)'
