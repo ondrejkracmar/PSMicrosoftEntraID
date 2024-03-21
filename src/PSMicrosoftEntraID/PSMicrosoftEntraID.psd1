@@ -3,7 +3,7 @@
 	RootModule        = 'PSMicrosoftEntraID.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.5.4.1'
+	ModuleVersion     = '0.6.0.1'
 
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -96,7 +96,7 @@
 
 			# Tags applied to this module. These help with module discovery in online galleries.
 			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory','MicrosoftEntra','MicrosoftEntraID')
-			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
+			ExternalModuleDependencies = @('PSFramework','EntraAuth')
 
 			# A URL to the license for this module.
 			# LicenseUri = ''

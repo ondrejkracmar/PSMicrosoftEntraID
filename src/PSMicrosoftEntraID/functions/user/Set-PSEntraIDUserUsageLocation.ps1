@@ -56,7 +56,8 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $usageLocationTemplate = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'aadtemplate' -ChildPath 'UsageLocation.json' )
         $usageLocationHashtable = Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
@@ -83,7 +84,7 @@
                     }
                 }
                 Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Patch -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Patch -ErrorAction Stop)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

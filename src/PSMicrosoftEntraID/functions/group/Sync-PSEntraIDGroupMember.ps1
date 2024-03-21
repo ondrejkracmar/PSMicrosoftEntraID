@@ -59,7 +59,8 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $referenceMemberList = [System.Collections.ArrayList]::New()
         $differenceMemberList = [System.Collections.ArrayList]::New()
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)

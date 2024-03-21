@@ -22,7 +22,8 @@
         [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service graph -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
@@ -33,7 +34,7 @@
     }
     process {
         Invoke-PSFProtectedCommand -ActionString 'Organization.Get' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            Invoke-RestRequest -Service 'graph' -Path organization -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestOrganization
+            Invoke-EntraRequest -Service $service -Path organization -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestOrganization
         } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
     }
     end

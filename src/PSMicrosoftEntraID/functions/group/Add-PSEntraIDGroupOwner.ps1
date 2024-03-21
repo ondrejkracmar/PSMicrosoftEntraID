@@ -50,7 +50,8 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
@@ -91,7 +92,7 @@
                         '@odata.id' = $ownerUrl
                     }
                     try {
-                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                        [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
                     }
                     catch {
                         if ($EnableException.IsPresent) {

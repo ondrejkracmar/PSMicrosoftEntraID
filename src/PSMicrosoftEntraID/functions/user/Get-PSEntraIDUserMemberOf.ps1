@@ -39,7 +39,8 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
@@ -60,7 +61,7 @@
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $userMail = Invoke-RestRequest -Service 'graph' -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        $userMail = Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop | ConvertFrom-RestUser
                         if (-not([object]::Equals($userMail, $null))) {
                             $userId = $userMail[0].Id
 
@@ -73,10 +74,10 @@
                             $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            Invoke-RestRequest -Service 'graph' -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                            Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
                         }
                         else{
-                            Invoke-RestRequest -Service 'graph' -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                            Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }

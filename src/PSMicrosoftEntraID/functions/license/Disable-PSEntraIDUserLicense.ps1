@@ -37,8 +37,7 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'IdentitySkuPartNumber')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
@@ -54,7 +53,8 @@
         [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
@@ -90,14 +90,14 @@
                 $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
                 if (-not ([object]::Equals($aADUser, $null))) {
                     $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
                 }
                 else {
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                     }
                 }
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }
