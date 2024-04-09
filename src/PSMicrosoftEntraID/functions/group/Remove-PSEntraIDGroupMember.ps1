@@ -36,11 +36,11 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
-    param([Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    param([Parameter(Mandatory = $True, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [string]$Identity,
-        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [string[]]$User,
@@ -52,11 +52,11 @@
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $group = Get-PSEntraIDGroup -Identity $Identity
     }
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not ([object]::Equals($group, $null))) {
                 switch -Regex ($PSCmdlet.ParameterSetName) {
                     'Identity' {
