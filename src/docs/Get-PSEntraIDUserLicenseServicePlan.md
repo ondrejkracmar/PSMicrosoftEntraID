@@ -14,61 +14,68 @@ Get users who are assigned licenses
 
 ### Identity (Default)
 ```
-Get-PSEntraIDUserLicenseServicePlan -Identity <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -Identity <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ServicePlanNameCompanyName
 ```
 Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> -ServicePlanName <String[]> [-EnableException]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ServicePlanIdCompanyName
 ```
 Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> -ServicePlanId <String[]> [-EnableException]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SkuPartNumberCompanyName
 ```
 Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> -SkuPartNumber <String[]> [-EnableException]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SkuIdCompanyName
 ```
 Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> -SkuId <String[]> [-EnableException]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### CompanyName
 ```
-Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -CompanyName <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SkuId
 ```
-Get-PSEntraIDUserLicenseServicePlan -SkuId <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -SkuId <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### SkuPartNumber
 ```
-Get-PSEntraIDUserLicenseServicePlan -SkuPartNumber <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -SkuPartNumber <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ServicePlanId
 ```
-Get-PSEntraIDUserLicenseServicePlan -ServicePlanId <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -ServicePlanId <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ServicePlanName
 ```
-Get-PSEntraIDUserLicenseServicePlan -ServicePlanName <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -ServicePlanName <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Filter
 ```
-Get-PSEntraIDUserLicenseServicePlan -Filter <String> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicenseServicePlan -Filter <String> [-AdvancedFilter] [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -159,6 +166,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

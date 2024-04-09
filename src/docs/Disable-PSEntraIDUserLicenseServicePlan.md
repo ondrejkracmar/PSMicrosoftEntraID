@@ -15,25 +15,26 @@ Disable serivce plan of users's sku subscription
 ### IdentitySkuPartNumberPlanName (Default)
 ```
 Disable-PSEntraIDUserLicenseServicePlan -Identity <String[]> -SkuPartNumber <String>
- -ServicePlanName <String[]> [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
+ -ServicePlanName <String[]> [-EnableException] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### IdentitySkuPartNumberPlanId
 ```
 Disable-PSEntraIDUserLicenseServicePlan -Identity <String[]> -SkuPartNumber <String> -ServicePlanId <String[]>
- [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### IdentitySkuIdServicePlanName
 ```
 Disable-PSEntraIDUserLicenseServicePlan -Identity <String[]> -SkuId <String> -ServicePlanName <String[]>
- [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### IdentitySkuIdServicePlanId
 ```
 Disable-PSEntraIDUserLicenseServicePlan -Identity <String[]> -SkuId <String> -ServicePlanId <String[]>
- [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -79,6 +80,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

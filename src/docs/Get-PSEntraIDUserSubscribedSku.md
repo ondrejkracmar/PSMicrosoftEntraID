@@ -15,22 +15,25 @@ Get users who are assigned licenses
 ### SkuPartNumberCompanyName (Default)
 ```
 Get-PSEntraIDUserSubscribedSku -CompanyName <String[]> -SkuPartNumber <String> [-EnableException]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SkuIdCompanyName
 ```
-Get-PSEntraIDUserSubscribedSku -CompanyName <String[]> -SkuId <String> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserSubscribedSku -CompanyName <String[]> -SkuId <String> [-EnableException]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SkuId
 ```
-Get-PSEntraIDUserSubscribedSku -SkuId <String> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserSubscribedSku -SkuId <String> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### SkuPartNumber
 ```
-Get-PSEntraIDUserSubscribedSku -SkuPartNumber <String> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserSubscribedSku -SkuPartNumber <String> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -94,6 +97,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

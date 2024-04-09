@@ -16,8 +16,8 @@ Create new  Microsoft EntraID (Azure AD).
 New-PSEntraIDGroup -Displayname <String> [-Description <String>] -MailNickname <String> -MailEnabled <Boolean>
  [-IsAssignableToRole <Boolean>] -SecurityEnabled <Boolean> [-Classification <String>] -GroupTypes <String[]>
  [-Visibility <String>] [-Owners <String[]>] [-Members <String[]>] [-MembersmembershipRule <String>]
- [-MembershipRuleProcessingState <String>] [-ResourceBehaviorOptions <String[]>] [-EnableException] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-MembershipRuleProcessingState <String>] [-ResourceBehaviorOptions <String[]>] [-EnableException]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -217,6 +217,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
