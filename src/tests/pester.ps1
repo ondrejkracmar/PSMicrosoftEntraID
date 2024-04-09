@@ -20,8 +20,8 @@ $global:testroot = $PSScriptRoot
 $global:__pester_data = @{ }
 
 Remove-Module PSMicrosoftEntraID -ErrorAction Ignore
-Import-Module "$PSScriptRoot\..\PSMicrosoftEntraID.psd1"
-Import-Module "$PSScriptRoot\..\PSMicrosoftEntraID.psm1" -Force
+Import-Module "$PSScriptRoot\..\PSMicrosoftEntraID\PSMicrosoftEntraID.psd1"
+Import-Module "$PSScriptRoot\..\PSMicrosoftEntraID\PSMicrosoftEntraID.psm1" -Force
 
 # Need to import explicitly so we can use the configuration class
 Import-Module Pester
