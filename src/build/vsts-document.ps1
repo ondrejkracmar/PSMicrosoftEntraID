@@ -1,4 +1,4 @@
-
+﻿
 
 #region Handle Working Directory Defaults
 if (-not $WorkingDirectory) {
