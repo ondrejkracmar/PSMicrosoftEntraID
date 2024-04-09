@@ -8,66 +8,94 @@ schema: 2.0.0
 # Connect-PSMicrosoftEntraID
 
 ## SYNOPSIS
-Connect to the Azure AD object via Microsoft Graph API
+Establish a connection to an Entra Service.
 
 ## SYNTAX
 
-### Interactive
+### Browser (Default)
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-Interactive]
- [-SelectAccount] [<CommonParameters>]
-```
-
-### UsernamePassword
-```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
- -Credential <PSCredential> [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-Browser] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### AppSecret
+### DeviceCode
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
- -ClientSecret <SecureString> [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-DeviceCode] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AppCertificate
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
  [-Certificate <X509Certificate2>] [-CertificateThumbprint <String>] [-CertificateName <String>]
- [-CertificatePath <String>] [-CertificatePassword <SecureString>] [<CommonParameters>]
+ [-CertificatePath <String>] [-CertificatePassword <SecureString>] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### DeviceCode
+### AppSecret
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-DeviceCode]
- [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
+ -ClientSecret <SecureString> [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### LegacyToken
+### UsernamePassword
 ```
-Connect-PSMicrosoftEntraID [-Scopes <String[]>] -Token <SecureString> [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
+ -Credential <PSCredential> [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Connect to the Azure AD object via Microsoft Graph API
+Establish a connection to an Entra Service.
+Prerequisite before executing any requests / commands.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -Certificate $cert
+Connect-EntraService -ClientID $clientID -TenantID $tenantID
 ```
 
-Connect to the specified tenant using a certificate
+Establish a connection to the graph API, prompting the user for login on their default browser.
 
 ### EXAMPLE 2
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -TenantName contoso -DeviceCode
+Connect-EntraService -ClientID $clientID -TenantID $tenantID -Certificate $cert
 ```
 
-Connect to the specified tenant using the DeviceCode flow
+Establish a connection to the graph API using the provided certificate.
+
+### EXAMPLE 3
+```
+Connect-EntraService -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
+```
+
+Establish a connection to the graph API using the provided certificate file.
+Prompts you to enter the certificate-file's password first.
+
+### EXAMPLE 4
+```
+Connect-EntraService -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+```
+
+Establish a connection to Defender for Endpoint using a client secret.
 
 ## PARAMETERS
+
+### -Browser
+Use an interactive logon in your default browser.
+This is the default logon experience.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: Browser
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Certificate
 The Certificate object used to authenticate with.
@@ -163,7 +191,7 @@ ID of the registered/enterprise application used for authentication.
 
 ```yaml
 Type: System.String
-Parameter Sets: Interactive, UsernamePassword, AppSecret, AppCertificate, DeviceCode
+Parameter Sets: (All)
 Aliases:
 
 Required: True
@@ -191,10 +219,9 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-The credentials to use to authenticate as a user.
+The username / password to authenticate with.
 
-Part of the Username and Password delegate authentication workflow.
-Note: This workflow only works with cloud-only accounts and requires scopes to be pre-approved.
+Part of the Resource Owner Password Credential (ROPC) workflow.
 
 ```yaml
 Type: System.Management.Automation.PSCredential
@@ -224,18 +251,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Interactive
-Interactive logon using the Authorization flow and browser.
-Supports SSO.
+### -PassThru
+Return the token received for the current connection.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-Parameter Sets: Interactive
+Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -256,46 +297,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SelectAccount
-Forces account selection on logon.
-As this flow supports single-sign-on, it will otherwise not prompt for anything if already signed in.
-This could be a problem if you want to connect using another (e.g.
-an admin) account.
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-Parameter Sets: Interactive
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -TenantID
 The ID of the tenant/directory to connect to.
 
 ```yaml
 Type: System.String
-Parameter Sets: Interactive, UsernamePassword, AppSecret, AppCertificate, DeviceCode
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Token
-A legacy token used to authorize API access.
-These tokens are deprecated and should be avoided, but not every migration can be accomplished instantaneously...
-
-```yaml
-Type: System.Security.SecureString
-Parameter Sets: LegacyToken
+Parameter Sets: (All)
 Aliases:
 
 Required: True

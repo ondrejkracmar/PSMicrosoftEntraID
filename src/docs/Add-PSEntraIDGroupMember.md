@@ -13,8 +13,8 @@ Add a member to a security or Microsoft 365 group.
 ## SYNTAX
 
 ```
-Add-PSEntraIDGroupMember -Identity <String> -User <String[]> [-EnableException] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Add-PSEntraIDGroupMember -Identity <String> -User <String[]> [-EnableException]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -59,7 +59,22 @@ Aliases: Id, GroupId, TeamId, MailNickName
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

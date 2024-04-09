@@ -14,12 +14,14 @@ Get service plans of license
 
 ### SkuPartNumber (Default)
 ```
-Get-PSEntraIDLicenseServicePlan -SkuPartNumber <String> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDLicenseServicePlan -SkuPartNumber <String> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### SkuId
 ```
-Get-PSEntraIDLicenseServicePlan -SkuId <String> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDLicenseServicePlan -SkuId <String> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -49,6 +51,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

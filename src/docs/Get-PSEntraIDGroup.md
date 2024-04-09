@@ -14,22 +14,25 @@ Get the properties of the specified group.
 
 ### Identity (Default)
 ```
-Get-PSEntraIDGroup -Identity <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -Identity <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### DisplayName
 ```
-Get-PSEntraIDGroup -DisplayName <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -DisplayName <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### Filter
 ```
-Get-PSEntraIDGroup -Filter <String> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -Filter <String> [-AdvancedFilter] [-EnableException] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-PSEntraIDGroup [-All] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup [-All] [-EnableException] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -135,6 +138,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: System.Management.Automation.ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
