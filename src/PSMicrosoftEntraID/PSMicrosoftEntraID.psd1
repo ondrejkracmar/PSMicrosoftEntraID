@@ -25,9 +25,7 @@
 
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules   = @('PSFramework', 'RestConnect'
-		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
-		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
+	RequiredModules   = @('PSFramework', 'EntraAuth'
 	)
 
 	# Assemblies that must be loaded prior to importing this module
