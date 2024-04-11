@@ -52,21 +52,21 @@ Prerequisite before executing any requests / commands.
 
 ### EXAMPLE 1
 ```
-Connect-EntraService -ClientID $clientID -TenantID $tenantID
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID
 ```
 
 Establish a connection to the graph API, prompting the user for login on their default browser.
 
 ### EXAMPLE 2
 ```
-Connect-EntraService -ClientID $clientID -TenantID $tenantID -Certificate $cert
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate $cert
 ```
 
 Establish a connection to the graph API using the provided certificate.
 
 ### EXAMPLE 3
 ```
-Connect-EntraService -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
 ```
 
 Establish a connection to the graph API using the provided certificate file.
@@ -74,10 +74,10 @@ Prompts you to enter the certificate-file's password first.
 
 ### EXAMPLE 4
 ```
-Connect-EntraService -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 ```
 
-Establish a connection to Defender for Endpoint using a client secret.
+Establish a connection using a client secret.
 
 ## PARAMETERS
 
