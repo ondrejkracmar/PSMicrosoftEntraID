@@ -68,25 +68,25 @@
 		Return the token received for the current connection.
 	
 	.EXAMPLE
-		PS C:\> Connect-EntraService -ClientID $clientID -TenantID $tenantID
+		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID
 	
 		Establish a connection to the graph API, prompting the user for login on their default browser.
 	
 	.EXAMPLE
-		PS C:\> Connect-EntraService -ClientID $clientID -TenantID $tenantID -Certificate $cert
+		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate $cert
 	
 		Establish a connection to the graph API using the provided certificate.
 	
 	.EXAMPLE
-		PS C:\> Connect-EntraService -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
+		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
 	
 		Establish a connection to the graph API using the provided certificate file.
 		Prompts you to enter the certificate-file's password first.
 	
 	.EXAMPLE
-		PS C:\> Connect-EntraService -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 	
-		Establish a connection to Defender for Endpoint using a client secret.
+		Establish a connection using a client secret.
 #>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 [CmdletBinding(DefaultParameterSetName = 'Browser')]
