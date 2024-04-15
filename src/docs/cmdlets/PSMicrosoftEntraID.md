@@ -68,6 +68,9 @@ Locale: en-US
 ### [Get-PSEntraIDUserSubscribedSku](Get-PSEntraIDUserSubscribedSku.md)
 {{ Fill in the Description }}
 
+### [Get-ServiceCompletion](Get-ServiceCompletion.md)
+{{ Fill in the Description }}
+
 ### [New-PSEntraIDGroup](New-PSEntraIDGroup.md)
 {{ Fill in the Description }}
 
