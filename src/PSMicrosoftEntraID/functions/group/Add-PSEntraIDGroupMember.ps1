@@ -65,7 +65,7 @@
                 if ($User.count -eq 1) {
                     $aADUser = Get-PSEntraIDUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
                         [void]$memberObjectIdList.Add($aADUser.Id)
                         [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$memberMailList.Add($aADUser.Mail)
@@ -89,7 +89,7 @@
                     foreach ($itemUser in $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
                             [void]$memberObjectIdList.Add($aADUser.Id)
                             [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void]$memberMailList.Add($aADUser.Mail)

@@ -25,8 +25,7 @@
 
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules   = @('PSFramework', 'EntraAuth'
-	)
+	RequiredModules   = @('PSFramework')
 
 	# Assemblies that must be loaded prior to importing this module
 	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
@@ -94,7 +93,7 @@
 
 			# Tags applied to this module. These help with module discovery in online galleries.
 			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory','MicrosoftEntra','MicrosoftEntraID')
-			ExternalModuleDependencies = @('PSFramework','EntraAuth')
+			ExternalModuleDependencies = @('PSFramework')
 
 			# A URL to the license for this module.
 			# LicenseUri = ''

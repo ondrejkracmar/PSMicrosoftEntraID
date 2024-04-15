@@ -149,7 +149,7 @@
                     foreach ($owner in $Owners) {
                         $aADUser = Get-PSEntraIDUser -Identity $owner
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
                         }
                         $body['owners@odata.bind'] = [array]$userIdUriPathList
                     }
@@ -158,7 +158,7 @@
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
