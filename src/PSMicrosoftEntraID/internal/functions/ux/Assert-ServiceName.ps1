@@ -28,7 +28,7 @@
 		if ($script:_EntraEndpoints.Keys -contains $Name) { return $true }
 
 		$serviceNames = $script:_EntraEndpoints.Keys -join ', '
-		Write-Warning "Invalid service name: '$Name'. Legal service names: $serviceNames"
+		#Write-Warning "Invalid service name: '$Name'. Legal service names: $serviceNames"
 		Invoke-TerminatingException -Cmdlet $PSCmdlet -Message "Invalid service name: '$Name'. Legal service names: $serviceNames"
 	}
 }
