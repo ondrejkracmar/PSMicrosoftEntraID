@@ -1,7 +1,7 @@
 ﻿# List of forbidden commands
 $global:BannedCommands = @(
 	#'Write-Host'
-	'Write-Verbose'
+	#'Write-Verbose'
 	#'Write-Warning'
 	'Write-Error'
 	'Write-Output'
@@ -28,7 +28,7 @@ $global:BannedCommands = @(
 #>
 $global:MayContainCommand = @{
 	#"Write-Host"  = @()
-	"Write-Verbose" = @()
+	#"Write-Verbose" = @()
 	#"Write-Warning" = @()
 	"Write-Error"  = @()
 	"Write-Output" = @()
