@@ -6,6 +6,9 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
+   - checkout: self
+     persistCredentials: true
+
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
      inputs:
@@ -23,6 +26,12 @@ steps:
      inputs:
        testResultsFormat: NUnit
      condition: always()
+  
+   - task: PowerShell@2
+     displayName: Generate documentation
+     inputs:
+       targetType: filePath
+       filePath: "./src/build/vsts-document.ps1"
 
    - task: PowerShell@2
      displayName: Build Nuget For Powerhell module
@@ -40,4 +49,14 @@ steps:
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.5.3.2.nupkg' -SkipDuplicate"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftEntraID.0.6.0.3.nupkg' -SkipDuplicate"
+
+   - powershell: |
+      git config --local user.email '$(userName)'
+      git config --local user.name "Azure Pipelines"
+      git add *.md
+      git commit -m "Generate documentation"
+      git push origin HEAD:$(Build.SourceBranchName)
+     displayName: 'Commit and Push updated markdown files for module'
+     env:
+      SYSTEM_ACCESSTOKEN: '$(PAT)'

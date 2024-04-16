@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kDTM1K4WVarPDNRLsivNCtEzoGhGdOW0bY2uq7mrbkPRL2yIeC1MeL3W5LIgZ7RYIknGaReJmfGzsJB9qd+pwQ==",
+  "dgSpecHash": "iQAe3NFZFp523da5cV+/fnGzzoYDpDK+umvS8tPdvfXDZwJfLfzJ1P2TvDoQyjdQmdmZLiyf7GBb15+062GbUw==",
   "success": true,
   "projectFilePath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj",
   "expectedPackageFiles": [

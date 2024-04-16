@@ -38,7 +38,7 @@
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string]$Identity,
@@ -50,9 +50,11 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $group = Get-PSEntraIDGroup -Identity $Identity
     }
 
     process {
@@ -61,12 +63,11 @@
         $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
         $ownerMailList = [System.Collections.ArrayList]::new()
         Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
                 foreach ($itemUser in $User) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id))
+                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
                         [void]$ownerObjectIdList.Add($aADUser.Id)
                         [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$ownerMailList.Add($aADUser.Mail)
@@ -91,7 +92,7 @@
                         '@odata.id' = $ownerUrl
                     }
                     try {
-                        [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                        [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
                     }
                     catch {
                         if ($EnableException.IsPresent) {

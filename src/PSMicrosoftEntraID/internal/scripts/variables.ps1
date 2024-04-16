@@ -1,16 +1,65 @@
-﻿# Graph Token used for connections
-$script:token = $null
+﻿# Available Tokens
+$script:_EntraTokens = @{}
 
-# Endpoint used for queries
-$script:baseEndpoint = 'https://graph.microsoft.com/v1.0'
+# Endpoint Configuration for Requests
+$script:_EntraEndpoints = @{}
 
-# Cached Connection Data
-$script:lastConnect = @{
-	When       = $null
-	Command    = $null
-	Parameters = $null
-	Refresh    = $null
+# The default service to connect to
+$script:_DefaultService = 'Graph'
+
+# Registers the default service configurations
+$endpointCfg = @{
+	Name          = 'Endpoint'
+	ServiceUrl    = 'https://api.securitycenter.microsoft.com/api'
+	Resource      = 'https://api.securitycenter.microsoft.com'
+	DefaultScopes = @()
+	Header        = @{ 'Content-Type' = 'application/json' }
+	HelpUrl       = 'https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/api/apis-intro?view=o365-worldwide'
 }
+Register-EntraService @endpointCfg
 
-# Used for Browser-Based interactive logon
-$script:browserPath = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+$securityCfg = @{
+	Name          = 'Security'
+	ServiceUrl    = 'https://api.security.microsoft.com/api'
+	Resource      = 'https://security.microsoft.com/mtp/'
+	DefaultScopes = @('AdvancedHunting.Read')
+	Header        = @{ 'Content-Type' = 'application/json' }
+	HelpUrl       = 'https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide'
+}
+Register-EntraService @securityCfg
+
+$graphCfg = @{
+	Name          = 'Graph'
+	ServiceUrl    = 'https://graph.microsoft.com/v1.0'
+	Resource      = 'https://graph.microsoft.com'
+	DefaultScopes = @()
+	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
+}
+Register-EntraService @graphCfg
+
+$graphBetaCfg = @{
+	Name          = 'GraphBeta'
+	ServiceUrl    = 'https://graph.microsoft.com/beta'
+	Resource      = 'https://graph.microsoft.com'
+	DefaultScopes = @()
+	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
+}
+Register-EntraService @graphBetaCfg
+
+$graphCfg = @{
+	Name          = 'PSMicrosoftEntraID.Graph'
+	ServiceUrl    = 'https://graph.microsoft.com/v1.0'
+	Resource      = 'https://graph.microsoft.com'
+	DefaultScopes = @()
+	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
+}
+Register-EntraService @graphCfg
+
+$graphBetaCfg = @{
+	Name          = 'PSMicrosoftEntraID.GraphBeta'
+	ServiceUrl    = 'https://graph.microsoft.com/beta'
+	Resource      = 'https://graph.microsoft.com'
+	DefaultScopes = @()
+	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
+}
+Register-EntraService @graphBetaCfg

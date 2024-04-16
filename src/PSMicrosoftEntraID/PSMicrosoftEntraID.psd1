@@ -3,7 +3,7 @@
 	RootModule        = 'PSMicrosoftEntraID.psm1'
 
 	# Version number of this module.
-	ModuleVersion     = '0.5.3.2'
+	ModuleVersion     = '0.6.0.3'
 
 	# ID used to uniquely identify this module
 	GUID              = '3ccc09a2-90bd-4561-9069-6db4040ff4f7'
@@ -25,10 +25,7 @@
 
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules   = @('PSFramework', 'RestConnect'
-		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
-		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
-	)
+	RequiredModules   = @('PSFramework')
 
 	# Assemblies that must be loaded prior to importing this module
 	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
@@ -55,6 +52,7 @@
 		'Get-PSEntraIDUser'
 		'Compare-PSEntraIDUserList'
 		'Remove-PSEntraIDUser'
+		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
 		'Set-PSEntraIDUserUsageLocation'
 		'Get-PSEntraIDUsageLocation'
@@ -95,7 +93,7 @@
 
 			# Tags applied to this module. These help with module discovery in online galleries.
 			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory','MicrosoftEntra','MicrosoftEntraID')
-			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
+			ExternalModuleDependencies = @('PSFramework')
 
 			# A URL to the license for this module.
 			# LicenseUri = ''

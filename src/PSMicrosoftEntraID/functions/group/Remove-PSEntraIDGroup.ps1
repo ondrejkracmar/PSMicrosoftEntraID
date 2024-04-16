@@ -43,7 +43,8 @@
         [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
@@ -54,7 +55,7 @@
                 $aADGroup = Get-PSEntraIDGroup -Identity $group
                 if (-not([object]::Equals($aADGroup, $null))) {
                     $path = ("groups/{0}" -f $aADGroup.Id)
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
                 }
                 else {
                     if ($EnableException.IsPresent) {
