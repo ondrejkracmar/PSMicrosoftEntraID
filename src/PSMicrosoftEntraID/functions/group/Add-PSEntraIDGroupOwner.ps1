@@ -55,6 +55,9 @@
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $group = Get-PSEntraIDGroup -Identity $Identity
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
 
     process {
@@ -92,7 +95,7 @@
                         '@odata.id' = $ownerUrl
                     }
                     try {
-                        [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                        [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
                     }
                     catch {
                         if ($EnableException.IsPresent) {

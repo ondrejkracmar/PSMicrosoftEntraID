@@ -1,4 +1,4 @@
-﻿function Enable-PSEntraIDUserLicenseServicePlan {
+﻿function Enable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
 		Enable serivce plan of users's sku subscription
@@ -39,19 +39,17 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$Identity,
-        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
         [string]$SkuId,
-        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string]$SkuPartNumber,
         [switch]$EnableException
@@ -61,15 +59,17 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
     process {
         foreach ($user in  $Identity) {
             switch -Regex ($PSCmdlet.ParameterSetName) {
-                '\wSkuId\w' {
+                '\wSkuId' {
                     $bodySkuId = $SkuId
                     $skuTarget = $SkuId
                     $body = @{
-
                         addLicenses    = @(
                             @{
                                 disabledPlans = @()
@@ -82,7 +82,7 @@
                         $aADUser = Get-PSEntraIDUserLicense -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {
@@ -92,11 +92,10 @@
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
-                '\wSkuPartNumber\w' {
+                '\wSkuPartNumber' {
                     $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
                     $skuTarget = $SkuPartNumber
                     $body = @{
-
                         addLicenses    = @(
                             @{
                                 disabledPlans = @()
@@ -106,10 +105,10 @@
                         removeLicenses = @()
                     }
                     Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUserLicense-Identity $user
+                        $aADUser = Get-PSEntraIDUserLicense -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {

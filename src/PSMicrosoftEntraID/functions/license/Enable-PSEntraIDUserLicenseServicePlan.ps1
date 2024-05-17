@@ -77,6 +77,9 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
     process {
         foreach ($user in  $Identity) {
@@ -115,7 +118,7 @@
                         $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {
@@ -152,7 +155,7 @@
                         $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {

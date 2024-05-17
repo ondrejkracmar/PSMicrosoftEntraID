@@ -53,6 +53,9 @@
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $nextLoop = 20
         $group = Get-PSEntraIDGroup -Identity $Identity
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
 
     process {
@@ -117,8 +120,8 @@
                             'members@odata.bind' = $bodyItem
                         }
                         try {
-                            [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
-                            
+                            [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+
                         }
                         catch {
                             if ($EnableException.IsPresent) {
@@ -133,7 +136,7 @@
                             '@odata.id' = $memberUrl
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {
