@@ -68,7 +68,7 @@
                 if ($User.count -eq 1) {
                     $aADUser = Get-PSEntraIDUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
+                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
                         [void]$memberObjectIdList.Add($aADUser.Id)
                         [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$memberMailList.Add($aADUser.Mail)
@@ -92,7 +92,7 @@
                     foreach ($itemUser in $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
+                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
                             [void]$memberObjectIdList.Add($aADUser.Id)
                             [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void]$memberMailList.Add($aADUser.Mail)
@@ -120,7 +120,7 @@
                             'members@odata.bind' = $bodyItem
                         }
                         try {
-                            [void](Invoke-RestRequest -Service 'graph' -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
 
                         }
                         catch {

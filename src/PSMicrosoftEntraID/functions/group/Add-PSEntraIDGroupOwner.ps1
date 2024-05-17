@@ -70,7 +70,7 @@
                 foreach ($itemUser in $User) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
+                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
                         [void]$ownerObjectIdList.Add($aADUser.Id)
                         [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$ownerMailList.Add($aADUser.Mail)
