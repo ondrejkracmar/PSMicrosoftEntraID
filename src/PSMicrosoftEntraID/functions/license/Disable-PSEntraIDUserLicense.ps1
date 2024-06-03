@@ -90,7 +90,7 @@
                 removeLicenses = $bodySkuId
             }
             Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
+                $aADUser = Get-PSEntraIDUserLicense -Identity $user
                 if (-not ([object]::Equals($aADUser, $null))) {
                     $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
