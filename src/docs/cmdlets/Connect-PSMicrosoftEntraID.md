@@ -14,34 +14,52 @@ Establish a connection to an Entra Service.
 
 ### Browser (Default)
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-Browser] [-PassThru]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-Browser]
+ [-BrowserMode <String>] [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault]
+ [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### KeyVault
+```
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -VaultName <String> -SecretName <String>
+ [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### DeviceCode
+### UsernamePassword
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-DeviceCode] [-PassThru]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### AppCertificate
-```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
- [-Certificate <X509Certificate2>] [-CertificateThumbprint <String>] [-CertificateName <String>]
- [-CertificatePath <String>] [-CertificatePassword <SecureString>] [-PassThru]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -Credential <PSCredential>
+ [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AppSecret
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
- -ClientSecret <SecureString> [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -ClientSecret <SecureString>
+ [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### UsernamePassword
+### AppCertificate
 ```
-Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>]
- -Credential <PSCredential> [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Certificate <X509Certificate2>]
+ [-CertificateThumbprint <String>] [-CertificateName <String>] [-CertificatePath <String>]
+ [-CertificatePassword <SecureString>] [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>]
+ [-MakeDefault] [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### DeviceCode
+```
+Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-DeviceCode]
+ [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Identity
+```
+Connect-PSMicrosoftEntraID [-Identity] [-IdentityID <String>] [-IdentityType <String>] [-Service <String[]>]
+ [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -74,10 +92,17 @@ Prompts you to enter the certificate-file's password first.
 
 ### EXAMPLE 4
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+Connect-PSMicrosoftEntraID -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 ```
 
-Establish a connection using a client secret.
+Establish a connection to Defender for Endpoint using a client secret.
+
+### EXAMPLE 5
+```
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
+```
+
+Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 
 ## PARAMETERS
 
@@ -93,6 +118,24 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -BrowserMode
+How the browser used for authentication is selected.
+Options:
++ Auto (default): Automatically use the default browser.
++ PrintLink: The link to open is printed on console and user selects which browser to paste it into (must be used on the same machine)
+
+```yaml
+Type: System.String
+Parameter Sets: Browser
+Aliases:
+
+Required: False
+Position: Named
+Default value: Auto
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -191,7 +234,7 @@ ID of the registered/enterprise application used for authentication.
 
 ```yaml
 Type: System.String
-Parameter Sets: (All)
+Parameter Sets: Browser, KeyVault, UsernamePassword, AppSecret, AppCertificate, DeviceCode
 Aliases:
 
 Required: True
@@ -244,6 +287,68 @@ Type: System.Management.Automation.SwitchParameter
 Parameter Sets: DeviceCode
 Aliases:
 
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Identity
+Log on as the Managed Identity of the current system.
+Only works in environments with managed identities, such as Azure Function Apps or Runbooks.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: Identity
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IdentityID
+ID of the User-Managed Identity to connect as.
+https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+
+```yaml
+Type: System.String
+Parameter Sets: Identity
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IdentityType
+Type of the User-Managed Identity.
+
+```yaml
+Type: System.String
+Parameter Sets: Identity
+Aliases:
+
+Required: False
+Position: Named
+Default value: ClientID
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MakeDefault
+Makes this service the new default service for all subsequent Connect-EntraService & Invoke-EntraRequest calls.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
 Required: False
 Position: Named
 Default value: False
@@ -281,12 +386,81 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Resource
+The resource to authenticate to.
+Used to authenticate to a service without requiring a full service configuration.
+Automatically implies PassThru.
+This token is not registered as a service and cannot be implicitly  used by Invoke-EntraRequest.
+Also provide the "-ServiceUrl" parameter, if you later want to use this token explicitly in Invoke-EntraRequest.
+
+```yaml
+Type: System.String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Scopes
 Any scopes to include in the request.
 Only used for interactive/delegate workflows, ignored for Certificate based authentication or when using Client Secrets.
 
 ```yaml
 Type: System.String[]
+Parameter Sets: Browser, DeviceCode
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SecretName
+Name of the secret to use from the Azure Key Vault specified through the '-VaultName' parameter.
+In order for this flow to work, please ensure that you either have an active AzureKeyVault service connection,
+or are connected via Connect-AzAccount.
+
+```yaml
+Type: System.String
+Parameter Sets: KeyVault
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Service
+The service to connect to.
+Individual commands using Invoke-EntraRequest specify the service to use and thus identify the token needed.
+Defaults to: Graph
+
+```yaml
+Type: System.String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: $script:_DefaultService
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ServiceUrl
+The base url for requests to the service connecting to.
+Overrides the default service url configured with the service settings.
+
+```yaml
+Type: System.String
 Parameter Sets: (All)
 Aliases:
 
@@ -302,7 +476,25 @@ The ID of the tenant/directory to connect to.
 
 ```yaml
 Type: System.String
-Parameter Sets: (All)
+Parameter Sets: Browser, KeyVault, UsernamePassword, AppSecret, AppCertificate, DeviceCode
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VaultName
+Name of the Azure Key Vault from which to retrieve the certificate or client secret used for the authentication.
+Secrets retrieved from the vault are not cached, on token expiration they will be retrieved from the Vault again.
+In order for this flow to work, please ensure that you either have an active AzureKeyVault service connection,
+or are connected via Connect-AzAccount.
+
+```yaml
+Type: System.String
+Parameter Sets: KeyVault
 Aliases:
 
 Required: True
