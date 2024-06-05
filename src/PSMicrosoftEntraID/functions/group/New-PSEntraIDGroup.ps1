@@ -115,6 +115,9 @@
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $path = 'groups'
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
 
     process {
@@ -149,7 +152,7 @@
                     foreach ($owner in $Owners) {
                         $aADUser = Get-PSEntraIDUser -Identity $owner
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
+                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
                         }
                         $body['owners@odata.bind'] = [array]$userIdUriPathList
                     }
@@ -158,7 +161,7 @@
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).Name, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
@@ -176,7 +179,7 @@
                     }
                 }
                 Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                 } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

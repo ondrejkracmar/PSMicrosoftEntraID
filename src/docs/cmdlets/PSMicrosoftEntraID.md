@@ -29,6 +29,9 @@ Locale: en-US
 ### [Disable-PSEntraIDUserLicenseServicePlan](Disable-PSEntraIDUserLicenseServicePlan.md)
 {{ Fill in the Description }}
 
+### [Enable-PSEntraIDUserLicense](Enable-PSEntraIDUserLicense.md)
+{{ Fill in the Description }}
+
 ### [Enable-PSEntraIDUserLicenseServicePlan](Enable-PSEntraIDUserLicenseServicePlan.md)
 {{ Fill in the Description }}
 

@@ -64,12 +64,12 @@
                         foreach ($itemUser in  $User) {
                             $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not ([object]::Equals($aADUser, $null))) {
-                                
-                                    $path = ('groups/{0}/owners/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
-                                try{
+
+                                $path = ('groups/{0}/owners/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
+                                try {
                                     [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
                                 }
-                                catch{
+                                catch {
                                     if ($EnableException.IsPresent) {
                                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name GroupOwner.Delete.Failed) -f $Identity)
                                     }

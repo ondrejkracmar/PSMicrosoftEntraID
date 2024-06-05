@@ -77,6 +77,9 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
     process {
         foreach ($user in  $Identity) {
@@ -117,7 +120,7 @@
                                 removeLicenses = @()
                             }
 
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
 
                         }
                         else {
@@ -155,7 +158,7 @@
                                 removeLicenses = @()
                             }
 
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
 
                         }
                         else {

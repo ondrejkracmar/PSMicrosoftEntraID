@@ -17,6 +17,9 @@
 	[string]$TenantID
 	[string]$ServiceUrl
 	[Hashtable]$Header = @{}
+
+	[string]$IdentityID
+	[string]$IdentityType
 	
 	# Workflow: Client Secret
 	[System.Security.SecureString]$ClientSecret
@@ -26,6 +29,10 @@
 
 	# Workflow: Username & Password
 	[PSCredential]$Credential
+
+	# Workflow: Key Vault
+	[string]$VaultName
+	[string]$SecretName
 	#endregion Connection Data
 	
 	#region Constructors
@@ -63,6 +70,27 @@
 		$this.ServiceUrl = $ServiceUrl
 		if ($IsDeviceCode) { $this.Type = 'DeviceCode' }
 		else { $this.Type = 'Browser' }
+	}
+
+	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [string]$ServiceUrl, [string]$VaultName, [string]$SecretName) {
+		$this.Service = $Service
+		$this.ClientID = $ClientID
+		$this.TenantID = $TenantID
+		$this.ServiceUrl = $ServiceUrl
+		$this.VaultName = $VaultName
+		$this.SecretName = $SecretName
+		$this.Type = 'KeyVault'
+	}
+
+	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
+		$this.Service = $Service
+		$this.ServiceUrl = $ServiceUrl
+		$this.Type = 'Identity'
+
+		if ($IdentityID) {
+			$this.IdentityID = $IdentityID
+			$this.IdentityType = $IdentityType
+		}
 	}
 	#endregion Constructors
 
@@ -103,9 +131,9 @@
 	[void]RenewToken()
 	{
 		$defaultParam = @{
-			ServiceUrl = $this.ServiceUrl
 			TenantID = $this.TenantID
 			ClientID = $this.ClientID
+			Resource = $this.Audience
 		}
 		switch ($this.Type) {
 			Certificate {
@@ -136,6 +164,18 @@
 				}
 
 				$result = Connect-ServiceBrowser @defaultParam -SelectAccount
+				$this.SetTokenMetadata($result)
+			}
+			KeyVault {
+				$secret = Get-VaultSecret -VaultName $this.VaultName -SecretName $this.SecretName
+				$result = switch ($secret.Type) {
+					Certificate { Connect-ServiceCertificate @defaultParam -Certificate $secret.Certificate }
+					ClientSecret { Connect-ServiceClientSecret @defaultParam -ClientSecret $secret.ClientSecret }
+				}
+				$this.SetTokenMetadata($result)
+			}
+			Identity {
+				$result = Connect-ServiceIdentity -Resource $this.Audience -IdentityID $this.IdentityID -IdentityType $this.IdentityType
 				$this.SetTokenMetadata($result)
 			}
 		}

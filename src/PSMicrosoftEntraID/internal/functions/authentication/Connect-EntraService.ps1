@@ -70,6 +70,28 @@
 
 		Part of the Resource Owner Password Credential (ROPC) workflow.
 
+	.PARAMETER VaultName
+		Name of the Azure Key Vault from which to retrieve the certificate or client secret used for the authentication.
+		Secrets retrieved from the vault are not cached, on token expiration they will be retrieved from the Vault again.
+		In order for this flow to work, please ensure that you either have an active AzureKeyVault service connection,
+		or are connected via Connect-AzAccount.
+
+	.PARAMETER SecretName
+		Name of the secret to use from the Azure Key Vault specified through the '-VaultName' parameter.
+		In order for this flow to work, please ensure that you either have an active AzureKeyVault service connection,
+		or are connected via Connect-AzAccount.
+
+	.PARAMETER Identity
+		Log on as the Managed Identity of the current system.
+		Only works in environments with managed identities, such as Azure Function Apps or Runbooks.
+
+	.PARAMETER IdentityID
+		ID of the User-Managed Identity to connect as.
+		https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity
+
+	.PARAMETER IdentityType
+		Type of the User-Managed Identity.
+
 	.PARAMETER Service
 		The service to connect to.
 		Individual commands using Invoke-EntraRequest specify the service to use and thus identify the token needed.
@@ -112,18 +134,35 @@
 		PS C:\> Connect-EntraService -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 	
 		Establish a connection to Defender for Endpoint using a client secret.
+	
+	.EXAMPLE
+		PS C:\> Connect-EntraService -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
+	
+		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 	[CmdletBinding(DefaultParameterSetName = 'Browser')]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
 		[string]
 		$ClientID,
 		
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
 		[string]
 		$TenantID,
 		
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
 		[string[]]
 		$Scopes,
 
@@ -136,7 +175,7 @@
 		[string]
 		$BrowserMode = 'Auto',
 
-		[Parameter(ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
 		[switch]
 		$DeviceCode,
 		
@@ -167,6 +206,27 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
 		[PSCredential]
 		$Credential,
+
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$VaultName,
+
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$SecretName,
+
+		[Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
+		[switch]
+		$Identity,
+
+		[Parameter(ParameterSetName = 'Identity')]
+		[string]
+		$IdentityID,
+
+		[Parameter(ParameterSetName = 'Identity')]
+		[ValidateSet('ClientID', 'ResourceID', 'PrincipalID')]
+		[string]
+		$IdentityType = 'ClientID',
 
 		[ArgumentCompleter({ Get-ServiceCompletion $args })]
 		[ValidateScript({ Assert-ServiceName -Name $_ })]
@@ -305,6 +365,47 @@
 					Write-Verbose "[$serviceName] Connected via Certificate ($($token.Scopes -join ', '))"
 				}
 				#endregion AppCertificate
+			
+				#region KeyVault
+				KeyVault {
+					Write-Verbose "[$serviceName] Connecting via KeyVault"
+					try { $secret = Get-VaultSecret -VaultName $VaultName -SecretName $SecretName }
+					catch {
+						Write-Warning "[$serviceName] Failed to retrieve secret from KeyVault: $_"
+						$PSCmdlet.ThrowTerminatingError($_)
+					}
+					try {
+						$result = switch ($secret.Type) {
+							Certificate { Connect-ServiceCertificate @commonParam -Certificate $secret.Certificate -ErrorAction Stop }
+							ClientSecret { Connect-ServiceClientSecret @commonParam -ClientSecret $secret.ClientSecret -ErrorAction Stop }
+						}
+					}
+					catch {
+						Write-Warning "[$serviceName] Failed to connect: $_"
+						$PSCmdlet.ThrowTerminatingError($_)
+					}
+					$token = [EntraToken]::new($serviceName, $ClientID, $TenantID, $effectiveServiceUrl, $VaultName, $SecretName)
+					if ($serviceObject.Header.Count -gt 0) { $token.Header = $serviceObject.Header.Clone() }
+					$token.SetTokenMetadata($result)
+					if ($doRegister) { $script:_EntraTokens[$serviceName] = $token }
+					Write-Verbose "[$serviceName] Connected via KeyVault ($($token.Scopes -join ', '))"
+				}
+				#endregion KeyVault
+
+				#region Identity
+				Identity {
+					Write-Verbose "[$serviceName] Connecting via Managed Identity"
+
+					$result = Connect-ServiceIdentity -Resource $commonParam.Resource -IdentityID $IdentityID -IdentityType $IdentityType -Cmdlet $PSCmdlet
+
+					$token = [EntraToken]::new($serviceName, $effectiveServiceUrl, $IdentityID, $IdentityType)
+					if ($serviceObject.Header.Count -gt 0) { $token.Header = $serviceObject.Header.Clone() }
+					$token.SetTokenMetadata($result)
+					if ($doRegister) { $script:_EntraTokens[$serviceName] = $token }
+
+					Write-Verbose "[$serviceName] Connected via Managed Identity ($($token.Scopes -join ', '))"
+				}
+				#endregion Identity
 			}
 			#endregion Connection
 

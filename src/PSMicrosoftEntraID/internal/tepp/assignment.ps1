@@ -24,6 +24,9 @@ Register-PSFTeppArgumentCompleter -Command Enable-PSEntraIDUserLicenseServicePla
 Register-PSFTeppArgumentCompleter -Command Enable-PSEntraIDUserLicenseServicePlan -Parameter ServicePlanId -Name 'subscribed.skupartnumber.serviceplanid'
 Register-PSFTeppArgumentCompleter -Command Enable-PSEntraIDUserLicenseServicePlan -Parameter ServicePlanName -Name 'subscribed.skupartnumber.serviceplanName'
 
+Register-PSFTeppArgumentCompleter -Command Enable-PSEntraIDUserLicense -Parameter SkuId -Name 'subscribed.skuid'
+Register-PSFTeppArgumentCompleter -Command Enable-PSEntraIDUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
+
 Register-PSFTeppArgumentCompleter -Command Disable-PSEntraIDUserLicenseServicePlan -Parameter SkuId -Name 'subscribed.skuid'
 Register-PSFTeppArgumentCompleter -Command Disable-PSEntraIDUserLicenseServicePlan -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
 

@@ -7,13 +7,13 @@
 
 	'SubscribedSku.List'           = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'     = "Get subscribed Sku '{0}' failed"
-	#'SubscribedSku.Get'            = "Get subscribed Sku '{0}'"
 	'SubscribedSku.Filter'         = "List subscribed Sku with filter '{0}'"
 	'ServicePlan.Filter'           = "List service plan with filter '{0}'"
 	'ServicePlanName.Get.Failed'   = "Get service plan '{0}' failed"
 
 	'LicenseServicePLan.Enable'    = "Enable service plans {0} in subscription '{1}'"
 	'LicenseServicePLan.Disable'   = "Disable service plans {0} in subscription '{1}"
+	'License.Enable'               = "Enable license {0}"
 	'License.Disable'              = "Disable license {0}"
 
 	'User.UsageLocation'           = "Set usagelocation '{0}'"
