@@ -1,4 +1,4 @@
-﻿function Register-PSEntraIDSubscribedSku {
+﻿function Get-PSEntraIDSubscribedLicense {
     <#
 	.SYNOPSIS
 		Register the list of commercial subscriptions that an organization has acquired.
@@ -11,7 +11,7 @@
         but allows catching exceptions in calling scripts.
 
 	.EXAMPLE
-		PS C:\> Register-PSEntraIDSubscribedSku
+		PS C:\> Get-PSEntraIDSubscribedLicense
 
 		Register the list of commercial subscriptions
 
@@ -22,7 +22,8 @@
 
     )
     begin {
-        Assert-RestConnection -Service graph -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
             '$select' = ((Get-PSFConfig -Module $sript:ModuleName -Name Settings.GraphApiQuery.Select.SubscribedSku).Value -join ',')
         }
@@ -31,8 +32,8 @@
     }
     process {
         Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.List' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            Invoke-RestRequest -Service 'graph' -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestSubscribedSku
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait | Set-PSFResultCache
+            Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestSubscribedSku
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
     end

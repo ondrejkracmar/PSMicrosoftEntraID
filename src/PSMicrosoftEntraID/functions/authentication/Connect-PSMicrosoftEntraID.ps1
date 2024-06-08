@@ -252,6 +252,15 @@
 
 	process {
 		Connect-EntraService @param -Service $service
+		[System.Collections.ArrayList]$licenseIdentifier = Get-PSEntraIDSubscribedSku
+		[System.Collections.ArrayList]$subscribedSku = (Get-PSEntraIDSubscribedLicense | Where-Object -Property SkuId -NotIn -Value $licenseIdentifier.SkuId)
+		if ([object]::Equals($subscribedSku, $null)) {
+			$licenseIdentifier | Set-PSFResultCache
+		}
+		else {
+			[void]$licenseIdentifier.AddRange($subscribedSku)
+			$licenseIdentifier | Set-PSFResultCache
+		}
 	}
 	end { }
 }

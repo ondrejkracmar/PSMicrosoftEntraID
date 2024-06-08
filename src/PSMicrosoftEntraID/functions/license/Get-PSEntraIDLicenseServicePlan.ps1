@@ -33,35 +33,35 @@
         [switch]$EnableException
     )
     begin {
-        $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
-        
+        #$licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
+
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'SkuId' {
-                $subscribedSku = Get-Content -Path $licenseIdentifiers | ConvertFrom-Json | Where-Object -Property SkuId -EQ -Value $SkuId
-                if (-not([object]::Equals($subscribedSku, $null))) {
-                    $subscribedSku.ServicePlans #| ConvertFrom-RestServicePlan
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuId)
+                $subscribedSku = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $SkuId
+                    if (-not([object]::Equals($subscribedSku, $null))) {
+                        $subscribedSku.ServicePlans | ConvertFrom-RestServicePlan
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuId)
+                        }
                     }
                 }
-            }
-            'SkuPartNumber' {
-                $subscribedSku = Get-Content -Path $licenseIdentifiers | ConvertFrom-Json | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
-                if (-not([object]::Equals($subscribedSku, $null))) {
-                    $subscribedSku.ServicePlans #| ConvertFrom-RestServicePlan
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuPartNumber)
+                'SkuPartNumber' {
+                    $subscribedSku = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
+                    if (-not([object]::Equals($subscribedSku, $null))) {
+                        $subscribedSku.ServicePlans | ConvertFrom-RestServicePlan
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.Get.Failed) -f $SkuPartNumber)
+                        }
                     }
                 }
             }
         }
+        end
+        {}
     }
-    end
-    {}
-}

@@ -36,11 +36,12 @@
         }
         else {
             [PSCustomObject]@{
-                PSTypeName         = 'PSMicrosoftEntraID.License.ServicePlan'
-                ServicePlanId      = $InputObject.servicePlanId
-                ServicePlanName    = $InputObject.servicePlanName
-                ProvisioningStatus = $InputObject.provisioningStatus
-                AppliesTo          = $InputObject.appliesTo
+                PSTypeName              = 'PSMicrosoftEntraID.License.ServicePlan'
+                ServicePlanId           = $InputObject.servicePlanId
+                ServicePlanName         = $InputObject.servicePlanName
+                ServicePlanFriendlyName = $InputObject.ServicePlanFriendlyName
+                ProvisioningStatus      = $InputObject.provisioningStatus
+                AppliesTo               = $InputObject.appliesTo
             }
         }
     }
