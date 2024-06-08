@@ -50,7 +50,7 @@ Locale: en-US
 ### [Get-PSEntraIDOrganization](Get-PSEntraIDOrganization.md)
 {{ Fill in the Description }}
 
-### [Get-PSEntraIDSubscribedSku](Get-PSEntraIDSubscribedSku.md)
+### [Get-PSEntraIDSubscribedLicense](Get-PSEntraIDSubscribedLicense.md)
 {{ Fill in the Description }}
 
 ### [Get-PSEntraIDUsageLocation](Get-PSEntraIDUsageLocation.md)
@@ -66,9 +66,6 @@ Locale: en-US
 {{ Fill in the Description }}
 
 ### [Get-PSEntraIDUserMemberOf](Get-PSEntraIDUserMemberOf.md)
-{{ Fill in the Description }}
-
-### [Get-PSEntraIDUserSubscribedSku](Get-PSEntraIDUserSubscribedSku.md)
 {{ Fill in the Description }}
 
 ### [Get-ServiceCompletion](Get-ServiceCompletion.md)

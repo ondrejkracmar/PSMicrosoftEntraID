@@ -5,28 +5,28 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-PSEntraIDSubscribedSku
+# Get-PSEntraIDSubscribedLicense
 
 ## SYNOPSIS
-Get the list of commercial subscriptions that an organization has acquired.
+Register the list of commercial subscriptions that an organization has acquired.
 
 ## SYNTAX
 
 ```
-Get-PSEntraIDSubscribedSku [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-PSEntraIDSubscribedLicense [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get the list of commercial subscriptions that an organization has acquired.
+Register the list of commercial subscriptions that an organization has acquired.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-PSEntraIDSubscribedSku
+Get-PSEntraIDSubscribedLicense
 ```
 
-Get the list of commercial subscriptions
+Register the list of commercial subscriptions
 
 ## PARAMETERS
 
