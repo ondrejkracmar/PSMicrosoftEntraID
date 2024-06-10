@@ -34,7 +34,7 @@ RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 
 RUN useradd --create-home vscode
 
-RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v8.30.0/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v21.3.0/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
 RUN chmod +x /usr/local/bin/oh-my-posh
 
 RUN apt-get update;apt-get install openssh-client -y
