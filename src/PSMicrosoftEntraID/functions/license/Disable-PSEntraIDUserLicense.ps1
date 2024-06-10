@@ -75,18 +75,11 @@
                 }
                 '\wSkuPartNumber' {
                     [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
                 }
             }
             $body = @{
 
-                addLicenses    = @(
-                )
+                addLicenses    = @()
                 removeLicenses = $bodySkuId
             }
             Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
