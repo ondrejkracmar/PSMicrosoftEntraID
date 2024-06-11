@@ -111,6 +111,7 @@
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -152,7 +153,7 @@
                     foreach ($owner in $Owners) {
                         $aADUser = Get-PSEntraIDUser -Identity $owner
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
+                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
                         }
                         $body['owners@odata.bind'] = [array]$userIdUriPathList
                     }
@@ -161,7 +162,7 @@
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name PSMicrosoftEntraID.Graph).ServiceUrl, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }

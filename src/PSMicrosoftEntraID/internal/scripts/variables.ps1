@@ -6,3 +6,4 @@ $script:_EntraEndpoints = @{}
 
 # The default service to connect to
 $script:_DefaultService = 'PSMicrosoftEntraID.Graph'
+$script:_DefaultGraphService = 'PSMicrosoftEntraID.Graph'

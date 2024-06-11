@@ -21,6 +21,7 @@ Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryWaitInSeco
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryCount' -Value 2 -Initialize -Validation 'integer' -Description "Value of parameter RetryCount in the Invoke-PSFProtectedCommand."
 
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $script:_DefaultService -Initialize -Validation 'string' -Description "What service name of Microsoft EntraID."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultGraphService' -Value $script:_DefaultGraphService -Initialize -Validation 'string' -Description "What service name of Microsoft EntraID."
 
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApiQuery.Format' -Value 'json' -Initialize -Validation 'string' -Description "Specifies the media format of the items returned from Microsoft Graph Api."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApiQuery.Query.Level' -Value 'Default' -Initialize -Validation 'string' -Description "Query capabilities level (Default/Advanced). Default value is Default."
