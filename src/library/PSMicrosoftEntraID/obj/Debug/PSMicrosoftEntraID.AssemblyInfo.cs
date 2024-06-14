@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0e223963eef4ef134950eab643225e4e8fc86b2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bd54bdb76361ba24c7329a6af3e4262bd1b7dacb")]
 [assembly: System.Reflection.AssemblyProductAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

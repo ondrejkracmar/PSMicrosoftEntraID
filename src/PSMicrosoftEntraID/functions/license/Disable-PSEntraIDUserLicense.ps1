@@ -67,14 +67,20 @@
                 '\wSkuId' {
                     [string[]]$bodySkuId = $SkuId
                     if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($SkuId | Join-String -SingleQuote -Separator ',')
+                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
                     }
                     else {
-                        $skuTarget = ($SkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                 }
                 '\wSkuPartNumber' {
                     [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    }
                 }
             }
             $body = @{
