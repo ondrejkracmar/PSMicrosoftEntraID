@@ -53,7 +53,6 @@
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $nextLoop = 20
-        $group = Get-PSEntraIDGroup -Identity $Identity
         $header = @{
             'Content-Type' = 'application/json'
         }
@@ -65,6 +64,7 @@
         $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
         $memberMailList = [System.Collections.ArrayList]::new()
         Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+            $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
                 if ($User.count -eq 1) {
                     $aADUser = Get-PSEntraIDUser -Identity $User

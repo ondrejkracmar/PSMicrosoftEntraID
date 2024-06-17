@@ -55,7 +55,6 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $group = Get-PSEntraIDGroup -Identity $Identity
         $header = @{
             'Content-Type' = 'application/json'
         }
@@ -67,6 +66,7 @@
         $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
         $ownerMailList = [System.Collections.ArrayList]::new()
         Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+            $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
                 foreach ($itemUser in $User) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser

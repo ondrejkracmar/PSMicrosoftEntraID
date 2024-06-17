@@ -53,11 +53,11 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $group = Get-PSEntraIDGroup -Identity $Identity
     }
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+            $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not ([object]::Equals($group, $null))) {
                 switch -Regex ($PSCmdlet.ParameterSetName) {
                     'Identity' {
