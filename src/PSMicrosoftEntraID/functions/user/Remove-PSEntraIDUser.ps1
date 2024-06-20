@@ -27,7 +27,7 @@
 	.EXAMPLE
 		PS C:\> Remove-PSEntraIDUser -Identity username@contoso.com
 
-		Delete user user username@contoso.com from Azure AD (Entra ID)
+		Delete user username@contoso.com from Azure AD (Entra ID)
 
 	#>
 
@@ -37,34 +37,33 @@
         DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [switch]
-        $EnableException
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
 
     process {
         foreach ($user in $Identity) {
-            $aADUser = Get-PSEntraIDUser -Identity $user
-            if (-not([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}" -f $aADUser.Id)
-                Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Delete -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+            Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $aADUser = Get-PSEntraIDUser -Identity $user
+                if (-not([object]::Equals($aADUser, $null))) {
+                    $path = ("users/{0}" -f $aADUser.Id)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
                 }
-            }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                    }
+                }
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
 

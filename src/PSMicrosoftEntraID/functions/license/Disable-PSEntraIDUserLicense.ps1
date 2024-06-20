@@ -37,73 +37,70 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'IdentitySkuPartNumber')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
-        [ValidateUserIdentity()]
-        [string[]]
         [Alias("Id", "UserPrincipalName", "Mail")]
-        $Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [ValidateUserIdentity()]
+        [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
-        [string[]]
-        $SkuId,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+        [string[]]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string[]]
-        $SkuPartNumber,
-        [switch]
-        $EnableException
+        [string[]]$SkuPartNumber,
+        [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitIsSeconds' -f $script:ModuleName))
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
     process {
         foreach ($user in  $Identity) {
-            $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
-            if (-not ([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-
-                switch -Regex ($PSCmdlet.ParameterSetName) {
-                    '\wSkuId' {
-                        [string[]]$bodySkuId = $SkuId
-                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                            $skuTarget = ($SkuId | Join-String -SingleQuote -Separator ',')
-                        }
-                        else {
-                            $skuTarget = ($SkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                        }
+            switch -Regex ($PSCmdlet.ParameterSetName) {
+                '\wSkuId' {
+                    [string[]]$bodySkuId = $SkuId
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
                     }
-                    '\wSkuPartNumber' {
-                        [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                        if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                            $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
-                        }
-                        else {
-                            $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                        }
+                    else {
+                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                 }
-                $body = @{
+                '\wSkuPartNumber' {
+                    [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
+                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
+                    }
+                    else {
+                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    }
+                }
+            }
+            $body = @{
 
-                    addLicenses    = @(
-                    )
-                    removeLicenses = $bodySkuId
-                }
-                Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Body $body -Method Post -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
+                addLicenses    = @()
+                removeLicenses = $bodySkuId
             }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
+                $aADUser = Get-PSEntraIDUserLicense -Identity $user
+                if (-not ([object]::Equals($aADUser, $null))) {
+                    $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                 }
-            }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                    }
+                }
+            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end
