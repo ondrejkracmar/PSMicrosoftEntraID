@@ -1,0 +1,22 @@
+﻿
+# ignore the settings folder and files for VSCode and PSS
+.vscode/*
+*.psproj
+*TempPoint*
+
+# Ignore staging info from Visual Studio
+library/PSMicrosoftEntraID/.vs/*
+library/PSMicrosoftEntraID/PSMicrosoftEntraID/bin/*
+library/PSMicrosoftEntraID/PSMicrosoftEntraID/obj/*
+
+# ignore PowerShell Studio MetaData
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj.bak
+PSMicrosoftEntraID/PSMicrosoftEntraID.psprojs
+PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
+
+# ignore the TestResults
+TestResults/*
+
+# ignore the publishing Directory
+publish/*
