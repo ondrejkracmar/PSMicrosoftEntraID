@@ -43,15 +43,14 @@
 
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
+        PS C:\> New-PSEntraIDInvitation -InvitedUserEmailAddress user1@contoso.com -InvitedUserDisplayName 'Displayname' -InviteRedirectUrl 'https://url'
 
-		Get properties of Azure AD user user1@contoso.com
+		Create new  of EntraID guest user user1@contoso.com
 
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'UserEmailAddres')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'UserEmailAddres')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]

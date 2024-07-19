@@ -69,7 +69,7 @@
                         else {
                             $userId = $user
                         }
-                        if(Test-PSFParameterBinding -ParameterName Filter)
+                        if(Test-PSFParameterBinding -ParameterName 'Filter')
                         {
                             $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'

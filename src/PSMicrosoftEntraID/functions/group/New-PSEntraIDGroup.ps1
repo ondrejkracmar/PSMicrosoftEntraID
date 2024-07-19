@@ -95,8 +95,10 @@
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
         [string]$Visibility,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [ValidateUserIdentity()]
         [string[]]$Owners,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [ValidateUserIdentity()]
         [string[]]$Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string]$MembersmembershipRule,
@@ -123,42 +125,41 @@
 
     process {
         $body = @{}
-        Switch ($PSCmdlet.ParameterSetName) {
-            'CreateGroup' {
-                $body['displayName'] = $Displayname
-                $body['description'] = $Description
-                if (Test-PSFParameterBinding -Parameter MailNickname) {
-                    $body['mailNickName'] = $MailNickname
-                }
-                if (Test-PSFParameterBinding -Parameter MailEnabled) {
-                    $body['mailEnabled'] = $MailEnabled
-                }
-                if (Test-PSFParameterBinding -Parameter Visibility) {
-                    $body['visibility'] = $Visibility
-                }
-                if (Test-PSFParameterBinding -Parameter SecurityEnabled) {
-                    $body['securityEnabled'] = $SecurityEnabled
-                }
-                if (Test-PSFParameterBinding -Parameter IsAssignableToRole) {
-                    $body['isAssignableToRole'] = $IsAssignableToRole
-                }
-                if (Test-PSFParameterBinding -Parameter Classification) {
-                    $body['classification'] = $Classification
-                }
-                if (Test-PSFParameterBinding -Parameter GroupTypes) {
-                    $body['groupTypes'] = @($GroupTypes)
-                }
-                if (Test-PSFParameterBinding -Parameter Owners) {
-                    $userIdUriPathList = [System.Collections.ArrayList]::new()
-                    foreach ($owner in $Owners) {
-                        $aADUser = Get-PSEntraIDUser -Identity $owner
-                        if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
-                        }
-                        $body['owners@odata.bind'] = [array]$userIdUriPathList
+        Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+            Switch ($PSCmdlet.ParameterSetName) {
+                'CreateGroup' {
+                    $body['displayName'] = $Displayname
+                    $body['description'] = $Description
+                    if (Test-PSFParameterBinding -ParameterName 'MailNickname') {
+                        $body['mailNickName'] = $MailNickname
                     }
-                    if (Test-PSFParameterBinding -Parameter Members) {
+                    if (Test-PSFParameterBinding -ParameterName 'MailEnabled') {
+                        $body['mailEnabled'] = $MailEnabled
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'Visibility') {
+                        $body['visibility'] = $Visibility
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'SecurityEnabled') {
+                        $body['securityEnabled'] = $SecurityEnabled
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'IsAssignableToRole') {
+                        $body['isAssignableToRole'] = $IsAssignableToRole
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'Classification') {
+                        $body['classification'] = $Classification
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'GroupTypes') {
+                        $body['groupTypes'] = @($GroupTypes)
+                    }
+                    if ((Test-PSFParameterBinding -ParameterName 'Owners') -or (Test-PSFParameterBinding -ParameterName 'Owners')) {
                         $userIdUriPathList = [System.Collections.ArrayList]::new()
+                        foreach ($owner in $Owners) {
+                            $aADUser = Get-PSEntraIDUser -Identity $owner
+                            if (-not([object]::Equals($aADUser, $null))) {
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                            }
+                            $body['owners@odata.bind'] = [array]$userIdUriPathList
+                        }
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
@@ -166,25 +167,23 @@
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
-                        if (Test-PSFParameterBinding -Parameter MembersmembershipRule) {
-                            $body['membershipRule'] = $MembersmembershipRule
-                            $body['membershipRuleProcessingState'] = 'On'
-                            $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
-                        }
-                        if (Test-PSFParameterBinding -Parameter MembershipRuleProcessingState) {
-                            $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-                        }
-                        if (Test-PSFParameterBinding -Parameter ResourceBehaviorOptions) {
-                            $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
-                        }
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'MembersmembershipRule') {
+                        $body['membershipRule'] = $MembersmembershipRule
+                        $body['membershipRuleProcessingState'] = 'On'
+                        $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'MembershipRuleProcessingState') {
+                        $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+                    }
+                    if (Test-PSFParameterBinding -ParameterName 'ResourceBehaviorOptions') {
+                        $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                     }
                 }
-                Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
             }
-        }
+            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        if (Test-PSFFunctionInterrupt) { return }
     }
     end {
 
