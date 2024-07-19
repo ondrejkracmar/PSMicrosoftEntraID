@@ -1,0 +1,86 @@
+﻿name: Publish Powershell Module To Private Repository
+trigger:
+  branches:
+    include:
+    - main
+
+  paths:
+    exclude:
+    - CHANGELOG.md
+
+  tags:
+    include:
+    - "v*"
+    exclude:
+    - "*-*"
+
+variables:
+  - group: "AzArtifactsPSModules"
+  - group: "BuildEnvironment"
+
+steps:
+   - checkout: self
+     persistCredentials: true
+
+   - task: PowerShell@2
+     displayName: Calculate Powershell ModuleVersion (GitVersion)
+     inputs:
+       targetType: inline
+       script: |
+         dotnet tool install --global GitVersion.Tool
+              dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml
+              $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
+              $gitVersionObject.PSObject.Properties.ForEach{
+                  Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+                  Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+              }
+              Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+
+   - task: PowerShell@2
+     displayName: Install Prerequisites For Validation
+     inputs:
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-prerequisites.ps1"
+
+   - task: PowerShell@2
+     displayName: Validation/Test Powershell Module
+     inputs:
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-validate.ps1"
+
+   - task: PublishTestResults@2
+     displayName: "Publish Test Results **/TEST-*.xml"
+     inputs:
+       testResultsFormat: NUnit
+     condition: always()
+
+   - task: PowerShell@2
+     displayName: Build Nuget Package For Powerhell Module
+     inputs:
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-build.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -WorkingDirectory '$(sourceDirectory)'
+          -LocalRepo
+          -ModuleVersion '$(MajorMinorPatch)'
+          -PreRelease '$(NuGetPreReleaseTagV2)'
+
+   - task: PowerShell@2
+     displayName: Publish Nuget Package To Repository
+     inputs:
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-publishNuGetPackage.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -WorkingDirectory '$(sourceDirectory)'
+          -OrganizationName '$(organizationName)'
+          -ArtifactRepositoryName '$(artifactRepositoryName)'
+          -ArtifactFeedName '$(artifactFeedName)'
+          -FeedUsername '$(FeedUsername)'
+          -PersonalAccessToken '$(personalAccessToken)'
+          -ModuleName 'PSMicrosoftEntraID'
+          -ModuleVersion '$(MajorMinorPatch)'
+          -PreRelease '$(NuGetPreReleaseTagV2)'
+
+
+
+    

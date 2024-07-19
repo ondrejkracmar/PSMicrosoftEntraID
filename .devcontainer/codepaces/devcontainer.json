@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/powershell
+{
+	"name": "i-system_PowerShellModule",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/powershell:lts-debian-11",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": "true",
+			"username": "vscode",
+			"upgradePackages": "false",
+			"nonFreePackages": "true"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"modules": [
+				"PSFramework",
+				"Profiler",
+				"Pester",
+				"PlatyPS".
+				"PSModuleDevelopment",
+				"PSScriptAnalyzer"
+			],
+			"powershellProfileURL": "https://gist.githubusercontent.com/ondrejkracmar/5beceaccb6bd72a7a8ce60993fb9beed/raw/828988ad6a88e0432cc928650bea3b957bba8e43/Profile.ps1"
+		}
+	},
+	"postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\";mkdir /root/.config/powershell/;touch /root/.config/powershell/Microsoft.VSCode_profile.ps1;curl -s https://ohmyposh.dev/install.sh | bash -s",
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "pwsh"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.powershell",
+				"github.vscode-pull-request-github",
+				"LouisWT.regexp-preview"
+			]
+		}
+	}
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
