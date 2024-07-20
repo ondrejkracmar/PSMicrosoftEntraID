@@ -76,7 +76,7 @@ steps:
           -ArtifactFeedName '$(artifactFeedName)'
           -FeedUsername '$(FeedUsername)'
           -PersonalAccessToken '$(personalAccessToken)'
-          -ModuleName PSMicrosoftEntraID
+          -ModuleName "PSMicrosoftEntraID"
           -ModuleVersion '$(MajorMinorPatch)'
           -PreRelease '$(NuGetPreReleaseTagV2)'
 

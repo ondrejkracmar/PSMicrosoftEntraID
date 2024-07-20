@@ -18,7 +18,7 @@ param (
 	$SkipPublish,
 
 	[string]
-	$ModuleName = 'PSMIcrosoftEntraID',
+	$ModuleName,
 
 	[string]
 	$ModuleVersion,
