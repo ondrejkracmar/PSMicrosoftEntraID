@@ -5,11 +5,11 @@ It expects as input an ApiKey authorized to publish the module.
 Insert any build steps you may need to take before publishing it here.
 #>
 param (
-	$ApiKey,
-
 	$WorkingDirectory,
 
 	$Repository = 'PSGallery',
+
+	$ApiKey,
 
 	[switch]
 	$LocalRepo,
@@ -18,7 +18,7 @@ param (
 	$SkipPublish,
 
 	[string]
-	$ModuleName,
+	$ModuleName = 'PSMIcrosoftEntraID',
 
 	[string]
 	$ModuleVersion,
