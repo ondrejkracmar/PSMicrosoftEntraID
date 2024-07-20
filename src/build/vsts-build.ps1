@@ -5,11 +5,11 @@ It expects as input an ApiKey authorized to publish the module.
 Insert any build steps you may need to take before publishing it here.
 #>
 param (
-	$ApiKey,
-
 	$WorkingDirectory,
 
 	$Repository = 'PSGallery',
+
+	$ApiKey,
 
 	[switch]
 	$LocalRepo,
@@ -109,7 +109,7 @@ foreach ($filePath in (& "$($PSScriptRoot)\..\$($ModuleName)\internal\scripts\po
 #endregion Gather text data to compile
 
 #region Update the psm1 file
-$fileData = Get-Content -Path "$($publishDir.FullName)\$($ModuleName)\PSMicrosoftTeams.psm1" -Raw
+$fileData = Get-Content -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psm1" -Raw
 $fileData = $fileData.Replace('"<was not compiled>"', '"<was compiled>"')
 $fileData = $fileData.Replace('"<compile code into here>"', ($text -join "`n`n"))
 [System.IO.File]::WriteAllText("$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psm1", $fileData, [System.Text.Encoding]::UTF8)
@@ -129,7 +129,7 @@ if ($AutoVersion)
 	}
 	if (-not $remoteVersion)
 	{
-		Stop-PSFFunction -Message "Couldn't find PSMicrosoftTeams on repository $($Repository)" -EnableException $true
+		Stop-PSFFunction -Message "Couldn't find $($ModuleName) on repository $($Repository)" -EnableException $true
 	}
 	$newBuildNumber = $remoteVersion.Build + 1
 	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1").ModuleVersion
@@ -160,7 +160,7 @@ if ($LocalRepo)
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
-	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
+	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: $($ModuleName)"
 	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\$($ModuleName)" -PackagePath .
 }
 else
