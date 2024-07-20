@@ -61,6 +61,7 @@ steps:
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory '$(sourceDirectory)'
           -LocalRepo
+          -ModuleName "PSMicrosoftEntraID"
           -ModuleVersion '$(MajorMinorPatch)'
           -PreRelease '$(NuGetPreReleaseTagV2)'
 
