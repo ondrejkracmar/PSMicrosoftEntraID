@@ -13,8 +13,7 @@ List a user's direct memberships.
 ## SYNTAX
 
 ```
-Get-PSEntraIDUserMemberOf -Identity <String[]> [-Filter <String>] [-EnableException]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-PSEntraIDUserMemberOf -Identity <String[]> [-Filter <String>] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,21 +76,6 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

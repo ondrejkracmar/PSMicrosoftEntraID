@@ -14,16 +14,15 @@ Get the properties of the specified user.
 
 ### UserEmailAddres (Default)
 ```
-New-PSEntraIDInvitation [-EnableException] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-PSEntraIDInvitation [-EnableException] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### UserEmailAddress
 ```
 New-PSEntraIDInvitation -InvitedUserEmailAddress <String> -InvitedUserDisplayName <String>
  -InviteRedirectUrl <String> [-SendInvitationMessage <Boolean>] [-InviteMessage <String>]
- [-MessageLanguage <String>] [-CCRecipient <PSObject[]>] [-EnableException]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-MessageLanguage <String>] [-CCRecipient <PSObject[]>] [-EnableException] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,10 +32,10 @@ Get the properties of the specified user.
 
 ### EXAMPLE 1
 ```
-Get-PSEntraIDUser -Identity user1@contoso.com
+New-PSEntraIDInvitation -InvitedUserEmailAddress user1@contoso.com -InvitedUserDisplayName 'Displayname' -InviteRedirectUrl 'https://url'
 ```
 
-Get properties of Azure AD user user1@contoso.com
+Create new  of EntraID guest user user1@contoso.com
 
 ## PARAMETERS
 
@@ -144,21 +143,6 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
