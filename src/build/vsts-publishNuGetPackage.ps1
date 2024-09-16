@@ -8,7 +8,8 @@ param (
     [string]$PersonalAccessToken,
     [string]$ModuleName,
     [string]$ModuleVersion,
-    [string]$PreRelease
+    [string]$PreRelease,
+    [string]$CommitsSinceVersion
 )
 
 # Variables
@@ -38,7 +39,7 @@ $credential = New-Object System.Management.Automation.PSCredential ($FeedUsernam
 # Step 4
 # Upload NuGet Package
 if (-not ([string]::IsNullOrEmpty($PreRelease))) {
-    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) "$($ModuleName).$($ModuleVersion)-$($PreRelease).nupkg" -SkipDuplicate
+    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) "$($ModuleName).$($ModuleVersion)-$($PreRelease)$($CommitsSinceVersion).nupkg" -SkipDuplicate
 }
 else {
     & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) "$($ModuleName).$($ModuleVersion).nupkg" -SkipDuplicate

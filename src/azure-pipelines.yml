@@ -28,6 +28,7 @@ steps:
        targetType: inline
        script: |
          dotnet tool install --global GitVersion.Tool
+              dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml
               $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
                   Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
@@ -63,7 +64,8 @@ steps:
           -LocalRepo
           -ModuleName "PSMicrosoftEntraID"
           -ModuleVersion '$(MajorMinorPatch)'
-          -PreRelease '$(NuGetPreReleaseTagV2)'
+          -PreRelease '$(PreReleaseLabel)'
+          -CommitsSinceVersion '$(CommitsSinceVersionSource)'
 
    - task: PowerShell@2
      displayName: Publish Nuget Package To Repository
@@ -79,8 +81,5 @@ steps:
           -PersonalAccessToken '$(personalAccessToken)'
           -ModuleName "PSMicrosoftEntraID"
           -ModuleVersion '$(MajorMinorPatch)'
-          -PreRelease '$(NuGetPreReleaseTagV2)'
-
-
-
-    
+          -PreRelease '$(PreReleaseLabel)'
+          -CommitsSinceVersion '$(CommitsSinceVersionSource)'

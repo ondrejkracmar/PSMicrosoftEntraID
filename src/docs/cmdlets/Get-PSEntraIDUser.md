@@ -14,31 +14,27 @@ Get the properties of the specified user.
 
 ### Identity (Default)
 ```
-Get-PSEntraIDUser -Identity <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUser -Identity <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### Name
 ```
-Get-PSEntraIDUser -Name <String[]> [-EnableException] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-PSEntraIDUser -Name <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### CompanyName
 ```
-Get-PSEntraIDUser -CompanyName <String[]> [-Disabled] [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUser -CompanyName <String[]> [-Disabled] [-EnableException] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-PSEntraIDUser [-Disabled] [-All] [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUser [-Disabled] [-All] [-EnableException] [<CommonParameters>]
 ```
 
 ### Filter
 ```
-Get-PSEntraIDUser -Filter <String> [-AdvancedFilter] [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUser -Filter <String> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -171,21 +167,6 @@ Parameter Sets: Name
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

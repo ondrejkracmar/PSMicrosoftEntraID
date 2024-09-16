@@ -14,14 +14,14 @@ Disable user's license
 
 ### IdentitySkuPartNumber (Default)
 ```
-Disable-PSEntraIDUserLicense -Identity <String[]> -SkuPartNumber <String[]> [-EnableException]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Disable-PSEntraIDUserLicense -Identity <String[]> -SkuPartNumber <String[]> [-EnableException] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### IdentitySkuId
 ```
-Disable-PSEntraIDUserLicense -Identity <String[]> -SkuId <String[]> [-EnableException]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Disable-PSEntraIDUserLicense -Identity <String[]> -SkuId <String[]> [-EnableException] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -67,21 +67,6 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
