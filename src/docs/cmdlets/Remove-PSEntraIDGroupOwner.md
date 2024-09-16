@@ -13,8 +13,8 @@ Remove a owner to a security or Microsoft 365 group.
 ## SYNTAX
 
 ```
-Remove-PSEntraIDGroupOwner -Identity <String> -User <String[]> [-EnableException]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-PSEntraIDGroupOwner -Identity <String> -User <String[]> [-EnableException] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -57,21 +57,6 @@ Parameter Sets: (All)
 Aliases: Id, GroupId, TeamId, MailNickName
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
