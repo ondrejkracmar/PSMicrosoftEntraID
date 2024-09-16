@@ -14,44 +14,38 @@ Get users who are assigned licenses
 
 ### Identity (Default)
 ```
-Get-PSEntraIDUserLicense -Identity <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUserLicense -Identity <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### SkuPartNumberCompanyName
 ```
 Get-PSEntraIDUserLicense -CompanyName <String[]> -SkuPartNumber <String[]> [-EnableException]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [<CommonParameters>]
 ```
 
 ### SkuIdCompanyName
 ```
-Get-PSEntraIDUserLicense -CompanyName <String[]> -SkuId <String[]> [-EnableException]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-PSEntraIDUserLicense -CompanyName <String[]> -SkuId <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### CompanyName
 ```
-Get-PSEntraIDUserLicense -CompanyName <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUserLicense -CompanyName <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### SkuId
 ```
-Get-PSEntraIDUserLicense -SkuId <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUserLicense -SkuId <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### SkuPartNumber
 ```
-Get-PSEntraIDUserLicense -SkuPartNumber <String[]> [-EnableException] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-PSEntraIDUserLicense -SkuPartNumber <String[]> [-EnableException] [<CommonParameters>]
 ```
 
 ### Filter
 ```
-Get-PSEntraIDUserLicense -Filter <String> [-AdvancedFilter] [-EnableException]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-PSEntraIDUserLicense -Filter <String> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -149,21 +143,6 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: System.Management.Automation.ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
