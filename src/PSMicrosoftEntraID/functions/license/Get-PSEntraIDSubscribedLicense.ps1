@@ -16,7 +16,7 @@
 		Register the list of commercial subscriptions
 
 	#>
-    [OutputType('PSMicrosoftEntraID.License')]
+    [OutputType('PSMicrosoftEntraID.License.SubscriptionSkuLicense')]
     [CmdletBinding()]
     param (
 
@@ -32,7 +32,7 @@
     }
     process {
         Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.List' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestSubscribedSku
+            ConvertFrom-RestSubscribedSku -InputObject (Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop)
         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }

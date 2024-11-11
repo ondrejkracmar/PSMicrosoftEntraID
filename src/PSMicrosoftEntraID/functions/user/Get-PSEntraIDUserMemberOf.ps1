@@ -1,4 +1,5 @@
-﻿function Get-PSEntraIDUserMemberOf {
+﻿using namespace PSMicrosoftEntraID.Groups
+function Get-PSEntraIDUserMemberOf {
     <#
     .SYNOPSIS
         List a user's direct memberships.
@@ -23,7 +24,7 @@
 		Get groups, directory roles, and administrative units that the user is a direct member of user1@contoso.com
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
+    [OutputType('PSMicrosoftEntraID.Groups.Group')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Filter',
         Justification = 'False positive as rule does not know that filter operates within the same scope')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
@@ -61,7 +62,7 @@
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $userMail = Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                        $userMail = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop)
                         if (-not([object]::Equals($userMail, $null))) {
                             $userId = $userMail[0].Id
 
@@ -74,10 +75,10 @@
                             $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -ErrorAction Stop)
                         }
                         else{
-                            Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }

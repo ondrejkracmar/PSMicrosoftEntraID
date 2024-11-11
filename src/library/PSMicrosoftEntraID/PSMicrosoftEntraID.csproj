@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\PSMicrosoftEntraID\bin</OutputPath>
-    <DocumentationFile>..\..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
+    <OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
+    <DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Release)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\PSMicrosoftEntraID\bin</OutputPath>
-    <DocumentationFile>..\..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
+    <OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
+    <DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
   </PropertyGroup>
   
   <PropertyGroup>

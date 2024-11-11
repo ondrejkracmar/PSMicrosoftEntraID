@@ -1,4 +1,5 @@
-﻿function Get-PSEntraIDGroupMember {
+﻿using namespace PSMicrosoftEntraID.Users
+function Get-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Get an owner or member to the team, and to the unified group which backs the team.
@@ -29,7 +30,7 @@
 
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
+    [OutputType('PSMicrosoftEntraID.Users.User')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
@@ -80,7 +81,7 @@
                             }
                         }
                         Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestUser
+                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }

@@ -25,6 +25,7 @@
 	'User.Name'                    = "List users by name '{0}'"
 	'User.Invitation'              = "Invite user '{0}'"
 	'User.License.List'            = "List licenses of user '{0}'"
+	'User.LicenseDetai.List'	   = "List license detail of user '{0}'"
 	'User.LicenseServicePLan.List' = "List licenses with service plan of user '{0}'"
 
 	'Group.Get'                    = "Get group '{0}'"
@@ -33,6 +34,8 @@
 	'Group.List'                   = "List groups '{0}'"
 	'Group.New'                    = "Create new group '{0}'"
 	'Group.Delete'                 = "Delete group '{0}'"
+	'Group.Set'                    = "Set group '{0}'"
+	'Group.Set.Failed'             = "Set group '{0}' failed"
 	
 	'GroupMember.Add'              = "Add members '{0}'"
 	'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"

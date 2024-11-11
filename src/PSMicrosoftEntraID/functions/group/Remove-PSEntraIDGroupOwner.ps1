@@ -19,6 +19,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -44,7 +51,8 @@
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [string[]]$User,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
 
@@ -53,6 +61,12 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
     }
 
     process {
@@ -89,7 +103,7 @@
                     Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
                 }
             }
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
     end {

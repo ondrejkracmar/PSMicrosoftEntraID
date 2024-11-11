@@ -22,6 +22,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -37,7 +44,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType(('PSMicrosoftEntraID.User'))]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentityUsageLocationCode')]
     param (
@@ -52,7 +59,8 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateNotNullOrEmpty()]
         [string]$UsageLocationCountry,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
     begin {
@@ -64,6 +72,12 @@
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $header = @{
             'Content-Type' = 'application/json'
+        }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
         }
     }
 
@@ -88,7 +102,7 @@
                 }
                 Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }
             else {
