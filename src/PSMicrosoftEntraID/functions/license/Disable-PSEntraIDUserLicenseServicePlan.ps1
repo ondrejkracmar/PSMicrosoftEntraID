@@ -28,6 +28,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -70,7 +77,8 @@
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string[]]$ServicePlanName,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
@@ -80,9 +88,16 @@
         $header = @{
             'Content-Type' = 'application/json'
         }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
     }
     process {
         foreach ($user in  $Identity) {
+            $bodyDisabledServicePlans = [System.Collections.ArrayList]::new()
             switch -Regex ($PSCmdlet.ParameterSetName) {
                 '\wSkuId\w' {
                     $bodySkuId = $SkuId
@@ -100,14 +115,20 @@
                         $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                     Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
+                        $aADUser = Get-PSEntraIDUserLicenseDetail -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-
-                            [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanId -in $ServicePlanId }).ServicePlanId
-                            [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanId -notin $ServicePlanId }).ServicePlanId
+                            [string[]]$enabledServicePlans = ($aADUser | Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                                Select-Object -ExpandProperty ServicePLans |
+                                Where-Object -Property ServicePlaneId -Value $ServicePlanId -In |
+                                Where-Object -Property ProvisioningStatus -Value 'Success' -EQ ).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = ($aADUser |
+                                Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                                Select-Object -ExpandProperty ServicePLans |
+                                Where-Object -Property ServicePlaneId -Value $ServicePlanId -NotIn |
+                                Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
                             if (-not [object]::Equals($enabledServicePlans, $null)) {
-                                $bodyDisabledServicePlans += $enabledServicePlans
+                                $bodyDisabledServicePlans = $enabledServicePlans | ForEach-Object { [void]$bodyDisabledServicePlans.Add($PSItem) }
                             }
                             $body = @{
 
@@ -128,7 +149,7 @@
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
                 '\wPlanName' {
@@ -142,10 +163,17 @@
                         $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [string[]]$enabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).EnabledServicePlans | Where-Object { $_.ServicePlanName -in $ServicePlanName }).ServicePlanId
-                            [string[]]$bodyDisabledServicePlans = (($aADUser.AssignedLicenses | Where-Object -Property SkuId -EQ -Value $bodySkuId).DisabledServicePlans | Where-Object { $_.ServicePlanName -notin $ServicePlanName }).ServicePlanId
+                            [string[]]$enabledServicePlans = ($aADUser | Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                                Select-Object -ExpandProperty ServicePLans |
+                                Where-Object -Property ServicePlaneName -Value $ServicePlanName -In |
+                                Where-Object -Property ProvisioningStatus -Value 'Success' -EQ ).ServicePlanId
+                            [string[]]$bodyDisabledServicePlans = ($aADUser |
+                                Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                                Select-Object -ExpandProperty ServicePLans |
+                                Where-Object -Property ServicePlaneName -Value $ServicePlanName -NotIn |
+                                Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
                             if (-not [object]::Equals($enabledServicePlans, $null)) {
-                                $bodyDisabledServicePlans += $enabledServicePlans
+                                $bodyDisabledServicePlans = $enabledServicePlans | ForEach-Object { [void]$bodyDisabledServicePlans.Add($PSItem) }
                             }
                             $body = @{
 
@@ -157,16 +185,14 @@
                                 )
                                 removeLicenses = @()
                             }
-
                             [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-
                         }
                         else {
                             if ($EnableException.IsPresent) {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

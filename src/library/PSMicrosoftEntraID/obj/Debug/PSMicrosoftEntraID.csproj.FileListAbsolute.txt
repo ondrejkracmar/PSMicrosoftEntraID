@@ -1,0 +1,14 @@
+C:\Projects\PSModules\PSMicrosoftEntraID\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml
+C:\Projects\PSModules\PSMicrosoftEntraID\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.dll
+C:\Projects\PSModules\PSMicrosoftEntraID\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.pdb
+C:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml
+C:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.dll
+C:\Projects\PSModules\PSMicrosoftEntraID\src\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.pdb
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.csproj.AssemblyReference.cache
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.AssemblyInfoInputs.cache
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.AssemblyInfo.cs
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.csproj.CoreCompileInputs.cache
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.sourcelink.json
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.dll
+C:\Projects\PSModules\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\obj\Debug\PSMicrosoftEntraID.pdb

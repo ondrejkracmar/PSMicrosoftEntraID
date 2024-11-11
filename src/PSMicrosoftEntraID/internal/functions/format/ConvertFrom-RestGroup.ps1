@@ -15,33 +15,22 @@
 		Retrieves the specified group and converts it into something userfriendly
 
 	#>
-    [CmdletBinding()]
-    param (
-        [Parameter(ValueFromPipeline = $true)]
-        $InputObject
-    )
-    begin {
+	param (
+		$InputObject
+	)
 
-    }
-    process {
-        if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) ) { return }
-
-
-        [PSCustomObject]@{
-            PSTypeName      = 'PSMicrosoftEntraID.Group'
-            Id              = $InputObject.id
-            CreatedDateTime = $InputObject.createdDateTime
-            MailNickname    = $InputObject.mailNickname
-            Mail            = $InputObject.mail
-            ProxyAddresses  = $InputObject.proxyAddresses
-            MailEnabled     = $InputObject.mailEnabled
-            Visibility      = $InputObject.visibility
-            DisplayName     = $InputObject.displayName
-            Description     = $InputObject.description
-            GropupTypes     = $InputObject.groupTypes
-            CreatedByAppId  = $InputObject.createdByAppId
-
-        }
-
-    }
+	if (-not $InputObject) { return }
+	$jsonString = $InputObject | ConvertTo-Json -Depth 3
+	
+	if ($InputObject -is [array]) {
+		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
+		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Groups.Group[]])
+	}
+	else {
+		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
+		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Groups.Group])
+	}
+	return $serializer.ReadObject($stream)
 }

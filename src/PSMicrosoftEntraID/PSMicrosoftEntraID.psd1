@@ -15,10 +15,10 @@
 	CompanyName       = 'i-system'
 
 	# Copyright statement for this module
-	Copyright         = 'Copyright (c) 2022 i-system'
+	Copyright         = 'Copyright (c) 2024 i-system'
 
 	# Description of the functionality provided by this module
-	Description       = 'Powershell module represents an Azure Active Directory object'
+	Description       = 'Powershell module represents an Microsoft EntraID object'
 
 	# Minimum version of the PowerShell engine required by this module
 	PowerShellVersion = '7.2'
@@ -31,10 +31,10 @@
 	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
 
 	# Type files (.ps1xml) to be loayded when importing this module
-	# TypesToProcess = @('xml\PSMicrosoftEntraID.Types.ps1xml')
+	TypesToProcess = @('types\PSMicrosoftEntraID.Types.ps1xml')
 
 	# Format files (.ps1xml) to be loaded when importing this module
-	# FormatsToProcess = @('xml\PSMicrosoftEntraID.Format.ps1xml')
+	FormatsToProcess = @('views\PSMicrosoftEntraID.Format.ps1xml')
 
 	# cript (.ps1) files that are run in the caller's session state when the module is imported.
 	#ScriptsToProcess   = ""
@@ -47,14 +47,14 @@
 		'Enable-PSEntraIDUserLicense'
 		'Disable-PSEntraIDUserLicenseServicePlan'
 		'Enable-PSEntraIDUserLicenseServicePlan'
-		'Get-PSEntraIDLicenseServicePlan'
 		'Get-PSEntraIDUserLicense'
-		'Get-PSEntraIDUserLicenseServicePlan'
+		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
 		'Compare-PSEntraIDUserList'
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
+		'Set-PSntraIDGroup'
 		'Set-PSEntraIDUserUsageLocation'
 		'Get-PSEntraIDUsageLocation'
 		'Get-PSEntraIDLicenseIdentifier'
