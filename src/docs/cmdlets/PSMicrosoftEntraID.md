@@ -44,9 +44,6 @@ Locale: en-US
 ### [Get-PSEntraIDLicenseIdentifier](Get-PSEntraIDLicenseIdentifier.md)
 {{ Fill in the Description }}
 
-### [Get-PSEntraIDLicenseServicePlan](Get-PSEntraIDLicenseServicePlan.md)
-{{ Fill in the Description }}
-
 ### [Get-PSEntraIDOrganization](Get-PSEntraIDOrganization.md)
 {{ Fill in the Description }}
 
@@ -62,7 +59,7 @@ Locale: en-US
 ### [Get-PSEntraIDUserLicense](Get-PSEntraIDUserLicense.md)
 {{ Fill in the Description }}
 
-### [Get-PSEntraIDUserLicenseServicePlan](Get-PSEntraIDUserLicenseServicePlan.md)
+### [Get-PSEntraIDUserLicenseDetail](Get-PSEntraIDUserLicenseDetail.md)
 {{ Fill in the Description }}
 
 ### [Get-PSEntraIDUserMemberOf](Get-PSEntraIDUserMemberOf.md)
@@ -87,6 +84,9 @@ Locale: en-US
 {{ Fill in the Description }}
 
 ### [Remove-PSEntraIDUser](Remove-PSEntraIDUser.md)
+{{ Fill in the Description }}
+
+### [Set-PSEntraIDGroup](Set-PSEntraIDGroup.md)
 {{ Fill in the Description }}
 
 ### [Set-PSEntraIDUserUsageLocation](Set-PSEntraIDUserUsageLocation.md)

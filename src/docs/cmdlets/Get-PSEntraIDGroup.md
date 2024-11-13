@@ -145,7 +145,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.Group
+### PSMicrosoftEntraID.Groups.Group
 ## NOTES
 
 ## RELATED LINKS
