@@ -1,4 +1,4 @@
-﻿function Set-PSntraIDGroup {
+﻿function Set-PSEntraIDGroup {
     <#
     .SYNOPSIS
         Updates the specified properties of a Microsoft 365 Group.
@@ -97,8 +97,8 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromAddressLists')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromOutlookClients')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeDynamicGroup')]
-        [Alias("Id", "GroupId", "TeamId", "Name")]
-        [ValidateUserIdentity()]
+        [Alias("Id", "GroupId", "TeamId")]
+        [ValidateGroupIdentity()]
         [string[]]$Identity,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
         [ValidateNotNullOrEmpty()]
@@ -114,13 +114,13 @@
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
         [string]$Visibility,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'AllowExternalSenders')]
-        [boolean]$AllowExternalSenders,
+        [System.Nullable[bool]]$AllowExternalSenders,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'AutoSubscribeNewMembers')]
-        [boolean]$AutoSubscribeNewMembers,
+        [System.Nullable[bool]]$AutoSubscribeNewMembers,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromAddressLists')]
-        [boolean]$HideFromAddressLists,
+        [System.Nullable[bool]]$HideFromAddressLists,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromOutlookClients')]
-        [boolean]$HideFromOutlookClients,
+        [System.Nullable[bool]]$HideFromOutlookClients,
         [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeDynamicGroup')]
         [string]$MembershipRule,
         [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeDynamicGroup')]
@@ -133,8 +133,6 @@
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $usageLocationTemplate = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'aadtemplate' -ChildPath 'UsageLocation.json' )
-        $usageLocationHashtable = Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $header = @{
@@ -156,50 +154,40 @@
                 $body = @{}
                 switch ($PSCmdlet.ParameterSetName) {
                     'UodtaeGroupCommon' {
-                        if (Test-PSFParameterBinding -ParameterName 'Displayname') {
+                        if ($PSBoundParameters.ContainsKey('Displayname')) {
                             $body['displayName'] = $Displayname
                         }
-                        if (Test-PSFParameterBinding -ParameterName 'Displayname') {
-                            $body['displayName'] = $Description
+                        if ($PSBoundParameters.ContainsKey('Description')) {
+                            $body['description'] = $Description
                         }
-                        if (Test-PSFParameterBinding -ParameterName 'MailNickname') {
+                        if ($PSBoundParameters.ContainsKey('MailNickname')) {
                             $body['mailNickName'] = $MailNickname
                         }
-                        if (Test-PSFParameterBinding -ParameterName 'GroupTypes') {
+                        if ($PSBoundParameters.ContainsKey('GroupTypes')) {
                             $body['groupTypes'] = @($GroupTypes)
                         }
-                        if (Test-PSFParameterBinding -ParameterName 'Visibility') {
+                        if ($PSBoundParameters.ContainsKey('Visibility')) {
                             $body['visibility'] = $Visibility
                         }
                     }
                     'AllowExternalSenders' {
-                        $body = @{
-                            $body['allowExternalSenders'] = $AllowExternalSenders
-                        }
+                        $body['allowExternalSenders'] = $AllowExternalSenders
                     }
                     'AutoSubscribeNewMembers' {
-                        $body = @{
-                            $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
-                        }
+                        $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
                     }
                     'HideFromAddressLists' {
-                        $body = @{
-                            $body['hideFromAddressLists'] = $HideFromAddressLists
-                        }
+                        $body['hideFromAddressLists'] = $HideFromAddressLists
                     }
                     'HideFromOutlookClients' {
-                        $body = @{
-                            $body['hideFromOutlookClients'] = $HideFromOutlookClients
-                        }
+                        $body['hideFromOutlookClients'] = $HideFromOutlookClients
                     }
                     'UodtaeDynamicGroup' {
-                        $body = @{
-                            $body['membershipRule'] = $MembershipRule
-                            $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-                        }
+                        $body['membershipRule'] = $MembershipRule
+                        $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                     }
                 }
-                Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $usgaeLocationTarget -Target $aADGroup.MailNickname -ScriptBlock {
+                Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $aADGroup.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName) -ScriptBlock {
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
                 } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
