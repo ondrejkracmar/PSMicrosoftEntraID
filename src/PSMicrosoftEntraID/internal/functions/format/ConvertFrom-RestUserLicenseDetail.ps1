@@ -1,4 +1,4 @@
-function ConvertFrom-RestUserLicenseDetail {
+﻿function ConvertFrom-RestUserLicenseDetail {
     <#
 	.SYNOPSIS
 		Converts User Office 365 License Detail objects to look nice.

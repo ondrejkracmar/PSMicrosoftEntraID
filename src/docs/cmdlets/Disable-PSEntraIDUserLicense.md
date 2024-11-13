@@ -14,14 +14,14 @@ Disable user's license
 
 ### IdentitySkuPartNumber (Default)
 ```
-Disable-PSEntraIDUserLicense -Identity <String[]> -SkuPartNumber <String[]> [-EnableException] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Disable-PSEntraIDUserLicense -Identity <String[]> -SkuPartNumber <String[]> [-EnableException] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### IdentitySkuId
 ```
-Disable-PSEntraIDUserLicense -Identity <String[]> -SkuId <String[]> [-EnableException] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Disable-PSEntraIDUserLicense -Identity <String[]> -SkuId <String[]> [-EnableException] [-Force] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -42,6 +42,25 @@ Disable license (subscription) ENTERPRISEPACK of user username@contoso.com
 This parameters disables user-friendly warnings and enables the throwing of exceptions.
 This is less user frien
 dly, but allows catching exceptions in calling scripts.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+The command then prompts you to acknowledge each action before it continues.
+When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter

@@ -5,34 +5,33 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-PSEntraIDGroupMember
+# Get-PSEntraIDUserLicenseDetail
 
 ## SYNOPSIS
-Get an owner or member to the team, and to the unified group which backs the team.
+Return details for licenses that are directly assigned and those transitively assigned through memberships in licensed groups.
 
 ## SYNTAX
 
 ```
-Get-PSEntraIDGroupMember -Identity <String[]> [-Owner] [-Filter <String>] [-AdvancedFilter] [-EnableException]
- [<CommonParameters>]
+Get-PSEntraIDUserLicenseDetail -Identity <String[]> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This cmdlet get an owner or member of the team, and to the unified group which backs the team.
+Return details for licenses that are directly assigned and those transitively assigned through memberships in licensed groups.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-PSEntraIDUser -Identity user1@contoso.com
+Get-PSEntraIDUserLicenseDetail -Identity user@domain.com
 ```
 
-Get properties of Azure AD user user1@contoso.com
+Get Office 365 subscriptions with their service plansPlans of specific user
 
 ## PARAMETERS
 
 ### -AdvancedFilter
-Switch advanced filter for filtering groups in tenant/directory.
+{{ Fill AdvancedFilter Description }}
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -63,48 +62,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Filter
-Filter expressions of groups in tenant/directory.
-
-```yaml
-Type: System.String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Identity
-MailNickName or Id of group or team.
+UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
 Parameter Sets: (All)
-Aliases: Id, GroupId, TeamId, MailNickName
+Aliases: Id, UserPrincipalName, Mail
 
 Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Owner
-Member type owner.
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -115,7 +84,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.Users.User
+### PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku
 ## NOTES
 
 ## RELATED LINKS
