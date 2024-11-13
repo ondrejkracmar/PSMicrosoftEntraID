@@ -56,7 +56,6 @@
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -83,7 +82,7 @@
                 if ($User.count -eq 1) {
                     $aADUser = Get-PSEntraIDUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                         [void]$memberObjectIdList.Add($aADUser.Id)
                         [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$memberMailList.Add($aADUser.Mail)
@@ -107,7 +106,7 @@
                     foreach ($itemUser in $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             [void]$memberObjectIdList.Add($aADUser.Id)
                             [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void]$memberMailList.Add($aADUser.Mail)
@@ -123,20 +122,19 @@
                         UserPrincipalName = $memberUserPrincipalNameList
                         Mail              = $memberMailList
                         Role              = 'Member'
-                        UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
+                        UrlPath           = ('groups/{0}' -f $group.Id)
                         Method            = 'Patch'
                         MemberUrlList     = $memberUrlList
                     }
                 }
                 if ($requestHash.ObjectId.Count -gt 1) {
-                    $bodyList = $requestHash.Body | Step-Array -Size $nextLoop
+                    $bodyList = $requestHash.MemberUrlList | Step-Array -Size $nextLoop
                     foreach ($bodyItem in $bodyList) {
                         $body = @{
-                            'members@odata.bind' = $bodyItem
+                            'members@odata.bind' = @($bodyItem)
                         }
                         try {
                             [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
-
                         }
                         catch {
                             if ($EnableException.IsPresent) {

@@ -79,7 +79,7 @@
                             $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not ([object]::Equals($aADUser, $null))) {
 
-                                $path = ('groups/{0}/owners/{1}/$ref' -f $aADGroup.Id, $aADUser.Id)
+                                $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
                                 try {
                                     [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
                                 }

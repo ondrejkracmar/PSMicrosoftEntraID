@@ -21,14 +21,14 @@
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
-    
+
     .PARAMETER Force
         The Force switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
         When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
-    
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -90,10 +90,10 @@
                 '\wSkuPartNumber' {
                     [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
                     if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
+                        $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
                     }
                     else {
-                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                        $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
                     }
                 }
             }
@@ -106,7 +106,12 @@
                 $aADUser = Get-PSEntraIDUser -Identity $user
                 if (-not ([object]::Equals($aADUser, $null))) {
                     $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                    $servivePlanStatus = $aADUser |
+                    Get-PSEntraIDUserLicenseDetail |
+                    Select-Object -ExpandProperty ServicePLans
+                    if (-not ([object]::Equals($servivePlanStatus, $null))) {
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                    }
                 }
                 else {
                     if ($EnableException.IsPresent) {

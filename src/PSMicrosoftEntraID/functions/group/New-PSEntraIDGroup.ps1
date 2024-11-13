@@ -121,7 +121,6 @@
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -143,54 +142,52 @@
             Switch ($PSCmdlet.ParameterSetName) {
                 'CreateGroup' {
                     $body['displayName'] = $Displayname
-                    $body['description'] = $Description
-                    if (Test-PSFParameterBinding -ParameterName 'MailNickname') {
-                        $body['mailNickName'] = $MailNickname
+                    $body['mailNickName'] = $MailNickname
+                    $body['mailEnabled'] = $MailEnabled
+                    $body['securityEnabled'] = $SecurityEnabled
+                    $body['groupTypes'] = @($GroupTypes)
+
+                    if ($PSBoundParameters.ContainsKey('Description')) {
+                        $body['description'] = $Description
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MailEnabled') {
-                        $body['mailEnabled'] = $MailEnabled
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'Visibility') {
+                    
+                    if ($PSBoundParameters.ContainsKey('Visibility')) {
                         $body['visibility'] = $Visibility
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'SecurityEnabled') {
-                        $body['securityEnabled'] = $SecurityEnabled
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'IsAssignableToRole') {
+            
+                    if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
                         $body['isAssignableToRole'] = $IsAssignableToRole
                     }
                     if (Test-PSFParameterBinding -ParameterName 'Classification') {
                         $body['classification'] = $Classification
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'GroupTypes') {
-                        $body['groupTypes'] = @($GroupTypes)
-                    }
-                    if ((Test-PSFParameterBinding -ParameterName 'Owners') -or (Test-PSFParameterBinding -ParameterName 'Owners')) {
+
+                    if ($PSBoundParameters.ContainsKey('Owners')) {
                         $userIdUriPathList = [System.Collections.ArrayList]::new()
                         foreach ($owner in $Owners) {
                             $aADUser = Get-PSEntraIDUser -Identity $owner
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
                             $body['owners@odata.bind'] = [array]$userIdUriPathList
                         }
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MembersmembershipRule') {
+                    if ($PSBoundParameters.ContainsKey('MembersmembershipRule')) {
                         $body['membershipRule'] = $MembersmembershipRule
                         $body['membershipRuleProcessingState'] = 'On'
                         $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MembershipRuleProcessingState') {
+                    if ($PSBoundParameters.ContainsKey('MembershipRuleProcessingState')) {
                         $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'ResourceBehaviorOptions') {
+                    if ($PSBoundParameters.ContainsKey('ResourceBehaviorOptions')) {
                         $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                     }
                 }

@@ -59,7 +59,6 @@
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -85,7 +84,7 @@
                 foreach ($itemUser in $User) {
                     $aADUser = Get-PSEntraIDUser -Identity $itemUser
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                         [void]$ownerObjectIdList.Add($aADUser.Id)
                         [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$ownerMailList.Add($aADUser.Mail)

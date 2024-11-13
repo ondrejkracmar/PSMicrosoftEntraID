@@ -11,10 +11,10 @@
 	'ServicePlan.Filter'           = "List service plan with filter '{0}'"
 	'ServicePlanName.Get.Failed'   = "Get service plan '{0}' failed"
 
-	'LicenseServicePLan.Enable'    = "Enable service plans {0} in subscription '{1}'"
-	'LicenseServicePLan.Disable'   = "Disable service plans {0} in subscription '{1}"
-	'License.Enable'               = "Enable license {0}"
-	'License.Disable'              = "Disable license {0}"
+	'LicenseServicePLan.Enable'    = "Enable service plans '{0}' in subscription '{1}'"
+	'LicenseServicePLan.Disable'   = "Disable service plans '{0}' in subscription '{1}'"
+	'License.Enable'               = "Enable license '{0}'"
+	'License.Disable'              = "Disable license '{0}'"
 
 	'User.UsageLocation'           = "Set usagelocation '{0}'"
 	'User.Delete'                  = "Delete user '{0}'"

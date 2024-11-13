@@ -54,7 +54,7 @@
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
-		'Set-PSntraIDGroup'
+		'Set-PSEntraIDGroup'
 		'Set-PSEntraIDUserUsageLocation'
 		'Get-PSEntraIDUsageLocation'
 		'Get-PSEntraIDLicenseIdentifier'
