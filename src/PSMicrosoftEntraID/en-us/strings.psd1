@@ -24,9 +24,7 @@
 	'User.List'                    = "List users '{0}'"
 	'User.Name'                    = "List users by name '{0}'"
 	'User.Invitation'              = "Invite user '{0}'"
-	'User.License.List'            = "List licenses of user '{0}'"
 	'User.LicenseDetai.List'	   = "List license detail of user '{0}'"
-	'User.LicenseServicePLan.List' = "List licenses with service plan of user '{0}'"
 
 	'Group.Get'                    = "Get group '{0}'"
 	'Group.Get.Failed'             = "Get group '{0}' failed"
