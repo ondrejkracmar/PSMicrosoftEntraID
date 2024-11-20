@@ -49,6 +49,12 @@ function Get-PSEntraIDUserMemberOf {
         }
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
@@ -62,7 +68,7 @@ function Get-PSEntraIDUserMemberOf {
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $userMail = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -ErrorAction Stop)
+                        $userMail = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         if (-not([object]::Equals($userMail, $null))) {
                             $userId = $userMail[0].Id
 
@@ -75,10 +81,10 @@ function Get-PSEntraIDUserMemberOf {
                             $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else{
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }

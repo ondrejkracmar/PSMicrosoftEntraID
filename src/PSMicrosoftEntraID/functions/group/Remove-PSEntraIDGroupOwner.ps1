@@ -67,6 +67,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
@@ -81,7 +87,7 @@
 
                                 $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
                                 try {
-                                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                                 }
                                 catch {
                                     if ($EnableException.IsPresent) {

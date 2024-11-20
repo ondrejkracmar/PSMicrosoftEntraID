@@ -74,6 +74,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
     process {
         foreach ($user in  $Identity) {
@@ -110,7 +116,7 @@
                     Get-PSEntraIDUserLicenseDetail |
                     Select-Object -ExpandProperty ServicePLans
                     if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                     }
                 }
                 else {

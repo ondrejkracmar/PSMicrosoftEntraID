@@ -94,6 +94,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
     process {
         foreach ($user in  $Identity) {
@@ -137,7 +143,7 @@
                                     )
                                     removeLicenses = @()
                                 }
-                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                             }
                         }
                         else {
@@ -178,7 +184,7 @@
                                     )
                                     removeLicenses = @()
                                 }
-                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                             }
                         }
                         else {

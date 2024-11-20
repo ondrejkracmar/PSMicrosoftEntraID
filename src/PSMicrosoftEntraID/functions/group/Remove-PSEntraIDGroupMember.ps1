@@ -80,7 +80,7 @@
                             if (-not([object]::Equals($aADUser, $null))) {
                                 $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $aADUser.Id)
                                 try {
-                                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                                 }
                                 catch {
                                     if ($EnableException.IsPresent) {

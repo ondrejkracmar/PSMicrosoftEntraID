@@ -79,6 +79,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
@@ -101,7 +107,7 @@
                     }
                 }
                 Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                 } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

@@ -76,6 +76,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
     process {
         foreach ($user in  $Identity) {
@@ -96,7 +102,7 @@
                         $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {
@@ -122,7 +128,7 @@
                         $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
                             $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {
