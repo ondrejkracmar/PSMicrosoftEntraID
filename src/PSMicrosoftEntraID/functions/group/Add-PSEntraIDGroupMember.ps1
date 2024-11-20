@@ -69,6 +69,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
@@ -134,7 +140,7 @@
                             'members@odata.bind' = @($bodyItem)
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {
@@ -149,7 +155,7 @@
                             '@odata.id' = $memberUrl
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {

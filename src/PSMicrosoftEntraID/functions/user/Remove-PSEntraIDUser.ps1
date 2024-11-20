@@ -61,6 +61,12 @@
         else {
             [bool]$cmdLetConfirm = $true
         }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
@@ -69,7 +75,7 @@
                 $aADUser = Get-PSEntraIDUser -Identity $user
                 if (-not([object]::Equals($aADUser, $null))) {
                     $path = ("users/{0}" -f $aADUser.Id)
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                 }
                 else {
                     if ($EnableException.IsPresent) {
