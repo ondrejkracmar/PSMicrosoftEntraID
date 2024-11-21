@@ -108,7 +108,7 @@
                 if (-not ([object]::Equals($aADUser, $null))) {
                     $path = ("users/{0}" -f $aADUser.Id)
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                }            
+                }
                 else {
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
