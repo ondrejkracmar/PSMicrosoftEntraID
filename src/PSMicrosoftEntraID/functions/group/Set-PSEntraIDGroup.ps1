@@ -154,55 +154,55 @@
 
     process {
         foreach ($group in $Identity) {
-            $aADGroup = Get-PSEntraIDGroup -Identity $group
-            if (-not ([object]::Equals($aADGroup, $null))) {
-                $path = ("groups/{0}" -f $aADGroup.Id)
-                $body = @{}
-                switch ($PSCmdlet.ParameterSetName) {
-                    'UodtaeGroupCommon' {
-                        if ($PSBoundParameters.ContainsKey('Displayname')) {
-                            $body['displayName'] = $Displayname
+            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName) -ScriptBlock {
+                $aADGroup = Get-PSEntraIDGroup -Identity $group
+                if (-not ([object]::Equals($aADGroup, $null))) {
+                    $path = ("groups/{0}" -f $aADGroup.Id)
+                    $body = @{}
+                    switch ($PSCmdlet.ParameterSetName) {
+                        'UodtaeGroupCommon' {
+                            if ($PSBoundParameters.ContainsKey('Displayname')) {
+                                $body['displayName'] = $Displayname
+                            }
+                            if ($PSBoundParameters.ContainsKey('Description')) {
+                                $body['description'] = $Description
+                            }
+                            if ($PSBoundParameters.ContainsKey('MailNickname')) {
+                                $body['mailNickName'] = $MailNickname
+                            }
+                            if ($PSBoundParameters.ContainsKey('GroupTypes')) {
+                                $body['groupTypes'] = @($GroupTypes)
+                            }
+                            if ($PSBoundParameters.ContainsKey('Visibility')) {
+                                $body['visibility'] = $Visibility
+                            }
                         }
-                        if ($PSBoundParameters.ContainsKey('Description')) {
-                            $body['description'] = $Description
+                        'AllowExternalSenders' {
+                            $body['allowExternalSenders'] = $AllowExternalSenders
                         }
-                        if ($PSBoundParameters.ContainsKey('MailNickname')) {
-                            $body['mailNickName'] = $MailNickname
+                        'AutoSubscribeNewMembers' {
+                            $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
                         }
-                        if ($PSBoundParameters.ContainsKey('GroupTypes')) {
-                            $body['groupTypes'] = @($GroupTypes)
+                        'HideFromAddressLists' {
+                            $body['hideFromAddressLists'] = $HideFromAddressLists
                         }
-                        if ($PSBoundParameters.ContainsKey('Visibility')) {
-                            $body['visibility'] = $Visibility
+                        'HideFromOutlookClients' {
+                            $body['hideFromOutlookClients'] = $HideFromOutlookClients
+                        }
+                        'UodtaeDynamicGroup' {
+                            $body['membershipRule'] = $MembershipRule
+                            $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                         }
                     }
-                    'AllowExternalSenders' {
-                        $body['allowExternalSenders'] = $AllowExternalSenders
-                    }
-                    'AutoSubscribeNewMembers' {
-                        $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
-                    }
-                    'HideFromAddressLists' {
-                        $body['hideFromAddressLists'] = $HideFromAddressLists
-                    }
-                    'HideFromOutlookClients' {
-                        $body['hideFromOutlookClients'] = $HideFromOutlookClients
-                    }
-                    'UodtaeDynamicGroup' {
-                        $body['membershipRule'] = $MembershipRule
-                        $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-                    }
-                }
-                Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $aADGroup.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName) -ScriptBlock {
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Set.Failed) -f $user)
                 }
-            }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Set.Failed) -f $user)
+                    }
+                }
+                if (Test-PSFFunctionInterrupt) { return }
+            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
         }
     }
     end {}
