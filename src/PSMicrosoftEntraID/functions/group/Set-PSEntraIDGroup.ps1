@@ -89,9 +89,9 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'UodtaeGroupCommon')]
+        DefaultParameterSetName = 'UpdateGroupCommon')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'AllowExternalSenders')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'AutoSubscribeNewMembers')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromAddressLists')]
@@ -100,17 +100,17 @@
         [Alias("Id", "GroupId", "TeamId")]
         [ValidateGroupIdentity()]
         [string[]]$Identity,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [ValidateNotNullOrEmpty()]
         [string]$Displayname,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [string]$Description,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [string]$MailNickname,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [ValidateSet('Unified', 'DynamicMembership')]
         [string[]]$GroupTypes,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateGroupCommon')]
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
         [string]$Visibility,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'AllowExternalSenders')]
@@ -121,9 +121,9 @@
         [System.Nullable[bool]]$HideFromAddressLists,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'HideFromOutlookClients')]
         [System.Nullable[bool]]$HideFromOutlookClients,
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeDynamicGroup')]
+        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateDynamicGroup')]
         [string]$MembershipRule,
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UodtaeDynamicGroup')]
+        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UpdateDynamicGroup')]
         [ValidateSet('On', 'Paused', 'Off')]
         [string]$MembershipRuleProcessingState,
         [switch]$EnableException,
@@ -160,7 +160,7 @@
                     $path = ("groups/{0}" -f $aADGroup.Id)
                     $body = @{}
                     switch ($PSCmdlet.ParameterSetName) {
-                        'UodtaeGroupCommon' {
+                        'UpdateGroupCommon' {
                             if ($PSBoundParameters.ContainsKey('Displayname')) {
                                 $body['displayName'] = $Displayname
                             }
@@ -189,7 +189,7 @@
                         'HideFromOutlookClients' {
                             $body['hideFromOutlookClients'] = $HideFromOutlookClients
                         }
-                        'UodtaeDynamicGroup' {
+                        'UpdateDynamicGroup' {
                             $body['membershipRule'] = $MembershipRule
                             $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                         }
