@@ -10,7 +10,7 @@
 try {
     # Construct the Azure DevOps and GitHub repository URLs
     $AzureRepoUrl = ('https://dev.azure.com/{0}/{1}/_git/{2}]' -f $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
-    $GitHubRepoUrl = 'github.com/{0}/{1}' -f ($GitHubUsername, $GitHubRepositoryName)
+    $GitHubRepoUrl = ('github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
     Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $AzureRepoUrl)
