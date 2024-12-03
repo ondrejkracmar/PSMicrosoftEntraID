@@ -10,10 +10,9 @@ library/PSMicrosoftEntraID/PSMicrosoftEntraID/bin/*
 library/PSMicrosoftEntraID/PSMicrosoftEntraID/obj/*
 
 # ignore PowerShell Studio MetaData
-PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
-PSMicrosoftEntraID/PSMicrosoftEntraID.psproj.bak
-PSMicrosoftEntraID/PSMicrosoftEntraID.psprojs
-PSMicrosoftEntraID/PSMicrosoftEntraID.psproj
+library/PSMicrosoftEntraID.csproj
+library/PSMicrosoftEntraID.csproj.bak
+library/PSMicrosoftEntraID.csprojs
 
 # ignore the TestResults
 TestResults/*

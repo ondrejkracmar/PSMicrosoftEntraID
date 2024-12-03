@@ -19,6 +19,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -43,18 +50,30 @@
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$User,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $nextLoop = 20
         $header = @{
             'Content-Type' = 'application/json'
+        }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
         }
     }
 
@@ -69,7 +88,7 @@
                 if ($User.count -eq 1) {
                     $aADUser = Get-PSEntraIDUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                         [void]$memberObjectIdList.Add($aADUser.Id)
                         [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void]$memberMailList.Add($aADUser.Mail)
@@ -93,7 +112,7 @@
                     foreach ($itemUser in $User) {
                         $aADUser = Get-PSEntraIDUser -Identity $itemUser
                         if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             [void]$memberObjectIdList.Add($aADUser.Id)
                             [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void]$memberMailList.Add($aADUser.Mail)
@@ -109,20 +128,19 @@
                         UserPrincipalName = $memberUserPrincipalNameList
                         Mail              = $memberMailList
                         Role              = 'Member'
-                        UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
+                        UrlPath           = ('groups/{0}' -f $group.Id)
                         Method            = 'Patch'
                         MemberUrlList     = $memberUrlList
                     }
                 }
                 if ($requestHash.ObjectId.Count -gt 1) {
-                    $bodyList = $requestHash.Body | Step-Array -Size $nextLoop
+                    $bodyList = $requestHash.MemberUrlList | Step-Array -Size $nextLoop
                     foreach ($bodyItem in $bodyList) {
                         $body = @{
-                            'members@odata.bind' = $bodyItem
+                            'members@odata.bind' = @($bodyItem)
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
-
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {
@@ -137,7 +155,7 @@
                             '@odata.id' = $memberUrl
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {
@@ -152,7 +170,7 @@
                     Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
                 }
             }
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
     end {

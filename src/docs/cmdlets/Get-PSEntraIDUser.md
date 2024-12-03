@@ -180,7 +180,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.User
+### PSMicrosoftEntraID.Users.User
 ## NOTES
 
 ## RELATED LINKS

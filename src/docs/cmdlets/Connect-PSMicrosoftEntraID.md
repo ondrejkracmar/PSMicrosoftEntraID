@@ -16,28 +16,28 @@ Establish a connection to an Entra Service.
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-Browser]
  [-BrowserMode <String>] [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault]
- [-PassThru] [<CommonParameters>]
+ [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### KeyVault
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -VaultName <String> -SecretName <String>
  [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
- [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### UsernamePassword
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -Credential <PSCredential>
  [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
- [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### AppSecret
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -ClientSecret <SecureString>
  [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
- [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### AppCertificate
@@ -45,20 +45,35 @@ Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> -ClientSecret <
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Certificate <X509Certificate2>]
  [-CertificateThumbprint <String>] [-CertificateName <String>] [-CertificatePath <String>]
  [-CertificatePassword <SecureString>] [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>]
- [-MakeDefault] [-PassThru] [<CommonParameters>]
+ [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### DeviceCode
 ```
 Connect-PSMicrosoftEntraID -ClientID <String> -TenantID <String> [-Scopes <String[]>] [-DeviceCode]
  [-Service <String[]>] [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru]
- [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <String>] [<CommonParameters>]
 ```
 
 ### Identity
 ```
 Connect-PSMicrosoftEntraID [-Identity] [-IdentityID <String>] [-IdentityType <String>] [-Service <String[]>]
- [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru] [<CommonParameters>]
+ [-ServiceUrl <String>] [-Resource <String>] [-MakeDefault] [-PassThru] [-Environment <Environment>]
+ [-AuthenticationUrl <String>] [<CommonParameters>]
+```
+
+### AzToken
+```
+Connect-PSMicrosoftEntraID [-AzToken <PSObject>] [-Service <String[]>] [-ServiceUrl <String>]
+ [-Resource <String>] [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <String>]
+ [<CommonParameters>]
+```
+
+### AzAccount
+```
+Connect-PSMicrosoftEntraID [-AsAzAccount] [-ShowDialog <String>] [-Service <String[]>] [-ServiceUrl <String>]
+ [-Resource <String>] [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -69,34 +84,41 @@ Prerequisite before executing any requests / commands.
 
 ### EXAMPLE 1
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID
+Connect-EntraService -ClientID $clientID -TenantID $tenantID
 ```
 
 Establish a connection to the graph API, prompting the user for login on their default browser.
 
 ### EXAMPLE 2
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate $cert
+connect-EntraService -AsAzAccount
+```
+
+Establish a connection to the graph API, using the current Az.Accounts session.
+
+### EXAMPLE 3
+```
+Connect-EntraService -ClientID $clientID -TenantID $tenantID -Certificate $cert
 ```
 
 Establish a connection to the graph API using the provided certificate.
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
+Connect-EntraService -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
 ```
 
 Establish a connection to the graph API using the provided certificate file.
 Prompts you to enter the certificate-file's password first.
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Connect-PSMicrosoftEntraID -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 ```
 
 Establish a connection to Defender for Endpoint using a client secret.
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
 ```
@@ -104,6 +126,55 @@ Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName my
 Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 
 ## PARAMETERS
+
+### -AsAzAccount
+Reuse the existing Az.Accounts session to authenticate.
+This is convenient as no further interaction is needed, but also limited in what scopes are available.
+This authentication flow requires the 'Az.Accounts' module to be present, loaded and connected.
+Use 'Connect-AzAccount' to connect first.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: AzAccount
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AuthenticationUrl
+The url used for the authentication requests to retrieve tokens.
+Usually determined by service connected to or the "Environment" parameter, but may be overridden in case of need.
+
+```yaml
+Type: System.String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AzToken
+{{ Fill AzToken Description }}
+
+```yaml
+Type: System.Management.Automation.PSObject
+Parameter Sets: AzToken
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Browser
 Use an interactive logon in your default browser.
@@ -293,6 +364,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Environment
+What environment this service should connect to.
+Defaults to: 'Global'
+
+```yaml
+Type: PSMicrosoftEntraID.Environment
+Parameter Sets: (All)
+Aliases:
+Accepted values: Global, USGov, USGovDOD, China
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Identity
 Log on as the Managed Identity of the current system.
 Only works in environments with managed identities, such as Azure Function Apps or Runbooks.
@@ -451,6 +539,28 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ShowDialog
+Whether to show an interactive dialog when connecting using the existing Az.Accounts session.
+Defaults to: "auto"
+
+Options:
+- auto: Shows dialog only if needed.
+- always: Will always show the dialog, forcing interaction.
+- never: Will never show the dialog.
+Authentication will fail if interaction is required.
+
+```yaml
+Type: System.String
+Parameter Sets: AzAccount
+Aliases:
+
+Required: False
+Position: Named
+Default value: Auto
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

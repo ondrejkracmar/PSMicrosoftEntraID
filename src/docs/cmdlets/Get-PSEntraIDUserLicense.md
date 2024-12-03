@@ -12,9 +12,21 @@ Get users who are assigned licenses
 
 ## SYNTAX
 
-### Identity (Default)
+### CompanyName (Default)
 ```
-Get-PSEntraIDUserLicense -Identity <String[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -CompanyName <String[]> [-EnableException] [<CommonParameters>]
+```
+
+### ServicePlanNameCompanyName
+```
+Get-PSEntraIDUserLicense -CompanyName <String[]> -ServicePlanName <String[]> [-EnableException]
+ [<CommonParameters>]
+```
+
+### ServicePlanIdCompanyName
+```
+Get-PSEntraIDUserLicense -CompanyName <String[]> -ServicePlanId <String[]> [-EnableException]
+ [<CommonParameters>]
 ```
 
 ### SkuPartNumberCompanyName
@@ -28,11 +40,6 @@ Get-PSEntraIDUserLicense -CompanyName <String[]> -SkuPartNumber <String[]> [-Ena
 Get-PSEntraIDUserLicense -CompanyName <String[]> -SkuId <String[]> [-EnableException] [<CommonParameters>]
 ```
 
-### CompanyName
-```
-Get-PSEntraIDUserLicense -CompanyName <String[]> [-EnableException] [<CommonParameters>]
-```
-
 ### SkuId
 ```
 Get-PSEntraIDUserLicense -SkuId <String[]> [-EnableException] [<CommonParameters>]
@@ -43,13 +50,23 @@ Get-PSEntraIDUserLicense -SkuId <String[]> [-EnableException] [<CommonParameters
 Get-PSEntraIDUserLicense -SkuPartNumber <String[]> [-EnableException] [<CommonParameters>]
 ```
 
+### ServicePlanId
+```
+Get-PSEntraIDUserLicense -ServicePlanId <String[]> [-EnableException] [<CommonParameters>]
+```
+
+### ServicePlanName
+```
+Get-PSEntraIDUserLicense -ServicePlanName <String[]> [-EnableException] [<CommonParameters>]
+```
+
 ### Filter
 ```
 Get-PSEntraIDUserLicense -Filter <String> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get users who are assigned licenses
+Get users who are assigned licenses with disabled and enabled service plans
 
 ## EXAMPLES
 
@@ -58,14 +75,7 @@ Get users who are assigned licenses
 Get-PSEntraIDUserLicense -Identity username@contoso.com
 ```
 
-Get licenses of user username@contoso.com
-
-### EXAMPLE 2
-```
-Get-PSEntraIDUserLicense -SkuPartNumber ENTERPRISEPACK
-```
-
-Get userse with ENTERPRISEPACK licenses
+Get licenses of user username@contoso.com with service plans
 
 ## PARAMETERS
 
@@ -89,7 +99,7 @@ CompanyName of the user attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
-Parameter Sets: SkuPartNumberCompanyName, SkuIdCompanyName, CompanyName
+Parameter Sets: CompanyName, ServicePlanNameCompanyName, ServicePlanIdCompanyName, SkuPartNumberCompanyName, SkuIdCompanyName
 Aliases: Company
 
 Required: True
@@ -131,23 +141,38 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Identity
-UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
+### -ServicePlanId
+Office 365 product GUID is identified using a GUID of ServicePlan.
 
 ```yaml
 Type: System.String[]
-Parameter Sets: Identity
-Aliases: Id, UserPrincipalName, Mail
+Parameter Sets: ServicePlanIdCompanyName, ServicePlanId
+Aliases:
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ServicePlanName
+Friendly name Office 365 product of ServicePlanName.
+
+```yaml
+Type: System.String[]
+Parameter Sets: ServicePlanNameCompanyName, ServicePlanName
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -SkuId
-Office 365 product GUID is identified using a GUID of subscribedSku.
+Office 365 product GUID is identified using a GUID of SubscribedSku.
 
 ```yaml
 Type: System.String[]
@@ -162,7 +187,7 @@ Accept wildcard characters: False
 ```
 
 ### -SkuPartNumber
-Friendly name Office 365 product of subscribedSku.
+Friendly name Office 365 product of SubscribedSku.
 
 ```yaml
 Type: System.String[]
@@ -183,7 +208,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.User.License
+### PSMicrosoftEntraID.Users.User
 ## NOTES
 
 ## RELATED LINKS

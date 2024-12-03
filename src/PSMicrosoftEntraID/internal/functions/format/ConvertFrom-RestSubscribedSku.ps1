@@ -15,23 +15,26 @@
 		Retrieves the specified subscribed Sku and converts it into something userfriendly
 		
 	#>
-	[CmdletBinding()]
 	param (
-		[Parameter(ValueFromPipeline = $true)]
 		$InputObject
 	)
 
 	process {
-		if ((-not $InputObject) -or ([string]::IsNullOrEmpty($InputObject.id)) ) { return }
-		[PSCustomObject]@{
-			PSTypeName    = 'PSMicrosoftEntraID.License'
-			Id            = $InputObject.id
-			SkuId         = $InputObject.skuId
-			SkuPartNumber = $InputObject.skuPartNumber
-			AppliesTo     = $InputObject.appliesTo
-			ConsumedUnits = $InputObject.consumedUnits
-			PrepaidUnits  = $InputObject.prepaidUnits
-			ServicePlans  = $InputObject.servicePlans
+		if (-not $InputObject) { return }
+		$jsonString = $InputObject | ConvertTo-Json -Depth 3
+		
+		if ($InputObject -is [array]) {
+			[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+			[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
+			[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.SubscriptionSkuLicense[]])
 		}
+		else {
+			[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+			[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
+			[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.SubscriptionSkuLicense])
+		}
+		return $serializer.ReadObject($stream)
 	}
 }
+
+
