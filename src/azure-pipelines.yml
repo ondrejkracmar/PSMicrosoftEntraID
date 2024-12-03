@@ -99,4 +99,5 @@ steps:
           -GitHubRepositoryName "PSMicrosoftEntraID"
           -GitHubToken $(GitHubPAT)
      env:
+      AZUREDEVOPSPAT: $(azureDevOpsPAT)
       GITHUBPAT: $(GitHubPAT)
