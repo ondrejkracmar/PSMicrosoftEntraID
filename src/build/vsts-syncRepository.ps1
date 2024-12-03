@@ -10,7 +10,8 @@
 
 try {
     # Construct the Azure DevOps and GitHub repository URLs
-    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}' -f $AzureDevOpsToken, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
+    $EncodedPAT = [System.Web.HttpUtility]::UrlEncode($AzureDevOpsToken)
+    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}' -f $EncodedPAT, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
     $GitHubRepoUrl = ('https://github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs

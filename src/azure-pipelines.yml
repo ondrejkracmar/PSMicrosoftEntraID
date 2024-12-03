@@ -97,7 +97,4 @@ steps:
           -AzureDevOpsToken '$(azureDevOpsPAT)'
           -GitHubUsername "ondrejkracmar"
           -GitHubRepositoryName "PSMicrosoftEntraID"
-          -GitHubToken $(GitHubPAT)
-     env:
-      AZUREDEVOPSPAT: $(azureDevOpsPAT)
-      GITHUBPAT: $(GitHubPAT)
+          -GitHubToken '$(GitHubPAT)'
