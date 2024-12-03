@@ -34,6 +34,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -50,6 +57,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'UserEmailAddres')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
@@ -76,7 +84,8 @@
         [string]$MessageLanguage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [psobject[]]$CCRecipient,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
     begin {
@@ -88,6 +97,18 @@
         $cCRecipientList = [System.Collections.ArrayList]::New()
         $header = @{
             'Content-Type' = 'application/json'
+        }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
         }
     }
 
@@ -134,8 +155,8 @@
         }
 
         Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
     end {}

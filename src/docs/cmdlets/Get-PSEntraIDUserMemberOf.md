@@ -86,7 +86,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.User
+### PSMicrosoftEntraID.Groups.Group
 ## NOTES
 
 ## RELATED LINKS

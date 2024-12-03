@@ -16,7 +16,7 @@
 		Get the list of product names and service plan identifiers for licensing
 
 	#>
-    [OutputType('PSMicrosoftEntraID.License')]
+    [OutputType('PSMicrosoftEntraID.License.LicenseIdentifier')]
     [CmdletBinding()]
     param (
 
@@ -26,7 +26,11 @@
     }
     process {
         $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
-        Get-Content -Path $licenseIdentifiers | ConvertFrom-Json | Select-Object -Property SkuId, SkuPartNumber, SkuFriednlyName
+        $jsonString = Get-Content -Path $licenseIdentifiers
+        [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+        [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
+        [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.LicenseIdentifier[]])
+        return $serializer.ReadObject($stream)
     }
     end
     {}

@@ -37,7 +37,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.License
+### PSMicrosoftEntraID.License.SubscriptionSkuLicense
 ## NOTES
 
 ## RELATED LINKS

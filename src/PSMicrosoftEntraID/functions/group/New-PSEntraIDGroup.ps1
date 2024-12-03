@@ -55,6 +55,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -108,18 +115,30 @@
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]]$ResourceBehaviorOptions,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         $path = 'groups'
         $header = @{
             'Content-Type' = 'application/json'
+        }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
         }
     }
 
@@ -129,60 +148,58 @@
             Switch ($PSCmdlet.ParameterSetName) {
                 'CreateGroup' {
                     $body['displayName'] = $Displayname
-                    $body['description'] = $Description
-                    if (Test-PSFParameterBinding -ParameterName 'MailNickname') {
-                        $body['mailNickName'] = $MailNickname
+                    $body['mailNickName'] = $MailNickname
+                    $body['mailEnabled'] = $MailEnabled
+                    $body['securityEnabled'] = $SecurityEnabled
+                    $body['groupTypes'] = @($GroupTypes)
+
+                    if ($PSBoundParameters.ContainsKey('Description')) {
+                        $body['description'] = $Description
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MailEnabled') {
-                        $body['mailEnabled'] = $MailEnabled
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'Visibility') {
+                    
+                    if ($PSBoundParameters.ContainsKey('Visibility')) {
                         $body['visibility'] = $Visibility
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'SecurityEnabled') {
-                        $body['securityEnabled'] = $SecurityEnabled
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'IsAssignableToRole') {
+            
+                    if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
                         $body['isAssignableToRole'] = $IsAssignableToRole
                     }
                     if (Test-PSFParameterBinding -ParameterName 'Classification') {
                         $body['classification'] = $Classification
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'GroupTypes') {
-                        $body['groupTypes'] = @($GroupTypes)
-                    }
-                    if ((Test-PSFParameterBinding -ParameterName 'Owners') -or (Test-PSFParameterBinding -ParameterName 'Owners')) {
+
+                    if ($PSBoundParameters.ContainsKey('Owners')) {
                         $userIdUriPathList = [System.Collections.ArrayList]::new()
                         foreach ($owner in $Owners) {
                             $aADUser = Get-PSEntraIDUser -Identity $owner
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
                             $body['owners@odata.bind'] = [array]$userIdUriPathList
                         }
                         foreach ($member in $Members) {
                             $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id))
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MembersmembershipRule') {
+                    if ($PSBoundParameters.ContainsKey('MembersmembershipRule')) {
                         $body['membershipRule'] = $MembersmembershipRule
                         $body['membershipRuleProcessingState'] = 'On'
                         $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'MembershipRuleProcessingState') {
+                    if ($PSBoundParameters.ContainsKey('MembershipRuleProcessingState')) {
                         $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                     }
-                    if (Test-PSFParameterBinding -ParameterName 'ResourceBehaviorOptions') {
+                    if ($PSBoundParameters.ContainsKey('ResourceBehaviorOptions')) {
                         $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                     }
                 }
             }
-            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
     end {

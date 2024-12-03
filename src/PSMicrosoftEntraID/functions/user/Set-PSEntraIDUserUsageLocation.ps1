@@ -22,6 +22,13 @@
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
     .PARAMETER Confirm
         The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -37,7 +44,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType(('PSMicrosoftEntraID.User'))]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
         DefaultParameterSetName = 'IdentityUsageLocationCode')]
     param (
@@ -52,7 +59,8 @@
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateNotNullOrEmpty()]
         [string]$UsageLocationCountry,
-        [switch]$EnableException
+        [switch]$EnableException,
+        [switch]$Force
     )
 
     begin {
@@ -65,37 +73,49 @@
         $header = @{
             'Content-Type' = 'application/json'
         }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool]$cmdLetConfirm = $false
+        }
+        else {
+            [bool]$cmdLetConfirm = $true
+        }
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean]$cmdLetVerbose = $true
+        }
+        else{
+            [boolean]$cmdLetVerbose =  $false
+        }
     }
 
     process {
         foreach ($user in $Identity) {
-            $aADUser = Get-PSEntraIDUserLicenseServicePlan -Identity $user
-            if (-not ([object]::Equals($aADUser, $null))) {
-                $path = ("users/{0}" -f $aADUser.Id)
-                switch ($PSCmdlet.ParameterSetName) {
-                    'IdentityUsageLocationCode' {
-                        $usgaeLocationTarget = $usageLocationCode
-                        $body = @{
-                            usageLocation = $usageLocationCode
-                        }
-                    }
-                    'IdentityUsageLocationCountry' {
-                        $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
-                        $body = @{
-                            usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
-                        }
+            switch ($PSCmdlet.ParameterSetName) {
+                'IdentityUsageLocationCode' {
+                    $usgaeLocationTarget = $usageLocationCode
+                    $body = @{
+                        usageLocation = $usageLocationCode
                     }
                 }
-                Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $aADUser.UserPrincipalName -ScriptBlock {
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                'IdentityUsageLocationCountry' {
+                    $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
+                    $body = @{
+                        usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
+                    }
+                }
+            }
+            Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $user -ScriptBlock {
+                $aADUser = Get-PSEntraIDUser -Identity $user
+                if (-not ([object]::Equals($aADUser, $null))) {
+                    $path = ("users/{0}" -f $aADUser.Id)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                    }
+                }
                 if (Test-PSFFunctionInterrupt) { return }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                }
-            }
+            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
         }
     }
     end {}
