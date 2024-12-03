@@ -26,7 +26,7 @@ try {
 
     # Add GitHub as a remote repository
     Write-PSFMessage -Level Host -Message "Adding GitHub remote repository..."
-    git remote add github ('https://{0}@{1}' -f $GitHubToken, $GitHubRepoUrl)
+    git remote add github ('{0}@{1}' -f $GitHubToken, $GitHubRepoUrl)
 
     # Push changes to GitHub
     Write-PSFMessage -Level Host -Message "Pushing to GitHub..."
