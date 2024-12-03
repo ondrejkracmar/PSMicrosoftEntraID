@@ -94,7 +94,8 @@ steps:
           -AzureDevOpsOrganizationName '$(organizationName)'
           -AzureDevOpsProjectName '$(projectName)'
           -AzureDevOpsRepositoryName "PSMicrosoftEntraID"
+          -AzureDevOpsUsername '$(azureDevOpsUsername)'
           -AzureDevOpsToken '$(azureDevOpsPAT)'
-          -GitHubUsername "ondrejkracmar"
           -GitHubRepositoryName "PSMicrosoftEntraID"
-          -GitHubToken '$(GitHubPAT)'
+          -GitHubUsername '$(gitHubUsername)'
+          -GitHubToken '$(gitHubPAT)'

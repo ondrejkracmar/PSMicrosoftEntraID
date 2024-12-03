@@ -2,6 +2,7 @@
     [string]$AzureDevOpsOrganizationName,
     [string]$AzureDevOpsProjectName,
     [string]$AzureDevOpsRepositoryName,
+    [string]$AzureDevOpsUsername,
     [string]$AzureDevOpsToken,
     [string]$GitHubUsername,
     [string]$GitHubRepositoryName,
@@ -17,6 +18,24 @@ try {
     # Log the constructed URLs
     Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $AzureRepoUrl)
     Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $GitHubRepoUrl)
+
+    # Configure Git to use credentials for Azure DevOps
+    Write-Host "Configuring Git credentials for Azure DevOps..."
+    $CredentialContent = @'
+protocol=https
+host=dev.azure.com
+username=$AzureDevOpsUserName
+password=$AzureDevOpsToken
+'@
+
+    $TempCredentialFile = New-TemporaryFile
+    $CredentialContent | Set-Content -Path $TempCredentialFile.FullName
+
+    # Pipe credentials to Git credential helper
+    Get-Content $TempCredentialFile.FullName | git credential approve
+
+    # Remove temporary credential file
+    Remove-Item $TempCredentialFile.FullName
 
     # Clone the Azure DevOps repository in mirror mode
     Write-PSFMessage -Level Host -Message "Cloning Azure DevOps repository..."
