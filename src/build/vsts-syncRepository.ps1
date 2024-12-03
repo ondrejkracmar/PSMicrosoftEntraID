@@ -11,45 +11,44 @@
 
 try {
     # Construct the Azure DevOps and GitHub repository URLs
-    $EncodedPAT = [System.Web.HttpUtility]::UrlEncode($AzureDevOpsToken)
-    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}' -f $EncodedPAT, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
-    $GitHubRepoUrl = ('https://github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
+    $encodedAzureDevOpsPAT = [System.Web.HttpUtility]::UrlEncode($AzureDevOpsToken)
+    $encodedGitHubToken = [System.Web.HttpUtility]::UrlEncode($GitHubToken)
+    $azureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}' -f $encodedAzureDevOpsPAT, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
+    $gitHubRepoUrl = ('https://{0}:{1}github.com/{2}/{3}' -f $GitHubUsername,$encodedGitHubToken, $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
-    Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $AzureRepoUrl)
-    Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $GitHubRepoUrl)
+    Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $azureRepoUrl)
+    Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $gitHubRepoUrl)
 
     # Configure Git to use credentials for Azure DevOps
     Write-Host "Configuring Git credentials for Azure DevOps..."
-    $CredentialContent = @'
+    $credentialAzureDevOpsContent = @'
 protocol=https
 host=dev.azure.com
 username=$AzureDevOpsUserName
 password=$AzureDevOpsToken
 '@
 
-    $TempCredentialFile = New-TemporaryFile
-    $CredentialContent | Set-Content -Path $TempCredentialFile.FullName
+    $tempCredentialFile = New-TemporaryFile
+    $credentialAzureDevOpsContent | Set-Content -Path $tempCredentialFile.FullName
 
     # Pipe credentials to Git credential helper
-    Get-Content $TempCredentialFile.FullName | git credential approve
+    Get-Content $tempCredentialFile.FullName | git credential approve
 
     # Remove temporary credential file
-    Remove-Item $TempCredentialFile.FullName
+    Remove-Item $tempCredentialFile.FullName
 
     # Clone the Azure DevOps repository in mirror mode
     Write-PSFMessage -Level Host -Message "Cloning Azure DevOps repository..."
-    git clone --mirror $AzureRepoUrl repo.git
-
-    # Navigate to the cloned repository folder
-    Set-Location -Path repo.git
+    git clone --mirror $azureRepoUrl repo.git
 
     # Add GitHub as a remote repository
-    Write-PSFMessage -Level Host -Message "Adding GitHub remote repository..."
-    git remote add github ('{0}@{1}' -f $GitHubToken, $GitHubRepoUrl)
+    Write-PSFMessage -Level Host "Adding GitHub remote repository..."
+    git remote add github $gitHubRepoUrl
+    git remote -v
 
-    # Push changes to GitHub
-    Write-PSFMessage -Level Host -Message "Pushing to GitHub..."
+    # Push to GitHub
+    Write-PSFMessage -Level Host "Pushing to GitHub..."
     git push --mirror github
 
     # Return to the original directory
