@@ -17,6 +17,7 @@ trigger:
 variables:
   - group: "AzArtifactsPSModules"
   - group: "BuildEnvironment"
+  - group: "GitHubSync"
 
 steps:
    - checkout: self
@@ -83,3 +84,18 @@ steps:
           -ModuleVersion '$(MajorMinorPatch)'
           -PreRelease '$(PreReleaseLabel)'
           -CommitsSinceVersion '$(CommitsSinceVersionSource)'
+
+   - task: PowerShell@2
+     displayName: 'Synchronize Azure DevOps Repository With GitHub'
+     inputs:
+       targetType: 'filePath'
+       filePath: '$(sourceDirectory)/build/vsts-syncRepository.ps1'
+       arguments: > # Use this to avoid newline characters in multiline string
+          -AzureDevOpsOrganizationName '$(organizationName)'
+          -AzureDevOpsProjectName '$(projectName)'
+          -AzureDevOpsRepositoryName "PSMicrosoftEntraID"
+          -GitHubUsername "ondrejkracmar"
+          -GitHubRepositoryName "PSMicrosoftEntraID"
+          -GitHubToken $(GitHubPAT)
+     env:
+     GITHUBPAT: $(GitHubPAT)
