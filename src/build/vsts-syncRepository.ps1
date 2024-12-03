@@ -2,7 +2,7 @@
     [string]$AzureDevOpsOrganizationName,
     [string]$AzureDevOpsProjectName,
     [string]$AzureDevOpsRepositoryName,
-    [string]$AzureDevOpsToken
+    [string]$AzureDevOpsToken,
     [string]$GitHubUsername,
     [string]$GitHubRepositoryName,
     [string]$GitHubToken
@@ -10,7 +10,7 @@
 
 try {
     # Construct the Azure DevOps and GitHub repository URLs
-    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}]' -f [string]$AzureDevOpsToken, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
+    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}]' -f $AzureDevOpsToken, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
     $GitHubRepoUrl = ('https://github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
