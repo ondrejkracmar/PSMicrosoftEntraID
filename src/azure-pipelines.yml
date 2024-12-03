@@ -98,4 +98,4 @@ steps:
           -GitHubRepositoryName "PSMicrosoftEntraID"
           -GitHubToken $(GitHubPAT)
      env:
-     GITHUBPAT: $(GitHubPAT)
+      GITHUBPAT: $(GitHubPAT)
