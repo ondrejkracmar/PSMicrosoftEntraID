@@ -2,6 +2,7 @@
     [string]$AzureDevOpsOrganizationName,
     [string]$AzureDevOpsProjectName,
     [string]$AzureDevOpsRepositoryName,
+    [string]$AzureDevOpsToken
     [string]$GitHubUsername,
     [string]$GitHubRepositoryName,
     [string]$GitHubToken
@@ -9,12 +10,12 @@
 
 try {
     # Construct the Azure DevOps and GitHub repository URLs
-    $AzureRepoUrl = ('https://dev.azure.com/{0}/{1}/_git/{2}]' -f $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
-    $GitHubRepoUrl = ('github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
+    $AzureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}]' -f [string]$AzureDevOpsToken, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
+    $GitHubRepoUrl = ('https://github.com/{0}/{1}' -f $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
     Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $AzureRepoUrl)
-    Write-PSFMessage -Level Host -Message ('GitHub Repository URL: ' -f $GitHubRepoUrl)
+    Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $GitHubRepoUrl)
 
     # Clone the Azure DevOps repository in mirror mode
     Write-PSFMessage -Level Host -Message "Cloning Azure DevOps repository..."
