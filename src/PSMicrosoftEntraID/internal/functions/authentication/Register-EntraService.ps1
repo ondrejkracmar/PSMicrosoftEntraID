@@ -45,8 +45,7 @@
 		ServiceUrl: https://%VAULTNAME%.vault.azure.net
 
 	.PARAMETER Query
-
-	Extra Query Parameters to automatically include on all requests.
+		Extra Query Parameters to automatically include on all requests.
 
 	.PARAMETER Environment
 		What environment this service should connect to.

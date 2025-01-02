@@ -24,10 +24,14 @@ function Get-PSEntraIDGroupMember {
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
+        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com
 
-		Get properties of Azure AD user user1@contoso.com
+		Get members of group1@contoso.com
 
+    .EXAMPLE
+        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com -Owner
+
+		Get owners of group1@contoso.com
 
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
@@ -72,30 +76,31 @@ function Get-PSEntraIDGroupMember {
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
-                    $group = Get-PSEntraIDGroup -Identity $itemIdentity
-                    if (-not([object]::Equals($group, $null))) {
-                        if ($Owner.IsPresent) {
-                            $path = ('groups/{0}/owners' -f $group.Id)
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $group = Get-PSEntraIDGroup -Identity $itemIdentity
+                        if (-not([object]::Equals($group, $null))) {
+                            if ($Owner.IsPresent) {
+                                $path = ('groups/{0}/owners' -f $group.Id)
+                            }
+                            else {
+                                $path = ('groups/{0}/members' -f $group.Id)
+                            }
+                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                                $query['$Filter'] = $Filter
+                                if ($AdvancedFilter.IsPresent) {
+                                    $header['ConsistencyLevel'] = 'eventual'
+                                }
+                            }
+                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
                         else {
-                            $path = ('groups/{0}/members' -f $group.Id)
-                        }
-                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                            $query['$Filter'] = $Filter
-                            if ($AdvancedFilter.IsPresent) {
-                                $header['ConsistencyLevel'] = 'eventual'
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
                         }
-                        Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
-                        }
-                    }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }

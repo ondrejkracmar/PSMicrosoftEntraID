@@ -134,5 +134,33 @@ namespace PSMicrosoftEntraID.Groups
         /// </summary>
         [DataMember(Name = "securityIdentifier")]
         public string SecurityIdentifier { get; set; }
+
+        /// <summary>
+        /// True if the group isn't displayed in certain parts of the Outlook UI.
+        /// </summary>
+        [DataMember(Name = "hideFromAddressLists")]
+        #nullable enable
+        public Boolean? HideFromAddressLists { get; set; }
+
+        /// <summary>
+        /// True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web.
+        /// </summary>
+        [DataMember(Name = "hideFromOutlookClients")]
+        #nullable enable
+        public Boolean? HideFromOutlookClients { get; set; }
+
+        /// <summary>
+        /// Indicates if people external to the organization can send messages to the group.
+        /// </summary>
+        [DataMember(Name = "allowExternalSenders")]
+        #nullable enable
+        public string? AllowExternalSenders { get; set; }
+
+        /// <summary>
+        /// Indicates if new members added to the group are autosubscribed to receive email notifications.
+        /// </summary>
+        [DataMember(Name = "autoSubscribeNewMembers")]
+        #nullable enable
+        public string? AutoSubscribeNewMembers { get; set; }
     }
 }

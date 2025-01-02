@@ -13,5 +13,12 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 # Load Assembly
 "$($moduleRoot)\bin\assembly.ps1"
 
+# Load all internal classes
+"$moduleRoot\internal\classes\attributes\ValidateGroupIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateMailAddressAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateUserIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateGuidAttribute.ps1"
+"$moduleRoot\internal\classes\token\EntraToken.ps1"
+
 # Load the strings used in messages
 "$moduleRoot\internal\scripts\strings.ps1"

@@ -42,6 +42,7 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
 		'Connect-PSMicrosoftEntraID'
+		'Disconnect-PSMicrosoftEntraID'
 		'Get-PSEntraIDOrganization'
 		'Disable-PSEntraIDUserLicense'
 		'Enable-PSEntraIDUserLicense'
@@ -60,6 +61,7 @@
 		'Get-PSEntraIDLicenseIdentifier'
 		'Get-PSEntraIDSubscribedLicense'
 		'Get-PSEntraIDGroup'
+		'Select-PSEntraIDGroupProperty'
 		'New-PSEntraIDGroup'
 		'Remove-PSEntraIDGroup'
 		'Get-PSEntraIDGroupMember'

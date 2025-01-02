@@ -2,6 +2,8 @@
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
 	'Identity.Platform'            = "Microsoft Entra ID (Azure AD)"
+	'Identity.Connect.Failed'	   = "Establish a connection to '{0}' failed"
+	'Identity.Disconnect'	   	   = "Disconnect from '{0}'"
 
 	'Organization.Get'             = 'Get organization detail'
 
@@ -27,6 +29,7 @@
 	'User.LicenseDetai.List'	   = "List license detail of user '{0}'"
 
 	'Group.Get'                    = "Get group '{0}'"
+	'Group.Swlect'                 = "Get group properties '{0}'"
 	'Group.Get.Failed'             = "Get group '{0}' failed"
 	'Group.Filter'                 = "List groups with filter '{0}'"
 	'Group.List'                   = "List groups '{0}'"

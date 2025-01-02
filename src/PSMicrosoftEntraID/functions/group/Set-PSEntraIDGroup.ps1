@@ -154,7 +154,7 @@
 
     process {
         foreach ($group in $Identity) {
-            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName) -ScriptBlock {
+            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 $aADGroup = Get-PSEntraIDGroup -Identity $group
                 if (-not ([object]::Equals($aADGroup, $null))) {
                     $path = ("groups/{0}" -f $aADGroup.Id)
@@ -184,7 +184,7 @@
                             $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
                         }
                         'HideFromAddressLists' {
-                            $body['hideFromAddressLists'] = $HideFromAddressLists
+                            $body['hideFromAddressLists'] = $HideFromAddressLists  
                         }
                         'HideFromOutlookClients' {
                             $body['hideFromOutlookClients'] = $HideFromOutlookClients
@@ -203,6 +203,7 @@
                 }
                 if (Test-PSFFunctionInterrupt) { return }
             } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end {}
