@@ -46,6 +46,7 @@
             [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Organization.OrganizationDetail])
             $serializer.ReadObject($stream)
         } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        if (Test-PSFFunctionInterrupt) { return }
     }
     end
     {}

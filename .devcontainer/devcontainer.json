@@ -34,6 +34,8 @@
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
+				"ms-vscode.vs-keybindings",
+				"vscode-icons-team.vscode-icons",
 				"ms-vscode.powershell",
 				"github.vscode-pull-request-github",
 				"GitHub.vscode-github-actions",

@@ -135,6 +135,26 @@
             Gets or sets the security identifier (SID) for the group.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.HideFromAddressLists">
+            <summary>
+            True if the group isn't displayed in certain parts of the Outlook UI.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.HideFromOutlookClients">
+            <summary>
+            True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.AllowExternalSenders">
+            <summary>
+            Indicates if people external to the organization can send messages to the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.AutoSubscribeNewMembers">
+            <summary>
+            Indicates if new members added to the group are autosubscribed to receive email notifications.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.License.LicenseIdentifier">
             <summary>
             Represents a license identifier in Microsoft Entra ID.

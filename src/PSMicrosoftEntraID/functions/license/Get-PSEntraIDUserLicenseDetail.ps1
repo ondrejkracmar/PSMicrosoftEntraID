@@ -48,18 +48,19 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($user in $Identity) {
-                    $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        $userId = $aADUser.Id
-                        Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetai.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetai.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $aADUser = Get-PSEntraIDUser -Identity $user
+                        if (-not([object]::Equals($aADUser, $null))) {
+                            $userId = $aADUser.Id
                             ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose))
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                         }
-                    }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                            }
+                        }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }

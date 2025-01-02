@@ -1,55 +1,32 @@
 ﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDGroupMember {
+function Select-PSEntraIDGroupProperty {
     <#
     .SYNOPSIS
-        Get an owner or member to the team, and to the unified group which backs the team.
+        Get the properties and relationships of a group or the team, and to the unified group which backs the team.
 
     .DESCRIPTION
-        This cmdlet get an owner or member of the team, and to the unified group which backs the team.
+        This cmdlet gets properties and relationships of a group or the team, and to the unified group which backs the team.
 
     .PARAMETER Identity
         MailNickName or Id of group or team.
-
-    .PARAMETER Owner
-        Member type owner.
-
-    .PARAMETER Filter
-        Filter expressions of groups in tenant/directory.
-
-    .PARAMETER AdvancedFilter
-        Switch advanced filter for filtering groups in tenant/directory.
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com
+        PS C:\> Select-PSEntraIDGroupProperty -Identity group1@contoso.com
 
-		Get members of group1@contoso.com
-
-    .EXAMPLE
-        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com -Owner
-
-		Get owners of group1@contoso.com
+		Get the properties and relationships of a group group1@contoso.com
 
 #>
-    [OutputType('PSMicrosoftEntraID.Users.User')]
+    [OutputType('PSMicrosoftEntraID.Groups.Group')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string[]]$Identity,
-        [Parameter(Mandatory = $False, ParameterSetName = 'Identity')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$Owner,
-        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
-        [ValidateNotNullOrEmpty()]
-        [string]$Filter,
-        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter,
         [switch]$EnableException
     )
 
@@ -59,7 +36,7 @@ function Get-PSEntraIDGroupMember {
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value -join ',') + ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.GroupProperty).Value -join ',')
         }
         $header = @{}
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
@@ -76,23 +53,11 @@ function Get-PSEntraIDGroupMember {
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
-                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'Group.Select' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         $group = Get-PSEntraIDGroup -Identity $itemIdentity
                         if (-not([object]::Equals($group, $null))) {
-                            if ($Owner.IsPresent) {
-                                $path = ('groups/{0}/owners' -f $group.Id)
-                            }
-                            else {
-                                $path = ('groups/{0}/members' -f $group.Id)
-                            }
-                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                                $query['$Filter'] = $Filter
-                                if ($AdvancedFilter.IsPresent) {
-                                    $header['ConsistencyLevel'] = 'eventual'
-                                }
-                            }
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                            if (Test-PSFFunctionInterrupt) { return }
+                            $path = ('groups/{0}' -f $group.Id)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {

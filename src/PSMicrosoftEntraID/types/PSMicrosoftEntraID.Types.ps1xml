@@ -128,7 +128,9 @@
             <Name>MembershipRuleProcessingState</Name>
             <Name>RenewedDateTime</Name>
             <Name>SecurityEnabled</Name>
-            <Name>SecurityIdentifier</Name>
+            <Name>HideFromAddressLists</Name>
+            <Name>HideFromOutlookClients</Name>
+            <Name>AutoSubscribeNewMembers</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>

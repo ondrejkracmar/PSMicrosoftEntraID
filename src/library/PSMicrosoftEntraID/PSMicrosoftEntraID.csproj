@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net4.5.2</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
     <DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
