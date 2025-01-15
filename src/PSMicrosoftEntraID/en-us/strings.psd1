@@ -8,6 +8,7 @@
 	'Organization.Get'             = 'Get organization detail'
 
 	'Batch.Invoke'				   = 'Invoke batch command with the following Ids {0}'
+	'Batch.Invoke.Failed'		   = 'Invoke batch command failed'
 
 	'SubscribedSku.List'           = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'     = "Get subscribed Sku '{0}' failed"
@@ -40,7 +41,7 @@
 	'Group.Delete'                 = "Delete group '{0}'"
 	'Group.Set'                    = "Set group '{0}'"
 	'Group.Set.Failed'             = "Set group '{0}' failed"
-	
+
 	'GroupMember.Add'              = "Add members '{0}'"
 	'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"
 	'GroupMember.Delete'           = "Remove members '{0}'"
