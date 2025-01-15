@@ -11,7 +11,7 @@
               3. The 'id' values are sequential strings from "1" to the total count.
 
         .PARAMETER Requests
-            An array of requests (either [PSCustomObject[]] or [hashtable[]]) typically originating
+            An array of requests PSMicrosoftEntraID.Batch.Request typically originating
             from a JSON structure (for example, by using ConvertFrom-Json on a file that contains
             a property named 'requests').
 
@@ -23,8 +23,7 @@
                 ValueFromPipeline = $true,
                 HelpMessage = "Provide an array of batch request objects (either PSCustomObject or Hashtable)."
             )]
-            [object[]]$Requests,
-
+            [PSMicrosoftEntraID.Batch.Request[]]$Requests,
             [switch]$EnableException
         )
 
