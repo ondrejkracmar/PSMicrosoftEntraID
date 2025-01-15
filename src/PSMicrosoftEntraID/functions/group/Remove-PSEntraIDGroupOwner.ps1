@@ -9,6 +9,9 @@
     .PARAMETER Identity
         MailNickName or Id of group or team
 
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
+
     .PARAMETER User
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
@@ -36,25 +39,27 @@
     .EXAMPLE
             PS C:\> Remove-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
-            Remove owner to Azure AD group group1
+            Remove owner user1,user2 form Microsoft EntraID group with name group1
 
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
-    param([Parameter(Mandatory = $True, ParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
+    param([Parameter(Mandatory = $True, ParameterSetName = 'IdentityInputObject')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'IdentityUser')]
         [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [string]$Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [string[]]$User,
         [switch]$EnableException,
         [switch]$Force
     )
-
 
     begin {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
@@ -76,30 +81,36 @@
     }
 
     process {
-        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+        switch ($PSCmdlet.ParameterSetName) {
+            'IdentityUser' {
+                $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+            'IdentityInputObject' {
+                $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+        }
+        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues ((($userActionString | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
             $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not ([object]::Equals($group, $null))) {
-                switch -Regex ($PSCmdlet.ParameterSetName) {
-                    'Identity' {
+                switch ($PSCmdlet.ParameterSetName) {
+                    'IdentityUser' {
                         foreach ($itemUser in  $User) {
                             $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not ([object]::Equals($aADUser, $null))) {
-
                                 $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
-                                try {
-                                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                                }
-                                catch {
-                                    if ($EnableException.IsPresent) {
-                                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name GroupOwner.Delete.Failed) -f $Identity)
-                                    }
-                                }
+                                [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                             }
                             else {
                                 if ($EnableException.IsPresent) {
                                     Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                                 }
                             }
+                        }
+                    }
+                    'IdentityInput' {
+                        foreach ($itemInputObject in  $InoutObject) {
+                            $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $itemInputObject.Id)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     }
                 }

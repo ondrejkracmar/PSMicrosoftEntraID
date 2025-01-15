@@ -4,6 +4,89 @@
         <name>PSMicrosoftEntraID</name>
     </assembly>
     <members>
+        <member name="T:PSMicrosoftEntraID.Batch.Request">
+            <summary>
+            Represents a single request to Microsoft Entra ID (Azure AD).
+            This class is compatible with both .NET 4.7 and .NET Standard 2.0.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request.AllowedMethods">
+            <summary>
+            A set of allowed HTTP methods for this request.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request._method">
+            <summary>
+            Backing field for the <see cref="P:PSMicrosoftEntraID.Batch.Request.Method"/> property,
+            storing the HTTP method used by this request.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Id">
+            <summary>
+            Gets or sets the unique identifier of this request (e.g., "1", "2", "3"...).
+            Typically used to distinguish multiple requests in a batch scenario.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Method">
+            <summary>
+            Gets or sets the HTTP method (e.g., GET, PUT, PATCH, POST, DELETE).
+            The setter validates that the method is allowed. 
+            If the provided value is not in the allowed set, an <see cref="T:System.ArgumentException"/> is thrown.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Url">
+            <summary>
+            Gets or sets the URL (endpoint) that this request will target.
+            For example, "/me/drive/root:/content" or "/groups/{id}/events".
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Body">
+            <summary>
+            Gets or sets the body of the request as a <see cref="T:System.Collections.Hashtable"/>.
+            This approach allows for easy manipulation in PowerShell as a native [hashtable].
+            Note that not all HTTP methods require a body.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Headers">
+            <summary>
+            Gets or sets the headers of the request as a <see cref="T:System.Collections.Hashtable"/>.
+            Each entry is a key-value pair representing a single HTTP header (e.g., "Content-Type").
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.Request.ToString">
+            <summary>
+            Provides a simple string representation of this request,
+            showing the Id, Method, and Url properties for quick reference.
+            </summary>
+            <returns>A string describing the current request.</returns>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest">
+            <summary>
+            Cmdlet that receives an array of Request objects, renumbers their 'Id' properties
+            as sequential strings ("1", "2", "3", ...), and outputs the updated array.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.InputObject">
+            <summary>
+            Input array of Request objects. Their Ids will be reassigned in EndProcessing.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.BeginProcessing">
+            <summary>
+            Start collecting all input, renumber Ids from "1" to the total count, then write them out.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.ProcessRecord">
+            <summary>
+            Called once for each pipeline input chunk. 
+            In this scenario, final logic will occur in EndProcessing.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.EndProcessing">
+            <summary>
+            After collecting all input, renumber Ids from "1" to the total count, then write them out.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Environment">
             <summary>
             What environment this service should connect to.
@@ -135,22 +218,53 @@
             Gets or sets the security identifier (SID) for the group.
             </summary>
         </member>
-        <member name="P:PSMicrosoftEntraID.Groups.Group.HideFromAddressLists">
+        <member name="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty">
+            <summary>
+            Represents a group additional property in Microsoft Entra ID.
+            This class provides properties for group identification, contact information, settings, and membership rules.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Id">
+            <summary>
+            Gets or sets the unique identifier of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Mail">
+            <summary>
+            Gets or sets the email address of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.MailNickname">
+            <summary>
+            Gets or sets the nickname or alias of the group's email.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.DisplayName">
+            <summary>
+            Gets or sets the display name of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromAddressLists">
             <summary>
             True if the group isn't displayed in certain parts of the Outlook UI.
             </summary>
         </member>
-        <member name="P:PSMicrosoftEntraID.Groups.Group.HideFromOutlookClients">
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromOutlookClients">
             <summary>
             True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web.
             </summary>
         </member>
-        <member name="P:PSMicrosoftEntraID.Groups.Group.AllowExternalSenders">
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AllowExternalSenders">
             <summary>
             Indicates if people external to the organization can send messages to the group.
             </summary>
         </member>
-        <member name="P:PSMicrosoftEntraID.Groups.Group.AutoSubscribeNewMembers">
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AutoSubscribeNewMembers">
             <summary>
             Indicates if new members added to the group are autosubscribed to receive email notifications.
             </summary>

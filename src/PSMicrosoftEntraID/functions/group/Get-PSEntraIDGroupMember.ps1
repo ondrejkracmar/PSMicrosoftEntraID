@@ -7,6 +7,9 @@ function Get-PSEntraIDGroupMember {
     .DESCRIPTION
         This cmdlet get an owner or member of the team, and to the unified group which backs the team.
 
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
     .PARAMETER Identity
         MailNickName or Id of group or team.
 
@@ -35,18 +38,22 @@ function Get-PSEntraIDGroupMember {
 
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
-    param(
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'InputObject')]
+    param([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string[]]$Identity,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $False, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch]$Owner,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
@@ -74,6 +81,27 @@ function Get-PSEntraIDGroupMember {
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
+            'InputObject' {
+                foreach ($itemInputObject in $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemInputObject.MailnickName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        if ($Owner.IsPresent) {
+                            $path = ('groups/{0}/owners' -f $itemInputObject.Id)
+                        }
+                        else {
+                            $path = ('groups/{0}/members' -f $itemInputObject.Id)
+                        }
+                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                            $query['$Filter'] = $Filter
+                            if ($AdvancedFilter.IsPresent) {
+                                $header['ConsistencyLevel'] = 'eventual'
+                            }
+                        }
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        if (Test-PSFFunctionInterrupt) { return }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {

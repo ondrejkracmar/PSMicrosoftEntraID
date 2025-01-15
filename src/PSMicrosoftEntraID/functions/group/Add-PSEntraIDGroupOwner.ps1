@@ -5,6 +5,9 @@
 
     .DESCRIPTION
         Add a owner to a security or Microsoft 365 group.
+    
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
 
     .PARAMETER Identity
         MailNickName or Id of group or team
@@ -43,13 +46,16 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string]$Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$User,
@@ -84,20 +90,40 @@
         $ownerObjectIdList = [System.Collections.ArrayList]::new()
         $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
         $ownerMailList = [System.Collections.ArrayList]::new()
-        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+        switch ($PSCmdlet.ParameterSetName) {
+            'IdentityUser' {
+                $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+            'IdentityInputObject' {
+                $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+        }
+        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues $userActionString -Target $Identity -ScriptBlock {
             $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
-                foreach ($itemUser in $User) {
-                    $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                        [void]$ownerObjectIdList.Add($aADUser.Id)
-                        [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
-                        [void]$ownerMailList.Add($aADUser.Mail)
+                switch ($PSCmdlet.ParameterSetName) {
+                    'IdentityInputObject' {
+                        foreach ($itemInputObject in $InputObject) {
+                            [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id))
+                            [void]$ownerObjectIdList.Add($itemInputObject.Id)
+                            [void]$ownerUserPrincipalNameList.Add($itemInputObject.UserPrincipalName)
+                            [void]$ownerMailList.Add($itemInputObject.Mail)
+                        }
                     }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                    'IdentityUser' {
+                        foreach ($itemUser in $User) {
+                            $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                            if (-not([object]::Equals($aADUser, $null))) {
+                                [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                [void]$ownerObjectIdList.Add($aADUser.Id)
+                                [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                                [void]$ownerMailList.Add($aADUser.Mail)
+                            }
+                            else {
+                                if ($EnableException.IsPresent) {
+                                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                                }
+                            }
                         }
                     }
                 }

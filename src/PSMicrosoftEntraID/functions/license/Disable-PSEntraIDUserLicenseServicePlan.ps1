@@ -1,10 +1,13 @@
 ﻿function Disable-PSEntraIDUserLicenseServicePlan {
     <#
 	.SYNOPSIS
-		Disable serivce plan of users's sku subscription
+		Disable serivce plan of users's sku subscription.
 
 	.DESCRIPTION
-		Disable serivce plan of users's sku subscription
+		Disable serivce plan of users's sku subscription.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
 
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
@@ -52,27 +55,39 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumberPlanName')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanName')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuIdServicePlanName')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanName')]
         [ValidateGuid()]
         [string]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumberPlanName')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string]$SkuPartNumber,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanId')]
         [ValidateGuid()]
         [string[]]$ServicePlanId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuIdServicePlanName')]
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumberPlanName')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuIdServicePlanName')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
@@ -102,65 +117,64 @@
         }
     }
     process {
-        foreach ($user in  $Identity) {
-            $bodyDisabledServicePlans = [System.Collections.ArrayList]::new()
-            switch -Regex ($PSCmdlet.ParameterSetName) {
-                '\wSkuId\w' {
-                    $bodySkuId = $SkuId
-                    $skuTarget = $SkuId
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wSkuId\w' {
+                $bodySkuId = $SkuId
+                $skuTarget = $SkuId
+            }
+            '\wSkuPartNumber\w' {
+                $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                $skuTarget = $SkuPartNumber
+            }
+            '\wPlanId' {
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
                 }
-                '\wSkuPartNumber\w' {
-                    $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-                    $skuTarget = $SkuPartNumber
+                else {
+                    $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
-                '\wPlanId' {
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
-                    Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUser -Identity $user
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [string[]]$bodyDisabledServicePlans = (($aADUser |
-                            Get-PSEntraIDUserLicenseDetail |
-                            Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                            Select-Object -ExpandProperty ServicePLans |
-                            Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId) +
-                            ((Get-PSEntraIDSubscribedLicense |
-                            Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                            Select-Object -ExpandProperty ServicePLans |
-                            Where-Object {$ServicePlanId -Contains $PSItem.ServicePlanId}).ServicePlanId)
-                            if (-not [object]::Equals($bodyDisabledServicePlans, $null)) {
-                                $body = @{
-                                    addLicenses    = @(
-                                        @{
-                                            disabledPlans = $bodyDisabledServicePlans
-                                            skuId         = $bodySkuId
-                                        }
-                                    )
-                                    removeLicenses = @()
-                                }
-                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+            }
+            '\wPlanName' {
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
+            }
+        }
+        $bodyDisabledServicePlans = [System.Collections.ArrayList]::new()
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wInputObject\w' {
+                foreach ($itemInputObject in  $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        $path = ("users/{0}/{1}" -f $InputObject.Id, 'assignLicense')
+                        [string[]]$bodyDisabledServicePlans = (($InputObject |
+                        Get-PSEntraIDUserLicenseDetail |
+                        Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                        Select-Object -ExpandProperty ServicePLans |
+                        Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId) + ((Get-PSEntraIDSubscribedLicense |
+                        Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                        Select-Object -ExpandProperty ServicePLans |
+                        Where-Object {$ServicePlanId -Contains $PSItem.ServicePlanId}).ServicePlanId)
+                        if (-not [object]::Equals($bodyDisabledServicePlans, $null)) {
+                            $body = @{
+                                addLicenses    = @(
+                                    @{
+                                        disabledPlans = $bodyDisabledServicePlans
+                                        skuId         = $bodySkuId
+                                    }
+                                )
+                                removeLicenses = @()
                             }
-                        }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                            }
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
-                '\wPlanName' {
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
+            }
+            '\wIdentity\w' {
+                foreach ($itemInputObject in  $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
                         $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
@@ -169,8 +183,7 @@
                                 Get-PSEntraIDUserLicenseDetail |
                                 Where-Object -Property SkuId -EQ -Value $bodySkuId |
                                 Select-Object -ExpandProperty ServicePLans |
-                                Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId) +
-                                ((Get-PSEntraIDSubscribedLicense |
+                                Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId) + ((Get-PSEntraIDSubscribedLicense |
                                 Where-Object -Property SkuId -EQ -Value $bodySkuId |
                                 Select-Object -ExpandProperty ServicePLans |
                                 Where-Object {$ServicePlanName -Contains $PSItem.ServicePlanName}).ServicePlanId)

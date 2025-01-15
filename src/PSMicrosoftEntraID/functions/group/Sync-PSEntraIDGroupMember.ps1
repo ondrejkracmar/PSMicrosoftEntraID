@@ -88,7 +88,7 @@
     }
 
     process {
-        
+
         $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
         if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
             $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id

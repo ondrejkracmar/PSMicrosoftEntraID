@@ -8,6 +8,9 @@ function Get-PSEntraIDUserMemberOf {
         Get groups, directory roles, and administrative units that the user is a direct member of.
         This operation isn't transitive. To retrieve groups, directory roles, and administrative units that the user is a member through transitive membership.
 
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
+
     .PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
@@ -27,9 +30,10 @@ function Get-PSEntraIDUserMemberOf {
     [OutputType('PSMicrosoftEntraID.Groups.Group')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Filter',
         Justification = 'False positive as rule does not know that filter operates within the same scope')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'InputObject')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$Identity,
@@ -59,6 +63,23 @@ function Get-PSEntraIDUserMemberOf {
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
+            'InoutObject' {
+                foreach ($itemInputObject in $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        if(Test-PSFParameterBinding -ParameterName 'Filter')
+                        {
+                                $header = @{}
+                                $header['ConsistencyLevel'] = 'eventual'
+                                $query['$Filter'] = $Filter
+                                ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        }
+                        else{
+                                ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
             'Identity' {
                 foreach ($user in $Identity) {
                     $mailQuery = @{

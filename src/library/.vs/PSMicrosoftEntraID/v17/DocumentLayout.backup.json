@@ -3,8 +3,20 @@
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\groups\\groupadditionalproperty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\groups\\groupadditionalproperty.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\groups\\group.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\groups\\group.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\commands\\newpsentraidbatchrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\commands\\newpsentraidbatchrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,14 +31,53 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "GroupAdditionalProperty.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\GroupAdditionalProperty.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Groups\\GroupAdditionalProperty.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\GroupAdditionalProperty.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Groups\\GroupAdditionalProperty.cs",
+              "ViewState": "AgIAADEAAACAamZmZuYiwEkAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-15T09:53:09.723Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Group.cs",
               "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\Group.cs",
               "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Groups\\Group.cs",
               "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\Group.cs",
               "RelativeToolTip": "PSMicrosoftEntraID\\Groups\\Group.cs",
-              "ViewState": "AgIAAHwAAAAABgAAAEAtwKMAAAA8AAAAAAAAAA==",
+              "ViewState": "AgIAAHQAAAAAZ2ZmZuYcwIkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T19:57:32.262Z",
+              "WhenOpened": "2025-01-09T11:50:46.049Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-09T09:34:41.051Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NewPSEntraIDBatchRequest.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Commands\\NewPSEntraIDBatchRequest.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Commands\\NewPSEntraIDBatchRequest.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Commands\\NewPSEntraIDBatchRequest.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Commands\\NewPSEntraIDBatchRequest.cs",
+              "ViewState": "AgIAABYAAACAmZmZmVkuwC0AAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-08T15:25:22.883Z",
               "EditorCaption": ""
             }
           ]

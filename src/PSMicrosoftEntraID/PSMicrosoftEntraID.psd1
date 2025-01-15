@@ -52,6 +52,7 @@
 		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
 		'Compare-PSEntraIDUserList'
+		'Invoke-PSMicrosoftEntraIDBatchRequest'
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
@@ -61,7 +62,7 @@
 		'Get-PSEntraIDLicenseIdentifier'
 		'Get-PSEntraIDSubscribedLicense'
 		'Get-PSEntraIDGroup'
-		'Select-PSEntraIDGroupProperty'
+		'Get-PSEntraIDGroupAdditionalProperty'
 		'New-PSEntraIDGroup'
 		'Remove-PSEntraIDGroup'
 		'Get-PSEntraIDGroupMember'
@@ -73,7 +74,9 @@
 	)
 
 	# Cmdlets to export from this module
-	CmdletsToExport   = ''
+	CmdletsToExport   = @(
+		'New-PSEntraIDBatchRequest'
+	)
 
 	# Variables to export from this module
 	VariablesToExport = ''

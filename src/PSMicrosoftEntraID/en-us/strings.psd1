@@ -7,6 +7,8 @@
 
 	'Organization.Get'             = 'Get organization detail'
 
+	'Batch.Invoke'				   = 'Invoke batch command with the following Ids {0}'
+
 	'SubscribedSku.List'           = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'     = "Get subscribed Sku '{0}' failed"
 	'SubscribedSku.Filter'         = "List subscribed Sku with filter '{0}'"
@@ -29,7 +31,8 @@
 	'User.LicenseDetai.List'	   = "List license detail of user '{0}'"
 
 	'Group.Get'                    = "Get group '{0}'"
-	'Group.Swlect'                 = "Get group properties '{0}'"
+	'Group.Select'                 = "Get group properties '{0}'"
+	'Group.AdditionalProperty'     = "Get group additional properties '{0}'"
 	'Group.Get.Failed'             = "Get group '{0}' failed"
 	'Group.Filter'                 = "List groups with filter '{0}'"
 	'Group.List'                   = "List groups '{0}'"

@@ -9,7 +9,7 @@
 	[string]$Issuer
 	[PSObject]$TokenData
 	#endregion Token Data
-	
+
 	#region Connection Data
 	[string]$Service
 	[string]$Type
@@ -21,10 +21,10 @@
 
 	[string]$IdentityID
 	[string]$IdentityType
-	
+
 	# Workflow: Client Secret
 	[System.Security.SecureString]$ClientSecret
-	
+
 	# Workflow: Certificate
 	[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate
 
@@ -38,7 +38,7 @@
 	# Workflow: Az.Accounts
 	[string]$ShowDialog
 	#endregion Connection Data
-	
+
 	#region Constructors
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [Securestring]$ClientSecret, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
@@ -49,7 +49,7 @@
 		$this.AuthenticationUrl = $AuthenticationUrl
 		$this.Type = 'ClientSecret'
 	}
-	
+
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
 		$this.ClientID = $ClientID
@@ -91,17 +91,6 @@
 		$this.Type = 'KeyVault'
 	}
 
-	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
-		$this.Service = $Service
-		$this.ServiceUrl = $ServiceUrl
-		$this.Type = 'Identity'
-
-		if ($IdentityID) {
-			$this.IdentityID = $IdentityID
-			$this.IdentityType = $IdentityType
-		}
-	}
-
 	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.AccessToken = $AccessToken
@@ -112,6 +101,17 @@
 
 		if ($IdentityID) {
 			$this.IdentityID = $IdentityID
+		}
+	}
+
+	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
+		$this.Service = $Service
+		$this.ServiceUrl = $ServiceUrl
+		$this.Type = 'Identity'
+
+		if ($IdentityID) {
+			$this.IdentityID = $IdentityID
+			$this.IdentityType = $IdentityType
 		}
 	}
 
@@ -134,13 +134,14 @@
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
 		$data = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
-		
+
 		if ($data.roles) { $this.Scopes = $data.roles }
 		elseif ($data.scp) { $this.Scopes = $data.scp -split " " }
 
 		$this.Audience = $data.aud
 		$this.Issuer = $data.iss
 		$this.TokenData = $data
+		$this.TenantID = $data.tid
 	}
 
 	[hashtable]GetHeader() {
@@ -212,6 +213,10 @@
 			}
 			AzAccount {
 				$result = Connect-ServiceAzure -Resource $this.Audience -ShowDialog $this.ShowDialog
+				$this.SetTokenMetadata($result)
+			}
+			AzToken {
+				$result = Connect-ServiceAzToken -AzToken $this.AccessToken
 				$this.SetTokenMetadata($result)
 			}
 		}
