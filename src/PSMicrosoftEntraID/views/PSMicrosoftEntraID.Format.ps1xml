@@ -162,6 +162,71 @@
 			</TableControl>
 		</View>
 		<View>
+			<Name>PSMicrosoftEntraID.Groups.GroupAdditionalProperty</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Groups.GroupAdditionalProperty</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+            			<Width>16</Width>
+          			</TableColumnHeader>
+          			<TableColumnHeader>
+            			<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Mail</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>MailNickname</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>HideFromAddressLists</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>hideFromOutlookClients</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>AllowExternalSenders</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>AutoSubscribeNewMembers</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
 			<Name>PSMicrosoftEntraID.License.LicenseIdentifier</Name>
 			<ViewSelectedBy>
 				<TypeName>PSMicrosoftEntraID.License.LicenseIdentifier</TypeName>

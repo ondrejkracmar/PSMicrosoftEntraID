@@ -1,10 +1,13 @@
 ﻿function Enable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
-		Enable serivce plan of users's sku subscription
+		Enable serivce plan of users's sku subscription.
 
 	.DESCRIPTION
-		Enable serivce plan of users's sku subscription
+		Enable serivce plan of users's sku subscription.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
 
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
@@ -21,7 +24,7 @@
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
-    
+
     .PARAMETER Force
         The Force switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -46,16 +49,20 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
         [string]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumber')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string]$SkuPartNumber,
@@ -84,46 +91,46 @@
         }
     }
     process {
-        foreach ($user in  $Identity) {
-            switch -Regex ($PSCmdlet.ParameterSetName) {
-                '\wSkuId' {
-                    $bodySkuId = $SkuId
-                    $skuTarget = $SkuId
-                    $body = @{
-                        addLicenses    = @(
-                            @{
-                                disabledPlans = @()
-                                skuId         = $bodySkuId
-                            }
-                        )
-                        removeLicenses = @()
-                    }
-                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUser -Identity $user
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wSkuId' {
+                $bodySkuId = $SkuId
+                $skuTarget = $SkuId
+                $body = @{
+                    addLicenses    = @(
+                        @{
+                            disabledPlans = @()
+                            skuId         = $bodySkuId
                         }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                            }
+                    )
+                    removeLicenses = @()
+                }
+            }
+            '\wSkuPartNumber' {
+                $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                $skuTarget = $SkuPartNumber
+                $body = @{
+                    addLicenses    = @(
+                        @{
+                            disabledPlans = @()
+                            skuId         = $bodySkuId
                         }
+                    )
+                    removeLicenses = @()
+                }
+            }
+        }
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wInputObject\w' {
+                foreach ($itemInputObject in  $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
-                '\wSkuPartNumber' {
-                    $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-                    $skuTarget = $SkuPartNumber
-                    $body = @{
-                        addLicenses    = @(
-                            @{
-                                disabledPlans = @()
-                                skuId         = $bodySkuId
-                            }
-                        )
-                        removeLicenses = @()
-                    }
+            }
+            '\wIdentity\w' {
+                foreach ($user in  $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
                         $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {

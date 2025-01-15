@@ -2,18 +2,18 @@
 	<#
 	.SYNOPSIS
 		Disconnect from an Microsoft EntraID Service.
-	
+
 	.DESCRIPTION
 		Disconnect from an Microsoft EntraID Service.
-	
+
 	.PARAMETER Service
 		The service for which to retrieve the token.
 		Defaults to: Default Service
-	
+
 	.EXAMPLE
 		PS C:\> Disconnect-PSMicrosoftEntraID
-		
-		
+
+
 	#>
 	[CmdletBinding()]
 	param (

@@ -7,7 +7,10 @@
 		Delete Azure AD group
         When deleted, group resources are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
 
-	.PARAMETER Identity
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
+    .PARAMETER Identity
         groupPrincipalName, Mail or Id of the group attribute populated in tenant/directory.
 
     .PARAMETER EnableException
@@ -40,10 +43,10 @@
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'Identity')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string[]]$Identity,
@@ -70,20 +73,33 @@
     }
 
     process {
-        foreach ($group in $Identity) {
-            Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                $aADGroup = Get-PSEntraIDGroup -Identity $group
-                if (-not([object]::Equals($aADGroup, $null))) {
-                    $path = ("groups/{0}" -f $aADGroup.Id)
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            'InputObject' {
+                foreach ($itemInputObject in $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $itemInputObject.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $path = ("groups/{0}" -f $itemInputObject.Id)
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $group)
-                    }
+            }
+            'Identity'{
+                foreach ($group in $Identity) {
+                    Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $aADGroup = Get-PSEntraIDGroup -Identity $group
+                        if (-not([object]::Equals($aADGroup, $null))) {
+                            $path = ("groups/{0}" -f $aADGroup.Id)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $group)
+                            }
+                        }
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
-            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
-            if (Test-PSFFunctionInterrupt) { return }
+            }
         }
     }
 

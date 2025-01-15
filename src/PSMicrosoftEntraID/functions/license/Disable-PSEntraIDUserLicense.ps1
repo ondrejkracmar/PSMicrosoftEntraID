@@ -1,10 +1,13 @@
 ﻿function Disable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
-		Disable user's license
+		Disable user's license.
 
 	.DESCRIPTION
-		Disable user's Office 365 subscription
+		Disable user's Office 365 subscription.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
 
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
@@ -44,16 +47,20 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]]$Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
         [string[]]$SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumber')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string[]]$SkuPartNumber,
@@ -82,50 +89,68 @@
         }
     }
     process {
-        foreach ($user in  $Identity) {
-            switch -Regex ($PSCmdlet.ParameterSetName) {
-                '\wSkuId' {
-                    [string[]]$bodySkuId = $SkuId
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
-                }
-                '\wSkuPartNumber' {
-                    [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                    if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                        $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
-                    }
-                    else {
-                        $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                    }
-                }
-            }
-            $body = @{
-
-                addLicenses    = @()
-                removeLicenses = $bodySkuId
-            }
-            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                $aADUser = Get-PSEntraIDUser -Identity $user
-                if (-not ([object]::Equals($aADUser, $null))) {
-                    $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                    $servivePlanStatus = $aADUser |
-                    Get-PSEntraIDUserLicenseDetail |
-                    Select-Object -ExpandProperty ServicePLans
-                    if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    }
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wSkuId' {
+                [string[]]$bodySkuId = $SkuId
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                    }
+                    $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
-            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-            if (Test-PSFFunctionInterrupt) { return }
+            }
+            '\wSkuPartNumber' {
+                [string[]]$bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
+            }
+        }
+        $body = @{
+
+            addLicenses    = @()
+            removeLicenses = $bodySkuId
+        }
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wInputObject\w' {
+                foreach ($itemInputObject in  $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                        $servivePlanStatus = $itemInputObject |
+                        Get-PSEntraIDUserLicenseDetail |
+                        Select-Object -ExpandProperty ServicePLans
+                        if (-not ([object]::Equals($servivePlanStatus, $null))) {
+                           [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        }
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
+            '\wIdnntity\w' {
+                foreach ($user in  $Identity) {
+                    Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
+                        $aADUser = Get-PSEntraIDUser -Identity $user
+                        if (-not ([object]::Equals($aADUser, $null))) {
+                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                            $servivePlanStatus = $aADUser |
+                            Get-PSEntraIDUserLicenseDetail |
+                            Select-Object -ExpandProperty ServicePLans
+                            if (-not ([object]::Equals($servivePlanStatus, $null))) {
+                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            }
+                        }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                            }
+                        }
+                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
         }
     }
     end

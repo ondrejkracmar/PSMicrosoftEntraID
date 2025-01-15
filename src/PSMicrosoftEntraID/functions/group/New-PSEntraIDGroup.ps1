@@ -156,11 +156,11 @@
                     if ($PSBoundParameters.ContainsKey('Description')) {
                         $body['description'] = $Description
                     }
-                    
+
                     if ($PSBoundParameters.ContainsKey('Visibility')) {
                         $body['visibility'] = $Visibility
                     }
-            
+
                     if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
                         $body['isAssignableToRole'] = $IsAssignableToRole
                     }
