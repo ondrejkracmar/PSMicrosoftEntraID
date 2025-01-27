@@ -62,7 +62,7 @@ namespace PSMicrosoftEntraID.Organization
         /// Indicates if on-premises synchronization is enabled.
         /// </summary>
         [DataMember(Name = "onPremisesSyncEnabled")]
-        public bool OnPremisesSyncEnabled { get; set; }
+        public bool? OnPremisesSyncEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets the status of on-premises synchronization.

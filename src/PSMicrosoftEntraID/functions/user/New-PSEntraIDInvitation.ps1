@@ -63,57 +63,57 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]
         [ValidateMailAddress()]
-        [string]$InvitedUserEmailAddress,
+        [string] $InvitedUserEmailAddress,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserDisplayNameName", "DisplayNameName", "Name")]
         [ValidateNotNullOrEmpty()]
-        [string]$InvitedUserDisplayName,
+        [string] $InvitedUserDisplayName,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("RedirectUrl", "Url")]
         [ValidateNotNullOrEmpty()]
-        [string]$InviteRedirectUrl,
+        [string] $InviteRedirectUrl,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [ValidateNotNullOrEmpty()]
-        [bool]$SendInvitationMessage,
+        [bool] $SendInvitationMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("Message")]
         [ValidateNotNullOrEmpty()]
-        [string]$InviteMessage,
+        [string] $InviteMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("Language")]
-        [string]$MessageLanguage,
+        [string] $MessageLanguage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
-        [psobject[]]$CCRecipient,
-        [switch]$EnableException,
-        [switch]$Force
+        [psobject[]] $CCRecipient,
+        [switch] $EnableException,
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $path = 'invitations'
-        $cCRecipientList = [System.Collections.ArrayList]::New()
-        $header = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [string] $path = 'invitations'
+        [System.Collections.ArrayList] $cCRecipientList = [System.Collections.ArrayList]::New()
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
-        $body = @{}
+        [hashtable] $body = @{}
         $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
         if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayName') {
@@ -140,7 +140,7 @@
 
         if (Test-PSFParameterBinding -ParameterName 'CCRecipient') {
             foreach ($itemCCRecipient in $CCRecipient) {
-                [void]$cCRecipientList.Add($itemCCRecipient)
+                [void] $cCRecipientList.Add($itemCCRecipient)
             }
         }
 
@@ -155,7 +155,7 @@
         }
 
         Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }

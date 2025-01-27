@@ -25,8 +25,8 @@
 
     }
     process {
-        $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
-        $jsonString = Get-Content -Path $licenseIdentifiers
+        [string] $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
+        [string] $jsonString = Get-Content -Path $licenseIdentifiers
         [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
         [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
         [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.LicenseIdentifier[]])

@@ -187,167 +187,167 @@
 
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
-[CmdletBinding(DefaultParameterSetName = 'Browser')]
-param (
-	[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$ClientID,
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
+	[CmdletBinding(DefaultParameterSetName = 'Browser')]
+	param (
+		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$ClientID,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$TenantID = 'organizations',
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$TenantID = 'organizations',
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[Parameter(ParameterSetName = 'Refresh')]
-	[Parameter(ParameterSetName = 'RefreshObject')]
-	[string[]]
-	$Scopes,
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
+		[Parameter(ParameterSetName = 'Refresh')]
+		[Parameter(ParameterSetName = 'RefreshObject')]
+		[string[]]
+		$Scopes,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[switch]
-	$Browser,
+		[Parameter(ParameterSetName = 'Browser')]
+		[switch]
+		$Browser,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[ValidateSet('Auto', 'PrintLink')]
-	[string]
-	$BrowserMode = 'Auto',
+		[Parameter(ParameterSetName = 'Browser')]
+		[ValidateSet('Auto', 'PrintLink')]
+		[string]
+		$BrowserMode = 'Auto',
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
-	[switch]
-	$DeviceCode,
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[switch]
+		$DeviceCode,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[string]
-	$RefreshToken,
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[string]
+		$RefreshToken,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'RefreshObject')]
-	[EntraToken]
-	$RefreshTokenObject,
+		[Parameter(Mandatory = $true, ParameterSetName = 'RefreshObject')]
+		[EntraToken]
+		$RefreshTokenObject,
 
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[System.Security.Cryptography.X509Certificates.X509Certificate2]
-	$Certificate,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[System.Security.Cryptography.X509Certificates.X509Certificate2]
+		$Certificate,
 
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificateThumbprint,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificateThumbprint,
 
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificateName,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificateName,
 
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificatePath,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificatePath,
 
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[System.Security.SecureString]
-	$CertificatePassword,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[System.Security.SecureString]
+		$CertificatePassword,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[System.Security.SecureString]
-	$ClientSecret,
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[System.Security.SecureString]
+		$ClientSecret,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[PSCredential]
-	$Credential,
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[PSCredential]
+		$Credential,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$VaultName,
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$VaultName,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$SecretName,
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$SecretName,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
-	[switch]
-	$Identity,
+		[Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
+		[switch]
+		$Identity,
 
-	[Parameter(ParameterSetName = 'Identity')]
-	[string]
-	$IdentityID,
+		[Parameter(ParameterSetName = 'Identity')]
+		[string]
+		$IdentityID,
 
-	[Parameter(ParameterSetName = 'Identity')]
-	[ValidateSet('ClientID', 'ResourceID', 'PrincipalID')]
-	[string]
-	$IdentityType = 'ClientID',
+		[Parameter(ParameterSetName = 'Identity')]
+		[ValidateSet('ClientID', 'ResourceID', 'PrincipalID')]
+		[string]
+		$IdentityType = 'ClientID',
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'AzAccount')]
-	[switch]
-	$AsAzAccount,
+		[Parameter(Mandatory = $true, ParameterSetName = 'AzAccount')]
+		[switch]
+		$AsAzAccount,
 
-	[Parameter(ParameterSetName = 'AzAccount')]
-	[ValidateSet('Auto', 'Always', 'Never')]
-	[string]
-	$ShowDialog = 'Auto',
+		[Parameter(ParameterSetName = 'AzAccount')]
+		[ValidateSet('Auto', 'Always', 'Never')]
+		[string]
+		$ShowDialog = 'Auto',
 
-	[Parameter(ParameterSetName = 'AzToken')]
-	[PSCustomObject]
-	$AzToken,
+		[Parameter(ParameterSetName = 'AzToken')]
+		[PSCustomObject]
+		$AzToken,
 
-	[ArgumentCompleter({ Get-ServiceCompletion $args })]
-	[ValidateScript({ Assert-ServiceName -Name $_ })]
-	[string[]]
-	$Service = $script:_DefaultService,
+		[ArgumentCompleter({ Get-ServiceCompletion $args })]
+		[ValidateScript({ Assert-ServiceName -Name $_ })]
+		[string[]]
+		$Service = $script:_DefaultService,
 
-	[string]
-	$ServiceUrl,
+		[string]
+		$ServiceUrl,
 
-	[string]
-	$Resource,
+		[string]
+		$Resource,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[switch]
-	$UseRefreshToken,
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
+		[switch]
+		$UseRefreshToken,
 
-	[switch]
-	$MakeDefault,
+		[switch]
+		$MakeDefault,
 
-	[switch]
-	$PassThru,
+		[switch]
+		$PassThru,
 
-	[Environment]
-	$Environment,
+		[Environment]
+		$Environment,
 
-	[string]
-	$AuthenticationUrl
-)
+		[string]
+		$AuthenticationUrl
+	)
 	begin {
 		if (-not ([object]::Equals($Service, $null))) {
 			Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $Service
-			$service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+			[string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
 		}
 		$param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Connect-EntraService
 		if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
-        }
-        else{
-            [boolean]$cmdLetVerbose =  $false
-        }
+			[boolean] $cmdLetVerbose = $true
+		}
+		else {
+			[boolean] $cmdLetVerbose = $false
+		}
 	}
 
 	process {
-		try{
+		try {
 			Connect-EntraService @param -Service $service
-			[System.Collections.ArrayList]$licenseIdentifier = Get-PSEntraIDSubscribedSku
-			[System.Collections.ArrayList]$subscribedSku = (Get-PSEntraIDSubscribedLicense | Where-Object -Property SkuId -NotIn -Value $licenseIdentifier.SkuId)
+			[System.Collections.ArrayList] $licenseIdentifier = Get-PSEntraIDSubscribedSku
+			[System.Collections.ArrayList] $subscribedSku = (Get-PSEntraIDSubscribedLicense | Where-Object -Property SkuId -NotIn -Value $licenseIdentifier.SkuId)
 			if ([object]::Equals($subscribedSku, $null)) {
 				$licenseIdentifier | Set-PSFResultCache
 			}
@@ -356,7 +356,7 @@ param (
 				$licenseIdentifier | Set-PSFResultCache
 			}
 		}
-		catch{
+		catch {
 			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f $service)
 		}
 	}

@@ -1,22 +1,29 @@
 ﻿Function Test-PSMicrosoftEntraIDBatchRequest {
     <#
-        .SYNOPSIS
-            Validates the structure and sequencing of Microsoft Entra ID (Azure AD) batch requests.
+    .SYNOPSIS
+        Processes an array of batch request objects for Microsoft Entra ID.
 
-        .DESCRIPTION
-            This cmdlet validates a collection of batch requests for Microsoft Entra ID (Azure AD).
-            It checks that:
-              1. The array contains no more than 20 requests.
-              2. Each request has an 'id', 'method', and 'url'.
-              3. The 'id' values are sequential strings from "1" to the total count.
+    .PARAMETER Requests
+        An array of batch request objects (either PSCustomObject or Hashtable).
+        This parameter is mandatory and accepts input from the pipeline.
 
-        .PARAMETER Requests
-            An array of requests PSMicrosoftEntraID.Batch.Request typically originating
-            from a JSON structure (for example, by using ConvertFrom-Json on a file that contains
-            a property named 'requests').
+    .PARAMETER EnableException
+        A switch to enable exceptions. If specified, exceptions will be thrown on errors.
 
+    .EXAMPLE
+        $batchRequests = @(
+            [PSCustomObject]@{ RequestType = "Create"; Data = "SampleData1" },
+            [PSCustomObject]@{ RequestType = "Update"; Data = "SampleData2" }
+        )
+        Test-PSMicrosoftEntraIDBatchRequest -Requests $batchRequests
+
+    .EXAMPLE
+        $batchRequests = @(
+            @{ RequestType = "Create"; Data = "SampleData1" },
+            @{ RequestType = "Update"; Data = "SampleData2" }
+        )
+        $batchRequests | Test-PSMicrosoftEntraIDBatchRequest -EnableException
     #>
-        [CmdletBinding()]
         Param (
             [Parameter(
                 Mandatory = $true,

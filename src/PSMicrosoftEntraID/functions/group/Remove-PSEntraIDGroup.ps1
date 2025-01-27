@@ -45,30 +45,30 @@
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
-        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [PSMicrosoftEntraID.Groups.Group[]] $InputObject,
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
-        [string[]]$Identity,
-        [switch]$EnableException,
-        [switch]$Force
+        [string[]] $Identity,
+        [switch] $EnableException,
+        [switch] $Force
     )
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
         else{
-            [boolean]$cmdLetVerbose =  $false
+            [boolean] $cmdLetVerbose =  $false
         }
     }
 
@@ -77,8 +77,8 @@
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $itemInputObject.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $path = ("groups/{0}" -f $itemInputObject.Id)
-                        [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [string] $path = ("groups/{0}" -f $itemInputObject.Id)
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -86,9 +86,9 @@
             'Identity'{
                 foreach ($group in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $aADGroup = Get-PSEntraIDGroup -Identity $group
+                        [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group
                         if (-not([object]::Equals($aADGroup, $null))) {
-                            $path = ("groups/{0}" -f $aADGroup.Id)
+                            [string] $path = ("groups/{0}" -f $aADGroup.Id)
                             [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else {

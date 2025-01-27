@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Groups
-function Get-PSEntraIDUserMemberOf {
+﻿function Get-PSEntraIDUserMemberOf {
     <#
     .SYNOPSIS
         List a user's direct memberships.
@@ -36,45 +35,43 @@ function Get-PSEntraIDUserMemberOf {
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$Identity,
+        [string[]] $Identity,
         [Parameter(ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [string]$Filter,
-        [switch]$EnableException
+        [string] $Filter,
+        [switch] $EnableException
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $query = @{
-            '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            #'$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
+        [hashtable] $query = @{
+            '$count' = 'true'
+            '$top'   = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         }
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'InoutObject' {
+            'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        if(Test-PSFParameterBinding -ParameterName 'Filter')
-                        {
-                                $header = @{}
-                                $header['ConsistencyLevel'] = 'eventual'
-                                $query['$Filter'] = $Filter
-                                ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                            [hashtable] $header = @{}
+                            $header['ConsistencyLevel'] = 'eventual'
+                            $query['$Filter'] = $Filter
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
-                        else{
-                                ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        else {
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
@@ -82,30 +79,16 @@ function Get-PSEntraIDUserMemberOf {
             }
             'Identity' {
                 foreach ($user in $Identity) {
-                    $mailQuery = @{
-                        #'$count'  = 'true'
-                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
-                    }
-                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $userMail = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        if (-not([object]::Equals($userMail, $null))) {
-                            $userId = $userMail[0].Id
-
-                        }
-                        else {
-                            $userId = $user
-                        }
-                        if(Test-PSFParameterBinding -ParameterName 'Filter')
-                        {
-                            $header = @{}
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                            [hashtable] $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $aADUser.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
-                        else{
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        else {
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
