@@ -5,7 +5,7 @@
 
     .DESCRIPTION
         Add a owner to a security or Microsoft 365 group.
-    
+
     .PARAMETER InputObject
         PSMicrosoftEntraID.Users.User object in tenant/directory.
 
@@ -24,7 +24,7 @@
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
-    
+
     .PARAMETER Force
         The Force switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -52,72 +52,72 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
-        [string]$Identity,
+        [string] $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
-        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$User,
-        [switch]$EnableException,
-        [switch]$Force
+        [string[]] $User,
+        [switch] $EnableException,
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
-        $ownerUrlList = [System.Collections.ArrayList]::new()
-        $ownerObjectIdList = [System.Collections.ArrayList]::new()
-        $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
-        $ownerMailList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $ownerUrlList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $ownerObjectIdList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $ownerMailList = [System.Collections.ArrayList]::new()
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityUser' {
-                $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
             }
             'IdentityInputObject' {
-                $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+                [string] $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
             }
         }
         Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues $userActionString -Target $Identity -ScriptBlock {
-            $group = Get-PSEntraIDGroup -Identity $Identity
+            [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
                 switch ($PSCmdlet.ParameterSetName) {
                     'IdentityInputObject' {
                         foreach ($itemInputObject in $InputObject) {
-                            [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id))
-                            [void]$ownerObjectIdList.Add($itemInputObject.Id)
-                            [void]$ownerUserPrincipalNameList.Add($itemInputObject.UserPrincipalName)
-                            [void]$ownerMailList.Add($itemInputObject.Mail)
+                            [void] $ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id))
+                            [void] $ownerObjectIdList.Add($itemInputObject.Id)
+                            [void] $ownerUserPrincipalNameList.Add($itemInputObject.UserPrincipalName)
+                            [void] $ownerMailList.Add($itemInputObject.Mail)
                         }
                     }
                     'IdentityUser' {
                         foreach ($itemUser in $User) {
-                            $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not([object]::Equals($aADUser, $null))) {
-                                [void]$ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                                [void]$ownerObjectIdList.Add($aADUser.Id)
-                                [void]$ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
-                                [void]$ownerMailList.Add($aADUser.Mail)
+                                [void] $ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                [void] $ownerObjectIdList.Add($aADUser.Id)
+                                [void] $ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                                [void] $ownerMailList.Add($aADUser.Mail)
                             }
                             else {
                                 if ($EnableException.IsPresent) {
@@ -127,7 +127,7 @@
                         }
                     }
                 }
-                $requestHash = @{
+                [hashtable] $requestHash = @{
                     ObjectId          = $ownerObjectIdList
                     UserPrincipalName = $ownerUserPrincipalNameList
                     Mail              = $ownerMailList
@@ -137,7 +137,7 @@
                     OwnerUrlList      = $ownerUrlList
                 }
                 foreach ($ownerUrl in $requestHash.OwnerUrlList) {
-                    $body = @{
+                    [hashtable] $body = @{
                         '@odata.id' = $ownerUrl
                     }
                     try {

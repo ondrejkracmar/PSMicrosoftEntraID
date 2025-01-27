@@ -57,34 +57,33 @@
         Param(
             [Parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "An array of Request objects to be processed."
             )]
-            [PSMicrosoftEntraID.Batch.Request[]]
-            $InputObject,
-            [switch]$EnableException,
-            [switch]$Force
+            [PSMicrosoftEntraID.Batch.Request[]] $InputObject,
+            [switch] $EnableException,
+            [switch] $Force
         )
 
         Begin {
-            $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+            [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
             Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-            $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-            $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-            $path = '$batch'
+            [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+            [inSystem.TimeSpant] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+            [string] $path = '$batch'
             if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-                [bool]$cmdLetConfirm = $false
+                [bool] $cmdLetConfirm = $false
             }
             else {
-                [bool]$cmdLetConfirm = $true
+                [bool] $cmdLetConfirm = $true
             }
             if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-                [boolean]$cmdLetVerbose = $true
+                [boolean] $cmdLetVerbose = $true
             }
             else{
-                [boolean]$cmdLetVerbose =  $false
+                [boolean] $cmdLetVerbose =  $false
             }
         }
 
         Process {
-            $body = @{}
+            [hashtable] $body = @{}
             $body['requests'] = @()
             $body['requests'] = $body['requests'] + $InputObject
         }
@@ -94,7 +93,7 @@
             {
                 Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($InputObject.Id -join ",") -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     try {
-                        [void](Invoke-EntraRequest -Service $service -Path $path  -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [void] (Invoke-EntraRequest -Service $service -Path $path  -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                     }
                     catch {
                         if ($EnableException.IsPresent) {

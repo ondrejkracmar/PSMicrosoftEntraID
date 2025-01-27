@@ -50,55 +50,55 @@
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentityUser')]
         [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        [string]$Identity,
+        [string] $Identity,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
-        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
-        [string[]]$User,
-        [switch]$EnableException,
-        [switch]$Force
+        [string[]] $User,
+        [switch] $EnableException,
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityUser' {
-                $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
             }
             'IdentityInputObject' {
-                $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+                [string] $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
             }
         }
         Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues ((($userActionString | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            $group = Get-PSEntraIDGroup -Identity $Identity
+            [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not ([object]::Equals($group, $null))) {
                 switch ($PSCmdlet.ParameterSetName) {
                     'IdentityUser' {
                         foreach ($itemUser in  $User) {
-                            $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
                             if (-not ([object]::Equals($aADUser, $null))) {
-                                $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
-                                [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                                [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                             }
                             else {
                                 if ($EnableException.IsPresent) {
@@ -107,10 +107,10 @@
                             }
                         }
                     }
-                    'IdentityInput' {
-                        foreach ($itemInputObject in  $InoutObject) {
-                            $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $itemInputObject.Id)
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                    'IdentityInputObject' {
+                        foreach ($itemInputObject in  $InputObject) {
+                            [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $itemInputObject.Id)
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     }
                 }

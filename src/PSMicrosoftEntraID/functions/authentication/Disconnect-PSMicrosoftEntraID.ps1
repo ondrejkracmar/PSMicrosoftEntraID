@@ -18,15 +18,14 @@
 	[CmdletBinding()]
 	param (
 		[ArgumentCompleter({ Get-ServiceCompletion $args })]
-		[string]
-		$Service = $script:_DefaultService
+		[string] $Service = $script:_DefaultService
 	)
 	begin{
 		if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
         else{
-            [boolean]$cmdLetVerbose =  $false
+            [boolean] $cmdLetVerbose =  $false
         }
 	}
 	process {

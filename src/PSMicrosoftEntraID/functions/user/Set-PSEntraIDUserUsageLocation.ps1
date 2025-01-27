@@ -49,83 +49,82 @@
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'IdentityUsageLocationCode')]
+        DefaultParameterSetName = 'InputObjectUsageLocationCode')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCode')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCountry')]
-        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCode')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$Identity,
+        [string[]] $Identity,
         [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectUsageLocationCode')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUsageLocationCode')]
         [ValidateNotNullOrEmpty()]
-        [string]$UsageLocationCode,
+        [string] $UsageLocationCode,
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectUsageLocationCountry')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateNotNullOrEmpty()]
-        [string]$UsageLocationCountry,
-        [switch]$EnableException,
-        [switch]$Force
+        [string] $UsageLocationCountry,
+        [switch] $EnableException,
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $usageLocationTemplate = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'aadtemplate' -ChildPath 'UsageLocation.json' )
-        $usageLocationHashtable = Get-Content -Path $usageLocationTemplate | ConvertFrom-Json | ConvertTo-PSFHashtable
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
+        [hsashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
         switch -Regex  ($PSCmdlet.ParameterSetName) {
-            '\wUsageLocationCode\w' {
-                $usgaeLocationTarget = $usageLocationCode
-                $body = @{
+            '\wUsageLocationCode' {
+                [string] $usgaeLocationTarget = $usageLocationCode
+                [hsashtable] $body = @{
                     usageLocation = $usageLocationCode
                 }
             }
-            '\wUsageLocationCountry\w' {
-                $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
-                $body = @{
+            '\wUsageLocationCountry' {
+                [string] $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
+                [hsashtable] $body = @{
                     usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
                 }
             }
         }
         switch -Regex  ($PSCmdlet.ParameterSetName) {
-            '\wInputObject\w'{
+            'InputObject\w' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                        $path = ("users/{0}" -f $itemInputObject.Id)
-                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [string] $path = ("users/{0}" -f $itemInputObject.Id)
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
-            '\wIdentity\w'{
+            'Identity\w' {
                 foreach ($user in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUser -Identity $user
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ("users/{0}" -f $aADUser.Id)
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            [string] $path = ("users/{0}" -f $aADUser.Id)
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {

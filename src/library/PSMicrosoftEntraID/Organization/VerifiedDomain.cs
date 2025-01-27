@@ -31,13 +31,13 @@ namespace PSMicrosoftEntraID.Organization
         /// Gets or sets a value indicating whether the domain is the default domain.
         /// </summary>
         [DataMember(Name = "isDefault")]
-        public bool IsDefault { get; set; }
+        public bool? IsDefault { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the domain is the initial domain.
         /// </summary>
         [DataMember(Name = "isInitial")]
-        public bool IsInitial { get; set; }
+        public bool? IsInitial { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the verified domain.

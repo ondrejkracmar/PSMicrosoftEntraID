@@ -39,43 +39,43 @@ function Get-PSEntraIDGroupMember {
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]
-    param([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+    param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
-        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
-        [string[]]$Identity,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [string[]] $Identity,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $False, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$Owner,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [switch] $Owner,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [string]$Filter,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [string] $Filter,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter,
-        [switch]$EnableException
+        [switch] $AdvancedFilter,
+        [switch] $EnableException
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $query = @{
+        [hashtable] $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
-        $header = @{}
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{}
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
@@ -85,10 +85,10 @@ function Get-PSEntraIDGroupMember {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemInputObject.MailnickName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         if ($Owner.IsPresent) {
-                            $path = ('groups/{0}/owners' -f $itemInputObject.Id)
+                            [string] $path = ('groups/{0}/owners' -f $itemInputObject.Id)
                         }
                         else {
-                            $path = ('groups/{0}/members' -f $itemInputObject.Id)
+                            [string] $path = ('groups/{0}/members' -f $itemInputObject.Id)
                         }
                         if (Test-PSFParameterBinding -ParameterName 'Filter') {
                             $query['$Filter'] = $Filter
@@ -105,13 +105,13 @@ function Get-PSEntraIDGroupMember {
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $group = Get-PSEntraIDGroup -Identity $itemIdentity
+                        [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $itemIdentity
                         if (-not([object]::Equals($group, $null))) {
                             if ($Owner.IsPresent) {
-                                $path = ('groups/{0}/owners' -f $group.Id)
+                                [string] $path = ('groups/{0}/owners' -f $group.Id)
                             }
                             else {
-                                $path = ('groups/{0}/members' -f $group.Id)
+                                [string] $path = ('groups/{0}/members' -f $group.Id)
                             }
                             if (Test-PSFParameterBinding -ParameterName 'Filter') {
                                 $query['$Filter'] = $Filter
