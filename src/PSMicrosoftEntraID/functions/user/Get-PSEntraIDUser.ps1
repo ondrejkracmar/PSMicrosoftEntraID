@@ -63,6 +63,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch] $All,
+        [Parameter()]
         [switch] $EnableException
     )
 

@@ -57,6 +57,7 @@ function Get-PSEntraIDGroupMember {
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [switch] $AdvancedFilter,
+        [Parameter()]
         [switch] $EnableException
     )
 

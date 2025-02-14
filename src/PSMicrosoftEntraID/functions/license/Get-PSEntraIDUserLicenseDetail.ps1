@@ -30,6 +30,7 @@
         [ValidateUserIdentity()]
         [string[]] $Identity,
         [switch] $AdvancedFilter,
+        [Parameter()]
         [switch] $EnableException
     )
     begin {

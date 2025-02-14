@@ -115,7 +115,9 @@
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]] $ResourceBehaviorOptions,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 

@@ -1,57 +1,102 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Management.Automation;
-using System.Reflection;
 using PSMicrosoftEntraID.Batch;
 
 namespace PSMicrosoftEntraID.Commands
 {
     /// <summary>
-    /// Cmdlet that receives an array of Request objects, renumbers their 'Id' properties
-    /// as sequential strings ("1", "2", "3", ...), and outputs the updated array.
+    /// Cmdlet that receives Request objects from the pipeline and produces multiple 
+    /// <see cref="BatchRequestPayload"/> objects, each containing up to 20 sub-requests. 
+    /// In each chunk, request Ids are reassigned to "1", "2", etc. to comply with the 
+    /// Microsoft Graph batch limit of 1..20 sub-requests per batch.
     /// </summary>
-    [Cmdlet(VerbsCommon.New, "PSEntraIDBatchRequest")]
-    [OutputType(typeof(Request[]))]
+    [Cmdlet(VerbsCommon.New, "PSEntraIDBatchRequest", SupportsShouldProcess = true)]
+    [OutputType(typeof(BatchRequestPayload))]
     public class NewPSEntraIDBatchRequest : PSCmdlet
     {
+        private const int MaxBatchSize = 20;
+
         /// <summary>
-        /// Input array of Request objects. Their Ids will be reassigned in EndProcessing.
+        /// An array of Request objects coming from the pipeline. 
+        /// Each item is a sub-request definition (method, url, body, etc.).
         /// </summary>
         [Parameter(
             Mandatory = true,
             ValueFromPipeline = true
         )]
         public Request[] InputObject { get; set; }
-        private int _index;
 
         /// <summary>
-        /// Start collecting all input, renumber Ids from "1" to the total count, then write them out.
+        /// Internal buffer to accumulate up to 20 requests before emitting a batch payload.
+        /// </summary>
+        private List<Request> _buffer = new List<Request>(MaxBatchSize);
+
+        /// <summary>
+        /// Called once before pipeline input is processed.
         /// </summary>
         protected override void BeginProcessing()
         {
-            _index = 1;
+            base.BeginProcessing();
         }
+
         /// <summary>
-        /// Called once for each pipeline input chunk. 
-        /// In this scenario, final logic will occur in EndProcessing.
+        /// Called once for each pipeline block of Request objects.
+        /// We accumulate them, and each time we hit 20, we emit a new BatchRequestPayload 
+        /// with Ids reindexed from "1" up to "n".
         /// </summary>
         protected override void ProcessRecord()
         {
-            foreach (var item in InputObject)
+            if (InputObject == null || InputObject.Length == 0)
+                return;
+
+            foreach (var req in InputObject)
             {
-                // Assign Id as a string reflecting the 1-based index.
-                item.Id = _index.ToString();
-                _index++;
-                // Output the modified array as a single object
-                WriteObject(item);
+                _buffer.Add(req);
+
+                // If we have 20 requests, emit them immediately
+                if (_buffer.Count == MaxBatchSize)
+                {
+                    EmitOnePayload(_buffer);
+                    _buffer.Clear();
+                }
             }
         }
 
         /// <summary>
-        /// After collecting all input, renumber Ids from "1" to the total count, then write them out.
+        /// Called after all pipeline input has been processed. 
+        /// If there's any leftover (20) requests in _buffer, we emit one final payload.
         /// </summary>
         protected override void EndProcessing()
         {
-            
+            if (_buffer.Count > 0)
+            {
+                EmitOnePayload(_buffer);
+                _buffer.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Helper method to create a single BatchRequestPayload from up to 20 Request objects, 
+        /// reindexing their Ids from "1" to the number of requests in this chunk.
+        /// </summary>
+        /// <param name="requests">A list of up to 20 Request objects.</param>
+        private void EmitOnePayload(List<Request> requests)
+        {
+            // Reindex them "1".."n"
+            int index = 1;
+            foreach (var r in requests)
+            {
+                r.Id = index.ToString();
+                index++;
+            }
+
+            // Build the payload
+            var payload = new BatchRequestPayload();
+            payload.Requests.AddRange(requests);
+
+            // Output a single BatchRequestPayload object
+            WriteObject(payload);
         }
     }
 }

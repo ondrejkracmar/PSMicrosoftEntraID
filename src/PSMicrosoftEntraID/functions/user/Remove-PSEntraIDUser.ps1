@@ -51,7 +51,9 @@
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]] $Identity,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
     begin {
@@ -68,8 +70,8 @@
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
             [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean] $cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 

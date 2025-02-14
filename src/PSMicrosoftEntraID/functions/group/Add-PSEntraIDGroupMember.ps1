@@ -56,7 +56,9 @@
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]] $User,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 
