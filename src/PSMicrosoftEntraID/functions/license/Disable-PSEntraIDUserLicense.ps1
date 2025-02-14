@@ -39,6 +39,10 @@
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
 	.EXAMPLE
 		PS C:\> Disable-PSEntraIDUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK
 
@@ -64,8 +68,12 @@
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
         [string[]] $SkuPartNumber,
+        [Parameter()]
         [switch] $EnableException,
-        [switch] $Force
+        [Parameter()]
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
     )
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
@@ -122,7 +130,12 @@
                         Get-PSEntraIDUserLicenseDetail |
                         Select-Object -ExpandProperty ServicePLans
                         if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            }
                         }
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
@@ -138,7 +151,12 @@
                             Get-PSEntraIDUserLicenseDetail |
                             Select-Object -ExpandProperty ServicePLans
                             if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                                if ($PassThru.IsPresent) {
+                                    [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                                }
+                                else {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                                }
                             }
                         }
                         else {

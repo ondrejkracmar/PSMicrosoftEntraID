@@ -84,7 +84,9 @@
         [string] $MessageLanguage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [psobject[]] $CCRecipient,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 

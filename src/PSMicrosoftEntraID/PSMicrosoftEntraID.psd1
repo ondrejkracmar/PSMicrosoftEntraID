@@ -28,7 +28,7 @@
 	RequiredModules   = @('PSFramework')
 
 	# Assemblies that must be loaded prior to importing this module
-	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
+	RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
 
 	# Type files (.ps1xml) to be loayded when importing this module
 	TypesToProcess = @('types\PSMicrosoftEntraID.Types.ps1xml')
@@ -52,7 +52,7 @@
 		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
 		'Compare-PSEntraIDUserList'
-		'Invoke-PSMicrosoftEntraIDBatchRequest'
+		'Invoke-PSEntraIDBatchRequest'
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'

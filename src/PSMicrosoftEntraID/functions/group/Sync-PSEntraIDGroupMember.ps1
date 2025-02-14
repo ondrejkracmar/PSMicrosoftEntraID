@@ -61,8 +61,11 @@
         [ValidateUserIdentity()]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [string[]] $ReferenceUserIdentity,
+        [Parameter()]
         [switch] $SyncView,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 

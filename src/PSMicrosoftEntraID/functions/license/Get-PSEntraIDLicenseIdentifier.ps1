@@ -19,7 +19,8 @@
     [OutputType('PSMicrosoftEntraID.License.LicenseIdentifier')]
     [CmdletBinding()]
     param (
-
+        [Parameter()]
+        [switch] $EnableException
     )
     begin {
 

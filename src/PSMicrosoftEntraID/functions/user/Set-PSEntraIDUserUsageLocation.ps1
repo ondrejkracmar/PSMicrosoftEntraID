@@ -66,7 +66,9 @@
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
         [ValidateNotNullOrEmpty()]
         [string] $UsageLocationCountry,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 

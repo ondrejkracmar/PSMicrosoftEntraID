@@ -69,6 +69,7 @@
         [Parameter(Mandatory = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch] $AdvancedFilter,
+        [Parameter()]
         [switch] $EnableException
     )
     begin {

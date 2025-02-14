@@ -50,7 +50,9 @@
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string[]] $Identity,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
     begin {
@@ -67,8 +69,8 @@
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
             [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean] $cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
@@ -83,7 +85,7 @@
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
-            'Identity'{
+            'Identity' {
                 foreach ($group in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group

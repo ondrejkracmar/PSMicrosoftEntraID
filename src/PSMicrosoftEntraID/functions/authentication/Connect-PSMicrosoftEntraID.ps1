@@ -306,9 +306,11 @@
 		[string[]]
 		$Service = $script:_DefaultService,
 
+		[Parameter()]
 		[string]
 		$ServiceUrl,
 
+		[Parameter()]
 		[string]
 		$Resource,
 
@@ -317,15 +319,19 @@
 		[switch]
 		$UseRefreshToken,
 
+		[Parameter()]
 		[switch]
 		$MakeDefault,
 
+		[Parameter()]
 		[switch]
 		$PassThru,
 
+		[Parameter()]
 		[Environment]
 		$Environment,
 
+		[Parameter()]
 		[string]
 		$AuthenticationUrl
 	)

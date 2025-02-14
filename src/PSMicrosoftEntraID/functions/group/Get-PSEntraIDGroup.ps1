@@ -50,6 +50,7 @@
         [Parameter(Mandatory = $True, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch] $All,
+        [Parameter()]
         [switch] $EnableException
     )
 
@@ -66,8 +67,8 @@
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
             [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean] $cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 

@@ -145,7 +145,9 @@
         [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
         [ValidateSet('On', 'Paused', 'Off')]
         [string] $MembershipRuleProcessingState,
+        [Parameter()]
         [switch] $EnableException,
+        [Parameter()]
         [switch] $Force
     )
 

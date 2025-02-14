@@ -39,6 +39,7 @@
         [Parameter(ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string] $Filter,
+        [Parameter()]
         [switch] $EnableException
     )
 

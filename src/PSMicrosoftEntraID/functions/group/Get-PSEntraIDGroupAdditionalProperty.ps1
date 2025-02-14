@@ -31,6 +31,7 @@ function Get-PSEntraIDGroupAdditionalProperty {
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string[]] $Identity,
+        [Parameter()]
         [switch] $EnableException
     )
 

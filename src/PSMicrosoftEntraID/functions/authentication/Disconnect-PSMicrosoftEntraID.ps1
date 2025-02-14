@@ -17,6 +17,7 @@
 	#>
 	[CmdletBinding()]
 	param (
+		[Parameter()]
 		[ArgumentCompleter({ Get-ServiceCompletion $args })]
 		[string] $Service = $script:_DefaultService
 	)

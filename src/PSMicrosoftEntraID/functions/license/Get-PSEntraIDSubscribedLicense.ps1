@@ -19,7 +19,8 @@
     [OutputType('PSMicrosoftEntraID.License.SubscriptionSkuLicense')]
     [CmdletBinding()]
     param (
-
+        [Parameter()]
+        [switch] $EnableException
     )
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)

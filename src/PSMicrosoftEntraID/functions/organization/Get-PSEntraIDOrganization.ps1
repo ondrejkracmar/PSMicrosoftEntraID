@@ -19,6 +19,7 @@
     [OutputType('PSMicrosoftEntraID.Organization')]
     [CmdletBinding()]
     param (
+        [Parameter()]
         [switch] $EnableException
     )
     begin {
