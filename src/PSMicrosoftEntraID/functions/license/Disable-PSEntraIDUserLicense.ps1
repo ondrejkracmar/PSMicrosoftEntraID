@@ -131,7 +131,7 @@
                         Select-Object -ExpandProperty ServicePLans
                         if (-not ([object]::Equals($servivePlanStatus, $null))) {
                             if ($PassThru.IsPresent) {
-                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                             }
                             else {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
@@ -152,7 +152,7 @@
                             Select-Object -ExpandProperty ServicePLans
                             if (-not ([object]::Equals($servivePlanStatus, $null))) {
                                 if ($PassThru.IsPresent) {
-                                    [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                                    [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'-f $path); Body = $body; Headers = $header }
                                 }
                                 else {
                                     [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
