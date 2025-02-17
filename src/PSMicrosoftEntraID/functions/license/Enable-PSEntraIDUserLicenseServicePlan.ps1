@@ -191,7 +191,7 @@
                             removeLicenses = @()
                         }
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'-f $path); Body = $body; Headers = $header }
                         }
                         else {
                             [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
@@ -238,7 +238,7 @@
                                 removeLicenses = @()
                             }
                             if ($PassThru.IsPresent) {
-                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'.$path); Body = $body; Headers = $header }
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}'-f $path); Body = $body; Headers = $header }
                             }
                             else {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
