@@ -83,7 +83,7 @@
                     $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f $group)
 
                     Invoke-PSFProtectedCommand -ActionString 'Group.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Groups.Groupp[]] $mailNickName = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $mailNickNameQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [PSMicrosoftEntraID.Groups.Group[]] $mailNickName = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $mailNickNameQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         if (-not([object]::Equals($mailNickName, $null))) {
                             [string] $groupId = $mailNickName[0].Id
                         }

@@ -43,7 +43,7 @@
 	{
 		if ($script:_EntraTokens["$Service"]) { return }
 		
-		$message = "Not connected yet! Use Connect-PSMicrosoftEntraID to establish a connection to '$Service' first."
+		$message = "Not connected yet! Use Connect-EntraService to establish a connection to '$Service' first."
 		if ($RequiredScopes) { $message = $message + " Scopes required for this call: $($RequiredScopes -join ', ')"}
 		Invoke-TerminatingException -Cmdlet $Cmdlet -Message $message -Category ConnectionError
 	}
