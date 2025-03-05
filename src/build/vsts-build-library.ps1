@@ -1,18 +1,18 @@
 ﻿<#
 .SYNOPSIS
-	Builds the PSMicrosoftEntraID binary library from source.
+    Builds the PSMicrosoftEntraID binary library from source.
 
 .DESCRIPTION
-	Builds the PSMicrosoftEntraID binary library from source.
+    Builds the PSMicrosoftEntraID binary library from source.
 
 .PARAMETER WorkingDirectory
-	Path where the project root is.
-	Defaults to the parent folder this file is in.
+    Path where the project root is.
+    Defaults to the parent folder this file is in.
 
 .EXAMPLE
-	PS C:\> .\vsts-build-library.ps1
+    PS C:\> .\vsts-build-library.ps1
 
-	Builds the PSMicrosoftEntraID binary library from source.
+    Builds the PSMicrosoftEntraID binary library from source.
 #>
 [CmdletBinding()]
 param (
@@ -29,7 +29,13 @@ if (-not $WorkingDirectory) {
 if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 #endregion Handle Working Directory Defaults
 
-# Build Library
+Write-Host "Restoring .NET dependencies..."
+dotnet restore "$WorkingDirectory\library\PSMicrosoftEntraID.sln"
+if ($LASTEXITCODE -ne 0) {
+    throw "dotnet restore failed!"
+}
+
+Write-Host "Building the PowerShell module..."
 dotnet build "$WorkingDirectory\library\PSMicrosoftEntraID.sln"
 if ($LASTEXITCODE -ne 0) {
     throw "Failed to build PSMicrosoftEntraID.dll!"
