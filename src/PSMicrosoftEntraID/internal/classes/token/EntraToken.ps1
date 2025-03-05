@@ -9,7 +9,7 @@
 	[string]$Issuer
 	[PSObject]$TokenData
 	#endregion Token Data
-
+	
 	#region Connection Data
 	[string]$Service
 	[string]$Type
@@ -18,13 +18,14 @@
 	[string]$ServiceUrl
 	[string]$AuthenticationUrl
 	[Hashtable]$Header = @{}
+	[Hashtable]$Query = @{}
 
 	[string]$IdentityID
 	[string]$IdentityType
-
+	
 	# Workflow: Client Secret
 	[System.Security.SecureString]$ClientSecret
-
+	
 	# Workflow: Certificate
 	[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate
 
@@ -38,7 +39,7 @@
 	# Workflow: Az.Accounts
 	[string]$ShowDialog
 	#endregion Connection Data
-
+	
 	#region Constructors
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [Securestring]$ClientSecret, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
@@ -49,7 +50,7 @@
 		$this.AuthenticationUrl = $AuthenticationUrl
 		$this.Type = 'ClientSecret'
 	}
-
+	
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
 		$this.ClientID = $ClientID
@@ -103,7 +104,6 @@
 			$this.IdentityID = $IdentityID
 		}
 	}
-
 	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.ServiceUrl = $ServiceUrl
@@ -121,6 +121,9 @@
 		$this.ShowDialog = $ShowDialog
 		$this.Type = 'AzAccount'
 	}
+	
+	# Empty Constructor for Import-EntraToken
+	EntraToken() {}
 	#endregion Constructors
 
 	[void]SetTokenMetadata([PSObject] $AuthToken) {
@@ -134,7 +137,7 @@
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
 		$data = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
-
+		
 		if ($data.roles) { $this.Scopes = $data.roles }
 		elseif ($data.scp) { $this.Scopes = $data.scp -split " " }
 
@@ -160,9 +163,9 @@
 
 	[void]RenewToken() {
 		$defaultParam = @{
-			TenantID         = $this.TenantID
-			ClientID         = $this.ClientID
-			Resource         = $this.Audience
+			TenantID          = $this.TenantID
+			ClientID          = $this.ClientID
+			Resource          = $this.Audience
 			AuthenticationUrl = $this.AuthenticationUrl
 		}
 		switch ($this.Type) {

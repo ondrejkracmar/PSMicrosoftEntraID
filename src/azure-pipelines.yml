@@ -44,6 +44,14 @@ steps:
        filePath: "$(sourceDirectory)/build/vsts-prerequisites.ps1"
 
    - task: PowerShell@2
+     displayName: Build binary library For Powerhell Module
+     inputs:
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-build-library.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -WorkingDirectory '$(sourceDirectory)'
+
+   - task: PowerShell@2
      displayName: Validation/Test Powershell Module
      inputs:
        targetType: filePath
