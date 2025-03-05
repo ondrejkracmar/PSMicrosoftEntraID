@@ -19,6 +19,9 @@ variables:
   - group: "BuildEnvironment"
   - group: "GitHubSync"
 
+pool:
+  vmImage: 'windows-latest'
+
 steps:
    - checkout: self
      persistCredentials: true
