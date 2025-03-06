@@ -1011,5 +1011,34 @@
             Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.User"/> class.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.Users.UserGuest">
+            <summary>
+            Represents a Guest user in Microsoft Entra ID (formerly Azure AD).
+            This class extends the User class and includes additional properties 
+            related to Guest user invitations.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserState">
+            <summary>
+            The external state of the user (e.g., PendingAcceptance, Accepted).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserStateChangeDateTime">
+            <summary>
+            The date and time when the external user state last changed.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.InvitationStatus">
+            <summary>
+            A derived property that represents the invitation status.
+            Returns "Pending" if the user has not accepted the invitation,
+            otherwise "Accepted".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.UserGuest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.UserGuest"/> class.
+            </summary>
+        </member>
     </members>
 </doc>
