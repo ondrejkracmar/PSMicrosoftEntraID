@@ -51,6 +51,7 @@
 		'Get-PSEntraIDUserLicense'
 		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
+		'Get-PSEntraIDUserGuest'
 		'Compare-PSEntraIDUserList'
 		'Invoke-PSEntraIDBatchRequest'
 		'Remove-PSEntraIDUser'

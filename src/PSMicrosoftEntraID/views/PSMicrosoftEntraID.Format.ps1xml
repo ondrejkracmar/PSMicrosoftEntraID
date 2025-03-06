@@ -2,7 +2,7 @@
 <Configuration>
 	<ViewDefinitions>
 		<View>
-			<Name>UsageReport</Name>
+			<Name>PSMicrosoftEntraID.Users.User</Name>
 			<ViewSelectedBy>
 				<TypeName>PSMicrosoftEntraID.Users.User</TypeName>
 			</ViewSelectedBy>
@@ -84,6 +84,101 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>UsageLocation</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
+			<Name>PSMicrosoftEntraID.Users.UserGuest</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Users.UserGuest</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+            			<Width>16</Width>
+          			</TableColumnHeader>
+          			<TableColumnHeader>
+            			<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>UserPrincipalName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Mail</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>MailNickname</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>AccountEnabled</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>GivenName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Surname</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>CompanyName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>City</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Country</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>UsageLocation</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>InvitationStatus</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>
