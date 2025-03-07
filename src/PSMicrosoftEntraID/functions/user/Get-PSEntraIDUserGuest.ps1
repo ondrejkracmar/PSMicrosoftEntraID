@@ -104,12 +104,12 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($user in $Identity) {
-                    $mailQuery = @{
-                        '$top'    = $query['$top']
-                        '$select' = $query['$select']
-                        '$filter' = "mail eq '$user'"
+                    [hashtable] $mailQuery = @{
+                        #'$count'  = 'true'
+                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
-
+                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Users.UserGuest[]] $userMail = ConvertFrom-RestUserGuest -InputObject (
                             Invoke-EntraRequest -Service $service -Path 'users' -Query $mailQuery -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop
