@@ -111,7 +111,7 @@
                     }
 
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.UserGuest[]] $userMail = ConvertFrom-RestUser -InputObject (
+                        [PSMicrosoftEntraID.Users.UserGuest[]] $userMail = ConvertFrom-RestUserGuest -InputObject (
                             Invoke-EntraRequest -Service $service -Path 'users' -Query $mailQuery -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop
                         )
 
@@ -151,6 +151,52 @@
                             Invoke-EntraRequest -Service $service -Path 'users' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop
                         )
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                }
+            }
+            'CompanyName' {
+                [hashtable] $header = @{}
+                $header['ConsistencyLevel'] = 'eventual'
+                if (Test-PSFPowerShell -PSMinVersion 7.0) {
+                    [hashtable] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                }
+                else {
+                    [hashtable] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                }
+                if ($Disabled.IsPresent) {
+                    $completeFilter = Add-GuestFilter ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList)
+                    $query['$Filter'] = $completeFilter
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+                else {
+                    $completeFilter = Add-GuestFilter ('companyName in ({0})' -f $companyNameList)
+                    $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
+            'All' {
+                if ($All.IsPresent) {
+                    if ($Disabled.IsPresent) {
+                        [hashtable] $header = @{}
+                        $header['ConsistencyLevel'] = 'eventual'
+                        $completeFilter = Add-GuestFilter "accountEnabled eq false"
+                        $query['$Filter'] = $completeFilter
+                        Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues 'accountEnabled eq false' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            ConvertFrom-RestUserGuest -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    }
+                    else {
+                        $query['$Filter'] = "userType eq 'Guest'"
+                        Invoke-PSFProtectedCommand -ActionString 'User.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            ConvertFrom-RestUserGuest -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                 }
             }
         }
