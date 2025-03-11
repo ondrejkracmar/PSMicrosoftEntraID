@@ -2,20 +2,20 @@
 	<#
 	.SYNOPSIS
 		Define a new Entra ID Service to connect to.
-	
+
 	.DESCRIPTION
 		Define a new Entra ID Service to connect to.
 		This allows defining new endpoints to connect to ... or overriding existing endpoints to a different configuration.
-	
+
 	.PARAMETER Name
 		Name of the Service.
-	
+
 	.PARAMETER ServiceUrl
 		The base Url requests will use.
-	
+
 	.PARAMETER Resource
 		The Resource ID. Used when connecting to identify which scopes of an App Registration to use.
-	
+
 	.PARAMETER DefaultScopes
 		Default scopes to request.
 		Used in interactive delegate flows to provide a good default user experience.
@@ -23,7 +23,7 @@
 
 	.PARAMETER Header
 		Header data to include in each request.
-	
+
 	.PARAMETER HelpUrl
 		Link for more information about this service.
 		Ideally to documentation that helps setting up the connection.
@@ -47,6 +47,12 @@
 	.PARAMETER Query
 		Extra Query Parameters to automatically include on all requests.
 
+	.PARAMETER RawOnly
+		Disable default API response handling.
+		By default, when executing a request via Invoke-EntraRequest, the response is processed as if it were a default Graph API standard response.
+		Many other MS APIs follow the same standard, but not all do so.
+		When enabling this setting on a service, all requests against that service will NOT have that processing applied and instead return raw responses.
+
 	.PARAMETER Environment
 		What environment this service should connect to.
 		Defaults to: 'Global'
@@ -54,10 +60,10 @@
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
 		Usually determined by the "Environment" parameter, but may be overridden in case of need.
-	
+
 	.EXAMPLE
 		PS C:\> Register-EntraService -Name Endpoint -ServiceUrl 'https://api.securitycenter.microsoft.com/api' -Resource 'https://api.securitycenter.microsoft.com'
-		
+
 		Registers the defender for endpoint API as a service.
 	#>
 	[CmdletBinding()]
@@ -93,6 +99,9 @@
 		[Hashtable]
 		$Query = @{},
 
+		[switch]
+		$RawOnly,
+
 		[PSMicrosoftEntraID.Environment]
 		$Environment = 'Global',
 
@@ -114,16 +123,17 @@
 		if ($AuthenticationUrl) { $authUrl = $AuthenticationUrl.TrimEnd('/') }
 
 		$script:_EntraEndpoints[$Name] = [PSCustomObject]@{
-			PSTypeName       = 'EntraAuth.Service'
-			Name             = $Name
-			ServiceUrl       = $ServiceUrl
-			Resource         = $Resource
-			DefaultScopes    = $DefaultScopes
-			Header           = $Header
-			HelpUrl          = $HelpUrl
-			NoRefresh        = $NoRefresh.ToBool()
-			Parameters       = $Parameters
-			Query            = $Query
+			PSTypeName        = 'EntraAuth.Service'
+			Name              = $Name
+			ServiceUrl        = $ServiceUrl
+			Resource          = $Resource
+			DefaultScopes     = $DefaultScopes
+			Header            = $Header
+			HelpUrl           = $HelpUrl
+			NoRefresh         = $NoRefresh.ToBool()
+			Parameters        = $Parameters
+			Query             = $Query
+			RawOnly           = $RawOnly.ToBool()
 			AuthenticationUrl = $authUrl
 		}
 	}
