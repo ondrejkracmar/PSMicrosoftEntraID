@@ -1,4 +1,4 @@
-function New-EntraCustomToken {
+﻿function New-EntraCustomToken {
     <#
 	.SYNOPSIS
 		Create a custom token compatible with EntraAuth.
