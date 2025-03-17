@@ -101,10 +101,10 @@
             }
             'SkuPartNumber' {
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
-                    [string] $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    [string] $singleSkuPartNumber = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -Value $itemSkuPartNumber -EQ).SkuId
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {
-                        $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber.SkuId
-                        Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber.SkuId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $query['$filter'] = 'assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber
+                        Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('assignedLicenses/any(x:x/skuId eq {0})' -f $singleSkuPartNumber) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Verbose:$($cmdLetVerbose))
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     }
@@ -129,10 +129,10 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 foreach ($itemServicePlanName in $ServicePlanName) {
-                    [string] $singleServicePlan = (Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property servicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
+                    [string] $singleServicePlan = ((Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property servicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique).ServicePlanId
                     if (-not([object]::Equals($singleServicePlan, $null))) {
-                        $query['$filter'] = ('assignedPlans/any(x:x/servicePlanId eq {0})' -f $singleServicePlan.ServicePlanId)
-                        Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('assignedPlans/any(x:x/servicePlanId eq {0})' -f $singleServicePlan.ServicePlanId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $query['$filter'] = ('assignedPlans/any(x:x/servicePlanId eq {0})' -f $singleServicePlan)
+                        Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('assignedPlans/any(x:x/servicePlanId eq {0})' -f $singleServicePlan) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose))
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     }
@@ -147,10 +147,10 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string[]] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [string[]] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemSkuId in $SkuId) {
                     $query['$Filter'] = 'companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $itemSkuId
@@ -164,16 +164,16 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string[]] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [string[]] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
-                    [string] $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber
+                    [string] $singleSkuPartNumber = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber).SkuId
                     if (-not([object]::Equals($singleSkuPartNumber, $null))) {
-                        $query['$Filter'] = 'companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $singleSkuPartNumber.SkuId
-                        Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $singleSkuPartNumber.SkuId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $query['$Filter'] = 'companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $singleSkuPartNumber
+                        Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $singleSkuPartNumber) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose))
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
@@ -189,10 +189,10 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string[]] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [string[]] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemServicePlanId in $ServicePlanId) {
                     $query['$Filter'] = 'companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $itemServicePlanId
@@ -206,16 +206,16 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string[]] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [string[]] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 foreach ($itemServicePlanName in $ServicePlanName) {
-                    [string] $singleServicePlan = (Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property ServicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique
+                    [string] $singleServicePlan = ((Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property ServicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique).ServicePLanId
                     if (-not([object]::Equals($singleServicePlan, $null))) {
-                        $query['$Filter'] = 'companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $singleServicePlan.servicePlanId
-                        Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $singleServicePlan.servicePlanId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $query['$Filter'] = 'companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $singleServicePlan
+                        Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $singleServicePlan) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose))
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
@@ -231,10 +231,10 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string[]] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [string[]] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
                 Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
