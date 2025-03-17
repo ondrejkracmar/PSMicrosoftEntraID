@@ -12,7 +12,7 @@
 	Author            = 'Ondrej Kracmar'
 
 	# Company or vendor of this module
-	CompanyName       = 'i-system'
+	CompanyName       = 'i-System'
 
 	# Copyright statement for this module
 	Copyright         = 'Copyright (c) 2024 i-system'

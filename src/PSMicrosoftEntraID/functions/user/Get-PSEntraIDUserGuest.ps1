@@ -157,10 +157,10 @@
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
                 if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [hashtable] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 }
                 else {
-                    [hashtable] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
+                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
                 }
                 if ($Disabled.IsPresent) {
                     $completeFilter = Add-GuestFilter ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList)
