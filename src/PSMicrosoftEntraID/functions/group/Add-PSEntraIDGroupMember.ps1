@@ -6,6 +6,9 @@
     .DESCRIPTION
         Add a member to a security or Microsoft 365 group.
 
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
+
     .PARAMETER Identity
         MailNickName or Id of group or team
 
@@ -40,107 +43,158 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
     param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityInputObject')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUser')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
-        [string]$Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [string] $Identity,
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$User,
-        [switch]$EnableException,
-        [switch]$Force
+        [string[]] $User,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $nextLoop = 20
-        $header = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [int] $nextLoop = 20
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
-        $memberUrlList = [System.Collections.ArrayList]::new()
-        $memberObjectIdList = [System.Collections.ArrayList]::new()
-        $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
-        $memberMailList = [System.Collections.ArrayList]::new()
-        Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            $group = Get-PSEntraIDGroup -Identity $Identity
+        [System.Collections.ArrayList] $memberUrlList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $memberObjectIdList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList] $memberMailList = [System.Collections.ArrayList]::new()
+        switch ($PSCmdlet.ParameterSetName) {
+            'IdentityUser' {
+                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+            'IdentityInputObject' {
+                [string] $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+            }
+        }
+        Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues $userActionString -Target $Identity -ScriptBlock {
+            [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
             if (-not([object]::Equals($group, $null))) {
-                if ($User.count -eq 1) {
-                    $aADUser = Get-PSEntraIDUser -Identity $User
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                        [void]$memberObjectIdList.Add($aADUser.Id)
-                        [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
-                        [void]$memberMailList.Add($aADUser.Mail)
-                        $requestHash = @{
-                            ObjectId          = $memberObjectIdList
-                            UserPrincipalName = $memberUserPrincipalNameList
-                            Mail              = $memberMailList
-                            Role              = 'Member'
-                            UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
-                            Method            = 'Post'
-                            MemberUrlList     = $memberUrlList
-                        }
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
-                        }
-                    }
-                }
-                else {
-                    foreach ($itemUser in $User) {
-                        $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                        if (-not([object]::Equals($aADUser, $null))) {
-                            [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                            [void]$memberObjectIdList.Add($aADUser.Id)
-                            [void]$memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
-                            [void]$memberMailList.Add($aADUser.Mail)
+                switch ($PSCmdlet.ParameterSetName) {
+                    'IdentityInputObject' {
+                        if ($InputObject.Count -eq 1) {
+                            [void] $memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $InputObject.Id))
+                            [void] $memberObjectIdList.Add($InputObject.Id)
+                            [void] $memberUserPrincipalNameList.Add($InputObject.UserPrincipalName)
+                            [void] $memberMailList.Add($InputObject.Mail)
+                            [hashtable] $requestHash = @{
+                                ObjectId          = $memberObjectIdList
+                                UserPrincipalName = $memberUserPrincipalNameList
+                                Mail              = $memberMailList
+                                Role              = 'Member'
+                                UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
+                                Method            = 'Post'
+                                MemberUrlList     = $memberUrlList
+                            }
                         }
                         else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                            foreach ($itemInputObject in $InputObject) {
+                                [void]$memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id))
+                                [void]$memberObjectIdList.Add($itemInputObject.Id)
+                                [void]$memberUserPrincipalNameList.Add($itemInputObject.UserPrincipalName)
+                                [void]$memberMailList.Add($itemInputObject.Mail)
+                            }
+                            [hashtable] $requestHash = @{
+                                ObjectId          = $memberObjectIdList
+                                UserPrincipalName = $memberUserPrincipalNameList
+                                Mail              = $memberMailList
+                                Role              = 'Member'
+                                UrlPath           = ('groups/{0}' -f $group.Id)
+                                Method            = 'Patch'
+                                MemberUrlList     = $memberUrlList
                             }
                         }
                     }
-                    $requestHash = @{
-                        ObjectId          = $memberObjectIdList
-                        UserPrincipalName = $memberUserPrincipalNameList
-                        Mail              = $memberMailList
-                        Role              = 'Member'
-                        UrlPath           = ('groups/{0}' -f $group.Id)
-                        Method            = 'Patch'
-                        MemberUrlList     = $memberUrlList
+                    'IdentityUser' {
+                        if ($User.Count -eq 1) {
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $User
+                            if (-not([object]::Equals($aADUser, $null))) {
+                                [void] $memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                [void] $memberObjectIdList.Add($aADUser.Id)
+                                [void] $memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                                [void] $memberMailList.Add($aADUser.Mail)
+                                [hashtable] $requestHash = @{
+                                    ObjectId          = $memberObjectIdList
+                                    UserPrincipalName = $memberUserPrincipalNameList
+                                    Mail              = $memberMailList
+                                    Role              = 'Member'
+                                    UrlPath           = ('groups/{0}/members/$ref' -f $group.Id)
+                                    Method            = 'Post'
+                                    MemberUrlList     = $memberUrlList
+                                }
+                            }
+                            else {
+                                if ($EnableException.IsPresent) {
+                                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
+                                }
+                            }
+                        }
+                        else {
+                            foreach ($itemUser in $User) {
+                                [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                                if (-not([object]::Equals($aADUser, $null))) {
+                                    [void] $memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                    [void] $memberObjectIdList.Add($aADUser.Id)
+                                    [void] $memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
+                                    [void] $memberMailList.Add($aADUser.Mail)
+                                }
+                                else {
+                                    if ($EnableException.IsPresent) {
+                                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                                    }
+                                }
+                            }
+                            $requestHash = @{
+                                ObjectId          = $memberObjectIdList
+                                UserPrincipalName = $memberUserPrincipalNameList
+                                Mail              = $memberMailList
+                                Role              = 'Member'
+                                UrlPath           = ('groups/{0}' -f $group.Id)
+                                Method            = 'Patch'
+                                MemberUrlList     = $memberUrlList
+                            }
+                        }
                     }
                 }
                 if ($requestHash.ObjectId.Count -gt 1) {
-                    $bodyList = $requestHash.MemberUrlList | Step-Array -Size $nextLoop
+                    [string[]] $bodyList = $requestHash.MemberUrlList | Step-Array -Size $nextLoop
                     foreach ($bodyItem in $bodyList) {
-                        $body = @{
+                        [hashtable] $body = @{
                             'members@odata.bind' = @($bodyItem)
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            [void] (Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {
@@ -151,11 +205,11 @@
                 }
                 else {
                     foreach ($memberUrl in $requestHash.MemberUrlList) {
-                        $body = @{
+                        [hashtable] $body = @{
                             '@odata.id' = $memberUrl
                         }
                         try {
-                            [void](Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            [void] (Invoke-EntraRequest -Service $service -Path $requestHash.UrlPath -Header $header -Body $body -Method $requestHash.Method -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                         catch {
                             if ($EnableException.IsPresent) {

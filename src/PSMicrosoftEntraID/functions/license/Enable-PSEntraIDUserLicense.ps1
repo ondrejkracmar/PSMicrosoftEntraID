@@ -1,10 +1,13 @@
 ﻿function Enable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
-		Enable serivce plan of users's sku subscription
+		Enable serivce plan of users's sku subscription.
 
 	.DESCRIPTION
-		Enable serivce plan of users's sku subscription
+		Enable serivce plan of users's sku subscription.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
 
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
@@ -21,7 +24,7 @@
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
-    
+
     .PARAMETER Force
         The Force switch instructs the command to which it is applied to stop processing before any changes are made.
         The command then prompts you to acknowledge each action before it continues.
@@ -36,7 +39,9 @@
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
-
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 	.EXAMPLE
 		PS C:\> Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
@@ -46,89 +51,107 @@
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentitySkuPartNumber')]
-    param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
+        [PSMicrosoftEntraID.Users.User[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [Alias("Id", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$Identity,
+        [string[]] $Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuId')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
-        [string]$SkuId,
+        [string] $SkuId,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectSkuPartNumber')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
-        [string]$SkuPartNumber,
-        [switch]$EnableException,
-        [switch]$Force
+        [string] $SkuPartNumber,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
     )
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
     process {
-        foreach ($user in  $Identity) {
-            switch -Regex ($PSCmdlet.ParameterSetName) {
-                '\wSkuId' {
-                    $bodySkuId = $SkuId
-                    $skuTarget = $SkuId
-                    $body = @{
-                        addLicenses    = @(
-                            @{
-                                disabledPlans = @()
-                                skuId         = $bodySkuId
-                            }
-                        )
-                        removeLicenses = @()
-                    }
-                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUser -Identity $user
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wSkuId' {
+                [string] $bodySkuId = $SkuId
+                [string] $skuTarget = $SkuId
+                [hashtable] $body = @{
+                    addLicenses    = @(
+                        @{
+                            disabledPlans = @()
+                            skuId         = $bodySkuId
+                        }
+                    )
+                    removeLicenses = @()
+                }
+            }
+            '\wSkuPartNumber' {
+                [string] $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                [string] $skuTarget = $SkuPartNumber
+                [hashtable] $body = @{
+                    addLicenses    = @(
+                        @{
+                            disabledPlans = @()
+                            skuId         = $bodySkuId
+                        }
+                    )
+                    removeLicenses = @()
+                }
+            }
+        }
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            'InputObject\w' {
+                foreach ($itemInputObject in  $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                            }
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
-                '\wSkuPartNumber' {
-                    $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
-                    $skuTarget = $SkuPartNumber
-                    $body = @{
-                        addLicenses    = @(
-                            @{
-                                disabledPlans = @()
-                                skuId         = $bodySkuId
-                            }
-                        )
-                        removeLicenses = @()
-                    }
+            }
+            'Identity\w' {
+                foreach ($user in  $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                        $aADUser = Get-PSEntraIDUser -Identity $user
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                         if (-not ([object]::Equals($aADUser, $null))) {
-                            $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            }
                         }
                         else {
                             if ($EnableException.IsPresent) {

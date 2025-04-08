@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "LMEIx2Mul1E=",
+  "dgSpecHash": "oeMp26mKyt4=",
   "success": true,
   "projectFilePath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\KracmarOndrej\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
-    "C:\\Users\\KracmarOndrej\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net452\\1.0.3\\microsoft.netframework.referenceassemblies.net452.1.0.3.nupkg.sha512"
+    "C:\\Users\\KracmarOndrej\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net47\\1.0.3\\microsoft.netframework.referenceassemblies.net47.1.0.3.nupkg.sha512"
   ],
   "logs": []
 }

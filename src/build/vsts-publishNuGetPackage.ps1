@@ -39,8 +39,14 @@ $credential = New-Object System.Management.Automation.PSCredential ($FeedUsernam
 # Step 4
 # Upload NuGet Package
 if (-not ([string]::IsNullOrEmpty($PreRelease))) {
-    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) "$($ModuleName).$($ModuleVersion)-$($PreRelease)$($CommitsSinceVersion).nupkg" -SkipDuplicate
+    # Sestavení prerelease části a odstranění nevalidních znaků
+    $sanitizedSuffix = ($PreRelease + $CommitsSinceVersion) -replace '[^a-zA-Z0-9]', ''
+    $packageName = "$ModuleName.$ModuleVersion-$sanitizedSuffix.nupkg"
+
+    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) $packageName -SkipDuplicate
 }
 else {
-    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) "$($ModuleName).$($ModuleVersion).nupkg" -SkipDuplicate
+    $packageName = "$ModuleName.$ModuleVersion.nupkg"
+
+    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) $packageName -SkipDuplicate
 }

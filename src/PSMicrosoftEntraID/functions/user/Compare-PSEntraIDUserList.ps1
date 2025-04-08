@@ -25,30 +25,30 @@
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
-        [string[]]$ReferenceIdentity,
+        [string[]] $ReferenceIdentity,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
         [ValidateUserIdentity()]
-        [string[]]$DifferenceIdentity
+        [string[]] $DifferenceIdentity
     )
 
     begin {
         Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
-        $changeUserList = [System.Collections.ArrayList]::New()
+        [System.Collections.ArrayList] $changeUserList = [System.Collections.ArrayList]::New()
     }
 
     process {
-        $compareUserList = Compare-Object -ReferenceObject $ReferenceIdentity -DifferenceObject $DifferenceIdentity -IncludeEqual
+        [System.Object[]] $compareUserList = Compare-Object -ReferenceObject $ReferenceIdentity -DifferenceObject $DifferenceIdentity -IncludeEqual
         foreach ($compareUser in $compareUserList) {
             switch ($compareUser.SideIndicator) {
                 '=>' {
-                    $changeUser = [pscustomobject]@{
+                    [pscustomobject] $changeUser = [pscustomobject]@{
                         Crud     = 'Delete'
                         Identity = $compareUser.InputObject
                     }
-                    [void]($changeUserList.Add($changeUser))
+                    [void] ($changeUserList.Add($changeUser))
                 }
                 '<=' {
-                    $changeUser = [pscustomobject]@{
+                    [pscustomobject] $changeUser = [pscustomobject]@{
                         Crud     = 'Create'
                         Identity = $compareUser.InputObject
                     }

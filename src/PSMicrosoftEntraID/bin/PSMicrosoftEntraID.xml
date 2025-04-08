@@ -4,6 +4,115 @@
         <name>PSMicrosoftEntraID</name>
     </assembly>
     <members>
+        <member name="T:PSMicrosoftEntraID.Batch.BatchRequestPayload">
+            <summary>
+            Represents the final JSON payload for a Microsoft Graph batch request.
+            Has a property named "requests" which is a list of Request objects.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.BatchRequestPayload.Requests">
+            <summary>
+            The "requests" array that Graph expects, each element having an Id, Method, Url, etc.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.BatchRequestPayload.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> class.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Batch.Request">
+            <summary>
+            Represents a single request to Microsoft Entra ID (Azure AD) in a batch scenario.
+            Compatible with .NET 4.7 or .NET Standard 2.0.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request.AllowedMethods">
+            <summary>
+            A set of allowed HTTP methods for this request (GET, PUT, PATCH, POST, DELETE).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request._method">
+            <summary>
+            Backing field for the HTTP method.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Id">
+            <summary>
+            Gets or sets the unique identifier of this request (e.g. "1", "2", "3").
+            Typically used to distinguish multiple requests in a single batch.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Method">
+            <summary>
+            Gets or sets the HTTP method (GET, PUT, PATCH, POST, DELETE).
+            The setter validates that the method is allowed, otherwise throws an ArgumentException.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Url">
+            <summary>
+            Gets or sets the URL (endpoint) that this request will call (e.g. "/users", "/groups/{id}", etc.).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Body">
+            <summary>
+            Gets or sets the body of the request as a hashtable, useful for PowerShell scenarios.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Headers">
+            <summary>
+            Gets or sets the headers of the request as a hashtable (key-value pairs).
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.Request.ToString">
+            <summary>
+            Returns a string representation for debugging.
+            </summary>
+            <returns>String describing the request Id, Method, Url.</returns>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest">
+            <summary>
+            Cmdlet that receives Request objects from the pipeline and produces multiple 
+            <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> objects, each containing up to 20 sub-requests. 
+            In each chunk, request Ids are reassigned to "1", "2", etc. to comply with the 
+            Microsoft Graph batch limit of 1..20 sub-requests per batch.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.InputObject">
+            <summary>
+            An array of Request objects coming from the pipeline. 
+            Each item is a sub-request definition (method, url, body, etc.).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest._buffer">
+            <summary>
+            Internal buffer to accumulate up to 20 requests before emitting a batch payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.BeginProcessing">
+            <summary>
+            Called once before pipeline input is processed.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.ProcessRecord">
+            <summary>
+            Called once for each pipeline block of Request objects.
+            We accumulate them, and each time we hit 20, we emit a new BatchRequestPayload 
+            with Ids reindexed from "1" up to "n".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.EndProcessing">
+            <summary>
+            Called after all pipeline input has been processed. 
+            If there's any leftover (20) requests in _buffer, we emit one final payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.EmitOnePayload(System.Collections.Generic.List{PSMicrosoftEntraID.Batch.Request})">
+            <summary>
+            Helper method to create a single BatchRequestPayload from up to 20 Request objects, 
+            reindexing their Ids from "1" to the number of requests in this chunk.
+            </summary>
+            <param name="requests">A list of up to 20 Request objects.</param>
+        </member>
         <member name="T:PSMicrosoftEntraID.Environment">
             <summary>
             What environment this service should connect to.
@@ -133,6 +242,57 @@
         <member name="P:PSMicrosoftEntraID.Groups.Group.SecurityIdentifier">
             <summary>
             Gets or sets the security identifier (SID) for the group.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty">
+            <summary>
+            Represents a group additional property in Microsoft Entra ID.
+            This class provides properties for group identification, contact information, settings, and membership rules.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Id">
+            <summary>
+            Gets or sets the unique identifier of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Mail">
+            <summary>
+            Gets or sets the email address of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.MailNickname">
+            <summary>
+            Gets or sets the nickname or alias of the group's email.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.DisplayName">
+            <summary>
+            Gets or sets the display name of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromAddressLists">
+            <summary>
+            True if the group isn't displayed in certain parts of the Outlook UI.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromOutlookClients">
+            <summary>
+            True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AllowExternalSenders">
+            <summary>
+            Indicates if people external to the organization can send messages to the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AutoSubscribeNewMembers">
+            <summary>
+            Indicates if new members added to the group are autosubscribed to receive email notifications.
             </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.License.LicenseIdentifier">
@@ -849,6 +1009,35 @@
         <member name="M:PSMicrosoftEntraID.Users.User.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.User"/> class.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.UserGuest">
+            <summary>
+            Represents a Guest user in Microsoft Entra ID (formerly Azure AD).
+            This class extends the User class and includes additional properties 
+            related to Guest user invitations.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserState">
+            <summary>
+            The external state of the user (e.g., PendingAcceptance, Accepted).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserStateChangeDateTime">
+            <summary>
+            The date and time when the external user state last changed.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.InvitationStatus">
+            <summary>
+            A derived property that represents the invitation status.
+            Returns "Pending" if the user has not accepted the invitation,
+            otherwise "Accepted".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.UserGuest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.UserGuest"/> class.
             </summary>
         </member>
     </members>

@@ -125,7 +125,7 @@ if ($AutoVersion) {
 
 if (-not ([string]::IsNullOrEmpty($ModuleVersion))) {
 	if (-not ([string]::IsNullOrEmpty($PreRelease))) {
-		Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion $ModuleVersion -Prerelease ('{0}{1}' -f $PreRelease, $CommitsSinceVersion)
+		Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion $ModuleVersion -Prerelease (('{0}{1}' -f $PreRelease, $CommitsSinceVersion) -replace '[^a-zA-Z0-9]', '')
 	}
 	else {
 		Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion $ModuleVersion

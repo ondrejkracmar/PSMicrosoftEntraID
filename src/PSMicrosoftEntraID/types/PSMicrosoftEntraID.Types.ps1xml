@@ -54,7 +54,7 @@
       </MemberSet>
     </Members>
   </Type>
-    <Type>
+  <Type>
     <Name>PSMicrosoftEntraID.Users.User</Name>
     <Members>
       <MemberSet>
@@ -101,7 +101,57 @@
       </MemberSet>
     </Members>
   </Type>
-    <Type>
+  <Type>
+    <Name>PSMicrosoftEntraID.Users.UserGuest</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>UserPrincipalName</Name>
+            <Name>CreatedDateTime</Name>
+            <Name>Mail</Name>
+            <Name>MailNickname</Name>
+            <Name>ProxyAddresses</Name>
+            <Name>UserType</Name>
+            <Name>AccountEnabled</Name>
+            <Name>GivenName</Name>
+            <Name>Surname</Name>
+            <Name>DisplayName</Name>
+            <Name>EmployeeId</Name>
+            <Name>JobTitle</Name>
+            <Name>Department</Name>
+            <Name>OfficeLocation</Name>
+            <Name>CompanyName</Name>
+            <Name>City</Name>
+            <Name>PostalCode</Name>
+            <Name>Country</Name>
+            <Name>UsageLocation</Name>
+            <Name>MobilePhone</Name>
+            <Name>BusinessPhones</Name>
+            <Name>FaxNumber</Name>
+            <Name>AssignedLicenses</Name>
+            <Name>ExternalUserState</Name>
+            <Name>ExternalUserStateChangeDateTime</Name>
+            <Name>InvitationStatus</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              Name
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
+  <Type>
     <Name>PSMicrosoftEntraID.Groups.Group</Name>
     <Members>
       <MemberSet>
@@ -128,7 +178,40 @@
             <Name>MembershipRuleProcessingState</Name>
             <Name>RenewedDateTime</Name>
             <Name>SecurityEnabled</Name>
-            <Name>SecurityIdentifier</Name>
+            <Name>HideFromAddressLists</Name>
+            <Name>HideFromOutlookClients</Name>
+            <Name>AutoSubscribeNewMembers</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              Name
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
+  <Type>
+    <Name>PSMicrosoftEntraID.Groups.GroupAdditionalProperty</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>Mail</Name>
+            <Name>MailNickname</Name>
+            <Name>DisplayName</Name>
+            <Name>HideFromAddressLists</Name>
+            <Name>HideFromOutlookClients</Name>
+            <Name>AllowExternalSenders</Name>
+            <Name>AutoSubscribeNewMembers</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>

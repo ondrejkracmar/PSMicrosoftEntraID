@@ -7,6 +7,9 @@ function Get-PSEntraIDGroupMember {
     .DESCRIPTION
         This cmdlet get an owner or member of the team, and to the unified group which backs the team.
 
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
     .PARAMETER Identity
         MailNickName or Id of group or team.
 
@@ -24,61 +27,69 @@ function Get-PSEntraIDGroupMember {
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDUser -Identity user1@contoso.com
+        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com
 
-		Get properties of Azure AD user user1@contoso.com
+		Get members of group1@contoso.com
 
+    .EXAMPLE
+        PS C:\> Get-PSEntraIDGroupMember -Identity group1@contoso.com -Owner
+
+		Get owners of group1@contoso.com
 
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
-    param(
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'InputObject')]
+    param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
+        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
-        [string[]]$Identity,
+        [string[]] $Identity,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $False, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$Owner,
+        [switch] $Owner,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [string]$Filter,
+        [string] $Filter,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
         [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter,
-        [switch]$EnableException
+        [switch] $AdvancedFilter,
+        [Parameter()]
+        [switch] $EnableException
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $query = @{
+        [hashtable] $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
-        $header = @{}
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{}
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' {
-                foreach ($itemIdentity in $Identity) {
-                    $group = Get-PSEntraIDGroup -Identity $itemIdentity
-                    if (-not([object]::Equals($group, $null))) {
+            'InputObject' {
+                foreach ($itemInputObject in $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemInputObject.MailnickName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         if ($Owner.IsPresent) {
-                            $path = ('groups/{0}/owners' -f $group.Id)
+                            [string] $path = ('groups/{0}/owners' -f $itemInputObject.Id)
                         }
                         else {
-                            $path = ('groups/{0}/members' -f $group.Id)
+                            [string] $path = ('groups/{0}/members' -f $itemInputObject.Id)
                         }
                         if (Test-PSFParameterBinding -ParameterName 'Filter') {
                             $query['$Filter'] = $Filter
@@ -86,16 +97,39 @@ function Get-PSEntraIDGroupMember {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
                         }
-                        Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         if (Test-PSFFunctionInterrupt) { return }
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
+            'Identity' {
+                foreach ($itemIdentity in $Identity) {
+                    Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $itemIdentity
+                        if (-not([object]::Equals($group, $null))) {
+                            if ($Owner.IsPresent) {
+                                [string] $path = ('groups/{0}/owners' -f $group.Id)
+                            }
+                            else {
+                                [string] $path = ('groups/{0}/members' -f $group.Id)
+                            }
+                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                                $query['$Filter'] = $Filter
+                                if ($AdvancedFilter.IsPresent) {
+                                    $header['ConsistencyLevel'] = 'eventual'
+                                }
+                            }
+                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
-                    }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
+                            }
+                        }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }
