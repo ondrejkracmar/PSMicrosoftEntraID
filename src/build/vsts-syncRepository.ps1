@@ -14,7 +14,6 @@ try {
     $encodedAzureDevOpsPAT = [System.Web.HttpUtility]::UrlEncode($AzureDevOpsToken)
     $encodedGitHubToken = [System.Web.HttpUtility]::UrlEncode($GitHubToken)
     $azureRepoUrl = ('https://{0}@dev.azure.com/{1}/{2}/_git/{3}' -f $encodedAzureDevOpsPAT, $AzureDevOpsOrganizationName, $AzureDevOpsProjectName, $AzureDevOpsRepositoryName)
-    $gitHubRepoUrl = ('https://{0}:{1}@github.com/{2}/{3}' -f $GitHubUsername,$encodedGitHubToken, $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
     Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $azureRepoUrl)
