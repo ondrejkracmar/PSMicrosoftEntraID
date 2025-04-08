@@ -12,7 +12,7 @@
 	Author            = 'Ondrej Kracmar'
 
 	# Company or vendor of this module
-	CompanyName       = 'i-system'
+	CompanyName       = 'i-System'
 
 	# Copyright statement for this module
 	Copyright         = 'Copyright (c) 2024 i-system'
@@ -28,7 +28,7 @@
 	RequiredModules   = @('PSFramework')
 
 	# Assemblies that must be loaded prior to importing this module
-	# RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
+	RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
 
 	# Type files (.ps1xml) to be loayded when importing this module
 	TypesToProcess = @('types\PSMicrosoftEntraID.Types.ps1xml')
@@ -42,6 +42,7 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
 		'Connect-PSMicrosoftEntraID'
+		'Disconnect-PSMicrosoftEntraID'
 		'Get-PSEntraIDOrganization'
 		'Disable-PSEntraIDUserLicense'
 		'Enable-PSEntraIDUserLicense'
@@ -50,7 +51,9 @@
 		'Get-PSEntraIDUserLicense'
 		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
+		'Get-PSEntraIDUserGuest'
 		'Compare-PSEntraIDUserList'
+		'Invoke-PSEntraIDBatchRequest'
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
@@ -60,6 +63,7 @@
 		'Get-PSEntraIDLicenseIdentifier'
 		'Get-PSEntraIDSubscribedLicense'
 		'Get-PSEntraIDGroup'
+		'Get-PSEntraIDGroupAdditionalProperty'
 		'New-PSEntraIDGroup'
 		'Remove-PSEntraIDGroup'
 		'Get-PSEntraIDGroupMember'
@@ -71,7 +75,9 @@
 	)
 
 	# Cmdlets to export from this module
-	CmdletsToExport   = ''
+	CmdletsToExport   = @(
+		'New-PSEntraIDBatchRequest'
+	)
 
 	# Variables to export from this module
 	VariablesToExport = ''

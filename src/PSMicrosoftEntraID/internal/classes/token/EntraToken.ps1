@@ -18,6 +18,8 @@
 	[string]$ServiceUrl
 	[string]$AuthenticationUrl
 	[Hashtable]$Header = @{}
+	[Hashtable]$Query = @{}
+	[bool]$RawOnly
 
 	[string]$IdentityID
 	[string]$IdentityType
@@ -37,6 +39,11 @@
 
 	# Workflow: Az.Accounts
 	[string]$ShowDialog
+
+	# Workflow: Custom Token
+	[scriptblock]$HeaderCode
+	[hashtable]$Data = @{}
+
 	#endregion Connection Data
 
 	#region Constructors
@@ -91,17 +98,6 @@
 		$this.Type = 'KeyVault'
 	}
 
-	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
-		$this.Service = $Service
-		$this.ServiceUrl = $ServiceUrl
-		$this.Type = 'Identity'
-
-		if ($IdentityID) {
-			$this.IdentityID = $IdentityID
-			$this.IdentityType = $IdentityType
-		}
-	}
-
 	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.AccessToken = $AccessToken
@@ -115,12 +111,26 @@
 		}
 	}
 
+	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
+		$this.Service = $Service
+		$this.ServiceUrl = $ServiceUrl
+		$this.Type = 'Identity'
+
+		if ($IdentityID) {
+			$this.IdentityID = $IdentityID
+			$this.IdentityType = $IdentityType
+		}
+	}
+
 	EntraToken([string]$Service, [string]$ServiceUrl, [string]$ShowDialog) {
 		$this.Service = $Service
 		$this.ServiceUrl = $ServiceUrl
 		$this.ShowDialog = $ShowDialog
 		$this.Type = 'AzAccount'
 	}
+
+	# Empty Constructor for Import-EntraToken
+	EntraToken() {}
 	#endregion Constructors
 
 	[void]SetTokenMetadata([PSObject] $AuthToken) {
@@ -133,17 +143,27 @@
 		$tokenPayload = $AuthToken.AccessToken.Split(".")[1].Replace('-', '+').Replace('_', '/')
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
-		$data = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
+		$localData = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
 
-		if ($data.roles) { $this.Scopes = $data.roles }
-		elseif ($data.scp) { $this.Scopes = $data.scp -split " " }
+		if ($localData.roles) { $this.Scopes = $localData.roles }
+		elseif ($localData.scp) { $this.Scopes = $localData.scp -split " " }
 
-		$this.Audience = $data.aud
-		$this.Issuer = $data.iss
-		$this.TokenData = $data
+		$this.Audience = $localData.aud
+		$this.Issuer = $localData.iss
+		$this.TokenData = $localData
+		$this.TenantID = $localData.tid
 	}
 
 	[hashtable]GetHeader() {
+		if ($this.HeaderCode) {
+			$newHeader = $this.Header.Clone()
+			$results = @(& $this.HeaderCode $this)[0]
+			foreach ($pair in $results.GetEnumerator()) {
+				$newHeader[$pair.Key] = $pair.Value
+			}
+			return $newHeader
+		}
+
 		if ($this.ValidUntil -lt (Get-Date).AddMinutes(5)) {
 			$this.RenewToken()
 		}
@@ -195,6 +215,9 @@
 				$result = Connect-ServiceBrowser @defaultParam -SelectAccount
 				$this.SetTokenMetadata($result)
 			}
+			Refresh {
+				Connect-ServiceRefreshToken -Token $this
+			}
 			KeyVault {
 				$secret = Get-VaultSecret -VaultName $this.VaultName -SecretName $this.SecretName
 				$result = switch ($secret.Type) {
@@ -209,6 +232,10 @@
 			}
 			AzAccount {
 				$result = Connect-ServiceAzure -Resource $this.Audience -ShowDialog $this.ShowDialog
+				$this.SetTokenMetadata($result)
+			}
+			AzToken {
+				$result = Connect-ServiceAzToken -AzToken $this.AccessToken
 				$this.SetTokenMetadata($result)
 			}
 		}

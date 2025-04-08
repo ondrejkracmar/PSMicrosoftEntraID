@@ -82,68 +82,70 @@
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$Displayname,
+        [string] $Displayname,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [string]$Description,
+        [string] $Description,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [string]$MailNickname,
+        [string] $MailNickname,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [System.Nullable[bool]]$MailEnabled,
+        [System.Nullable[bool] ]$MailEnabled,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [System.Nullable[bool]]$IsAssignableToRole,
+        [System.Nullable[bool]] $IsAssignableToRole,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [System.Nullable[bool]]$SecurityEnabled = $true,
+        [System.Nullable[bool]] $SecurityEnabled = $true,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [string]$Classification,
+        [string] $Classification,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('Unified', 'DynamicMembership')]
-        [string[]]$GroupTypes,
+        [string[]] $GroupTypes,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
-        [string]$Visibility,
+        [string] $Visibility,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateUserIdentity()]
-        [string[]]$Owners,
+        [string[]] $Owners,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateUserIdentity()]
-        [string[]]$Members,
+        [string[]] $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [string]$MembersmembershipRule,
+        [string] $MembersmembershipRule,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('On', 'Paused')]
-        [string]$MembershipRuleProcessingState,
+        [string] $MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
-        [string[]]$ResourceBehaviorOptions,
-        [switch]$EnableException,
-        [switch]$Force
+        [string[]] $ResourceBehaviorOptions,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $path = 'groups'
-        $header = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [string] $path = 'groups'
+        [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool]$cmdLetConfirm = $false
+            [bool] $cmdLetConfirm = $false
         }
         else {
-            [bool]$cmdLetConfirm = $true
+            [bool] $cmdLetConfirm = $true
         }
         if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean]$cmdLetVerbose = $true
+            [boolean] $cmdLetVerbose = $true
         }
-        else{
-            [boolean]$cmdLetVerbose =  $false
+        else {
+            [boolean] $cmdLetVerbose = $false
         }
     }
 
     process {
-        $body = @{}
+        [hashtable] $body = @{}
         Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             Switch ($PSCmdlet.ParameterSetName) {
                 'CreateGroup' {
@@ -156,11 +158,11 @@
                     if ($PSBoundParameters.ContainsKey('Description')) {
                         $body['description'] = $Description
                     }
-                    
+
                     if ($PSBoundParameters.ContainsKey('Visibility')) {
                         $body['visibility'] = $Visibility
                     }
-            
+
                     if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
                         $body['isAssignableToRole'] = $IsAssignableToRole
                     }
@@ -171,14 +173,14 @@
                     if ($PSBoundParameters.ContainsKey('Owners')) {
                         $userIdUriPathList = [System.Collections.ArrayList]::new()
                         foreach ($owner in $Owners) {
-                            $aADUser = Get-PSEntraIDUser -Identity $owner
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
                             if (-not([object]::Equals($aADUser, $null))) {
                                 [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
                             $body['owners@odata.bind'] = [array]$userIdUriPathList
                         }
                         foreach ($member in $Members) {
-                            $aADUser = Get-PSEntraIDUser -Identity $member
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
                             if (-not([object]::Equals($aADUser, $null))) {
                                 [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             }
@@ -198,7 +200,7 @@
                     }
                 }
             }
-            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }

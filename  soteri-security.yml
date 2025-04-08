@@ -1,0 +1,2 @@
+skip_file_paths:
+  -  src/build/vsts-syncRepository.ps1
