@@ -127,8 +127,7 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        [string] $path = '$batch'
-
+        
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
             [bool] $cmdLetConfirm = $false
         }
