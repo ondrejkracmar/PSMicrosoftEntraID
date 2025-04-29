@@ -128,14 +128,23 @@
     }
 
     process {
-        Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-            Invoke-EntraRequest @param -Service $service -Verbose:$($cmdLetVerbose) -ErrorAction Stop
-        } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        Invoke-PSFProtectedCommand -ActionString 'Request.Invoke' -ActionStringValues $Path -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+            try {
+                Invoke-EntraRequest @param -Service $service -Verbose:$($cmdLetVerbose) -ErrorAction Stop
+            }
+            catch {
+                if ($EnableException.IsPresent) {
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message (Get-PSFLocalizedString -Module $script:ModuleName -Name Request.Invoke.Failed)
+                }
+                else {
+                    Write-Warning "Failed to invoke request: $($_.Exception.Message)"
+                }
+            } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
 
-        if (Test-PSFFunctionInterrupt) { return }
-    }
+            if (Test-PSFFunctionInterrupt) { return }
+        }
 
-    end {
-        # Final summary if needed
+        end {
+            # Final summary if needed
+        }
     }
-}

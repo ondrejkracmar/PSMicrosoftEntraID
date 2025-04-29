@@ -106,10 +106,10 @@
                     -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
                     -ScriptBlock {
                     try {
-                        
+
                         $batchResponse = Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop
 
-                        
+
                         [pscustomobject]@{
                             requests  = $payload.Requests
                             responses = $batchResponse.responses

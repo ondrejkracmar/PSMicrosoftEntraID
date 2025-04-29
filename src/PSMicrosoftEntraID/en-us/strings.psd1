@@ -7,6 +7,9 @@
 
 	'Organization.Get'           = 'Get organization detail'
 
+	'Request.Invoke'             = 'Invoke request command with the following url {0}'
+	'Request.Invoke.Failed'      = 'Invoke command failed'
+
 	'Batch.Invoke'               = 'Invoke batch command with the following Ids {0}'
 	'Batch.Invoke.Failed'        = 'Invoke batch command failed'
 
