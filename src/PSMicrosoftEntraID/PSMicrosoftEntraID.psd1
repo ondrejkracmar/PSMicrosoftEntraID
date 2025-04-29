@@ -54,6 +54,7 @@
 		'Get-PSEntraIDUserGuest'
 		'Compare-PSEntraIDUserList'
 		'Invoke-PSEntraIDBatchRequest'
+		'Invoke-PSEntraIDRequest'
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
