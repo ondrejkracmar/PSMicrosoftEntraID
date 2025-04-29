@@ -50,6 +50,24 @@
     .PARAMETER Raw
         If specified, returns the raw API response without additional processing.
 
+        .PARAMETER EnableException
+        This parameter disables user-friendly warnings and enables the throwing of exceptions.
+        Less user friendly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER Force
+        The Force switch instructs the command to stop processing before any changes are made
+        and prompt for confirmation (depending on your logic in the code).
+        When used, you can step through changes to ensure only specific objects are modified.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Confirm
+        The Confirm switch instructs the command to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        This functionality is useful when you apply changes to many objects
+        and want precise control over the operation of the Shell.
+
     .EXAMPLE
         PS C:\> Invoke-PSEntraIDRequest -Path 'alerts' -RequiredScopes 'Alert.Read'
 
@@ -65,49 +83,43 @@
         [Parameter(Mandatory = $true, Position = 0)]
         [string]
         $Path,
-
         [Parameter()]
         [object]  # <- DOPLNĚNO: protože Body může být jakýkoliv objekt (pscustomobject, string, apod.)
         $Body,
-
         [Parameter()]
         [hashtable]
         $Query = @{},
-
         [Parameter()]
         [string]
         $Method = 'GET',
-
         [Parameter()]
         [string[]]
         $RequiredScopes,
-
         [Parameter()]
         [hashtable]
         $Header = @{},
-
         [Parameter()]
         [ArgumentCompleter({ Get-ServiceCompletion $args })]
         [ValidateScript({ Assert-ServiceName -Name $_ -IncludeTokens })]
         [string]
         $Service = $script:_DefaultService,
-
         [Parameter()]
         [ValidateRange(1, 666)]
         [int]
         $SerializationDepth = 99,
-
         [Parameter()]
-        [EntraToken]  # Předpokládám vlastní typ. Pokud není, mělo by být třeba [object]
+        [EntraToken]
         $Token,
-
         [Parameter()]
         [switch]
         $NoPaging,
-
         [Parameter()]
         [switch]
-        $Raw
+        $Raw,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force
     )
 
     begin {
