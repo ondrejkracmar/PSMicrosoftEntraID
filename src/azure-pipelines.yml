@@ -32,7 +32,7 @@ steps:
      inputs:
        targetType: inline
        script: |
-         dotnet tool install --global GitVersion.Tool -version 6.3.0
+         dotnet tool install --global GitVersion.Tool --version 6.3.0
               dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml
               $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
