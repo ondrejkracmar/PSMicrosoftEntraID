@@ -139,12 +139,13 @@
                 else {
                     Write-Warning "Failed to invoke request: $($_.Exception.Message)"
                 }
-            } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            }
+        } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
 
-            if (Test-PSFFunctionInterrupt) { return }
-        }
-
-        end {
-            # Final summary if needed
-        }
+        if (Test-PSFFunctionInterrupt) { return }
     }
+
+    end {
+        # Final summary if needed
+    }
+}
