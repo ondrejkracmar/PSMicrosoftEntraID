@@ -75,7 +75,7 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [hsashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
+        [hashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{
@@ -99,13 +99,13 @@
         switch -Regex  ($PSCmdlet.ParameterSetName) {
             '\wUsageLocationCode' {
                 [string] $usgaeLocationTarget = $usageLocationCode
-                [hsashtable] $body = @{
+                [hashtable] $body = @{
                     usageLocation = $usageLocationCode
                 }
             }
             '\wUsageLocationCountry' {
                 [string] $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
-                [hsashtable] $body = @{
+                [hashtable] $body = @{
                     usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
                 }
             }
