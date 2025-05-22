@@ -2,34 +2,22 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
+		<AssemblyName>PSMicrosoftEntraID</AssemblyName>
+		<RootNamespace>PSMicrosoftEntraID</RootNamespace>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<OutputPath>../../PSMicrosoftEntraID/bin/</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<PreserveCompilationContext>false</PreserveCompilationContext>
+		<EnableDefaultCompileItems>true</EnableDefaultCompileItems>
 	</PropertyGroup>
-
-	<PropertyGroup>
-		<LangVersion>8.0</LangVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
-		<DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Release)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
-		<DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
-	</PropertyGroup>
-
 	<!-- Windows-only dependencies -->
 	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
-		<PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
 	</ItemGroup>
 
 	<!-- Linux/macOS dependencies -->
 	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.12" />
 	</ItemGroup>
-		
-	<PropertyGroup>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	</PropertyGroup>
 </Project>
