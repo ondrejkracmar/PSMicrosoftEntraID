@@ -48,6 +48,14 @@ steps:
        filePath: "$(sourceDirectory)/build/vsts-prerequisites.ps1"
 
    - task: PowerShell@2
+     displayName: Build Powershell Module library
+     inputs:
+       filePath: '$(sourceDirectory)/build/vsts-build-library.ps1'
+       arguments: >
+          -WorkingDirectory '$(sourceDirectory)'
+       pwsh: true
+
+   - task: PowerShell@2
      displayName: Validation/Test Powershell Module
      inputs:
        targetType: filePath

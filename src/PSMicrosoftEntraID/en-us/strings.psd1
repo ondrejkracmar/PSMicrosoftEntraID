@@ -2,10 +2,13 @@
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
 	'Identity.Platform'          = "Microsoft Entra ID (Azure AD)"
+	"Office365.Platform"         = "Microsoft Office 365"
 	'Identity.Connect.Failed'    = "Establish a connection to '{0}' failed"
 	'Identity.Disconnect'        = "Disconnect from '{0}'"
 
 	'Organization.Get'           = 'Get organization detail'
+
+	"MessageCenter.Get"          = "Get Microsoft 365 Message Center Announcements'"
 
 	'Request.Invoke'             = 'Invoke request command with the following url {0}'
 	'Request.Invoke.Failed'      = 'Invoke command failed'

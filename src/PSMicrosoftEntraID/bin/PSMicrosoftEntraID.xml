@@ -789,6 +789,146 @@
             Gets or sets the type of the verified domain.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.Body">
+            <summary>
+            Represents the body content of a message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Body.ContentType">
+            <summary>
+            Type of content, typically "html".
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Body.Content">
+            <summary>
+            The raw HTML content.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair">
+            <summary>
+            Represents a name/value pair used in the details property.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair.Name">
+            <summary>
+            Name of the key/value pair.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair.Value">
+            <summary>
+            Value of the key/value pair.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.Message">
+            <summary>
+            Represents a single Microsoft 365 Message Center announcement.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Id">
+            <summary>
+            Unique identifier of the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Title">
+            <summary>
+            Title of the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Category">
+            <summary>
+            Category of the message (plan, feature, retire, stayInformed).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Severity">
+            <summary>
+            Severity of the message (normal, high, critical).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Services">
+            <summary>
+            Microsoft 365 services affected by the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Tags">
+            <summary>
+            Tags associated with the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.IsMajorChange">
+            <summary>
+            Indicates whether this is a major change.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.PublishedDateTime">
+            <summary>
+            Date and time the message was published.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.LastModifiedDateTime">
+            <summary>
+            Date and time the message was last modified.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.StartDateTime">
+            <summary>
+            Optional date when the message starts to apply.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.EndDateTime">
+            <summary>
+            Optional date when the message ends.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.ActionRequiredByDateTime">
+            <summary>
+            Optional date when action is required by.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Body">
+            <summary>
+            Object containing message body details.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.ViewPoint">
+            <summary>
+            Object containing user-specific view state.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.HasAttachments">
+            <summary>
+            Indicates whether the message has attachments.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.AttachmentsArchive">
+            <summary>
+            A stream representing the attachments archive (if present).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Details">
+            <summary>
+            Optional array of key-value details.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint">
+            <summary>
+            Represents the view-related properties of a message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsRead">
+            <summary>
+            Indicates whether the message is marked as read.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsArchived">
+            <summary>
+            Indicates whether the message is archived.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsFavorited">
+            <summary>
+            Indicates whether the message is marked as favorite.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense">
             <summary>
             Represents an assigned license in Microsoft Entra ID.
