@@ -1,4 +1,4 @@
-function ConvertFrom-RestMessageCenter {
+﻿function ConvertFrom-RestMessageCenter {
 	<#
 	.SYNOPSIS
 		Converts user objects to look nice.

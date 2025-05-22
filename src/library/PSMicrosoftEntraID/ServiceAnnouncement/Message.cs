@@ -52,12 +52,6 @@ namespace PSMicrosoftEntraID.ServiceAnnouncement
         public bool IsMajorChange { get; set; }
 
         /// <summary>
-        /// Date and time the message was published.
-        /// </summary>
-        [DataMember(Name = "publishedDateTime")]
-        public string PublishedDateTime { get; set; }
-
-        /// <summary>
         /// Date and time the message was last modified.
         /// </summary>
         [DataMember(Name = "lastModifiedDateTime")]

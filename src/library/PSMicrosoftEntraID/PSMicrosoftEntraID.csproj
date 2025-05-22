@@ -9,15 +9,24 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
 		<PreserveCompilationContext>false</PreserveCompilationContext>
-		<EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+		<PublishTrimmed>false</PublishTrimmed>
+		<PublishSingleFile>false</PublishSingleFile>
+		<SelfContained>false</SelfContained>
+		<RuntimeIdentifier></RuntimeIdentifier>
+		<!-- žádný RID = žádné runtimes -->
 	</PropertyGroup>
-	<!-- Windows-only dependencies -->
+
 	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
 	</ItemGroup>
 
-	<!-- Linux/macOS dependencies -->
 	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.12" />
 	</ItemGroup>
+
+	<Target Name="RemoveUnwantedOutputs" AfterTargets="Build">
+		<RemoveDir Directories="$(OutputPath)ref" />
+		<RemoveDir Directories="$(OutputPath)runtimes" />
+	</Target>
+
 </Project>
