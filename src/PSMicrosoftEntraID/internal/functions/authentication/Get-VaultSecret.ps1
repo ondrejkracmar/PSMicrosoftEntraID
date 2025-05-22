@@ -106,6 +106,6 @@
 		}
 		#endregion Via Az.KeyVault
 
-		Invoke-TerminatingException -Cmdlet $Cmdlet -Message "Not connected to azure yet! Either use 'Connect-EntraService -Service AzureKeyVault' or 'Connect-AzAccount' before trying to connect via KeyVault!" -Category ConnectionError
+		Invoke-TerminatingException -Cmdlet $Cmdlet -Message "Not connected to azure yet! Either use 'Connect-PSMicrosoftEntraID -Service AzureKeyVault' or 'Connect-AzAccount' before trying to connect via KeyVault!" -Category ConnectionError
 	}
 }
