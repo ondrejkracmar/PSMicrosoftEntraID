@@ -859,11 +859,6 @@
             Indicates whether this is a major change.
             </summary>
         </member>
-        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.PublishedDateTime">
-            <summary>
-            Date and time the message was published.
-            </summary>
-        </member>
         <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.LastModifiedDateTime">
             <summary>
             Date and time the message was last modified.
