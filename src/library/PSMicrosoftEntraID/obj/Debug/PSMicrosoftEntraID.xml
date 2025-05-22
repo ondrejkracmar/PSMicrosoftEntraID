@@ -1,0 +1,1184 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PSMicrosoftEntraID</name>
+    </assembly>
+    <members>
+        <member name="T:PSMicrosoftEntraID.Batch.BatchRequestPayload">
+            <summary>
+            Represents the final JSON payload for a Microsoft Graph batch request.
+            Has a property named "requests" which is a list of Request objects.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.BatchRequestPayload.Requests">
+            <summary>
+            The "requests" array that Graph expects, each element having an Id, Method, Url, etc.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.BatchRequestPayload.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> class.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Batch.Request">
+            <summary>
+            Represents a single request to Microsoft Entra ID (Azure AD) in a batch scenario.
+            Compatible with .NET 4.7 or .NET Standard 2.0.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request.AllowedMethods">
+            <summary>
+            A set of allowed HTTP methods for this request (GET, PUT, PATCH, POST, DELETE).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Batch.Request._method">
+            <summary>
+            Backing field for the HTTP method.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Id">
+            <summary>
+            Gets or sets the unique identifier of this request (e.g. "1", "2", "3").
+            Typically used to distinguish multiple requests in a single batch.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Method">
+            <summary>
+            Gets or sets the HTTP method (GET, PUT, PATCH, POST, DELETE).
+            The setter validates that the method is allowed, otherwise throws an ArgumentException.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Url">
+            <summary>
+            Gets or sets the URL (endpoint) that this request will call (e.g. "/users", "/groups/{id}", etc.).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Body">
+            <summary>
+            Gets or sets the body of the request as a hashtable, useful for PowerShell scenarios.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Request.Headers">
+            <summary>
+            Gets or sets the headers of the request as a hashtable (key-value pairs).
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.Request.ToString">
+            <summary>
+            Returns a string representation for debugging.
+            </summary>
+            <returns>String describing the request Id, Method, Url.</returns>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest">
+            <summary>
+            Cmdlet that receives Request objects from the pipeline and produces multiple 
+            <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> objects, each containing up to 20 sub-requests. 
+            In each chunk, request Ids are reassigned to "1", "2", etc. to comply with the 
+            Microsoft Graph batch limit of 1..20 sub-requests per batch.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.InputObject">
+            <summary>
+            An array of Request objects coming from the pipeline. 
+            Each item is a sub-request definition (method, url, body, etc.).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest._buffer">
+            <summary>
+            Internal buffer to accumulate up to 20 requests before emitting a batch payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.BeginProcessing">
+            <summary>
+            Called once before pipeline input is processed.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.ProcessRecord">
+            <summary>
+            Called once for each pipeline block of Request objects.
+            We accumulate them, and each time we hit 20, we emit a new BatchRequestPayload 
+            with Ids reindexed from "1" up to "n".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.EndProcessing">
+            <summary>
+            Called after all pipeline input has been processed. 
+            If there's any leftover (20) requests in _buffer, we emit one final payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest.EmitOnePayload(System.Collections.Generic.List{PSMicrosoftEntraID.Batch.Request})">
+            <summary>
+            Helper method to create a single BatchRequestPayload from up to 20 Request objects, 
+            reindexing their Ids from "1" to the number of requests in this chunk.
+            </summary>
+            <param name="requests">A list of up to 20 Request objects.</param>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Environment">
+            <summary>
+            What environment this service should connect to.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Environment.Global">
+            <summary>
+            Global Microsoft cloud https://login.microsoftonline.com
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Environment.USGov">
+            <summary>
+            US Gov Microsoft cloud https://login.microsoftonline.us
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Environment.USGovDOD">
+            <summary>
+            US Gov DOD Microsoft cloud https://login.microsoftonline.us
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftEntraID.Environment.China">
+            <summary>
+            China Microsoft cloud https://login.chinacloudapi.cn
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Groups.Group">
+            <summary>
+            Represents a group in Microsoft Entra ID.
+            This class provides properties for group identification, contact information, settings, and membership rules.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.Group.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.Group"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.Id">
+            <summary>
+            Gets or sets the unique identifier of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.CreatedDateTime">
+            <summary>
+            Gets or sets the date and time when the group was created.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.Mail">
+            <summary>
+            Gets or sets the email address of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.MailNickname">
+            <summary>
+            Gets or sets the nickname or alias of the group's email.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.ProxyAddresses">
+            <summary>
+            Gets or sets the collection of proxy addresses for the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.MailEnabled">
+            <summary>
+            Gets or sets a value indicating whether the group is mail-enabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.Visibility">
+            <summary>
+            Gets or sets the visibility of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.DisplayName">
+            <summary>
+            Gets or sets the display name of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.Description">
+            <summary>
+            Gets or sets the description of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.GropupTypes">
+            <summary>
+            Gets or sets the types of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.CreationOptions">
+            <summary>
+            Gets or sets the creation options for the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.DeletedDateTime">
+            <summary>
+            Gets or sets the date and time when the group was deleted.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.ExpirationDateTime">
+            <summary>
+            Gets or sets the expiration date and time of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.IsAssignableToRole">
+            <summary>
+            Gets or sets a value indicating whether the group can be assigned to a role.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.MembershipRule">
+            <summary>
+            Gets or sets the membership rule for dynamic group membership.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.MembershipRuleProcessingState">
+            <summary>
+            Gets or sets the processing state of the membership rule.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.RenewedDateTime">
+            <summary>
+            Gets or sets the date and time when the group was last renewed.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.SecurityEnabled">
+            <summary>
+            Gets or sets a value indicating whether the group is security-enabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.SecurityIdentifier">
+            <summary>
+            Gets or sets the security identifier (SID) for the group.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty">
+            <summary>
+            Represents a group additional property in Microsoft Entra ID.
+            This class provides properties for group identification, contact information, settings, and membership rules.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Id">
+            <summary>
+            Gets or sets the unique identifier of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.Mail">
+            <summary>
+            Gets or sets the email address of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.MailNickname">
+            <summary>
+            Gets or sets the nickname or alias of the group's email.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.DisplayName">
+            <summary>
+            Gets or sets the display name of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromAddressLists">
+            <summary>
+            True if the group isn't displayed in certain parts of the Outlook UI.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.HideFromOutlookClients">
+            <summary>
+            True if the group isn't displayed in Outlook clients, such as Outlook for Windows and Outlook on the web.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AllowExternalSenders">
+            <summary>
+            Indicates if people external to the organization can send messages to the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.GroupAdditionalProperty.AutoSubscribeNewMembers">
+            <summary>
+            Indicates if new members added to the group are autosubscribed to receive email notifications.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.LicenseIdentifier">
+            <summary>
+            Represents a license identifier in Microsoft Entra ID.
+            This class provides properties for SKU identification, part number, friendly name, and associated service plans.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.LicenseIdentifier.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.LicenseIdentifier"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.LicenseIdentifier.SkuId">
+            <summary>
+            Gets or sets the unique identifier (GUID) for the SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.LicenseIdentifier.SkuPartNumber">
+            <summary>
+            Gets or sets the SKU part number.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.LicenseIdentifier.SkuFriendlyName">
+            <summary>
+            Gets or sets the friendly name for the SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.LicenseIdentifier.ServicePlans">
+            <summary>
+            Gets or sets the collection of service plans associated with the SKU.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.PrepaidUnit">
+            <summary>
+            Represents the status of prepaid units in Microsoft Entra ID.
+            This class provides properties for tracking enabled, suspended, warning, and locked-out units.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.PrepaidUnit.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.PrepaidUnit"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.PrepaidUnit.Enabled">
+            <summary>
+            Gets or sets the number of enabled units.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.PrepaidUnit.Suspended">
+            <summary>
+            Gets or sets the number of suspended units.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.PrepaidUnit.Warning">
+            <summary>
+            Gets or sets the number of units in a warning state.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.PrepaidUnit.LockedOut">
+            <summary>
+            Gets or sets the number of locked-out units.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.ServicePlan">
+            <summary>
+            Represents an abstract service plan for an Office 365 subscription.
+            This class provides properties for the service plan's unique identifier and name.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.ServicePlan.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.ServicePlan"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.ServicePlan.ServicePlanId">
+            <summary>
+            Gets or sets the unique identifier of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.ServicePlan.ServicePlanName">
+            <summary>
+            Gets or sets the name of the service plan.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.ServicePlanIdentifier">
+            <summary>
+            Represents a specific identifier for a service plan in Microsoft Entra ID.
+            Inherits from the abstract <see cref="T:PSMicrosoftEntraID.License.ServicePlan"/> class and provides an additional
+            property for a friendly name.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.ServicePlanIdentifier.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.ServicePlanIdentifier"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.ServicePlanIdentifier.ServicePlanFriendlyName">
+            <summary>
+            Gets or sets the friendly name of the service plan.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.ServicePlanSubscriptionSku">
+            <summary>
+            Represents a service plan associated with a subscription SKU in Microsoft Entra ID.
+            Inherits from the abstract <see cref="T:PSMicrosoftEntraID.License.ServicePlan"/> class and provides additional properties
+            for provisioning status and applicable scope.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.ServicePlanSubscriptionSku.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.ServicePlanSubscriptionSku"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.ServicePlanSubscriptionSku.ProvisioningStatus">
+            <summary>
+            Gets or sets the provisioning status of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.ServicePlanSubscriptionSku.AppliesTo">
+            <summary>
+            Gets or sets the applicable scope of the service plan (e.g., User or Organization).
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.SubscriptionSku">
+            <summary>
+            Represents a subscription SKU (Stock Keeping Unit) for an Office 365 license in Microsoft Entra ID.
+            This class provides properties for SKU identification, display name, applicable scope, units consumed,
+            prepaid units, and associated service plans.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.SubscriptionSku.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.SubscriptionSku"/> class.
+            Creates an empty subscription.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.Id">
+            <summary>
+            Gets or sets the unique identifier for the license detail object.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.SkuId">
+            <summary>
+            Gets or sets the unique identifier (GUID) for the service SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.SkuPartNumber">
+            <summary>
+            Gets or sets the SKU display name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.AppliesTo">
+            <summary>
+            Gets or sets the applicable scope of the SKU (e.g., User or Organization).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.ConsumedUnits">
+            <summary>
+            Gets or sets the number of units consumed under this SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.PrepaidUnits">
+            <summary>
+            Gets or sets the prepaid units available under this SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSku.ServicePlans">
+            <summary>
+            Gets or sets the collection of service plans associated with this SKU.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.License.SubscriptionSkuLicense">
+            <summary>
+            Represents a license associated with a subscription SKU in Microsoft Entra ID.
+            Inherits from the <see cref="T:PSMicrosoftEntraID.License.SubscriptionSku"/> class and provides additional properties
+            for account information, capability status, and associated subscription IDs.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.License.SubscriptionSkuLicense.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.License.SubscriptionSkuLicense"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSkuLicense.AccountName">
+            <summary>
+            Gets or sets the account name associated with the license.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSkuLicense.AccountId">
+            <summary>
+            Gets or sets the account ID associated with the license.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSkuLicense.CapabilityStatus">
+            <summary>
+            Gets or sets the capability status of the license.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.License.SubscriptionSkuLicense.SubscriptionIds">
+            <summary>
+            Gets or sets the list of subscription IDs associated with the license.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.AssignedPlan">
+            <summary>
+            Represents an assigned plan for an organization in Microsoft Entra ID.
+            This class contains properties for the assignment date, service, service plan ID, and capability status.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.AssignedPlan.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.AssignedPlan"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.AssignedPlan.AssignedDateTime">
+            <summary>
+            Gets or sets the date and time when the plan was assigned.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.AssignedPlan.Service">
+            <summary>
+            Gets or sets the name of the service associated with the plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.AssignedPlan.ServicePlanId">
+            <summary>
+            Gets or sets the unique identifier of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.AssignedPlan.CapabilityStatus">
+            <summary>
+            Gets or sets the capability status of the assigned plan.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.DirectorySizeQuota">
+            <summary>
+            Represents the directory size quota for an organization in Microsoft Entra ID.
+            This class provides properties for tracking the used and total directory storage.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.DirectorySizeQuota.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.DirectorySizeQuota"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.DirectorySizeQuota.Used">
+            <summary>
+            Gets or sets the amount of directory storage used.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.DirectorySizeQuota.Total">
+            <summary>
+            Gets or sets the total directory storage quota.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus">
+            <summary>
+            Represents the synchronization status for on-premises directory in Microsoft Entra ID.
+            This class provides properties for the attribute set name, sync state, and version.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus.AttributeSetName">
+            <summary>
+            Gets or sets the name of the attribute set used for synchronization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus.State">
+            <summary>
+            Gets or sets the current state of the on-premises synchronization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OnPremisesSyncStatus.Version">
+            <summary>
+            Gets or sets the version of the on-premises synchronization configuration.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.OrganizationDetail">
+            <summary>
+            Represents the details of an organization (tenant) in Microsoft Entra ID.
+            This class provides properties for tenant identification, display settings,
+            synchronization details, contact information, and various settings.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.OrganizationDetail.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.OrganizationDetail"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.TenantId">
+            <summary>
+            Gets or sets the tenant ID, a unique identifier representing the organization (or tenant).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.DisplayName">
+            <summary>
+            Gets or sets the display name for the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.TenantType">
+            <summary>
+            Gets or sets the type of tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.IsMultipleDataLocationsForServicesEnabled">
+            <summary>
+            Indicates if multiple data locations for services are enabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.OnPremisesLastSyncDateTime">
+            <summary>
+            Gets or sets the last synchronization date and time for on-premises.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.OnPremisesNextSyncDateTime">
+            <summary>
+            Gets or sets the next synchronization date and time for on-premises.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.OnPremisesSyncEnabled">
+            <summary>
+            Indicates if on-premises synchronization is enabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.OnPremisesSyncStatus">
+            <summary>
+            Gets or sets the status of on-premises synchronization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.PartnerTenantType">
+            <summary>
+            Gets or sets the partner tenant type.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.CreatedDateTime">
+            <summary>
+            Gets or sets the creation date and time of the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.DeletedDateTime">
+            <summary>
+            Gets or sets the deletion date and time of the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.DirectorySizeQuota">
+            <summary>
+            Gets or sets the directory size quota information.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.CountryLetterCode">
+            <summary>
+            Gets or sets the country letter code for the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.DefaultUsageLocation">
+            <summary>
+            Gets or sets the default usage location for the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.PreferredLanguage">
+            <summary>
+            Gets or sets the preferred language for the tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.Street">
+            <summary>
+            Gets or sets the street address of the organization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.City">
+            <summary>
+            Gets or sets the city where the organization is located.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.PostalCode">
+            <summary>
+            Gets or sets the postal code of the organization's location.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.State">
+            <summary>
+            Gets or sets the state where the organization is located.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.Country">
+            <summary>
+            Gets or sets the country where the organization is located.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.BusinessPhones">
+            <summary>
+            Gets or sets a collection of business phone numbers for the organization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.TechnicalNotificationMails">
+            <summary>
+            Gets or sets a collection of technical notification email addresses.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.SecurityComplianceNotificationMails">
+            <summary>
+            Gets or sets a collection of security compliance notification email addresses.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.SecurityComplianceNotificationPhones">
+            <summary>
+            Gets or sets a collection of security compliance notification phone numbers.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.PrivacyProfile">
+            <summary>
+            Gets or sets the privacy profile for the organization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.AssignedPlans">
+            <summary>
+            Gets or sets the assigned plans for the organization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.ProvisionedPlans">
+            <summary>
+            Gets or sets the provisioned plans for the organization.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.OrganizationDetail.VerifiedDomains">
+            <summary>
+            Gets or sets the verified domains for the organization.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.ProvisionedPlan">
+            <summary>
+            Represents a provisioned plan in Microsoft Entra ID.
+            This class provides properties for the capability status, provisioning status, and service.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.ProvisionedPlan.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.ProvisionedPlan"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.ProvisionedPlan.CapabilityStatus">
+            <summary>
+            Gets or sets the capability status of the provisioned plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.ProvisionedPlan.ProvisioningStatus">
+            <summary>
+            Gets or sets the provisioning status of the plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.ProvisionedPlan.Service">
+            <summary>
+            Gets or sets the name of the service associated with the provisioned plan.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Organization.VerifiedDomain">
+            <summary>
+            Represents a verified domain in Microsoft Entra ID.
+            This class provides properties for domain capabilities, default status, initial status, name, and type.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Organization.VerifiedDomain.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Organization.VerifiedDomain"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.VerifiedDomain.Capabilities">
+            <summary>
+            Gets or sets the capabilities of the verified domain.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.VerifiedDomain.IsDefault">
+            <summary>
+            Gets or sets a value indicating whether the domain is the default domain.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.VerifiedDomain.IsInitial">
+            <summary>
+            Gets or sets a value indicating whether the domain is the initial domain.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.VerifiedDomain.Name">
+            <summary>
+            Gets or sets the name of the verified domain.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Organization.VerifiedDomain.Type">
+            <summary>
+            Gets or sets the type of the verified domain.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.Body">
+            <summary>
+            Represents the body content of a message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Body.ContentType">
+            <summary>
+            Type of content, typically "html".
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Body.Content">
+            <summary>
+            The raw HTML content.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair">
+            <summary>
+            Represents a name/value pair used in the details property.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair.Name">
+            <summary>
+            Name of the key/value pair.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.KeyValuePair.Value">
+            <summary>
+            Value of the key/value pair.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.Message">
+            <summary>
+            Represents a single Microsoft 365 Message Center announcement.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Id">
+            <summary>
+            Unique identifier of the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Title">
+            <summary>
+            Title of the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Category">
+            <summary>
+            Category of the message (plan, feature, retire, stayInformed).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Severity">
+            <summary>
+            Severity of the message (normal, high, critical).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Services">
+            <summary>
+            Microsoft 365 services affected by the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Tags">
+            <summary>
+            Tags associated with the message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.IsMajorChange">
+            <summary>
+            Indicates whether this is a major change.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.PublishedDateTime">
+            <summary>
+            Date and time the message was published.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.LastModifiedDateTime">
+            <summary>
+            Date and time the message was last modified.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.StartDateTime">
+            <summary>
+            Optional date when the message starts to apply.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.EndDateTime">
+            <summary>
+            Optional date when the message ends.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.ActionRequiredByDateTime">
+            <summary>
+            Optional date when action is required by.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Body">
+            <summary>
+            Object containing message body details.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.ViewPoint">
+            <summary>
+            Object containing user-specific view state.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.HasAttachments">
+            <summary>
+            Indicates whether the message has attachments.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.AttachmentsArchive">
+            <summary>
+            A stream representing the attachments archive (if present).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.Details">
+            <summary>
+            Optional array of key-value details.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint">
+            <summary>
+            Represents the view-related properties of a message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsRead">
+            <summary>
+            Indicates whether the message is marked as read.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsArchived">
+            <summary>
+            Indicates whether the message is archived.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.ViewPoint.IsFavorited">
+            <summary>
+            Indicates whether the message is marked as favorite.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense">
+            <summary>
+            Represents an assigned license in Microsoft Entra ID.
+            This class contains properties for identifying the service SKU and
+            the plans that are disabled under this license.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense"/> class.
+            Creates an empty assigned license.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense.SkuId">
+            <summary>
+            Gets or sets the unique identifier (GUID) for the service SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense.DisabledPlans">
+            <summary>
+            Gets or sets the list of disabled plans under this license.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan">
+            <summary>
+            Represents a service plan in an Office 365 subscription.
+            This class provides properties to hold the service plan's unique ID, name, 
+            applicable assignments, and provisioning status.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan"/> class.
+            Creates an empty service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.ServicePlanId">
+            <summary>
+            Gets or sets the unique identifier of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.ServicePlanName">
+            <summary>
+            Gets or sets the name of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.AppliesTo">
+            <summary>
+            Gets or sets the target object to which the service plan can be assigned.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.ProvisioningStatus">
+            <summary>
+            Gets or sets the provisioning status of the service plan.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku">
+            <summary>
+            Represents an Office 365 subscription SKU (Stock Keeping Unit) for a user.
+            This class provides properties to hold information about the subscription's unique ID,
+            SKU details, and assigned service plans.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku"/> class.
+            Creates an empty subscription.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.Id">
+            <summary>
+            Unique identifier for the license detail object.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.SkuId">
+            <summary>
+            Unique identifier (GUID) for the service SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.SkuPartNumber">
+            <summary>
+            Unique SKU display name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.ServicePlans">
+            <summary>
+            List of service plans associated with the license.
+            Contains information about the specific services included in the subscription.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.User">
+            <summary>
+            Represents a user in Microsoft Entra ID (formerly Azure AD).
+            This class provides properties to hold user profile, contact information,
+            and licensing details.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.Id">
+            <summary>
+            The unique identifier of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.UserPrincipalName">
+            <summary>
+            The user principal name (UPN) used as the login name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.CreatedDateTime">
+            <summary>
+            The date and time the user was created.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.Mail">
+            <summary>
+            The email address of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.MailNickname">
+            <summary>
+            The nickname or alias used in the user's email.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.ProxyAddresses">
+            <summary>
+            A collection of proxy addresses associated with the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.UserType">
+            <summary>
+            The type of user, such as "Member" or "Guest".
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.AccountEnabled">
+            <summary>
+            Indicates if the user account is enabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.GivenName">
+            <summary>
+            The first name of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.Surname">
+            <summary>
+            The last name (surname) of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.DisplayName">
+            <summary>
+            The display name of the user, shown in the UI.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.EmployeeId">
+            <summary>
+            The employee ID associated with the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.JobTitle">
+            <summary>
+            The job title of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.Department">
+            <summary>
+            The department where the user works.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.OfficeLocation">
+            <summary>
+            The office location of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.CompanyName">
+            <summary>
+            The company name associated with the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.City">
+            <summary>
+            The city where the user is located.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.PostalCode">
+            <summary>
+            The postal code of the user's location.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.Country">
+            <summary>
+            The country where the user is located.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.UsageLocation">
+            <summary>
+            The usage location of the user, used for licensing purposes.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.MobilePhone">
+            <summary>
+            The mobile phone number of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.BusinessPhones">
+            <summary>
+            A collection of business phone numbers for the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.FaxNumber">
+            <summary>
+            The fax number associated with the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.AssignedLicenses">
+            <summary>
+            The licenses assigned to the user.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.User.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.User"/> class.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.UserGuest">
+            <summary>
+            Represents a Guest user in Microsoft Entra ID (formerly Azure AD).
+            This class extends the User class and includes additional properties 
+            related to Guest user invitations.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserState">
+            <summary>
+            The external state of the user (e.g., PendingAcceptance, Accepted).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.ExternalUserStateChangeDateTime">
+            <summary>
+            The date and time when the external user state last changed.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.UserGuest.InvitationStatus">
+            <summary>
+            A derived property that represents the invitation status.
+            Returns "Pending" if the user has not accepted the invitation,
+            otherwise "Accepted".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Users.UserGuest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.UserGuest"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>
