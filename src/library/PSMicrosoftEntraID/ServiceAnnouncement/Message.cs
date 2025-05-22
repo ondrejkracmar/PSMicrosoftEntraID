@@ -67,19 +67,19 @@ namespace PSMicrosoftEntraID.ServiceAnnouncement
         /// Optional date when the message starts to apply.
         /// </summary>
         [DataMember(Name = "startDateTime")]
-        public string? StartDateTime { get; set; }
+        public string StartDateTime { get; set; }
 
         /// <summary>
         /// Optional date when the message ends.
         /// </summary>
         [DataMember(Name = "endDateTime")]
-        public string? EndDateTime { get; set; }
+        public string EndDateTime { get; set; }
 
         /// <summary>
         /// Optional date when action is required by.
         /// </summary>
         [DataMember(Name = "actionRequiredByDateTime")]
-        public string? ActionRequiredByDateTime { get; set; }
+        public string ActionRequiredByDateTime { get; set; }
 
         /// <summary>
         /// Object containing message body details.
