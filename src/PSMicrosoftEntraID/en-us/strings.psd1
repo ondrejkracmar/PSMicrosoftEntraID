@@ -54,4 +54,6 @@
 	'GroupOwner.Delete'          = "Remove owners '{0}'"
 	'GroupMember.List'           = "List members from the group '{0}'"
 	'GroupMember.Sync'           = "Sync members of group"
+
+	'Contact.Get'                = "Get xontact '{0}'"
 }

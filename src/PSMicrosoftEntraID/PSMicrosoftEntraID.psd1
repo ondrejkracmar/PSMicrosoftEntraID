@@ -53,6 +53,7 @@
 		'Get-PSEntraIDUserLicenseDetail'
 		'Get-PSEntraIDUser'
 		'Get-PSEntraIDUserGuest'
+		'Get-PSEntraIDContact'
 		'Compare-PSEntraIDUserList'
 		'Invoke-PSEntraIDBatchRequest'
 		'Invoke-PSEntraIDRequest'
