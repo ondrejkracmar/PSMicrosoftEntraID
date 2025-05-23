@@ -5,6 +5,7 @@ function Get-PSEntraIDContact {
 
 .DESCRIPTION
     Get the properties of the specified contact from Microsoft Entra ID (Microsoft Graph orgContact entity).
+    Requires delegated Graph permission: OrgContact.Read.Al
 
 .PARAMETER Identity
     Mail or Id of the contact.
