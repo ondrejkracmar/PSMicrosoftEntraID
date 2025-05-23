@@ -1,12 +1,71 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\contacts\\contact.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\contacts\\contact.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\groups\\group.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\groups\\group.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T13:00:43.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Group.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\Group.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Groups\\Group.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Groups\\Group.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Groups\\Group.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T12:56:13.905Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Contact.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Contacts\\Contact.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Contacts\\Contact.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Contacts\\Contact.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Contacts\\Contact.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T12:56:07.142Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
