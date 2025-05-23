@@ -556,5 +556,42 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
-	</ViewDefinitions>
+		<View>
+			<Name>PSMicrosoftEntraID.Contacts.Contact</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Contacts.Contact</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize />
+				<TableHeaders>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>20</Width></TableColumnHeader>
+				<TableColumnHeader><Width>20</Width></TableColumnHeader>
+				<TableColumnHeader><Width>20</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>20</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+				<TableRowEntry>
+					<TableColumnItems>
+					<TableColumnItem><PropertyName>Id</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>DisplayName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>GivenName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>Surname</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>Mail</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>MailNickname</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>CompanyName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>Department</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>JobTitle</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>MobilePhone</PropertyName></TableColumnItem>
+					</TableColumnItems>
+				</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+</ViewDefinitions>
 </Configuration>

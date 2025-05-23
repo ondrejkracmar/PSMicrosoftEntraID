@@ -745,4 +745,38 @@
       </MemberSet>
     </Members>
   </Type>
+  <Type>
+  <Name>PSMicrosoftEntraID.Contacts.Contact</Name>
+  <Members>
+    <MemberSet>
+      <Name>PSStandardMembers</Name>
+      <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>DisplayName</Name>
+            <Name>GivenName</Name>
+            <Name>Surname</Name>
+            <Name>Mail</Name>
+            <Name>MailNickname</Name>
+            <Name>CompanyName</Name>
+            <Name>Department</Name>
+            <Name>JobTitle</Name>
+            <Name>MobilePhone</Name>
+            <Name>BusinessPhones</Name>
+            <Name>OfficeLocation</Name>
+            <Name>PreferredLanguage</Name>
+            <Name>ProxyAddresses</Name>
+          </ReferencedProperties>
+        </PropertySet>
+        <NoteProperty>
+          <Name>DefaultDisplayProperty</Name>
+          <Value>DisplayName</Value>
+        </NoteProperty>
+      </Members>
+    </MemberSet>
+  </Members>
+</Type>
+
 </Types>
