@@ -56,4 +56,7 @@
 	'GroupMember.Sync'           = "Sync members of group"
 
 	'Contact.Get'                = "Get xontact '{0}'"
+	'Contact.Filter'             = "List contacts with filter '{0}'"
+	'Contact.List'               = "List contacts '{0}'"
+	'Contact.Name'               = "List contacts by name '{0}'"
 }

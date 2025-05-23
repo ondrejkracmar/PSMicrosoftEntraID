@@ -1,4 +1,4 @@
-function Get-PSEntraIDContact {
+﻿function Get-PSEntraIDContact {
 <#
 .SYNOPSIS
     Get the properties of the specified organizational contact.
