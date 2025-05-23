@@ -81,7 +81,7 @@
             'Name' {
                 foreach ($contact in $Name) {
                     $query['$filter'] = "startswith(displayName,'$contact') or startswith(givenName,'$contact') or startswith(surname,'$contact')"
-                    Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                 }
@@ -90,7 +90,7 @@
             'CompanyName' {
                 $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'$_'" } -join ',')
                 $query['$filter'] = $filterString
-                Invoke-PSFProtectedCommand -ActionString 'Contact.Company' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
             }
