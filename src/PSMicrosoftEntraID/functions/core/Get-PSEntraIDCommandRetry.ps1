@@ -1,4 +1,4 @@
-function Get-PSEntraIDCommandRetry {
+﻿function Get-PSEntraIDCommandRetry {
 <#
 .SYNOPSIS
     Returns the current retry configuration values used in protected commands.
