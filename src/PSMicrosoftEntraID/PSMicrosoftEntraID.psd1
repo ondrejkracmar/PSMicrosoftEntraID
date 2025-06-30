@@ -57,8 +57,6 @@
 		'Compare-PSEntraIDUserList'
 		'Invoke-PSEntraIDBatchRequest'
 		'Invoke-PSEntraIDRequest'
-		
-		
 		'Remove-PSEntraIDUser'
 		'Get-PSEntraIDUserMemberOf'
 		'New-PSEntraIDInvitation'
@@ -77,6 +75,8 @@
 		'Add-PSEntraIDGroupOwner'
 		'Remove-PSEntraIDGroupOwner'
 		'Sync-PSEntraIDGroupMember'
+		'Set-PSEntraIDCommandRetry'
+		'Get-PSEntraIDCommandRetry'
 	)
 
 	# Cmdlets to export from this module
