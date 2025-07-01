@@ -113,6 +113,82 @@
             </summary>
             <param name="requests">A list of up to 20 Request objects.</param>
         </member>
+        <member name="T:PSMicrosoftEntraID.Contacts.Contact">
+            <summary>
+            Represents an organizational contact in Microsoft Entra ID (formerly Azure AD).
+            This model reflects the orgContact entity from Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.Id">
+            <summary>
+            Unique identifier of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.DisplayName">
+            <summary>
+            Display name of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.GivenName">
+            <summary>
+            First name (given name) of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.Surname">
+            <summary>
+            Surname (last name) of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.JobTitle">
+            <summary>
+            Job title of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.Mail">
+            <summary>
+            Email address of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.MailNickname">
+            <summary>
+            Mail nickname (alias).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.CompanyName">
+            <summary>
+            Company name of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.Department">
+            <summary>
+            Department of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.BusinessPhones">
+            <summary>
+            Business phone numbers.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.MobilePhone">
+            <summary>
+            Mobile phone number.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.OfficeLocation">
+            <summary>
+            Office location of the contact.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.PreferredLanguage">
+            <summary>
+            Preferred language for communication.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Contacts.Contact.ProxyAddresses">
+            <summary>
+            Proxy addresses associated with the contact.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Environment">
             <summary>
             What environment this service should connect to.
@@ -857,11 +933,6 @@
         <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.IsMajorChange">
             <summary>
             Indicates whether this is a major change.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.PublishedDateTime">
-            <summary>
-            Date and time the message was published.
             </summary>
         </member>
         <member name="P:PSMicrosoftEntraID.ServiceAnnouncement.Message.LastModifiedDateTime">
