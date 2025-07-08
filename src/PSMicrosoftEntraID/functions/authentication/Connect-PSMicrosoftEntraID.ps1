@@ -360,15 +360,8 @@ param (
 	process {
 		try {
 			Connect-EntraService @param -Service $service
-			[System.Collections.ArrayList] $licenseIdentifier = Get-PSEntraIDSubscribedSku
-			[System.Collections.ArrayList] $subscribedSku = (Get-PSEntraIDSubscribedLicense | Where-Object -Property SkuId -NotIn -Value $licenseIdentifier.SkuId)
-			if ([object]::Equals($subscribedSku, $null)) {
-				$licenseIdentifier | Set-PSFResultCache
-			}
-			else {
-				[void]$licenseIdentifier.AddRange($subscribedSku)
-				$licenseIdentifier | Set-PSFResultCache
-			}
+			[PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedSku = Get-PSEntraIDSubscribedLicense
+			$subscribedSku | Set-PSFResultCache
 		}
 		catch {
 			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f $service)
