@@ -2,21 +2,21 @@
 	<#
 	.SYNOPSIS
 		Establish a connection to an Entra Service.
-	
+
 	.DESCRIPTION
 		Establish a connection to an Entra Service.
 		Prerequisite before executing any requests / commands.
-	
+
 	.PARAMETER ClientID
 		ID of the registered/enterprise application used for authentication.
 
 		Supports providing special labels as "ID":
 		+ Azure: Resolves to the actual ID of the first party app used by Connect-AzAccount
 		+ Graph: Resolves to the actual ID of the first party app used by Connect-MgGraph
-	
+
 	.PARAMETER TenantID
 		The ID of the tenant/directory to connect to.
-	
+
 	.PARAMETER Scopes
 		Any scopes to include in the request.
 		Only used for interactive/delegate workflows, ignored for Certificate based authentication or when using Client Secrets.
@@ -42,39 +42,39 @@
 	.PARAMETER RefreshTokenObject
 		Use the full token object of a delegate session with a refresh token, to authenticate to another service with this object.
 		Can be used to connect to multiple services using a single interactive delegate auth flow.
-	
+
 	.PARAMETER Certificate
 		The Certificate object used to authenticate with.
-		
+
 		Part of the Application Certificate authentication workflow.
-	
+
 	.PARAMETER CertificateThumbprint
 		Thumbprint of the certificate to authenticate with.
 		The certificate must be stored either in the user or computer certificate store.
-		
+
 		Part of the Application Certificate authentication workflow.
-	
+
 	.PARAMETER CertificateName
 		The name/subject of the certificate to authenticate with.
 		The certificate must be stored either in the user or computer certificate store.
 		The newest certificate with a private key will be chosen.
-		
+
 		Part of the Application Certificate authentication workflow.
-	
+
 	.PARAMETER CertificatePath
 		Path to a PFX file containing the certificate to authenticate with.
-		
+
 		Part of the Application Certificate authentication workflow.
-	
+
 	.PARAMETER CertificatePassword
 		Password to use to read a PFX certificate file.
 		Only used together with -CertificatePath.
-		
+
 		Part of the Application Certificate authentication workflow.
-	
+
 	.PARAMETER ClientSecret
 		The client secret configured in the registered/enterprise application.
-		
+
 		Part of the Client Secret Certificate authentication workflow.
 
 	.PARAMETER Credential
@@ -124,9 +124,22 @@
 		- always: Will always show the dialog, forcing interaction.
 		- never: Will never show the dialog. Authentication will fail if interaction is required.
 
-	.PARAMETER AzToken
-		Access Token from AzAuth PowerShell module to handle Azure authentication, using the Azure.Identity MSAL library.
-		https://github.com/PalmEmanuel/AzAuth
+	.PARAMETER Federated
+		Use federated credentials to authenticate.
+		This authentication flow is specific to a given environment and can for example enable a Github Action in a specific repository on a specific branch to authenticate, without needing to provide (and manage) a credential.
+		Some setup is required.
+
+		By default, this command is going to check all provided configurations ("Federation Providers") registered to PSMicrosoftEntraID and use the first that applies.
+		Use "-FederationProvider" to pick a specific one to use.
+		Use "-Assertion" to handle the federated identity provider outside of PSMicrosoftEntraID and simply provide the result for logon.
+
+	.PARAMETER FederationProvider
+		The name of the Federation Provider to use. Overrides the automatic selection.
+		Federation Providers are an EntraAuth concept and used to automatically do what is needed to access and use a Federated Credential, based on its environment.
+		See the documentation on Register-EntraFederationProvider for more details.
+
+	.PARAMETER Assertion
+		The credentials from the federated identity provider to use in an Federated Credentials authentication flow.
 
 	.PARAMETER Service
 		The service to connect to.
@@ -152,7 +165,7 @@
 		By default, it would always do the fully interactive authentication flow via Browser.
 
 	.PARAMETER MakeDefault
-		Makes this service the new default service for all subsequent Connect-PSMicrosoftEntraID & Invoke-EntraRequest calls.
+		Makes this service the new default service for all subsequent Connect-EntraService & Invoke-EntraRequest calls.
 
 	.PARAMETER PassThru
 		Return the token received for the current connection.
@@ -164,185 +177,219 @@
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
 		Usually determined by service connected to or the "Environment" parameter, but may be overridden in case of need.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID
-	
+
 		Establish a connection to the graph API, prompting the user for login on their default browser.
 
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -AsAzAccount
 
 		Establish a connection to the graph API, using the current Az.Accounts session.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate $cert
-	
+
 		Establish a connection to the graph API using the provided certificate.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificatePath C:\secrets\certs\mde.pfx -CertificatePassword (Read-Host -AsSecureString)
-	
+
 		Establish a connection to the graph API using the provided certificate file.
 		Prompts you to enter the certificate-file's password first.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
-	
+
 		Establish a connection to Defender for Endpoint using a client secret.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
-	
+
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
-[CmdletBinding(DefaultParameterSetName = 'Browser')]
-param (
-	[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[ArgumentCompleter({ 'Graph', 'Azure' })]
-	[string]
-	$ClientID,
-	
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$TenantID = 'organizations',
-	
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[Parameter(ParameterSetName = 'Refresh')]
-	[Parameter(ParameterSetName = 'RefreshObject')]
-	[string[]]
-	$Scopes,
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
+	[CmdletBinding(DefaultParameterSetName = 'Browser')]
+	param (
+		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Federated')]
+		[ArgumentCompleter({ 'Graph', 'Azure' })]
+		[string]
+		$ClientID,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[switch]
-	$Browser,
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppCertificate')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[Parameter(Mandatory = $true, ParameterSetName = 'Federated')]
+		[string]
+		$TenantID = 'organizations',
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[ValidateSet('Auto', 'PrintLink')]
-	[string]
-	$BrowserMode = 'Auto',
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
+		[Parameter(ParameterSetName = 'Refresh')]
+		[Parameter(ParameterSetName = 'RefreshObject')]
+		[string[]]
+		$Scopes,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
-	[switch]
-	$DeviceCode,
+		[Parameter(ParameterSetName = 'Browser')]
+		[switch]
+		$Browser,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
-	[string]
-	$RefreshToken,
+		[Parameter(ParameterSetName = 'Browser')]
+		[ValidateSet('Auto', 'PrintLink')]
+		[string]
+		$BrowserMode = 'Auto',
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'RefreshObject')]
-	[EntraToken]
-	$RefreshTokenObject,
-	
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[System.Security.Cryptography.X509Certificates.X509Certificate2]
-	$Certificate,
-	
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificateThumbprint,
-	
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificateName,
-	
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[string]
-	$CertificatePath,
-	
-	[Parameter(ParameterSetName = 'AppCertificate')]
-	[System.Security.SecureString]
-	$CertificatePassword,
-	
-	[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
-	[System.Security.SecureString]
-	$ClientSecret,
+		[Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
+		[switch]
+		$DeviceCode,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
-	[PSCredential]
-	$Credential,
+		[Parameter(Mandatory = $true, ParameterSetName = 'Refresh')]
+		[string]
+		$RefreshToken,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string]
-	$VaultName,
+		[Parameter(Mandatory = $true, ParameterSetName = 'RefreshObject')]
+		[EntraToken]
+		$RefreshTokenObject,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
-	[string[]]
-	$SecretName,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[System.Security.Cryptography.X509Certificates.X509Certificate2]
+		$Certificate,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
-	[switch]
-	$Identity,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificateThumbprint,
 
-	[Parameter(ParameterSetName = 'Identity')]
-	[string]
-	$IdentityID,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificateName,
 
-	[Parameter(ParameterSetName = 'Identity')]
-	[ValidateSet('ClientID', 'ResourceID', 'PrincipalID')]
-	[string]
-	$IdentityType = 'ClientID',
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[string]
+		$CertificatePath,
 
-	[Parameter(ParameterSetName = 'Identity')]
-	[switch]
-	$FallBackAzAccount,
+		[Parameter(ParameterSetName = 'AppCertificate')]
+		[System.Security.SecureString]
+		$CertificatePassword,
 
-	[Parameter(Mandatory = $true, ParameterSetName = 'AzAccount')]
-	[switch]
-	$AsAzAccount,
+		[Parameter(Mandatory = $true, ParameterSetName = 'AppSecret')]
+		[System.Security.SecureString]
+		$ClientSecret,
 
-	[Parameter(ParameterSetName = 'AzAccount')]
-	[ValidateSet('Auto', 'Always', 'Never')]
-	[string]
-	$ShowDialog = 'Auto',
+		[Parameter(Mandatory = $true, ParameterSetName = 'UsernamePassword')]
+		[PSCredential]
+		$Credential,
 
-	[Parameter(ParameterSetName = 'AzToken')]
-	[PSCustomObject]
-	$AzToken,
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string]
+		$VaultName,
 
-	[ArgumentCompleter({ Get-ServiceCompletion $args })]
-	[ValidateScript({ Assert-ServiceName -Name $_ })]
-	[string[]]
-	$Service = $script:_DefaultService,
+		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
+		[string[]]
+		$SecretName,
 
-	[string]
-	$ServiceUrl,
+		[Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
+		[switch]
+		$Identity,
 
-	[string]
-	$Resource,
+		[Parameter(ParameterSetName = 'Identity')]
+		[string]
+		$IdentityID,
 
-	[Parameter(ParameterSetName = 'Browser')]
-	[Parameter(ParameterSetName = 'DeviceCode')]
-	[switch]
-	$UseRefreshToken,
+		[Parameter(ParameterSetName = 'Identity')]
+		[ValidateSet('ClientID', 'ResourceID', 'PrincipalID')]
+		[string]
+		$IdentityType = 'ClientID',
 
-	[switch]
-	$MakeDefault,
+		[Parameter(ParameterSetName = 'Identity')]
+		[Parameter(ParameterSetName = 'Federated')]
+		[switch]
+		$FallBackAzAccount,
 
-	[switch]
-	$PassThru,
+		[Parameter(Mandatory = $true, ParameterSetName = 'AzAccount')]
+		[switch]
+		$AsAzAccount,
 
-	[PSMicrosoftEntraID.Environment]
-	$Environment,
+		[Parameter(ParameterSetName = 'AzAccount')]
+		[ValidateSet('Auto', 'Always', 'Never')]
+		[string]
+		$ShowDialog = 'Auto',
 
-	[string]
-	$AuthenticationUrl
-)
+		[Parameter(ParameterSetName = 'AzToken')]
+		[PSCustomObject]
+		$AzToken,
+
+		[Parameter(ParameterSetName = 'Federated')]
+		[switch]
+		$Federated,
+
+		[Parameter(ParameterSetName = 'Federated')]
+		[ArgumentCompleter({
+				param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+				foreach ($provider in Get-EntraFederationProvider) {
+					if ($provider.Name -notlike "$wordToComplete*") { continue }
+					$text = $provider.Name
+					if ($text -match '\s') { $text = "'$($provider.Name -replace "'", "''")'" }
+
+					[System.Management.Automation.CompletionResult]::new($text, $text, 'ParameterValue', $provider.Description)
+				}
+			})]
+		[ValidateScript({
+				$providers = (Get-EntraFederationProvider).Name
+				if ($_ -in $providers) { return $true }
+
+				$message = "Unknown Federation Provider! '$_' - known providers: $($providers -join ', ')"
+				Write-Warning $message
+				throw $message
+			})]
+		[string]
+		$FederationProvider,
+
+		[Parameter(ParameterSetName = 'Federated')]
+		[string]
+		$Assertion,
+
+		[ArgumentCompleter({ Get-ServiceCompletion $args })]
+		[ValidateScript({ Assert-ServiceName -Name $_ })]
+		[string[]]
+		$Service = $script:_DefaultService,
+
+		[string]
+		$ServiceUrl,
+
+		[string]
+		$Resource,
+
+		[Parameter(ParameterSetName = 'Browser')]
+		[Parameter(ParameterSetName = 'DeviceCode')]
+		[switch]
+		$UseRefreshToken,
+
+		[switch]
+		$MakeDefault,
+
+		[switch]
+		$PassThru,
+
+		[PSMicrosoftEntraID.Environment]
+		$Environment,
+
+		[string]
+		$AuthenticationUrl
+	)
 	begin {
 		if (-not ([object]::Equals($Service, $null))) {
 			Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $Service
