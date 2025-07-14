@@ -9,7 +9,7 @@
 	[string]$Issuer
 	[PSObject]$TokenData
 	#endregion Token Data
-
+	
 	#region Connection Data
 	[string]$Service
 	[string]$Type
@@ -20,13 +20,13 @@
 	[Hashtable]$Header = @{}
 	[Hashtable]$Query = @{}
 	[bool]$RawOnly
-
+	
 	[string]$IdentityID
 	[string]$IdentityType
-
+	
 	# Workflow: Client Secret
 	[System.Security.SecureString]$ClientSecret
-
+	
 	# Workflow: Certificate
 	[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate
 
@@ -40,12 +40,15 @@
 	# Workflow: Az.Accounts
 	[string]$ShowDialog
 
+	# Workflow: Federated
+	[FederationProvider]$FederationProvider
+
 	# Workflow: Custom Token
 	[scriptblock]$HeaderCode
 	[hashtable]$Data = @{}
 
 	#endregion Connection Data
-
+	
 	#region Constructors
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [Securestring]$ClientSecret, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
@@ -57,6 +60,16 @@
 		$this.Type = 'ClientSecret'
 	}
 
+	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [FederationProvider]$Provider, [string]$ServiceUrl, [string]$AuthenticationUrl) {
+		$this.Service = $Service
+		$this.ClientID = $ClientID
+		$this.TenantID = $TenantID
+		$this.ServiceUrl = $ServiceUrl
+		$this.AuthenticationUrl = $AuthenticationUrl
+		$this.FederationProvider = $Provider
+		$this.Type = 'Federated'
+	}
+	
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
 		$this.ClientID = $ClientID
@@ -98,19 +111,6 @@
 		$this.Type = 'KeyVault'
 	}
 
-	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
-		$this.Service = $Service
-		$this.AccessToken = $AccessToken
-		$this.TenantID = $TenantID
-		$this.Scopes = $Scopes
-		$this.ServiceUrl = $ServiceUrl
-		$this.Type = $IdentityType
-
-		if ($IdentityID) {
-			$this.IdentityID = $IdentityID
-		}
-	}
-
 	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.ServiceUrl = $ServiceUrl
@@ -129,6 +129,19 @@
 		$this.Type = 'AzAccount'
 	}
 
+	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
+		$this.Service = $Service
+		$this.AccessToken = $AccessToken
+		$this.TenantID = $TenantID
+		$this.Scopes = $Scopes
+		$this.ServiceUrl = $ServiceUrl
+		$this.Type = $IdentityType
+
+		if ($IdentityID) {
+			$this.IdentityID = $IdentityID
+		}
+	}
+	
 	# Empty Constructor for Import-EntraToken
 	EntraToken() {}
 	#endregion Constructors
@@ -144,7 +157,7 @@
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
 		$localData = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
-
+		
 		if ($localData.roles) { $this.Scopes = $localData.roles }
 		elseif ($localData.scp) { $this.Scopes = $localData.scp -split " " }
 
@@ -236,6 +249,10 @@
 			}
 			AzToken {
 				$result = Connect-ServiceAzToken -AzToken $this.AccessToken
+				$this.SetTokenMetadata($result)
+			}
+			Federated {
+				$result, $provider = Connect-ServiceFederated @defaultParam -Provider $this.FederationProvider.Name -Assertion $this.FederationProvider.Assertion
 				$this.SetTokenMetadata($result)
 			}
 		}
