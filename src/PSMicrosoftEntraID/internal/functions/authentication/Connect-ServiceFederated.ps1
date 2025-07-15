@@ -85,7 +85,7 @@
 		
 		Read-AuthResponse -AuthResponse $authResponse
 		if ($providerObject) { return $providerObject }
-		[FederationProvider]@{
+		[PSMicrosoftEntraID.FederationProvider]@{
 			Assertion = $myAssertion
 		}
 	}
