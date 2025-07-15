@@ -130,12 +130,12 @@
 		Some setup is required.
 
 		By default, this command is going to check all provided configurations ("Federation Providers") registered to PSMicrosoftEntraID and use the first that applies.
-		Use "-FederationProvider" to pick a specific one to use.
+		Use "PSMicrosoftEntraID" to pick a specific one to use.
 		Use "-Assertion" to handle the federated identity provider outside of PSMicrosoftEntraID and simply provide the result for logon.
 
 	.PARAMETER FederationProvider
 		The name of the Federation Provider to use. Overrides the automatic selection.
-		Federation Providers are an EntraAuth concept and used to automatically do what is needed to access and use a Federated Credential, based on its environment.
+		Federation Providers are an PSMicrosoftEntraID concept and used to automatically do what is needed to access and use a Federated Credential, based on its environment.
 		See the documentation on Register-EntraFederationProvider for more details.
 
 	.PARAMETER Assertion
