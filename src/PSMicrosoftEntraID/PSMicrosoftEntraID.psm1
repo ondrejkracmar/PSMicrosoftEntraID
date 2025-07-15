@@ -51,22 +51,33 @@ function Import-ModuleFile {
 
 #region Load individual files
 if ($importIndividualFiles) {
-	# Execute Preimport actions
-	foreach ($path in (& "$ModuleRoot\internal\scripts\preimport.ps1")) {
-		. Import-ModuleFile -Path $path
-	}
+	
 
 	# Import all internal classes
-	<#foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\exceptions" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
-	{
-		. Import-ModuleFile -Path $class.FullName
-	}
-
 	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\attributes" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
 	{
 		. Import-ModuleFile -Path $class.FullName
 	}
-	#>
+
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\exceptions" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
+	}
+
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\other" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
+	}
+
+	foreach ($class in (Get-ChildItem "$ModuleRoot\internal\classes\token" -Filter "*.ps1" -Recurse -ErrorAction Ignore))
+	{
+		. Import-ModuleFile -Path $class.FullName
+	}
+
+	# Execute Preimport actions
+	foreach ($path in (& "$ModuleRoot\internal\scripts\preimport.ps1")) {
+		. Import-ModuleFile -Path $path
+	}
 
 	# Import all internal functions
 	foreach ($function in (Get-ChildItem "$ModuleRoot\internal\functions" -Filter "*.ps1" -Recurse -ErrorAction Ignore)) {
