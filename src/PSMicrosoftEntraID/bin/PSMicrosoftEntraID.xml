@@ -214,6 +214,52 @@
             China Microsoft cloud https://login.chinacloudapi.cn
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.FederationProvider">
+            <summary>
+            Represents a federation provider with scriptblock logic for use in PowerShell automation.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Name">
+            <summary>
+            Gets or sets the name of the federation provider.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Description">
+            <summary>
+            Gets or sets the description of the federation provider.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Priority">
+            <summary>
+            Gets or sets the priority of the federation provider.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Test">
+            <summary>
+            Gets or sets the test scriptblock.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Code">
+            <summary>
+            Gets or sets the main code scriptblock.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Assertion">
+            <summary>
+            Gets or sets the assertion string.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.FederationProvider.Type">
+            <summary>
+            Gets or sets the type of the federation provider. Default is "Custom".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.FederationProvider.ToString">
+            <summary>
+            Returns the name of the federation provider.
+            </summary>
+            <returns>The name of the provider.</returns>
+        </member>
         <member name="T:PSMicrosoftEntraID.Groups.Group">
             <summary>
             Represents a group in Microsoft Entra ID.

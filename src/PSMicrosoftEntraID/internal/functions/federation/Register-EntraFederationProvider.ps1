@@ -67,7 +67,7 @@
 		$Code
 	)
 	process {
-		$script:_FederationProviders[$Name] = [FederationProvider]@{
+		$script:_FederationProviders[$Name] = [PSMicrosoftEntraID.FederationProvider]@{
 			Name        = $Name
 			Description = $Description
 			Priority    = $Priority
