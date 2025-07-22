@@ -130,7 +130,7 @@
             }
             'Identity\w' {
                 foreach ($user in  $Identity) {
-                    
+
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                     if (-not ([object]::Equals($aADUser, $null))) {
                         [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
@@ -148,7 +148,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                         }
-                    }   
+                    }
                 }
             }
         }
