@@ -12,10 +12,10 @@
 	"MessageCenter.Get.Validation" = "Parameter validation failed: {0} cannot be later than {1}"
 
 	'Request.Invoke'               = 'Invoke request command with the following url {0}'
-	'Request.Invoke.Failed'        = 'Invoke command failed'
+	#'Request.Invoke.Failed'        = 'Invoke command failed'
 
 	'Batch.Invoke'                 = 'Invoke batch command with the following Ids {0}'
-	'Batch.Invoke.Failed'          = 'Invoke batch command failed'
+	#'Batch.Invoke.Failed'          = 'Invoke batch command failed'
 
 	'SubscribedSku.List'           = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'     = "Get subscribed Sku '{0}' failed"
@@ -50,10 +50,10 @@
 	'Group.Set'                    = "Set group '{0}'"
 	'Group.Set.Failed'             = "Set group '{0}' failed"
 	'GroupMember.Add'              = "Add members '{0}'"
-	'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"
+	#'GroupMember.Add.Failed'       = "Add members to the group '{0}' failed"
 	'GroupMember.Delete'           = "Remove members '{0}'"
 	'GroupOwner.Add'               = "Add owners '{0}'"
-	'GroupOwner.Add.Failed'        = "Add owners to the group '{0}' failed"
+	#'GroupOwner.Add.Failed'        = "Add owners to the group '{0}' failed"
 	'GroupOwner.Delete'            = "Remove owners '{0}'"
 	'GroupMember.List'             = "List members from the group '{0}'"
 	'GroupMember.Sync'             = "Sync members of group"
