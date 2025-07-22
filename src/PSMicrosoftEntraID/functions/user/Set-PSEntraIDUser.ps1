@@ -246,20 +246,21 @@
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
-                        Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $user.DisplayName -Target $user.Id -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $user.DisplayName -Target $user.Id -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
                     }
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
+                        }
                     }
                 }
             }
         }
     }
-}
-end {}
+    end {}
 }
