@@ -9,7 +9,7 @@
 	[string]$Issuer
 	[PSObject]$TokenData
 	#endregion Token Data
-	
+
 	#region Connection Data
 	[string]$Service
 	[string]$Type
@@ -20,13 +20,16 @@
 	[Hashtable]$Header = @{}
 	[Hashtable]$Query = @{}
 	[bool]$RawOnly
-	
+
 	[string]$IdentityID
 	[string]$IdentityType
-	
+
+	# Workflow: Browser
+	[string]$RedirectUri
+
 	# Workflow: Client Secret
 	[System.Security.SecureString]$ClientSecret
-	
+
 	# Workflow: Certificate
 	[System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate
 
@@ -48,7 +51,7 @@
 	[hashtable]$Data = @{}
 
 	#endregion Connection Data
-	
+
 	#region Constructors
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [Securestring]$ClientSecret, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
@@ -69,7 +72,7 @@
 		$this.FederationProvider = $Provider
 		$this.Type = 'Federated'
 	}
-	
+
 	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [System.Security.Cryptography.X509Certificates.X509Certificate2]$Certificate, [string]$ServiceUrl, [string]$AuthenticationUrl) {
 		$this.Service = $Service
 		$this.ClientID = $ClientID
@@ -129,19 +132,6 @@
 		$this.Type = 'AzAccount'
 	}
 
-	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
-		$this.Service = $Service
-		$this.AccessToken = $AccessToken
-		$this.TenantID = $TenantID
-		$this.Scopes = $Scopes
-		$this.ServiceUrl = $ServiceUrl
-		$this.Type = $IdentityType
-
-		if ($IdentityID) {
-			$this.IdentityID = $IdentityID
-		}
-	}
-	
 	# Empty Constructor for Import-EntraToken
 	EntraToken() {}
 	#endregion Constructors
@@ -157,7 +147,7 @@
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
 		$localData = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
-		
+
 		if ($localData.roles) { $this.Scopes = $localData.roles }
 		elseif ($localData.scp) { $this.Scopes = $localData.scp -split " " }
 
@@ -225,7 +215,7 @@
 					return
 				}
 
-				$result = Connect-ServiceBrowser @defaultParam -SelectAccount
+				$result = Connect-ServiceBrowser @defaultParam -SelectAccount -RedirectUri $this.RedirectUri
 				$this.SetTokenMetadata($result)
 			}
 			Refresh {

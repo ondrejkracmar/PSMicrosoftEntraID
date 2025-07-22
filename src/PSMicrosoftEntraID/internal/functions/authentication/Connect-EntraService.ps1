@@ -25,6 +25,10 @@
 		Use an interactive logon in your default browser.
 		This is the default logon experience.
 
+	.PARAMETER RedirectUri
+		The Redirect URI to send with the request.
+		May be different from the actual local port you want to listen on (e.g. when redirecting to an alternative name on top of localhost).
+
 	.PARAMETER BrowserMode
 		How the browser used for authentication is selected.
 		Options:
@@ -249,6 +253,10 @@
 		$Browser,
 
 		[Parameter(ParameterSetName = 'Browser')]
+		[string]
+		$RedirectUri,
+
+		[Parameter(ParameterSetName = 'Browser')]
 		[ValidateSet('Auto', 'PrintLink')]
 		[string]
 		$BrowserMode = 'Auto',
@@ -334,23 +342,23 @@
 
 		[Parameter(ParameterSetName = 'Federated')]
 		[ArgumentCompleter({
-			param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-			foreach ($provider in Get-EntraFederationProvider) {
-				if ($provider.Name -notlike "$wordToComplete*") { continue }
-				$text = $provider.Name
-				if ($text -match '\s') { $text = "'$($provider.Name -replace "'", "''")'" }
+				param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+				foreach ($provider in Get-EntraFederationProvider) {
+					if ($provider.Name -notlike "$wordToComplete*") { continue }
+					$text = $provider.Name
+					if ($text -match '\s') { $text = "'$($provider.Name -replace "'", "''")'" }
 
-				[System.Management.Automation.CompletionResult]::new($text, $text, 'ParameterValue', $provider.Description)
-			}
-		})]
+					[System.Management.Automation.CompletionResult]::new($text, $text, 'ParameterValue', $provider.Description)
+				}
+			})]
 		[ValidateScript({
-			$providers = (Get-EntraFederationProvider).Name
-			if ($_ -in $providers) { return $true }
+				$providers = (Get-EntraFederationProvider).Name
+				if ($_ -in $providers) { return $true }
 
-			$message = "Unknown Federation Provider! '$_' - known providers: $($providers -join ', ')"
-			Write-Warning $message
-			throw $message
-		})]
+				$message = "Unknown Federation Provider! '$_' - known providers: $($providers -join ', ')"
+				Write-Warning $message
+				throw $message
+			})]
 		[string]
 		$FederationProvider,
 
@@ -380,7 +388,7 @@
 		[switch]
 		$PassThru,
 
-		[PSMicrosoftEntraID.Environment]
+		[Environment]
 		$Environment,
 
 		[string]
@@ -473,13 +481,14 @@
 					if (-not $Scopes) { $scopesToUse = $serviceObject.DefaultScopes }
 
 					Write-Verbose "[$serviceName] Connecting via Browser ($($scopesToUse -join ', '))"
-					try { $result = Connect-ServiceBrowser @commonParam -SelectAccount -Scopes $scopesToUse -NoReconnect:$($serviceObject.NoRefresh) -BrowserMode $BrowserMode -ErrorAction Stop }
+					try { $result = Connect-ServiceBrowser @commonParam -SelectAccount -Scopes $scopesToUse -NoReconnect:$($serviceObject.NoRefresh) -BrowserMode $BrowserMode -RedirectUri $RedirectUri -ErrorAction Stop }
 					catch {
 						Write-Warning "[$serviceName] Failed to connect: $_"
 						$PSCmdlet.ThrowTerminatingError($_)
 					}
 					
 					$token = [EntraToken]::new($serviceName, $ClientID, $TenantID, $effectiveServiceUrl, $false, $authUrl)
+					$token.RedirectUri = $RedirectUri
 					$token.SetTokenMetadata($result)
 					Write-Verbose "[$serviceName] Connected via Browser ($($token.Scopes -join ', '))"
 				}
@@ -635,7 +644,7 @@
 
 						try {
 							$newParam = @{}
-							$validParam = $PSCmdlet.MyInvocation.MyCommand.ParameterSets.Where{$_.Name -eq 'AzAccount'}.Parameters.Name
+							$validParam = $PSCmdlet.MyInvocation.MyCommand.ParameterSets.Where{ $_.Name -eq 'AzAccount' }.Parameters.Name
 							foreach ($pair in $PSBoundParameters.GetEnumerator()) {
 								if ($pair.Key -notin $validParam) { continue }
 								$newParam[$pair.Key] = $pair.Value
@@ -663,13 +672,13 @@
 				Federated {
 					Write-Verbose "[$serviceName] Connecting via Federated Credential"
 
-					try { $result,$provider = Connect-ServiceFederated @commonParam -Assertion $Assertion -Provider $FederationProvider -ErrorAction Stop }
+					try { $result, $provider = Connect-ServiceFederated @commonParam -Assertion $Assertion -Provider $FederationProvider -ErrorAction Stop }
 					catch {
 						if (-not $FallBackAzAccount) { $PSCmdlet.ThrowTerminatingError($_) }
 
 						try {
 							$newParam = @{}
-							$validParam = $PSCmdlet.MyInvocation.MyCommand.ParameterSets.Where{$_.Name -eq 'AzAccount'}.Parameters.Name
+							$validParam = $PSCmdlet.MyInvocation.MyCommand.ParameterSets.Where{ $_.Name -eq 'AzAccount' }.Parameters.Name
 							foreach ($pair in $PSBoundParameters.GetEnumerator()) {
 								if ($pair.Key -notin $validParam) { continue }
 								$newParam[$pair.Key] = $pair.Value
@@ -712,6 +721,25 @@
 					Write-Verbose "[$serviceName] Connected via existing Az.Accounts session ($($token.Scopes -join ', '))"
 				}
 				#endregion AzAccount
+
+				#region AzToken
+				AzToken {
+					Write-Verbose "[$serviceName] Connecting via AzToken"
+
+					try { $result = Connect-ServiceAzToken -AzToken $AzToken -CmdLet $PSCmdlet -ErrorAction Stop }
+					catch {
+						Write-Warning "[$serviceName] Failed to connect: $_"
+						$PSCmdlet.ThrowTerminatingError($_)
+					}
+					$token = [EntraToken]::new($serviceName, $result.AccessToken, $result.TenantID, $result.IdentityID, $result.Scopes, $effectiveServiceUrl, $authUrl, 'AzToken')
+					if ($serviceObject.Header.Count -gt 0) { $token.Header = $serviceObject.Header.Clone() }
+					$token.SetTokenMetadata($result)
+
+					if ($doRegister) { $script:_EntraTokens[$serviceName] = $token }
+
+					Write-Verbose "[$serviceName] Connected AzToken ($($token.Scopes -join ', '))"
+				}
+				#endregion AzToken
 			}
 			#endregion Connection
 

@@ -71,26 +71,17 @@
     )
 
     Begin {
-        # Example lines (depending on your environment):
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = '$batch'
 
-        # Figure out confirm logic:
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
             [bool] $cmdLetConfirm = $false
         }
         else {
             [bool] $cmdLetConfirm = $true
-        }
-
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
         }
     }
 
@@ -101,37 +92,21 @@
                 'requests' = $payload.Requests
             }
 
-            if (Test-PSMicrosoftEntraIDBatchRequest -Requests $payload.Requests -EnableException:$EnableException) {
-                Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
-                    -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
-                    -ScriptBlock {
-                    try {
-
-                        $batchResponse = Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop
-
-
-                        [pscustomobject]@{
-                            requests  = $payload.Requests
-                            responses = $batchResponse.responses
-                        }
-                    }
-                    catch {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message (Get-PSFLocalizedString -Module $script:ModuleName -Name Batch.Invoke.Failed)
-                        }
-                        else {
-                            Write-Warning "Failed to invoke batch request: $($_.Exception.Message)"
-                        }
-                    }
-                } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait |
-                if (Test-PSFFunctionInterrupt) {
-                    return
+            Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
+                -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
+                -ScriptBlock {
+                $batchResponse = Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -ErrorAction Stop
+                [pscustomobject]@{
+                    requests  = $payload.Requests
+                    responses = $batchResponse.Responses
                 }
-            }
+
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait |
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
 
     End {
-        # final summary if needed
+
     }
 }

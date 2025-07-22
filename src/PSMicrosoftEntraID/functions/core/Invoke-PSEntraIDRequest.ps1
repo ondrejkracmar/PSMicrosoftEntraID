@@ -128,36 +128,23 @@
         $param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Invoke-EntraRequest
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        
+
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
             [bool] $cmdLetConfirm = $false
         }
         else {
             [bool] $cmdLetConfirm = $true
         }
-
-        [bool] $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'Request.Invoke' -ActionStringValues $Path -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            try {
-                Invoke-EntraRequest @param -Service $service -Verbose:$($cmdLetVerbose) -ErrorAction Stop
-            }
-            catch {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message (Get-PSFLocalizedString -Module $script:ModuleName -Name Request.Invoke.Failed)
-                }
-                else {
-                    Write-Warning "Failed to invoke request: $($_.Exception.Message)"
-                }
-            }
+            Invoke-EntraRequest @param -Service $service -Verbose:$($cmdLetVerbose) -ErrorAction Stop
         } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-
         if (Test-PSFFunctionInterrupt) { return }
     }
 
     end {
-        # Final summary if needed
+
     }
 }

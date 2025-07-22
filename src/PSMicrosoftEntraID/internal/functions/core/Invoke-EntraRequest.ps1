@@ -2,34 +2,38 @@
 	<#
 	.SYNOPSIS
 		Executes a web request against an entra-based service
-	
+
 	.DESCRIPTION
 		Executes a web request against an entra-based service
 		Handles all the authentication details once connected using Connect-EntraService.
-	
+
 	.PARAMETER Path
 		The relative path of the endpoint to query.
 		For example, to retrieve Microsoft Graph users, it would be a plain "users".
 		To access details on a particular defender for endpoint machine instead it would look thus: "machines/1e5bc9d7e413ddd7902c2932e418702b84d0cc07"
-	
+
 	.PARAMETER Body
 		Any body content needed for the request.
 
     .PARAMETER Query
         Any query content to include in the request.
         In opposite to -Body this is attached to the request Url and usually used for filtering.
-	
+
 	.PARAMETER Method
 		The Rest Method to use.
 		Defaults to GET
-	
+
 	.PARAMETER RequiredScopes
 		Any authentication scopes needed.
 		Used for documentary purposes only.
 
 	.PARAMETER Header
 		Any additional headers to include on top of authentication and content-type.
-	
+
+	.PARAMETER ContentType
+		Specify the content-type of this request.
+		Equivalent to specifying it as a header entry, but added as dedicated parameter for user convenience.
+
 	.PARAMETER Service
 		Which service to execute against.
 		Determines the API endpoint called to.
@@ -49,10 +53,10 @@
 
 	.PARAMETER Raw
 		Do not process the response object and instead return the raw result returned by the API.
-	
+
 	.EXAMPLE
 		PS C:\> Invoke-EntraRequest -Path 'alerts' -RequiredScopes 'Alert.Read'
-	
+
 		Return a list of defender alerts.
 #>
 	[CmdletBinding(DefaultParameterSetName = 'default')]
@@ -60,21 +64,24 @@
 		[Parameter(Mandatory = $true)]
 		[string]
 		$Path,
-		
+
 		$Body,
 
 		[Hashtable]
 		$Query = @{ },
-		
+
 		[string]
 		$Method = 'GET',
-		
+
 		[string[]]
 		$RequiredScopes,
 
 		[hashtable]
 		$Header = @{},
-		
+
+		[string]
+		$ContentType,
+
 		[ArgumentCompleter({ Get-ServiceCompletion $args })]
 		[ValidateScript({ Assert-ServiceName -Name $_ -IncludeTokens })]
 		[string]
@@ -93,7 +100,7 @@
 		[switch]
 		$Raw
 	)
-	
+
 	DynamicParam {
 		if ($Resource) { return }
 
@@ -127,15 +134,16 @@
 			Assert-EntraConnection -Service $Service -Cmdlet $PSCmdlet -RequiredScopes $RequiredScopes
 			$tokenObject = $script:_EntraTokens.$Service
 		}
-		
+
 		$serviceObject = $script:_EntraEndpoints.$($tokenObject.Service)
+		if ($ContentType) { $Header['Content-Type'] = $ContentType }
 	}
 	process {
 		$parameters = @{
 			Method = $Method
 			Uri    = Resolve-RequestUri -TokenObject $tokenObject -ServiceObject $serviceObject -BoundParameters $PSBoundParameters
 		}
-		
+
 		if ($PSBoundParameters.Keys -contains 'Body') {
 			if ($Body -is [string]) {
 				$parameters.Body = $Body
@@ -149,7 +157,7 @@
 		if ($PSVersionTable.PSVersion.Major -lt 6 -and $Method -in $noBodyMethods) {
 			$parameters.Remove('Body')
 		}
-		
+
 		$parameters.Uri += ConvertTo-QueryString -QueryHash $Query -DefaultQuery $tokenObject.Query
 
 		do {

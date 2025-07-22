@@ -1,5 +1,5 @@
 ﻿function Get-PSEntraIDCommandRetry {
-<#
+    <#
 .SYNOPSIS
     Returns the current retry configuration values used in protected commands.
 
@@ -20,7 +20,7 @@
     $retryWait = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName)
 
     return @{
-        RetryCount = $retryCount
+        RetryCount         = $retryCount
         RetryWaitInSeconds = $retryWait
     }
 }
