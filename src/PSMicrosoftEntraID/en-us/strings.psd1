@@ -29,6 +29,8 @@
 	'License.Disable'              = "Disable license '{0}'"
 
 	'User.UsageLocation'           = "Set usagelocation '{0}'"
+	'User.New'                     = "Create new user '{0}'"
+	'User.Set'                     = "Set user '{0}'"
 	'User.Delete'                  = "Delete user '{0}'"
 	'User.Get'                     = "Get user '{0}'"
 	'User.Get.Failed'              = "Get user '{0}' failed"

@@ -1,5 +1,5 @@
 ﻿function Get-PSEntraIDContact {
-<#
+    <#
 .SYNOPSIS
     Get the properties of the specified organizational contact.
 
@@ -64,7 +64,6 @@
         $header = @{ 'ConsistencyLevel' = 'eventual' }
         $retryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $retryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
 
     process {
@@ -75,6 +74,7 @@
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Get' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
 
@@ -84,6 +84,7 @@
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
 
@@ -93,6 +94,7 @@
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                if (Test-PSFFunctionInterrupt) { return }
             }
 
             'Filter' {
@@ -100,12 +102,14 @@
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                if (Test-PSFFunctionInterrupt) { return }
             }
 
             'All' {
                 Invoke-PSFProtectedCommand -ActionString 'Contact.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                if (Test-PSFFunctionInterrupt) { return }
             }
         }
     }

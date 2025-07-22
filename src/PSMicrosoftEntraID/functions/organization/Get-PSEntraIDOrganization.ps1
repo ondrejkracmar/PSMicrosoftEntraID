@@ -46,7 +46,7 @@
             [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
             [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Organization.OrganizationDetail])
             $serializer.ReadObject($stream)
-        } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
     }
     end

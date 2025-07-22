@@ -83,20 +83,6 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
-    }
-    process {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string] $bodySkuId = $SkuId
@@ -125,41 +111,44 @@
                 }
             }
         }
+    }
+    process {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
-                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                        [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                        }
-                        else {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        }
-                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt) { return }
+                    [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                 }
             }
             'Identity\w' {
                 foreach ($user in  $Identity) {
-                    Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                            if ($PassThru.IsPresent) {
-                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                            }
-                            else {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                            }
+                    
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                    if (-not ([object]::Equals($aADUser, $null))) {
+                        [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                            }
+                            Invoke-PSFProtectedCommand -ActionString 'License.Enable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
-                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt) { return }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                    }   
                 }
             }
         }

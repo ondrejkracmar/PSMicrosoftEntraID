@@ -48,6 +48,9 @@
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
         PS C:\> New-PSEntraIDInvitation -InvitedUserEmailAddress user1@contoso.com -InvitedUserDisplayName 'Displayname' -InviteRedirectUrl 'https://url'
@@ -87,7 +90,9 @@
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
-        [switch] $Force
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
     )
 
     begin {
@@ -105,12 +110,6 @@
         }
         else {
             [bool] $cmdLetConfirm = $true
-        }
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
         }
     }
 
@@ -155,11 +154,15 @@
             ccRecipients          = $cCRecipientList
             customizedMessageBody = $InviteMessage
         }
-
-        Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-        if (Test-PSFFunctionInterrupt) { return }
+        if ($PassThru.IsPresent) {
+            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+        }
+        else {
+            Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
+        }
     }
     end {}
 }

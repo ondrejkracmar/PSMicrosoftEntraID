@@ -46,12 +46,6 @@ function Get-PSEntraIDGroupAdditionalProperty {
         [hashtable] $header = @{}
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
@@ -60,8 +54,8 @@ function Get-PSEntraIDGroupAdditionalProperty {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.AdditionalProperty' -ActionStringValues $itemInputObject.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [string] $path = ('groups/{0}' -f $itemInputObject.Id)
-                        ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -71,14 +65,14 @@ function Get-PSEntraIDGroupAdditionalProperty {
                         [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $itemIdentity
                         if (-not([object]::Equals($group, $null))) {
                             [string] $path = ('groups/{0}' -f $group.Id)
-                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

@@ -18,7 +18,8 @@
 				"Pester",
 				"PlatyPS",
 				"PSModuleDevelopment",
-				"PSScriptAnalyzer"
+				"PSScriptAnalyzer",
+				"AzAuth"
 			],
 			"powershellProfileURL": "https://gist.githubusercontent.com/ondrejkracmar/5beceaccb6bd72a7a8ce60993fb9beed/raw/828988ad6a88e0432cc928650bea3b957bba8e43/Profile.ps1"
 		}

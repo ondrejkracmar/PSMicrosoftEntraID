@@ -128,7 +128,6 @@
 
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [timespan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        [bool] $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
 
     process {
@@ -141,7 +140,6 @@
                         -Path 'admin/serviceAnnouncement/messages' `
                         -Query $query `
                         -Method Get `
-                        -Verbose:$cmdLetVerbose `
                         -ErrorAction Stop)
 
                 # Local filter: Service
@@ -168,8 +166,7 @@
                 }
                 return $messageList#>
 
-            } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-
+            } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
             if (Test-PSFFunctionInterrupt) { return }
         }
     }
