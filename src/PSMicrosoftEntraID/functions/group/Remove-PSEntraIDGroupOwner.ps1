@@ -36,6 +36,10 @@
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
     .EXAMPLE
             PS C:\> Remove-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
@@ -60,7 +64,9 @@
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
-        [switch] $Force
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
     )
 
     begin {
@@ -74,56 +80,51 @@
         else {
             [bool] $cmdLetConfirm = $true
         }
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
+        [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
+        if ([object]::Equals($group, $null)) {
+            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
         }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityUser' {
-                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+                foreach ($itemUser in  $User) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                    if (-not ([object]::Equals($aADUser, $null))) {
+                        [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $group.DisplayName -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                        }
+                    }
+                }
             }
             'IdentityInputObject' {
-                [string] $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+                foreach ($itemInputObject in  $InputObject) {
+                    [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $itemInputObject.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues $itemInputObject.UserPrincipalName -Target $group.DisplayName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
             }
         }
-        Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Delete' -ActionStringValues ((($userActionString | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
-            if (-not ([object]::Equals($group, $null))) {
-                switch ($PSCmdlet.ParameterSetName) {
-                    'IdentityUser' {
-                        foreach ($itemUser in  $User) {
-                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                            if (-not ([object]::Equals($aADUser, $null))) {
-                                [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $aADUser.Id)
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                            }
-                            else {
-                                if ($EnableException.IsPresent) {
-                                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                                }
-                            }
-                        }
-                    }
-                    'IdentityInputObject' {
-                        foreach ($itemInputObject in  $InputObject) {
-                            [string] $path = ('groups/{0}/owners/{1}/$ref' -f $group.Id, $itemInputObject.Id)
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        }
-                    }
-                }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
-                }
-            }
-        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
-        if (Test-PSFFunctionInterrupt) { return }
     }
     end {
 

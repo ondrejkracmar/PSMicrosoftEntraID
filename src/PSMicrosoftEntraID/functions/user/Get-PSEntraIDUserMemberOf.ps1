@@ -52,12 +52,6 @@
         }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
@@ -69,12 +63,12 @@
                             [hashtable] $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
                         else {
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -86,12 +80,12 @@
                             [hashtable] $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $aADUser.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
                         else {
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

@@ -41,12 +41,8 @@
     }
     process {
         Invoke-PSFProtectedCommand -ActionString 'Organization.Get' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            [string] $jsonString = Invoke-EntraRequest -Service $service -Path organization -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop | ConvertTo-Json -Depth 4
-            [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-            [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-            [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Organization.OrganizationDetail])
-            $serializer.ReadObject($stream)#>
-        } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            ConvertFrom-RestOrganizationDetail -InputObject(Invoke-EntraRequest -Service $service -Path organization -Query $query -Method Get -ErrorAction Stop)
+        } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
     }
     end

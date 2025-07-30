@@ -39,6 +39,10 @@
         This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
     .EXAMPLE
         PS C:\>Set-PSEntraIDUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
 
@@ -69,13 +73,15 @@
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
-        [switch] $Force
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
     )
 
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [hsashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
+        [hashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{
@@ -87,25 +93,19 @@
         else {
             [bool] $cmdLetConfirm = $true
         }
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
         switch -Regex  ($PSCmdlet.ParameterSetName) {
             '\wUsageLocationCode' {
                 [string] $usgaeLocationTarget = $usageLocationCode
-                [hsashtable] $body = @{
+                [hashtable] $body = @{
                     usageLocation = $usageLocationCode
                 }
             }
             '\wUsageLocationCountry' {
                 [string] $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
-                [hsashtable] $body = @{
+                [hashtable] $body = @{
                     usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
                 }
             }
@@ -113,29 +113,38 @@
         switch -Regex  ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in $InputObject) {
-                    Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                        [string] $path = ("users/{0}" -f $itemInputObject.Id)
-                        [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt) { return }
+                    [string] $path = ("users/{0}" -f $itemInputObject.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                 }
             }
             'Identity\w' {
                 foreach ($user in $Identity) {
-                    Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $user -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            [string] $path = ("users/{0}" -f $aADUser.Id)
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                    if (-not ([object]::Equals($aADUser, $null))) {
+                        [string] $path = ("users/{0}" -f $aADUser.Id)
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                            }
+                            Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $user -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
-                        if (Test-PSFFunctionInterrupt) { return }
-                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt) { return }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                    }
                 }
             }
         }
