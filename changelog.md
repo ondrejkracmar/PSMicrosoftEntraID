@@ -1,6 +1,6 @@
 ﻿# Changelog
 
-## 1.1.0 (2025-07-22)
+## 1.0.0 (2025-07-22)
 - **New:** Added advanced cmdlets for creating and updating Microsoft Entra ID (Azure AD) groups, including support for dynamic and security-enabled groups.
 - **New:** Implemented batch request support for Microsoft Graph API, allowing efficient processing of multiple requests in a single call.
 - **New:** Introduced `Get-PSEntraIDContact` cmdlet for retrieving organization contacts via Graph API.
