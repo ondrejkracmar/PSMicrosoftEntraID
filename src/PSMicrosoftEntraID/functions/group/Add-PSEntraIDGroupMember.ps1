@@ -198,7 +198,6 @@
                         [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -Verbose $false -ErrorAction Stop)
                     } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
-
                 }
             }
         }

@@ -16,7 +16,7 @@
 				"PSFramework",
 				"Profiler",
 				"Pester",
-				"PlatyPS",
+				"Microsoft.Powershell.PlatyPS",
 				"PSModuleDevelopment",
 				"PSScriptAnalyzer",
 				"AzAuth"

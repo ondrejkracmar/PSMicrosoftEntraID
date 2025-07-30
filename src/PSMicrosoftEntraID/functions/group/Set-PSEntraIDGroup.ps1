@@ -112,41 +112,41 @@
         [Alias("Id", "GroupId", "TeamId")]
         [ValidateGroupIdentity()]
         [string[]] $Identity,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
         [ValidateNotNullOrEmpty()]
         [string] $Displayname,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
         [string] $Description,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
         [string] $MailNickname,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
         [ValidateSet('Unified', 'DynamicMembership')]
         [string[]] $GroupTypes,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
         [string] $Visibility,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectAllowExternalSenders')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAllowExternalSenders')]
+        [Parameter(ParameterSetName = 'InputObjectAllowExternalSenders')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAllowExternalSenders')]
         [System.Nullable[bool]]$AllowExternalSenders,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectAutoSubscribeNewMembers')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAutoSubscribeNewMembers')]
+        [Parameter(ParameterSetName = 'InputObjectAutoSubscribeNewMembers')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAutoSubscribeNewMembers')]
         [System.Nullable[bool]]$AutoSubscribeNewMembers,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectHideFromAddressLists')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromAddressLists')]
+        [Parameter(ParameterSetName = 'InputObjectHideFromAddressLists')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromAddressLists')]
         [System.Nullable[bool]]$HideFromAddressLists,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectHideFromOutlookClients')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromOutlookClients')]
+        [Parameter(ParameterSetName = 'InputObjectHideFromOutlookClients')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromOutlookClients')]
         [System.Nullable[bool]]$HideFromOutlookClients,
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateDynamicGroup')]
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateDynamicGroup')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
         [string] $MembershipRule,
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateDynamicGroup')]
-        [Parameter(Mandatory = $true , ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateDynamicGroup')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
         [ValidateSet('On', 'Paused', 'Off')]
         [string] $MembershipRuleProcessingState,
         [Parameter()]

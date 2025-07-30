@@ -83,6 +83,12 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool] $cmdLetConfirm = $false
+        }
+        else {
+            [bool] $cmdLetConfirm = $true
+        }
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string] $bodySkuId = $SkuId

@@ -72,10 +72,29 @@
     Specifies whether the user must change password at next sign-in using MFA.
 
 .PARAMETER EnableException
-    If specified, throws terminating errors instead of user-friendly warnings.
+    This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+    dly, but allows catching exceptions in calling scripts.
+
+.PARAMETER WhatIf
+    Enables the function to simulate what it will do instead of actually executing.
+
+.PARAMETER Force
+    The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+    The command then prompts you to acknowledge each action before it continues.
+    When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+    This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+    A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+.PARAMETER Confirm
+    The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+    The command then prompts you to acknowledge each action before it continues.
+    When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+    This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+    A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 .PARAMETER PassThru
-    Returns the updated user object.
+    When specified, the cmdlet will not execute the disable license action but will instead
+    return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 .EXAMPLE
     Set-PSEntraIDUser -Identity "john.doe@contoso.com" -JobTitle "Manager"
@@ -89,73 +108,73 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateUser')]
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
-        [Alias('Id', 'UserPrincipalName', 'Mail')]
+        [ValidateUserIdentity()]
+        [Alias('Id', 'UserPrincipalName')]
         [string[]] $Identity,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string] $Mail,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $DisplayName,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'IdentityUpdateUser')]
         [string] $GivenName,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $Surname,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $JobTitle,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $Department,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'IdentityUpdateUser')]
         [string] $CompanyName,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $OfficeLocation,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $City,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $PostalCode,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $State,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $Country,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $MobilePhone,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string[]] $BusinessPhones,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $UsageLocation,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $PreferredLanguage,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [bool] $AccountEnabled,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [SecureString] $Password,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [bool] $ForceChangePasswordNextSignIn,
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [bool] $ForceChangePasswordNextSignInWithMfa,
-
-        [Parameter()]
-        [switch] $EnableException,
-        [Parameter()]
-        [switch] $PassThru
+        [Parameter()] [switch] $EnableException,
+        [Parameter()] [switch] $Force,
+        [Parameter()] [switch] $PassThru
     )
 
     begin {
@@ -164,6 +183,12 @@
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool] $cmdLetConfirm = $false
+        }
+        else {
+            [bool] $cmdLetConfirm = $true
+        }
     }
 
     process {
@@ -171,6 +196,7 @@
             'InputObjectUpdateUser' {
                 foreach ($itemInputObject in $InputObject) {
                     [hashtable] $body = @{}
+                    if ($PSBoundParameters.ContainsKey('Mail')) { $body['mail'] = $Mail }
                     if ($PSBoundParameters.ContainsKey('DisplayName')) { $body['displayName'] = $DisplayName }
                     if ($PSBoundParameters.ContainsKey('GivenName')) { $body['givenName'] = $GivenName }
                     if ($PSBoundParameters.ContainsKey('Surname')) { $body['surname'] = $Surname }
@@ -188,9 +214,7 @@
                     if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
                     if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }
                     if ($PSBoundParameters.ContainsKey('Password')) {
-                        $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-                            [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-                        $body['passwordProfile'] = @{ password = $plainPassword }
+                        $body['passwordProfile'] = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
                         if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
                             $body['passwordProfile']['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
                         }
@@ -205,16 +229,17 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $user.DisplayName -Target $user.Id -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }
             'IdentityUpdateUser' {
                 foreach ($user in $Identity) {
-                    [PSMicrosoftEntraID.Userss.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                     if (-not ([object]::Equals($aADUser, $null))) {
                         [hashtable] $body = @{}
+                        if ($PSBoundParameters.ContainsKey('Mail')) { $body['mail'] = $Mail }
                         if ($PSBoundParameters.ContainsKey('DisplayName')) { $body['displayName'] = $DisplayName }
                         if ($PSBoundParameters.ContainsKey('GivenName')) { $body['givenName'] = $GivenName }
                         if ($PSBoundParameters.ContainsKey('Surname')) { $body['surname'] = $Surname }
@@ -232,9 +257,7 @@
                         if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
                         if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }
                         if ($PSBoundParameters.ContainsKey('Password')) {
-                            $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-                                [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-                            $body['passwordProfile'] = @{ password = $plainPassword }
+                            $body['passwordProfile'] = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
                             if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
                                 $body['passwordProfile']['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
                             }
@@ -242,14 +265,14 @@
                                 $body['passwordProfile']['forceChangePasswordNextSignInWithMfa'] = $ForceChangePasswordNextSignInWithMfa
                             }
                         }
-                        [string] $path = ("users/{0}" -f $itemInputObject.Id)
+                        [string] $path = ("users/{0}" -f $aADUser.Id)
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $user.DisplayName -Target $user.Id -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
