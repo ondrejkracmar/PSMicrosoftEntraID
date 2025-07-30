@@ -13,26 +13,22 @@
 		PS C:\> Get-PSEntraIDUserLicenseDetail -InputObject (Invoke-RestRequest -Service 'graph' -Path pstnCalls -Method Get -ErrorAction Stop)
 		Retrieves the specified User Office 365 License Detail and converts it into something userfriendly
 	#>
-    [CmdletBinding()]
     param (
         $InputObject
     )
+    if (-not $InputObject) { return }
 
-    process {
-        if (-not $InputObject) { return }
-        $jsonString = $InputObject | ConvertTo-Json -Depth 3
+    $jsonString = $InputObject | ConvertTo-Json -Depth 3
 
-        if ($InputObject -is [array]) {
-            [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-            [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-            [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku[]])
-        }
-        else {
-            [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-            [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-            [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku])
-        }
-        return $serializer.ReadObject($stream)
+    $type = if ($InputObject -is [array]) {
+        [PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku[]]
+    }
+    else {
+        [PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku]
     }
 
+    $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+    $stream = [System.IO.MemoryStream]::new($byteArray)
+    $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
+    return $serializer.ReadObject($stream)
 }

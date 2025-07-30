@@ -1,48 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net47</TargetFramework>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<LangVersion>8.0</LangVersion>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
-		<DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Release)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\..\PSMicrosoftEntraID\bin</OutputPath>
-		<DocumentationFile>..\..\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<AssemblyName>PSMicrosoftEntraID</AssemblyName>
+		<RootNamespace>PSMicrosoftEntraID</RootNamespace>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<OutputPath>../../PSMicrosoftEntraID/bin/</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<PreserveCompilationContext>false</PreserveCompilationContext>
+		<PublishTrimmed>false</PublishTrimmed>
+		<PublishSingleFile>false</PublishSingleFile>
+		<SelfContained>false</SelfContained>
+		<RuntimeIdentifier></RuntimeIdentifier>
+		<!-- žádný RID = žádné runtimes -->
 	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="Microsoft.Management.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.Management.Infrastructure\v4.0_1.0.0.0__31bf3856ad364e35\Microsoft.Management.Infrastructure.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-		</Reference>
-		<Reference Include="System.IO.Compression" />
-		<Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\v4.0_3.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Xml.Linq" />
-		<Reference Include="System.Data.DataSetExtensions" />
-		<Reference Include="Microsoft.CSharp" />
-		<Reference Include="System.Net.Http" />
-		<Reference Include="System.Xml" />
+
+	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
 	</ItemGroup>
+
+	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.12" />
+	</ItemGroup>
+
+	<Target Name="RemoveUnwantedOutputs" AfterTargets="Build">
+		<RemoveDir Directories="$(OutputPath)ref" />
+		<RemoveDir Directories="$(OutputPath)runtimes" />
+	</Target>
+
 </Project>

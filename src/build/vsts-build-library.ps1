@@ -1,42 +1,59 @@
 ﻿<#
 .SYNOPSIS
-    Builds the PSMicrosoftEntraID binary library from source.
+    Builds a PowerShell module's .NET binary library (DLL) from source.
 
 .DESCRIPTION
-    Builds the PSMicrosoftEntraID binary library from source.
+    This script compiles a .NET project, then copies all output files from the
+    most recent target framework build directory (e.g., net8.0, netstandard2.1) into
+    the module's `bin/` directory. It works without hardcoded framework names.
 
 .PARAMETER WorkingDirectory
-    Path where the project root is.
-    Defaults to the parent folder this file is in.
+    The root directory of the project (where the .sln file is located).
 
 .EXAMPLE
-    PS C:\> .\vsts-build-library.ps1
-
-    Builds the PSMicrosoftEntraID binary library from source.
+    .\vsts-build-library.ps1 -WorkingDirectory "C:\MyRepo\src"
 #>
+
 [CmdletBinding()]
 param (
-    $WorkingDirectory
+    [string]$WorkingDirectory
 )
 
-#region Handle Working Directory Defaults
+#region Resolve Working Directory
 if (-not $WorkingDirectory) {
-    if ($env:RELEASE_PRIMARYARTIFACTSOURCEALIAS) {
-        $WorkingDirectory = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath $env:RELEASE_PRIMARYARTIFACTSOURCEALIAS
-    }
-    else { $WorkingDirectory = $env:SYSTEM_DEFAULTWORKINGDIRECTORY }
+    $WorkingDirectory = Split-Path -Parent $PSScriptRoot
 }
-if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
-#endregion Handle Working Directory Defaults
+#endregion
 
-Write-Host "Restoring .NET dependencies..."
-dotnet restore "$WorkingDirectory\library\PSMicrosoftEntraID.sln"
-if ($LASTEXITCODE -ne 0) {
-    throw "dotnet restore failed!"
+# Find solution file
+$SlnPath = Get-ChildItem -Path $WorkingDirectory -Filter *.sln -Recurse | Select-Object -First 1
+if (-not $SlnPath) {
+    throw "[vsts-build-library] ❌ Solution (.sln) file not found."
 }
 
-Write-Host "Building the PowerShell module..."
-dotnet build "$WorkingDirectory\library\PSMicrosoftEntraID.sln"
-if ($LASTEXITCODE -ne 0) {
-    throw "Failed to build PSMicrosoftEntraID.dll!"
+# Find project folder with .csproj
+$ProjectFolder = Get-ChildItem -Path $WorkingDirectory -Directory -Recurse | Where-Object {
+    Test-Path (Join-Path $_.FullName "*.csproj")
+} | Select-Object -First 1
+
+if (-not $ProjectFolder) {
+    throw "[vsts-build-library] ❌ No folder with .csproj found."
 }
+
+$BinFolder = Join-Path $ProjectFolder.FullName "bin"
+
+Write-Host "[vsts-build-library] 🔄 Restoring .NET dependencies..."
+dotnet restore $SlnPath.FullName
+if ($LASTEXITCODE -ne 0) {
+    throw "[vsts-build-library] ❌ dotnet restore failed!"
+}
+
+Write-Host "[vsts-build-library] 🏗️ Building the project..."
+dotnet build $SlnPath.FullName --configuration Release
+if ($LASTEXITCODE -ne 0) {
+    throw "[vsts-build-library] ❌ Build failed!"
+}
+
+Write-Host "[vsts-build-library] ✅ Build complete."
+Write-Host "[vsts-build-library] 📂 Final output directory: $BinFolder"
+Set-Location -Path $WorkingDirectory

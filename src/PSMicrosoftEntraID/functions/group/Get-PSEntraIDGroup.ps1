@@ -64,12 +64,6 @@
         }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
@@ -83,15 +77,15 @@
                     $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f $group)
 
                     Invoke-PSFProtectedCommand -ActionString 'Group.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Groups.Group[]] $mailNickName = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $mailNickNameQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [PSMicrosoftEntraID.Groups.Group[]] $mailNickName = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $mailNickNameQuery -Method Get  -ErrorAction Stop)
                         if (-not([object]::Equals($mailNickName, $null))) {
                             [string] $groupId = $mailNickName[0].Id
                         }
                         else {
                             [string] $groupId = $group
                         }
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $groupId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $groupId) -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -99,8 +93,8 @@
                 foreach ($group in $DisplayName) {
                     $query['$Filter'] = ("startswith(displayName,'{0}')" -f $group)
                     Invoke-PSFProtectedCommand -ActionString 'Group.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -110,21 +104,21 @@
                     [hashtable] $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
                     Invoke-PSFProtectedCommand -ActionString 'Group.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -Header $header -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -Header $header  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'Group.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 if (Test-PSFFunctionInterrupt) { return }
             }
             'All' {
                 if ($All.IsPresent) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\userguest .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\userguest .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\batch\\batchresponsepayload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\batch\\batchresponsepayload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\batch\\response.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\batch\\response.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -22,15 +26,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "UserGuest .cs",
-              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\UserGuest .cs",
-              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\UserGuest .cs",
-              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\UserGuest .cs",
-              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\UserGuest .cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABcAAAA1AAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Response.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Batch\\Response.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Batch\\Response.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Batch\\Response.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Batch\\Response.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T09:25:33.183Z",
+              "WhenOpened": "2025-07-30T12:07:28.767Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BatchResponsePayload.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Batch\\BatchResponsePayload.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Batch\\BatchResponsePayload.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Batch\\BatchResponsePayload.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Batch\\BatchResponsePayload.cs",
+              "ViewState": "AgIAAAsAAACgmZmZmRkqwBwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-30T12:07:11.067Z",
               "EditorCaption": ""
             }
           ]

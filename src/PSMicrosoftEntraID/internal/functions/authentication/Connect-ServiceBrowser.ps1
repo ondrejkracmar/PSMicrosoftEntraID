@@ -34,6 +34,10 @@
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
 
+	.PARAMETER RedirectUri
+		The Redirect URI to send with the request.
+		May be different from the actual local port you want to listen on (e.g. when redirecting to an alternative name on top of localhost).
+
 	.PARAMETER Browser
 		The path to the browser to use for the authentication flow.
 		Provide the full path to the executable.
@@ -83,6 +87,10 @@
 		[int]
 		$LocalPort = 8080,
 
+		[AllowEmptyString()]
+		[string]
+		$RedirectUri,
+
 		[string]
 		$Browser,
 
@@ -102,7 +110,8 @@
 		Add-Type -AssemblyName System.Web
 		if (-not $Scopes) { $Scopes = @('.default') }
 
-		$redirectUri = "http://localhost:$LocalPort"
+		$localUri = "http://localhost:$LocalPort"
+		if (-not $RedirectUri) { $RedirectUri = $localUri }
 		$actualScopes = $Scopes | Resolve-ScopeName -Resource $Resource
 
 		if (-not $NoReconnect) {
@@ -114,7 +123,7 @@
 		$parameters = @{
 			client_id     = $ClientID
 			response_type = 'code'
-			redirect_uri  = $redirectUri
+			redirect_uri  = $RedirectUri
 			response_mode = 'query'
 			scope         = $actualScopes -join ' '
 			state         = $state
@@ -129,14 +138,17 @@
 		$uriFinal = $uri + ($paramStrings -join '&')
 		Write-Verbose "Authorize Uri: $uriFinal"
 
-		$redirectTo = 'https://raw.githubusercontent.com/FriedrichWeinmann/MiniGraph/master/nothing-to-see-here.txt'
+		#$redirectTo = 'https://raw.githubusercontent.com/FriedrichWeinmann/EntraAuth/master/nothing-to-see-here.txt'
+		#$redirectTo = (Join-Path -Path $script:ModuleRoot -ChildPath 'nothing-to-see-here.txt') -replace '\\','/'
+		$redirectTo = "http://localhost:$(Get-Random -Minimum 9800 -Maximum 9999)/"
 		if ((Get-Random -Minimum 10 -Maximum 99) -eq 66) {
 			$redirectTo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 		}
 		
 		# Start local server to catch the redirect
 		$http = [System.Net.HttpListener]::new()
-		$http.Prefixes.Add("$redirectUri/")
+		$http.Prefixes.Add(("$RedirectUri/" -replace '//$', '/'))
+		if ($localUri -ne $RedirectUri) { $http.Prefixes.Add(("$localUri/" -replace '//$', '/')) }
 		try { $http.Start() }
 		catch { Invoke-TerminatingException -Cmdlet $PSCmdlet -Message "Failed to create local http listener on port $LocalPort. Use -LocalPort to select a different port. $_" -Category OpenError }
 
@@ -161,14 +173,32 @@ $uriFinal
 			while (-not $task.IsCompleted) {
 				Start-Sleep -Milliseconds 200
 			}
+			$http2 = [System.Net.HttpListener]::new()
+			$http2.Prefixes.Add($redirectTo)
+			$http2.Start()
+
 			$context = $task.Result
 			$context.Response.Redirect($redirectTo)
 			$context.Response.Close()
 			$authorizationCode, $stateReturn, $sessionState = $context.Request.Url.Query -split "&"
+
+			$task2 = $http2.GetContextAsync()
+			while (-not $task2.IsCompleted) {
+				Start-Sleep -Milliseconds 200
+			}
+			$context2 = $task2.Result
+			$bytes = [System.Text.Encoding]::UTF8.GetBytes('Authentication flow completed, you can close the tab now.')
+			$context2.Response.ContentEncoding = [System.Text.Encoding]::UTF8
+			$context2.Response.OutputStream.Write($bytes,0,$bytes.Length)
+			$context2.Response.Close()
 		}
 		finally {
 			$http.Stop()
 			$http.Dispose()
+			if ($http2.IsListening) {
+				$http2.Stop()
+				$http2.Dispose()
+			}
 		}
 
 		if (-not $stateReturn) {
@@ -191,7 +221,7 @@ $uriFinal
 			client_id    = $ClientID
 			scope        = $actualScopes -join " "
 			code         = $actualAuthorizationCode
-			redirect_uri = $redirectUri
+			redirect_uri = $RedirectUri
 			grant_type   = 'authorization_code'
 		}
 		$uri = "$AuthenticationUrl/$TenantID/oauth2/v2.0/token"

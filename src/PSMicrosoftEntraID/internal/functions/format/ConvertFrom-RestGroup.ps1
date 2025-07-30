@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Converts a REST API response object representing a group into a more user-friendly format.
-	
+
 	.DESCRIPTION
 		Converts a REST API response object representing a group into a more user-friendly format.
 
@@ -20,19 +20,19 @@
 	param (
 		$InputObject
 	)
-	
+
 	if (-not $InputObject) { return }
 	$jsonString = $InputObject | ConvertTo-Json -Depth 3
-	
-	if ($InputObject -is [array]) {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Groups.Group[]])
+
+	$type = if ($InputObject -is [array]) {
+		[PSMicrosoftEntraID.Groups.Group[]]
 	}
 	else {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Groups.Group])
+		[PSMicrosoftEntraID.Groups.Group]
 	}
+
+	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+	$stream = [System.IO.MemoryStream]::new($byteArray)
+	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
 	return $serializer.ReadObject($stream)
 }

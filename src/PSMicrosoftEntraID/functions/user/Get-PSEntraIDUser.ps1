@@ -77,12 +77,6 @@
         }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else{
-            [boolean] $cmdLetVerbose =  $false
-        }
     }
 
     process {
@@ -96,7 +90,7 @@
                     }
                     $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.User[]] $userMail = ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                        [PSMicrosoftEntraID.Users.User[]] $userMail = ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get  -ErrorAction Stop)
                         if (-not([object]::Equals($userMail, $null))) {
                             [string] $userId = $userMail[0].Id
 
@@ -104,16 +98,17 @@
                         else {
                             [string] $userId = $user
                         }
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}' -f $userId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}' -f $userId) -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
             'Name' {
                 foreach ($user in $Name) {
                     $query['$Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surName,'{0}')" -f $User)
                     Invoke-PSFProtectedCommand -ActionString 'User.Name' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -123,14 +118,14 @@
                     [hashtable] $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Header $header -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Header $header  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -146,15 +141,15 @@
                 if ($Disabled.IsPresent) {
                     $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
                 else {
                     $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get  -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -165,13 +160,14 @@
                         $header['ConsistencyLevel'] = 'eventual'
                         $query['$Filter'] = "accountEnabled eq false"
                         Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues 'accountEnabled eq false' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get  -ErrorAction Stop)
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        if (Test-PSFFunctionInterrupt) { return }
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'User.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get  -ErrorAction Stop)
+                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
