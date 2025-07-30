@@ -147,10 +147,10 @@
         }
     }
     process {
-        [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
+                    [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
                     [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $itemInputObject |
                     Get-PSEntraIDUserLicenseDetail |
                     Where-Object -Property SkuId -EQ -Value $bodySkuId |
@@ -161,19 +161,18 @@
                         if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
                             [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
                             Where-Object { $PSItem -notin $existingDisabledServicePlanList }
-                            $bodyDisabledServicePlanList = $existingDisabledServicePlanList + $bodyNewDisabledServicePlanList
+                            $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                            $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
                         }
                         else {
-                            [string[]] $bodyDisabledServicePlanList = @()
+                            [string[]] $bodyDisabledServicePlanList = @($bodyServicePlanId)
                         }
                     }
-                    else {
-                        [string[]] $bodyDisabledServicePlanList = @()
-                    }
+                        
                     [hashtable] $body = @{
                         addLicenses    = @(
                             @{
-                                disabledPlans = $bodyDisabledServicePlanList
+                                disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique)
                                 skuId         = $bodySkuId
                             }
                         )
@@ -181,18 +180,23 @@
                     }
                     [string] $path = ("users/{0}/{1}" -f $InputObject.Id, 'assignLicense')
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        if ($bodyDisabledServicePlanList.Count -gt 0) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
+                        if ($bodyDisabledServicePlanList.Count -gt 0) {
+                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
                     }
                 }
             }
             'Identity\w' {
                 foreach ($user in  $Identity) {
+                    [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                     if (-not ([object]::Equals($aADUser, $null))) {
                         [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $aADUser |
@@ -205,34 +209,37 @@
                             if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
                                 [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
                                 Where-Object { $PSItem -notin $existingDisabledServicePlanList }
-                                [string[]] $bodyDisabledServicePlanList = $existingDisabledServicePlanList + $bodyNewDisabledServicePlanList
+                                $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                                $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
                             }
                             else {
-                                $bodyDisabledServicePlanList = @()
+                                [string[]] $bodyDisabledServicePlanList = @($bodyServicePlanId)
                             }
                         }
-                        else {
-                            [string[]] $bodyDisabledServicePlanList = @()
-                        }
+                        
                         [hashtable] $body = @{
                             addLicenses    = @(
                                 @{
-                                    disabledPlans = $bodyDisabledServicePlanList
+                                    disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique)
                                     skuId         = $bodySkuId
                                 }
                             )
                             removeLicenses = @()
                         }
+
                         [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            if ($bodyDisabledServicePlanList.Count -gt 0) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
-
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
+                            if (($bodyDisabledServicePlanList.Count -gt 0)) {
+                                Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
                         }
                     }
                     else {

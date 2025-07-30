@@ -105,6 +105,7 @@
         [Parameter(ParameterSetName = 'CreateUser', Mandatory = $true, ValueFromPipelineByPropertyName = $true)] [SecureString] $Password,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [bool] $ForceChangePasswordNextSignIn = $true,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [bool] $ForceChangePasswordNextSignInWithMfa = $false,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $Mail,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [bool] $AccountEnabled = $true,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $UsageLocation,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $JobTitle,
@@ -121,8 +122,8 @@
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeId,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeType,
         [Parameter()] [switch] $EnableException,
-        [Parameter()] [switch] $PassThru,
-        [Parameter()] [switch] $Force
+        [Parameter()] [switch] $Force,
+        [Parameter()] [switch] $PassThru
     )
 
     begin {
@@ -130,18 +131,22 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{ 'Content-Type' = 'application/json' }
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool] $cmdLetConfirm = $false
+        }
+        else {
+            [bool] $cmdLetConfirm = $true
+        }
     }
 
     process {
         [hashtable] $body = @{}
-
+        [hashtable] $passwordProfile = @{}
         Switch ($PSCmdlet.ParameterSetName) {
-            'CreateGroup' {
-                $plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-                    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-
-                $passwordProfile = @{ password = $plainPassword }
+            'CreateUser' {
+                
+                $passwordProfile = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
                 if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
                     $passwordProfile['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
                 }
@@ -157,6 +162,7 @@
                     passwordProfile   = $passwordProfile
                 }
 
+                if ($PSBoundParameters.ContainsKey('Mail')) { $body['mail'] = $Mail }
                 if ($PSBoundParameters.ContainsKey('GivenName')) { $body['givenName'] = $GivenName }
                 if ($PSBoundParameters.ContainsKey('Surname')) { $body['surname'] = $Surname }
                 if ($PSBoundParameters.ContainsKey('UsageLocation')) { $body['usageLocation'] = $UsageLocation }
@@ -187,7 +193,7 @@
         else {
             Invoke-PSFProtectedCommand -ActionString 'User.New' -ActionStringValues $UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path 'users' -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -Confirm:$Force
+            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

@@ -15,22 +15,21 @@
 		Retrieves the specified user and converts it into something userfriendly
 
 	#>
-
 	param (
 		$InputObject
 	)
 	if (-not $InputObject) { return }
 	$jsonString = $InputObject | ConvertTo-Json -Depth 4
 
-	if ($InputObject -is [array]) {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Contacts.Contact[]])
+	$type = if ($InputObject -is [array]) {
+		[PSMicrosoftEntraID.Contacts.Contact[]]
 	}
 	else {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Contacts.Contact])
+		[PSMicrosoftEntraID.Contacts.Contact]
 	}
+
+	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+	$stream = [System.IO.MemoryStream]::new($byteArray)
+	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
 	return $serializer.ReadObject($stream)
 }

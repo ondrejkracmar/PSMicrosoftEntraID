@@ -20,6 +20,7 @@
         Last Updated: 2025-03-06
     #>
 
+    [CmdletBinding()]
     param (
         $InputObject
     )
@@ -27,15 +28,19 @@
     if (-not $InputObject) { return }
 
     $jsonString = $InputObject | ConvertTo-Json -Depth 4
+
+    $type = if ($InputObject -is [array]) {
+        [PSMicrosoftEntraID.Users.UserGuest[]]
+    }
+    else {
+        [PSMicrosoftEntraID.Users.UserGuest]
+    }
+
     [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
     [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
 
-    if ($InputObject -is [array]) {
-        [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Users.UserGuest[]])
-    }
-    else {
-        [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.Users.UserGuest])
-    }
-
+    $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+    $stream = [System.IO.MemoryStream]::new($byteArray)
+    $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
     return $serializer.ReadObject($stream)
 }

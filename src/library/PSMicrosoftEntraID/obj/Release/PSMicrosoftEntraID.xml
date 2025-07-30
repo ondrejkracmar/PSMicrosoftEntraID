@@ -20,6 +20,29 @@
             Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> class.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.Batch.BatchResponsePayload">
+            <summary>
+            Represents the entire payload returned by a Microsoft Graph batch operation.
+            Contains both the original requests and the corresponding responses as returned by the API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.BatchResponsePayload.Requests">
+            <summary>
+            Gets or sets the list of requests sent in the batch operation.
+            This property typically mirrors the original batch input for traceability.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.BatchResponsePayload.Responses">
+            <summary>
+            Gets or sets the list of responses returned from Microsoft Graph for each request in the batch.
+            The order and number of responses may not always match the requests, so matching by Id is recommended.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.BatchResponsePayload.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Batch.BatchResponsePayload"/> class.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Batch.Request">
             <summary>
             Represents a single request to Microsoft Entra ID (Azure AD) in a batch scenario.
@@ -68,6 +91,43 @@
             Returns a string representation for debugging.
             </summary>
             <returns>String describing the request Id, Method, Url.</returns>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Batch.Response">
+            <summary>
+            Represents a single response from Microsoft Graph API in a batch scenario.
+            Not all properties are guaranteed to be present; headers and body may be null if not returned by the API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Response.Id">
+            <summary>
+            Gets or sets the unique integer identifier of this response (matches request Id).
+            Always present.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Response.Status">
+            <summary>
+            Gets or sets the HTTP status code returned by the API (e.g. 200, 404, 500).
+            Always present.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Response.Headers">
+            <summary>
+            Gets or sets the HTTP headers of the response as a hashtable (key-value pairs).
+            May be null if not present in the response.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Batch.Response.Body">
+            <summary>
+            Gets or sets the body of the response as a hashtable (typically parsed JSON).
+            May be null if the response has no body or an error occurred.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Batch.Response.ToString">
+            <summary>
+            Returns a string representation for debugging purposes.
+            Indicates whether body and headers are present.
+            </summary>
+            <returns>A string describing the response Id, Status, and presence of headers/body.</returns>
         </member>
         <member name="T:PSMicrosoftEntraID.Commands.NewPSEntraIDBatchRequest">
             <summary>
