@@ -73,7 +73,6 @@
         When specified, the cmdlet will not execute the disable license action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
-
     .EXAMPLE
         PS C:\> New-PSEntraIDUser -DisplayName 'New group' -Description 'Description of new froup'
 
@@ -91,20 +90,20 @@
         [string] $Description,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string] $MailNickname,
-        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [System.Nullable[bool] ]$MailEnabled,
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [System.Nullable[bool] ]$MailEnabled = $false,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]] $IsAssignableToRole,
-        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]] $SecurityEnabled = $true,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [string] $Classification,
-        [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('Unified', 'DynamicMembership')]
-        [string[]] $GroupTypes,
+        [string[]] $GroupTypes = 'Unified',
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
-        [string] $Visibility,
+        [string] $Visibility = 'Private',
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateUserIdentity()]
         [string[]] $Owners,
