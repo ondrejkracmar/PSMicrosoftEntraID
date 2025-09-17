@@ -72,7 +72,7 @@
                 foreach ($contact in $Identity) {
                     $query['$filter'] = "mail eq '$contact'"
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Get' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                        ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -82,7 +82,7 @@
                 foreach ($contact in $Name) {
                     $query['$filter'] = "startswith(displayName,'$contact') or startswith(givenName,'$contact') or startswith(surname,'$contact')"
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                        ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -92,7 +92,7 @@
                 $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'$_'" } -join ',')
                 $query['$filter'] = $filterString
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }
@@ -100,14 +100,14 @@
             'Filter' {
                 $query['$filter'] = $Filter
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }
 
             'All' {
                 Invoke-PSFProtectedCommand -ActionString 'Contact.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

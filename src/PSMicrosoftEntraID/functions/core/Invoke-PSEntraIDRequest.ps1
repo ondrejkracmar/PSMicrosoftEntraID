@@ -139,7 +139,7 @@
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'Request.Invoke' -ActionStringValues $Path -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            Invoke-EntraRequest @param -Service $service -Verbose:$($cmdLetVerbose) -ErrorAction Stop
+            Invoke-EntraRequest @param -Service $service -ErrorAction Stop
         } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
