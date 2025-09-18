@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## 1.0.2 (2025-09-18)
+- **Fix:** Move License and README.MD file to root folder.
+
+## 1.0.1 (2025-09-17)
+- **Fix:** Incorrect verbosing of Get-PSEntraIDContact cmdlet.
+
 ## 1.0.0 (2025-07-22)
 - **New:** Added advanced cmdlets for creating and updating Microsoft Entra ID (Azure AD) groups, including support for dynamic and security-enabled groups.
 - **New:** Implemented batch request support for Microsoft Graph API, allowing efficient processing of multiple requests in a single call.
