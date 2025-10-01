@@ -1,0 +1,25 @@
+﻿using System.Runtime.Serialization;
+
+namespace PSMicrosoftEntraID.DirectoryManagement
+{
+    /// <summary>
+    /// Represents a member (user, group, or device) in an administrative unit, as per Microsoft Graph API.
+    /// </summary>
+    [DataContract]
+    public class Member
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "@odata.type")]
+        public string ODataType { get; set; }
+
+        [DataMember(Name = "displayName")]
+        public string DisplayName { get; set; }
+
+        [DataMember(Name = "userPrincipalName")]
+        public string UserPrincipalName { get; set; }
+
+        // Add additional properties as needed based on your use case or Graph API schema
+    }
+}

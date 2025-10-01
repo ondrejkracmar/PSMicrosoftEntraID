@@ -1,0 +1,30 @@
+﻿using System.Runtime.Serialization;
+
+namespace PSMicrosoftEntraID.DirectoryManagement
+{
+    /// <summary>
+    /// Represents identity information for a role member in a scoped role membership.
+    /// </summary>
+    [DataContract]
+    public class Identity
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier for the identity.
+        /// </summary>
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display name for the identity.
+        /// </summary>
+        [DataMember(Name = "displayName")]
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user principal name for the identity.
+        /// </summary>
+        [DataMember(Name = "userPrincipalName")]
+        public string UserPrincipalName { get; set; }
+        // Add more properties as needed from Graph API
+    }
+}

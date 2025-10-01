@@ -249,6 +249,145 @@
             Proxy addresses associated with the contact.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit">
+            <summary>
+            Represents an administrative unit in Microsoft Entra ID.
+            Administrative units restrict permissions in a role to any portion of your organization that you define.
+            For example, you could use administrative units to delegate the Helpdesk Administrator role to regional support specialists, 
+            so they can manage users only in the region that they support.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.Id">
+            <summary>
+            Gets or sets the unique identifier of the administrative unit.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.CreatedDateTime">
+            <summary>
+            Gets or sets the date and time when the administrative unit was created.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.DeletedDateTime">
+            <summary>
+            Gets or sets the date and time when the administrative unit was deleted.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.DisplayName">
+            <summary>
+            Gets or sets the display name of the administrative unit.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.Description">
+            <summary>
+            Gets or sets the description of the administrative unit.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.Visibility">
+            <summary>
+            Gets or sets the visibility of the administrative unit.
+            Controls whether the administrative unit and its members are hidden or public.
+            Can be HiddenMembership or Public. If not set, the default behavior is Public.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.IsMemberManagementRestricted">
+            <summary>
+            Gets or sets a value indicating whether the management of members in this administrative unit is restricted to administrators.
+            If true, only administrators can manage the members of this administrative unit.
+            If false, both administrators and users can manage the members.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.Members">
+            <summary>
+            Gets or sets the collection of members in this administrative unit.
+            This property is read-only and can include users, groups, and devices.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.ScopedRoleMembers">
+            <summary>
+            Gets or sets the collection of scoped role members in this administrative unit.
+            This property is read-only and represents users or groups with administrative roles scoped to this unit.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit.Extensions">
+            <summary>
+            Gets or sets additional extensions for the administrative unit.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.DirectoryManagement.Extension">
+            <summary>
+            Represents an extension object for an administrative unit, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Extension.Id">
+            <summary>
+            Gets or sets the unique identifier for the extension.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.DirectoryManagement.Identity">
+            <summary>
+            Represents identity information for a role member in a scoped role membership, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Identity.Id">
+            <summary>
+            Gets or sets the unique identifier for the identity or actor.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Identity.DisplayName">
+            <summary>
+            Gets or sets the display name of the identity.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Identity.TenantId">
+            <summary>
+            Gets or sets the unique identity of the tenant. Optional.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.DirectoryManagement.Member">
+            <summary>
+            Represents a member (user, group, or device) in an administrative unit, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Member.Id">
+            <summary>
+            Gets or sets the unique identifier for the member object.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.Member.DeletedDateTime">
+            <summary>
+            Gets or sets the date and time when this object was deleted. Always null when the object hasn't been deleted.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.DirectoryManagement.ScopedRoleMember">
+            <summary>
+            Represents a scoped role member in an administrative unit, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.ScopedRoleMember.Id">
+            <summary>
+            Gets or sets the unique identifier for the scoped-role membership.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.ScopedRoleMember.RoleId">
+            <summary>
+            Gets or sets the unique identifier for the directory role that the member is in.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.ScopedRoleMember.AdministrativeUnitId">
+            <summary>
+            Gets or sets the unique identifier for the administrative unit that the directory role is scoped to.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.ScopedRoleMember.RoleMemberInfo">
+            <summary>
+            Gets or sets the role member identity information. Represents the user that is a member of this scoped-role.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Environment">
             <summary>
             What environment this service should connect to.

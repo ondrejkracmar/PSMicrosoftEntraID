@@ -77,6 +77,10 @@
 		'Add-PSEntraIDGroupOwner'
 		'Remove-PSEntraIDGroupOwner'
 		'Sync-PSEntraIDGroupMember'
+		'Get-PSEntraIDAdministrativeUnit'
+		'New-PSEntraIDAdministrativeUnit'
+		'Set-PSEntraIDAdministrativeUnit'
+		'Remove-PSEntraIDAdministrativeUnit'
 		'Set-PSEntraIDCommandRetry'
 		'Get-PSEntraIDCommandRetry'
 	)
