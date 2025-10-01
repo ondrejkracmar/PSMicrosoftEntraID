@@ -28,6 +28,7 @@ If you are planning to build a web application or a desktop app for end users ho
 + [Creating an Application](creating-applications.md)
 + [Application vs. Delegate Authentication](application-vs-delegate.md)
 + [API Permissions and you](api-permissions.md)
++ [Cmdlet Permissions Reference](cmdlet-permissions.md)
 + [Managing an Application & Troubleshooting logins](managing-applications.md)
 
 > Setting up Authentication
