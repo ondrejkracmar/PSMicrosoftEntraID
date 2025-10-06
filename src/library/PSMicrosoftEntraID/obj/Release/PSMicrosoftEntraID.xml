@@ -1245,6 +1245,86 @@
             Indicates whether the message is marked as favorite.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.Users.Invitations.Invitation">
+            <summary>
+            Represents an invitation resource in Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUserDisplayName">
+            <summary>
+            Gets or sets the display name of the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUserEmailAddress">
+            <summary>
+            Gets or sets the email address of the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUserMessageInfo">
+            <summary>
+            Gets or sets the message information sent to the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUser">
+            <summary>
+            Gets or sets the user object of the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InviteRedeemUrl">
+            <summary>
+            Gets or sets the URL the user can use to redeem their invitation.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InviteRedirectUrl">
+            <summary>
+            Gets or sets the URL the user is redirected to after accepting the invitation.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.SendInvitationMessage">
+            <summary>
+            Gets or sets a value indicating whether to send the invitation message.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.Status">
+            <summary>
+            Gets or sets the status of the invitation.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUserType">
+            <summary>
+            Gets or sets the type of the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.InvitedUserPhoneNumber">
+            <summary>
+            Gets or sets the phone number of the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.ResetRedemption">
+            <summary>
+            Gets or sets a value indicating whether to reset redemption.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.Invitation.ExpirationDateTime">
+            <summary>
+            Gets or sets the expiration date and time of the invitation.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Users.Invitations.InvitedUserMessageInfo">
+            <summary>
+            Represents the message information sent to the invited user, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.InvitedUserMessageInfo.CustomizedMessageBody">
+            <summary>
+            Gets or sets the customized message body sent to the invited user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.Invitations.InvitedUserMessageInfo.MessageLanguage">
+            <summary>
+            Gets or sets the language of the message.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Users.LicenseManagement.AssignedLicense">
             <summary>
             Represents an assigned license in Microsoft Entra ID.

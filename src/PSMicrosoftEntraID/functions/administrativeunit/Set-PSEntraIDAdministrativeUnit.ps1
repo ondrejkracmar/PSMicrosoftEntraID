@@ -1,11 +1,11 @@
-function Set-PSEntraIDAdministrativeUnit {
+﻿function Set-PSEntraIDAdministrativeUnit {
     <#
     .SYNOPSIS
         Updates the specified properties of an administrative unit.
 
     .DESCRIPTION
         The `Set-PSEntraIDAdministrativeUnit` cmdlet allows you to modify specific properties of an administrative unit.
-        Administrative units provide a way to subdivide your organization and delegate administrative permissions 
+        Administrative units provide a way to subdivide your organization and delegate administrative permissions
         to those subdivisions.
 
     .PARAMETER InputObject
@@ -21,7 +21,7 @@ function Set-PSEntraIDAdministrativeUnit {
         Specifies the description of the administrative unit.
 
     .PARAMETER Visibility
-        Controls whether the administrative unit and its members are hidden or public. 
+        Controls whether the administrative unit and its members are hidden or public.
         Can be set to HiddenMembership or Public.
 
     .PARAMETER IsMemberManagementRestricted
@@ -68,7 +68,7 @@ function Set-PSEntraIDAdministrativeUnit {
         Restrict member management to administrators only
 
     .NOTES
-        Administrative units provide a way to subdivide your organization and delegate administrative permissions 
+        Administrative units provide a way to subdivide your organization and delegate administrative permissions
         to those subdivisions.
 
 #>
@@ -78,32 +78,24 @@ function Set-PSEntraIDAdministrativeUnit {
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit[]] $InputObject,
-        
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "AdministrativeUnitId")]
         [ValidateNotNullOrEmpty()]
         [string[]] $Identity,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $DisplayName,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string] $Description,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('HiddenMembership', 'Public')]
         [string] $Visibility,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [System.Nullable[bool]] $IsMemberManagementRestricted,
-        
         [Parameter()]
         [switch] $EnableException,
-        
         [Parameter()]
         [switch] $Force,
-        
         [Parameter()]
         [switch] $PassThru
     )
@@ -137,19 +129,16 @@ function Set-PSEntraIDAdministrativeUnit {
                             'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
                         }
                     }
-                    
-                    if ($body.Count -eq 0) {
-                        return
-                    }
-                    
-                    [string] $path = ("administrativeUnits/{0}" -f $itemInputObject.Id)
-                    
+
+
+                    [string] $path = ("directory/administrativeUnits/{0}" -f $itemInputObject.Id)
+
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ 
-                            Method = 'PATCH'
-                            Url = ('/{0}' -f $path)
-                            Body = $body
-                            Headers = $header 
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'PATCH'
+                            Url     = ('/{0}' -f $path)
+                            Body    = $body
+                            Headers = $header
                         }
                     }
                     else {
@@ -165,7 +154,7 @@ function Set-PSEntraIDAdministrativeUnit {
                     [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
                     if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
                         [hashtable] $body = @{}
-                        
+
                         foreach ($param in $PSBoundParameters.Keys) {
                             switch ($param) {
                                 'DisplayName' { $body['displayName'] = $DisplayName }
@@ -174,19 +163,15 @@ function Set-PSEntraIDAdministrativeUnit {
                                 'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
                             }
                         }
-                        
-                        if ($body.Count -eq 0) {
-                            return
-                        }
-                        
-                        [string] $path = ("administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
-                        
+
+                        [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
+
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ 
-                                Method = 'PATCH'
-                                Url = ('/{0}' -f $path)
-                                Body = $body
-                                Headers = $header 
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'PATCH'
+                                Url     = ('/{0}' -f $path)
+                                Body    = $body
+                                Headers = $header
                             }
                         }
                         else {
@@ -205,6 +190,6 @@ function Set-PSEntraIDAdministrativeUnit {
             }
         }
     }
-    
+
     end {}
 }

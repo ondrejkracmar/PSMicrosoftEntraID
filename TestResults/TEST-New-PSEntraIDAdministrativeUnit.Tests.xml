@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="18" errors="0" failures="10" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-10-03" time="13:36:32">
+  <environment machine-name="1d933fca8e84" clr-version="9.0.1" user-domain="" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" nunit-version="2.5.8.0" cwd="/workspaces/PSMicrosoftEntraID/src/tests" user="root" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Failure" success="False" time="18.8088" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1" executed="True" result="Failure" success="False" time="18.8088" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit" executed="True" result="Failure" success="False" time="18.2729" asserts="0" description="New-PSEntraIDAdministrativeUnit">
+            <results>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Parameter Validation" executed="True" result="Failure" success="False" time="17.4879" asserts="0" description="New-PSEntraIDAdministrativeUnit.Parameter Validation">
+                <results>
+                  <test-case description="Should require DisplayName parameter" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should require DisplayName parameter" time="17.2792" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept valid DisplayName" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should accept valid DisplayName" time="0.1252" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault" was thrown from /usr/local/share/powershell/Modules/Pester/5.7.1/Pester.psm1:12140 char:5
+    +     &amp; $scriptBlock @splat
+    +     ~~~~~~~~~~~~~~~~~~~~~.</message>
+                      <stack-trace>at { New-PSEntraIDAdministrativeUnit -DisplayName "Test AU" } | Should -Not -Throw, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:54
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:54</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should validate Visibility parameter values" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should validate Visibility parameter values" time="0.004" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept valid Visibility values" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should accept valid Visibility values" time="0.0345" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Expected no exception to be thrown, but an exception "Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault" was thrown from /usr/local/share/powershell/Modules/Pester/5.7.1/Pester.psm1:12140 char:5
+    +     &amp; $scriptBlock @splat
+    +     ~~~~~~~~~~~~~~~~~~~~~.</message>
+                      <stack-trace>at { New-PSEntraIDAdministrativeUnit -DisplayName "Test AU" -Visibility "HiddenMembership" } | Should -Not -Throw, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:62
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:62</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Function Execution" executed="True" result="Failure" success="False" time="17.6665" asserts="0" description="New-PSEntraIDAdministrativeUnit.Function Execution">
+                <results>
+                  <test-case description="Should call Invoke-EntraRequest with correct parameters for minimal input" name="New-PSEntraIDAdministrativeUnit.Function Execution.Should call Invoke-EntraRequest with correct parameters for minimal input" time="0.0411" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should call Invoke-EntraRequest with all parameters" name="New-PSEntraIDAdministrativeUnit.Function Execution.Should call Invoke-EntraRequest with all parameters" time="0.0346" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should not include optional parameters in body when not provided" name="New-PSEntraIDAdministrativeUnit.Function Execution.Should not include optional parameters in body when not provided" time="0.0411" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should include description when provided" name="New-PSEntraIDAdministrativeUnit.Function Execution.Should include description when provided" time="0.0324" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should include visibility when provided" name="New-PSEntraIDAdministrativeUnit.Function Execution.Should include visibility when provided" time="0.0262" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.PassThru Parameter" executed="True" result="Success" success="True" time="17.817" asserts="0" description="New-PSEntraIDAdministrativeUnit.PassThru Parameter">
+                <results>
+                  <test-case description="Should return batch request object when PassThru is specified" name="New-PSEntraIDAdministrativeUnit.PassThru Parameter.Should return batch request object when PassThru is specified" time="0.0645" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="New-PSEntraIDAdministrativeUnit.PassThru Parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0832" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Error Handling" executed="True" result="Success" success="True" time="17.8552" asserts="0" description="New-PSEntraIDAdministrativeUnit.Error Handling">
+                <results>
+                  <test-case description="Should handle Invoke-EntraRequest errors gracefully" name="New-PSEntraIDAdministrativeUnit.Error Handling.Should handle Invoke-EntraRequest errors gracefully" time="0.0355" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Configuration Dependencies" executed="True" result="Failure" success="False" time="17.9405" asserts="0" description="New-PSEntraIDAdministrativeUnit.Configuration Dependencies">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection with correct service" name="New-PSEntraIDAdministrativeUnit.Configuration Dependencies.Should call Assert-EntraConnection with correct service" time="0.0283" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case description="Should retrieve configuration values" name="New-PSEntraIDAdministrativeUnit.Configuration Dependencies.Should retrieve configuration values" time="0.0536" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Pipeline Support" executed="True" result="Failure" success="False" time="17.9809" asserts="0" description="New-PSEntraIDAdministrativeUnit.Pipeline Support">
+                <results>
+                  <test-case description="Should accept pipeline input" name="New-PSEntraIDAdministrativeUnit.Pipeline Support.Should accept pipeline input" time="0.0335" asserts="0" success="False" result="Failure" executed="True">
+                    <failure>
+                      <message>Exception: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+CmdletInvocationException: Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault
+ParameterBindingValidationException: Cannot validate argument on parameter 'Service'. Invalid service name: 'https://graph.microsoft.com'. Legal service names: PSMicrosoftEntraID.AzToken, PSMicrosoftEntraID.Graph, PSMicrosoftEntraID.Endpoint, PSMicrosoftEntraID.GraphBeta, PSMicrosoftEntraID.Azure, PSMicrosoftEntraID.Security, PSMicrosoftEntraID.AzureKeyVault</message>
+                      <stack-trace>at &lt;ScriptBlock&gt;, &lt;No file&gt;:124
+at &lt;ScriptBlock&gt;, /workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1:30</stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Output Type" executed="True" result="Success" success="True" time="17.9969" asserts="0" description="New-PSEntraIDAdministrativeUnit.Output Type">
+                <results>
+                  <test-case description="Should have correct output type attribute" name="New-PSEntraIDAdministrativeUnit.Output Type.Should have correct output type attribute" time="0.0119" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.SupportsShouldProcess" executed="True" result="Success" success="True" time="18.0163" asserts="0" description="New-PSEntraIDAdministrativeUnit.SupportsShouldProcess">
+                <results>
+                  <test-case description="Should support WhatIf parameter" name="New-PSEntraIDAdministrativeUnit.SupportsShouldProcess.Should support WhatIf parameter" time="0.0106" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support Confirm parameter" name="New-PSEntraIDAdministrativeUnit.SupportsShouldProcess.Should support Confirm parameter" time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

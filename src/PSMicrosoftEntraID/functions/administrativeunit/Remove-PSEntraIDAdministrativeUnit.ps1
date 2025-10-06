@@ -1,11 +1,11 @@
-function Remove-PSEntraIDAdministrativeUnit {
+﻿function Remove-PSEntraIDAdministrativeUnit {
     <#
 	.SYNOPSIS
 		Delete administrative unit
 
 	.DESCRIPTION
 		Delete administrative unit from Microsoft Entra ID (Azure AD).
-        When deleted, administrative unit resources are moved to a temporary container and can be restored within 30 days. 
+        When deleted, administrative unit resources are moved to a temporary container and can be restored within 30 days.
         After that time, they are permanently deleted.
 
     .PARAMETER InputObject
@@ -50,7 +50,7 @@ function Remove-PSEntraIDAdministrativeUnit {
 		Delete administrative unit by piping from Get cmdlet
 
     .NOTES
-        Administrative units provide a way to subdivide your organization and delegate administrative permissions 
+        Administrative units provide a way to subdivide your organization and delegate administrative permissions
         to those subdivisions. When deleted, they can be restored within 30 days.
 
 	#>
@@ -58,21 +58,17 @@ function Remove-PSEntraIDAdministrativeUnit {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
-    param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
-        [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit[]] $InputObject,
-        
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSTypeName('PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit')]
+        [object[]] $InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "AdministrativeUnitId")]
         [ValidateNotNullOrEmpty()]
         [string[]] $Identity,
-        
         [Parameter()]
         [switch] $EnableException,
-        
         [Parameter()]
         [switch] $Force,
-        
         [Parameter()]
         [switch] $PassThru
     )
@@ -97,13 +93,13 @@ function Remove-PSEntraIDAdministrativeUnit {
         switch ($PSCmdlet.ParameterSetName) {
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    [string] $path = ("administrativeUnits/{0}" -f $itemInputObject.Id)
-                    
+                    [string] $path = ("directory/administrativeUnits/{0}" -f $itemInputObject.Id)
+
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ 
-                            Method = 'DELETE'
-                            Url = ('/{0}' -f $path)
-                            Headers = $header 
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'DELETE'
+                            Url     = ('/{0}' -f $path)
+                            Headers = $header
                         }
                     }
                     else {
@@ -118,13 +114,13 @@ function Remove-PSEntraIDAdministrativeUnit {
                 foreach ($administrativeUnit in $Identity) {
                     [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
                     if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                        [string] $path = ("administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
-                        
+                        [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
+
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ 
-                                Method = 'DELETE'
-                                Url = ('/{0}' -f $path)
-                                Headers = $header 
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'DELETE'
+                                Url     = ('/{0}' -f $path)
+                                Headers = $header
                             }
                         }
                         else {

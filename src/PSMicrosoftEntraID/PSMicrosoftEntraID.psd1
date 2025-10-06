@@ -81,6 +81,9 @@
 		'New-PSEntraIDAdministrativeUnit'
 		'Set-PSEntraIDAdministrativeUnit'
 		'Remove-PSEntraIDAdministrativeUnit'
+		'Get-PSEntraIDAdministrativeUnitMember'
+		'Add-PSEntraIDAdministrativeUnitMember'
+		'Remove-PSEntraIDAdministrativeUnitMember'
 		'Set-PSEntraIDCommandRetry'
 		'Get-PSEntraIDCommandRetry'
 	)

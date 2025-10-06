@@ -67,6 +67,9 @@
 	'AdministrativeUnit.Set.Failed'    = "Set administrative unit '{0}' failed"
 	'AdministrativeUnit.Remove'        = "Delete administrative unit '{0}'"
 	'AdministrativeUnit.Remove.Failed' = "Delete administrative unit '{0}' failed"
+	'AdministrativeUnitMember.List'    = "List members from the administrative unit '{0}'"
+	'AdministrativeUnitMember.Add'     = "Add member '{0}' to administrative unit"
+	'AdministrativeUnitMember.Delete'  = "Remove member '{0}' from administrative unit"
 
 	'Contact.Get'                      = "Get xontact '{0}'"
 	'Contact.Filter'                   = "List contacts with filter '{0}'"
