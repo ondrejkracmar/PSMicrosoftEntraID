@@ -1,4 +1,4 @@
-function ConvertFrom-RestInvitation {
+﻿function ConvertFrom-RestInvitation {
 	<#
 	.SYNOPSIS
 		Converts a REST API response object representing an invitation into a more user-friendly format.
