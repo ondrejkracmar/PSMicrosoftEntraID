@@ -4,7 +4,7 @@
         Create new administrative unit in Microsoft Entra ID (Azure AD).
 
     .DESCRIPTION
-        Create new administrative unit in Microsoft Entra ID (Azure AD). Administrative units restrict permissions 
+        Create new administrative unit in Microsoft Entra ID (Azure AD). Administrative units restrict permissions
         in a role to any portion of your organization that you define.
 
     .PARAMETER DisplayName
@@ -14,11 +14,11 @@
         The description for the administrative unit.
 
     .PARAMETER Visibility
-        Controls whether the administrative unit and its members are hidden or public. 
+        Controls whether the administrative unit and its members are hidden or public.
         Can be set to HiddenMembership or Public. If not set, the default behavior is Public.
 
     .PARAMETER IsMemberManagementRestricted
-        Indicates whether the management of members in this administrative unit is restricted to administrators. 
+        Indicates whether the management of members in this administrative unit is restricted to administrators.
         Default is false.
 
     .PARAMETER EnableException
@@ -57,7 +57,7 @@
         Create a new administrative unit with hidden membership
 
     .NOTES
-        Administrative units provide a way to subdivide your organization and delegate administrative permissions 
+        Administrative units provide a way to subdivide your organization and delegate administrative permissions
         to those subdivisions.
 
     #>
@@ -68,20 +68,17 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $DisplayName,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string] $Description,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('HiddenMembership', 'Public')]
         [string] $Visibility,
-        
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [bool] $IsMemberManagementRestricted = $false,
-        
         [Parameter()]
         [switch] $EnableException,
-        
+        [Parameter()]
+        [switch] $Force,
         [Parameter()]
         [switch] $PassThru
     )
@@ -94,11 +91,18 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool] $cmdLetConfirm = $false
+        }
+        else {
+            [bool] $cmdLetConfirm = $true
+        }
+        [string] $path = "directory/administrativeUnits"
     }
 
     process {
         [hashtable] $body = @{
-            'displayName' = $DisplayName
+            'displayName'                  = $DisplayName
             'isMemberManagementRestricted' = $IsMemberManagementRestricted
         }
 
@@ -110,21 +114,20 @@
             $body['visibility'] = $Visibility
         }
 
-        [string] $path = "administrativeUnits"
-        
+
         if ($PassThru.IsPresent) {
-            [PSMicrosoftEntraID.Batch.Request]@{ 
-                Method = 'POST'
-                Url = ('/{0}' -f $path)
-                Body = $body
-                Headers = $header 
+            [PSMicrosoftEntraID.Batch.Request]@{
+                Method  = 'POST'
+                Url     = ('/{0}' -f $path)
+                Body    = $body
+                Headers = $header
             }
         }
         else {
             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Create' -ActionStringValues $DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                $result = Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop
-                $result
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+
+            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }
