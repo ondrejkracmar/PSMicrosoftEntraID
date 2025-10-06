@@ -67,10 +67,10 @@ else {
 }
 
 $MdHelpParams = @{
-	ModuleInfo            = (Get-Module $ModuleName)
-	OutputFolder          = $MarkdownPath.FullName
-	WithModulePage        = $false
-	Encoding              = [System.Text.Encoding]::UTF8
+	ModuleInfo     = (Get-Module $ModuleName)
+	OutputFolder   = $MarkdownPath.FullName
+	WithModulePage = $false
+	Encoding       = [System.Text.Encoding]::UTF8
 }
 
 # Try to suppress metadata if NoMetadata switch is used
@@ -141,26 +141,26 @@ if (($CleanPlaceholders -or $NoMetadata) -and -not $KeepPlaceholders) {
 	foreach ($MarkdownFile in $MarkdownFiles) {
 		$Content = Get-Content -Path $MarkdownFile.FullName -Raw
 		$OriginalContent = $Content
-		
+
 		# Remove common PlatyPS placeholder texts
 		$Content = $Content -replace '\{\{ Fill in the Description \}\}', ''
 		$Content = $Content -replace '\{\{Insert list of aliases\}\}', ''
 		$Content = $Content -replace 'This cmdlet has the following aliases,\s*\r?\n\s*$', ''
-		
+
 		# Conditionally remove RELATED LINKS placeholder based on KeepRelatedLinks parameter
 		if (-not $KeepRelatedLinks) {
 			$Content = $Content -replace '\{\{ Fill in the related links here \}\}', ''
 			# Clean up empty RELATED LINKS sections only if we're removing the placeholder
 			$Content = $Content -replace '## RELATED LINKS\s*\r?\n\s*\r?\n', ''
 		}
-		
-		# Clean up empty ALIASES sections  
+
+		# Clean up empty ALIASES sections
 		$Content = $Content -replace '## ALIASES\s*\r?\n\s*This cmdlet has the following aliases,\s*\r?\n\s*\r?\n', ''
-		
+
 		# Remove trailing whitespace and normalize line endings
 		$Content = $Content -replace '\s+$', ''
 		$Content = $Content -replace '\r?\n', "`n"
-		
+
 		# Only update if content changed
 		if ($Content -ne $OriginalContent) {
 			Set-Content -Path $MarkdownFile.FullName -Value $Content -NoNewline -Encoding UTF8
@@ -178,7 +178,7 @@ if (-not $SkipMaml) {
 	# Check if markdown files exist before trying to import them
 	$MarkdownFiles = Get-ChildItem -Path $MarkdownPath.FullName -Filter "*.md" -ErrorAction SilentlyContinue
 	Write-PSFMessage -Level Verbose -Message "Found $($MarkdownFiles.Count) markdown files in $($MarkdownPath.FullName)"
-	
+
 	if ($MarkdownFiles -and $MarkdownFiles.Count -gt 0) {
 		try {
 			# Try to import markdown files for MAML generation
@@ -187,11 +187,11 @@ if (-not $SkipMaml) {
 				Write-PSFMessage -Level Warning -Message "Cannot generate MAML from markdown files without metadata. Using direct module approach."
 				throw "Metadata required for MAML generation"
 			}
-			
+
 			# Ensure we have the correct path format
 			$ImportPath = $MarkdownPath.FullName
 			Write-PSFMessage -Level Verbose -Message "Attempting to import markdown files from: $ImportPath"
-			
+
 			# Try importing with individual files first
 			$ImportedHelp = @()
 			foreach ($MarkdownFile in $MarkdownFiles) {
@@ -205,11 +205,11 @@ if (-not $SkipMaml) {
 					Write-PSFMessage -Level Warning -Message "Failed to import $($MarkdownFile.Name): $($_.Exception.Message)"
 				}
 			}
-			
+
 			if ($ImportedHelp.Count -gt 0) {
 				Export-MamlCommandHelp -CommandHelp $ImportedHelp @ExtHelpParams -Force
 				Write-PSFMessage -Level Important -Message "Successfully generated MAML help files from $($ImportedHelp.Count) markdown files"
-				
+
 				# Move any XML files from subfolders to the target directory (including module-named subfolders)
 				$ModuleSubfolder = Join-Path -Path $MamlPath.FullName -ChildPath $ModuleName
 				if (Test-Path -Path $ModuleSubfolder) {
@@ -228,7 +228,7 @@ if (-not $SkipMaml) {
 						Write-PSFMessage -Level Verbose -Message "Removed empty module subfolder"
 					}
 				}
-				
+
 				# Also check for any other XML files in subfolders
 				$OtherSubfolderXmlFiles = Get-ChildItem -Path $MamlPath.FullName -Recurse -Filter "*.xml" | Where-Object { $_.Directory.FullName -ne $MamlPath.FullName }
 				foreach ($XmlFile in $OtherSubfolderXmlFiles) {
@@ -248,13 +248,13 @@ if (-not $SkipMaml) {
 		catch {
 			Write-PSFMessage -Level Warning -Message "Failed to import markdown for MAML: $($_.Exception.Message)"
 			Write-PSFMessage -Level Important -Message "Attempting direct module MAML generation"
-			
+
 			# Alternative approach: Generate MAML directly from the loaded module
 			try {
 				$ModuleCommands = Get-Command -Module $ModuleName -CommandType Cmdlet, Function
 				if ($ModuleCommands) {
 					Write-PSFMessage -Level Important -Message "Generating MAML from $($ModuleCommands.Count) module commands"
-					
+
 					# Create command help objects from module commands
 					$CommandHelpObjects = @()
 					foreach ($Command in $ModuleCommands) {
@@ -268,11 +268,11 @@ if (-not $SkipMaml) {
 							Write-PSFMessage -Level Warning -Message "Failed to create help for $($Command.Name): $($_.Exception.Message)"
 						}
 					}
-					
+
 					if ($CommandHelpObjects.Count -gt 0) {
 						Export-MamlCommandHelp -CommandHelp $CommandHelpObjects @ExtHelpParams -Force
 						Write-PSFMessage -Level Important -Message "Successfully generated MAML help from module commands"
-						
+
 						# Move any XML files from subfolders to the target directory (including module-named subfolders)
 						$ModuleSubfolder = Join-Path -Path $MamlPath.FullName -ChildPath $ModuleName
 						if (Test-Path -Path $ModuleSubfolder) {
@@ -291,7 +291,7 @@ if (-not $SkipMaml) {
 								Write-PSFMessage -Level Verbose -Message "Removed empty module subfolder"
 							}
 						}
-						
+
 						# Also check for any other XML files in subfolders
 						$OtherSubfolderXmlFiles = Get-ChildItem -Path $MamlPath.FullName -Recurse -Filter "*.xml" | Where-Object { $_.Directory.FullName -ne $MamlPath.FullName }
 						foreach ($XmlFile in $OtherSubfolderXmlFiles) {
