@@ -1542,6 +1542,13 @@
             The licenses assigned to the user.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.Users.User.OtherMails">
+            <summary>
+            A list of other email addresses for the user; for example: ["bob@contoso.com", "Robert@fabrikam.com"].
+            Can store up to250 values, each with a limit of250 characters. This property can't contain accent characters.
+            Returned only on $select. Supports $filter (eq, not, ge, le, in, startsWith, endsWith, /$count eq0, /$count).
+            </summary>
+        </member>
         <member name="M:PSMicrosoftEntraID.Users.User.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Users.User"/> class.

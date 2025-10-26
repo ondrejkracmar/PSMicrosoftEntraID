@@ -3,7 +3,12 @@
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\KracmarOndrej\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-487937450\\Invitation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\userguest .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\userguest .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,14 +27,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Invitation.cs",
-              "DocumentMoniker": "C:\\Users\\KracmarOndrej\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-487937450\\Invitation.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Users\\KracmarOndrej\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-487937450\\Invitation.cs",
-              "ToolTip": "C:\\Users\\KracmarOndrej\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-487937450\\Invitation.cs",
-              "RelativeToolTip": "..\\..\\..\\..\\..\\Users\\KracmarOndrej\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\-487937450\\Invitation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\User.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\User.cs",
+              "ViewState": "AgIAAJEAAAAAAAAAAAAzwK0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-06T08:24:30.374Z",
+              "WhenOpened": "2025-10-26T07:52:09.944Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserGuest .cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\UserGuest .cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\UserGuest .cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\UserGuest .cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\UserGuest .cs",
+              "ViewState": "AgIAABkAAAAAzszMzMzsvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T07:52:06.279Z",
               "EditorCaption": ""
             }
           ]
