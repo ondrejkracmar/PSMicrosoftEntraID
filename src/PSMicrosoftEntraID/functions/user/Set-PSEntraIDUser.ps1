@@ -53,6 +53,27 @@
 .PARAMETER BusinessPhones
     Specifies an array of business phone numbers for the user.
 
+.PARAMETER Mail
+    Specifies the user's primary email address.
+    
+.PARAMETER ProxyAddresses
+    Specifies an array of proxy email addresses for the user.
+    
+.PARAMETER UserPrincipalName
+    Specifies the user principal name (UPN) used for sign-in.
+    
+.PARAMETER MailNickname
+    Specifies the mail alias (nickname) for the user.
+
+.PARAMETER FaxNumber
+    Specifies the fax number associated with the user.
+    
+.PARAMETER EmployeeId
+    Specifies the employee ID of the user.
+
+.PARAMETER OtherMails
+    Specifies a list of other email addresses for the user.
+
 .PARAMETER UsageLocation
     Specifies the location where the user intends to use Microsoft 365 services.
 
@@ -110,7 +131,7 @@
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [ValidateUserIdentity()]
-        [Alias('Id', 'UserPrincipalName')]
+        [Alias('Id','UserPrincipalName')]
         [string[]] $Identity,
         [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
