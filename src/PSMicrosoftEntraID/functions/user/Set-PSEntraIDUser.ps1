@@ -131,7 +131,7 @@
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [ValidateUserIdentity()]
-        [Alias('Id','UserPrincipalName')]
+        [Alias('Id','UserId')]
         [string[]] $Identity,
         [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
