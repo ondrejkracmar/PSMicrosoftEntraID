@@ -114,6 +114,19 @@
 		$this.Type = 'KeyVault'
 	}
 
+	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
+		$this.Service = $Service
+		$this.AccessToken = $AccessToken
+		$this.TenantID = $TenantID
+		$this.Scopes = $Scopes
+		$this.ServiceUrl = $ServiceUrl
+		$this.Type = $IdentityType
+
+		if ($IdentityID) {
+			$this.IdentityID = $IdentityID
+		}
+	}
+
 	EntraToken([string]$Service, [string]$ServiceUrl, [string]$IdentityID, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.ServiceUrl = $ServiceUrl

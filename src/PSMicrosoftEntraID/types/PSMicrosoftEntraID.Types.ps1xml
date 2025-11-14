@@ -86,6 +86,7 @@
             <Name>MobilePhone</Name>
             <Name>BusinessPhones</Name>
             <Name>FaxNumber</Name>
+            <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
           </ReferencedProperties>
         </PropertySet>
@@ -133,6 +134,7 @@
             <Name>MobilePhone</Name>
             <Name>BusinessPhones</Name>
             <Name>FaxNumber</Name>
+            <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
             <Name>ExternalUserState</Name>
             <Name>ExternalUserStateChangeDateTime</Name>

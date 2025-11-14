@@ -128,6 +128,10 @@
 		- always: Will always show the dialog, forcing interaction.
 		- never: Will never show the dialog. Authentication will fail if interaction is required.
 
+	.PARAMETER AzToken
+		Access Token from AzAuth PowerShell module to handle Azure authentication, using the Azure.Identity MSAL library.
+		https://github.com/PalmEmanuel/AzAuth
+
 	.PARAMETER Federated
 		Use federated credentials to authenticate.
 		This authentication flow is specific to a given environment and can for example enable a Github Action in a specific repository on a specific branch to authenticate, without needing to provide (and manage) a credential.
@@ -330,6 +334,10 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'AzAccount')]
 		[switch]
 		$AsAzAccount,
+
+		[Parameter(ParameterSetName = 'AzToken')]
+		[PSCustomObject]
+		$AzToken,
 
 		[Parameter(ParameterSetName = 'AzAccount')]
 		[ValidateSet('Auto', 'Always', 'Never')]
@@ -641,7 +649,6 @@
 					try { $result = Connect-ServiceIdentity -Resource $commonParam.Resource -IdentityID $IdentityID -IdentityType $IdentityType -ErrorAction Stop }
 					catch {
 						if (-not $FallBackAzAccount) { $PSCmdlet.ThrowTerminatingError($_) }
-
 						try {
 							$newParam = @{}
 							$validParam = $PSCmdlet.MyInvocation.MyCommand.ParameterSets.Where{ $_.Name -eq 'AzAccount' }.Parameters.Name
