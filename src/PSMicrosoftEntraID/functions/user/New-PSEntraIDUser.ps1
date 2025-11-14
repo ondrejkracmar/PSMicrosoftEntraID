@@ -67,6 +67,17 @@
 .PARAMETER BusinessPhones
     Business phone numbers.
 
+.PARAMETER Mail
+    Primary email address of the user.
+.PARAMETER ProxyAddresses
+
+    Array of proxy email addresses for the user.
+.PARAMETER FaxNumber
+    Fax number associated with the user.
+    
+.PARAMETER OtherMails
+    List of other email addresses for the user.
+
 .PARAMETER PreferredLanguage
     Default language (e.g. en-US, cs-CZ).
 
@@ -118,11 +129,11 @@
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $State,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $MobilePhone,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $BusinessPhones,
-        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $PreferredLanguage,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $ProxyAddresses,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $FaxNumber,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeId,
-        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeType,
-        [Parameter()] [switch] $EnableException,
-        [Parameter()] [switch] $Force,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $OtherMails,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $PreferredLanguage,
         [Parameter()] [switch] $PassThru
     )
 
@@ -145,7 +156,7 @@
         [hashtable] $passwordProfile = @{}
         Switch ($PSCmdlet.ParameterSetName) {
             'CreateUser' {
-                
+
                 $passwordProfile = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
                 if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
                     $passwordProfile['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
@@ -176,6 +187,11 @@
                 if ($PSBoundParameters.ContainsKey('State')) { $body['state'] = $State }
                 if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
                 if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
+                if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
+                if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
+                if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
+                if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
+                if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
                 if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
                 if ($PSBoundParameters.ContainsKey('EmployeeId')) { $body['employeeId'] = $EmployeeId }
                 if ($PSBoundParameters.ContainsKey('EmployeeType')) { $body['employeeType'] = $EmployeeType }
@@ -193,7 +209,7 @@
         else {
             Invoke-PSFProtectedCommand -ActionString 'User.New' -ActionStringValues $UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path 'users' -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

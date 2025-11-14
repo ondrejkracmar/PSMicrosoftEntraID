@@ -53,6 +53,27 @@
 .PARAMETER BusinessPhones
     Specifies an array of business phone numbers for the user.
 
+.PARAMETER Mail
+    Specifies the user's primary email address.
+    
+.PARAMETER ProxyAddresses
+    Specifies an array of proxy email addresses for the user.
+    
+.PARAMETER UserPrincipalName
+    Specifies the user principal name (UPN) used for sign-in.
+    
+.PARAMETER MailNickname
+    Specifies the mail alias (nickname) for the user.
+
+.PARAMETER FaxNumber
+    Specifies the fax number associated with the user.
+    
+.PARAMETER EmployeeId
+    Specifies the employee ID of the user.
+
+.PARAMETER OtherMails
+    Specifies a list of other email addresses for the user.
+
 .PARAMETER UsageLocation
     Specifies the location where the user intends to use Microsoft 365 services.
 
@@ -110,7 +131,7 @@
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [ValidateUserIdentity()]
-        [Alias('Id', 'UserPrincipalName')]
+        [Alias('Id','UserId')]
         [string[]] $Identity,
         [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
@@ -154,6 +175,24 @@
         [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string[]] $BusinessPhones,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string[]] $ProxyAddresses,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string] $UserPrincipalName,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string] $MailNickname,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string] $FaxNumber,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string] $EmployeeId,
+        [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
+        [string[]] $OtherMails,
         [Parameter(ParameterSetName = 'InputObjectUpdateUser')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateUser')]
         [string] $UsageLocation,
@@ -210,6 +249,12 @@
                     if ($PSBoundParameters.ContainsKey('Country')) { $body['country'] = $Country }
                     if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
                     if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
+                    if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
+                    if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
+                    if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
+                    if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
+                    if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
+                    if ($PSBoundParameters.ContainsKey('EmployeeId')) { $body['employeeId'] = $EmployeeId }
                     if ($PSBoundParameters.ContainsKey('UsageLocation')) { $body['usageLocation'] = $UsageLocation }
                     if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
                     if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }
@@ -253,6 +298,12 @@
                         if ($PSBoundParameters.ContainsKey('Country')) { $body['country'] = $Country }
                         if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
                         if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
+                        if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
+                        if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
+                        if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
+                        if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
+                        if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
+                        if ($PSBoundParameters.ContainsKey('EmployeeId')) { $body['employeeId'] = $EmployeeId }
                         if ($PSBoundParameters.ContainsKey('UsageLocation')) { $body['usageLocation'] = $UsageLocation }
                         if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
                         if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }

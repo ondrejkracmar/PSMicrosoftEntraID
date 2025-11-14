@@ -1,0 +1,28 @@
+﻿using System.Runtime.Serialization;
+
+namespace PSMicrosoftEntraID.DirectoryManagement
+{
+    /// <summary>
+    /// Represents a scoped role member in an administrative unit, as per Microsoft Graph API.
+    /// </summary>
+    [DataContract]
+    public class ScopedRoleMember
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "roleId")]
+        public string RoleId { get; set; }
+
+        [DataMember(Name = "administrativeUnitId")]
+        public string AdministrativeUnitId { get; set; }
+
+        [DataMember(Name = "roleMemberInfo")]
+        public Identity RoleMemberInfo { get; set; }
+
+        [DataMember(Name = "@odata.type")]
+        public string ODataType { get; set; }
+
+        // Add additional properties as needed based on your use case or Graph API schema
+    }
+}

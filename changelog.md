@@ -1,5 +1,17 @@
 ﻿# Changelog
 
+## 1.1.0 (2025-10-06)
+- **New:** Enhanced administrative unit management cmdlets with improved pipeline support and parameter optimization.
+- **New:** Added centralized path variables for administrative unit API endpoints for better maintainability.
+- **New:** Implemented $select parameter optimization for administrative unit cmdlets to improve API performance.
+- **New:** Added comprehensive InputObject parameter support for Add-PSEntraIDAdministrativeUnitMember and Remove-PSEntraIDAdministrativeUnitMember cmdlets.
+- **Upd:** Refactored Remove-PSEntraIDAdministrativeUnitMember parameter structure for cleaner parameter sets and better pipeline binding.
+- **Upd:** Improved type safety in administrative unit member cmdlets with proper PSTypeName attributes and specific type declarations.
+- **Upd:** Enhanced pipeline parameter binding for Remove-PSEntraIDAdministrativeUnit cmdlet using PSTypeName for better object acceptance.
+- **Fix:** Resolved pipeline binding issues in administrative unit cmdlets that were causing "input object cannot be bound" errors.
+- **Fix:** Corrected duplicate parameter set blocks and syntax errors in Remove-PSEntraIDAdministrativeUnitMember cmdlet.
+- **Fix:** Streamlined parameter set logic to eliminate ambiguous pipeline binding scenarios.
+
 ## 1.0.2 (2025-09-18)
 - **Fix:** Move License and README.MD file to root folder.
 

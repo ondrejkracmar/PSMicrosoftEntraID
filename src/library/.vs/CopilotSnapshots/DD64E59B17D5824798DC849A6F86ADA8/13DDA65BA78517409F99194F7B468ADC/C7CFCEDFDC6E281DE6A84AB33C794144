@@ -1,0 +1,16 @@
+﻿using System.Runtime.Serialization;
+
+namespace PSMicrosoftEntraID.DirectoryManagement
+{
+    /// <summary>
+    /// Represents an extension object for an administrative unit, as per Microsoft Graph API.
+    /// </summary>
+    [DataContract]
+    public class Extension
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        // Add additional properties as needed based on your use case or Graph API schema
+    }
+}
