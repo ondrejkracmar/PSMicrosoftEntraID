@@ -148,7 +148,7 @@ function Get-PSEntraIDUserLicense {
             'SkuIdCompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 foreach ($itemSkuId in $SkuId) {
                     $query['$Filter'] = 'companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $itemSkuId
                     $result = Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $itemSkuId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -161,7 +161,7 @@ function Get-PSEntraIDUserLicense {
             'SkuPartNumberCompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 foreach ($itemSkuPartNumber in $SkuPartNumber) {
                     $singleSkuPartNumber = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $itemSkuPartNumber).SkuId
                     if (-not [string]::IsNullOrWhiteSpace($singleSkuPartNumber)) {
@@ -182,7 +182,7 @@ function Get-PSEntraIDUserLicense {
             'ServicePlanIdCompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 foreach ($itemServicePlanId in $ServicePlanId) {
                     $query['$Filter'] = 'companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $itemServicePlanId
                     $result = Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('companyName in ({0}) and assignedPlans/any(x:x/servicePlanId eq {1})' -f $companyNameList, $itemServicePlanId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -195,7 +195,7 @@ function Get-PSEntraIDUserLicense {
             'ServicePlanNameCompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 foreach ($itemServicePlanName in $ServicePlanName) {
                     $singleServicePlan = ((Get-PSEntraIDSubscribedSku).Serviceplans | Where-Object -Property ServicePlanName -EQ -Value $itemServicePlanName | Select-Object -Unique).ServicePlanId
                     if (-not [string]::IsNullOrWhiteSpace($singleServicePlan)) {
@@ -216,7 +216,7 @@ function Get-PSEntraIDUserLicense {
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
                 $result = Invoke-PSFProtectedCommand -ActionString 'ServicePlan.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get)

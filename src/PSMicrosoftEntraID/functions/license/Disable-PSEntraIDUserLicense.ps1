@@ -92,7 +92,7 @@ function Disable-PSEntraIDUserLicense {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string[]] $bodySkuId = $SkuId
-                [string] $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
+                [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
             }
             '\wSkuPartNumber' {
                 [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
@@ -104,7 +104,7 @@ function Disable-PSEntraIDUserLicense {
                     }
                 }
                 [string[]] $bodySkuId = $bodySkuIdList.ToArray()
-                [string] $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
+                [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
             }
         }
     }
