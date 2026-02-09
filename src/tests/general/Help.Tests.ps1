@@ -1,4 +1,5 @@
-﻿<#
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+<#
     .NOTES
         The original test this is based upon was written by June Blender.
 		After several rounds of modifications it stands now as it is, but the honor remains hers.
@@ -10,7 +11,7 @@
 
 	.PARAMETER SkipTest
 		Disables this test.
-	
+
 	.PARAMETER CommandPath
 		List of paths under which the script files are stored.
 		This test assumes that all functions have their own file that is named after themselves.
@@ -30,17 +31,18 @@
 		These can be used to tweak the tests slightly in cases of need.
 		See the example file for explanations on each of these usage and effect.
 #>
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 [CmdletBinding()]
 Param (
 	[switch]
 	$SkipTest,
-	
+
 	[string[]]
 	$CommandPath = @("$global:testroot\..\functions", "$global:testroot\..\internal\functions"),
-	
+
 	[string]
 	$ModuleName = "PSMicrosoftEntraID",
-	
+
 	[string]
 	$ExceptionsFile = "$global:testroot\general\Help.Exceptions.ps1"
 )
@@ -58,60 +60,60 @@ $commands = Get-Command -Module (Get-Module $ModuleName) -CommandType $commandTy
 
 foreach ($command in $commands) {
     $commandName = $command.Name
-    
+
     # Skip all functions that are on the exclusions list
     if ($global:FunctionHelpTestExceptions -contains $commandName) { continue }
-    
+
     # The module-qualified command fails on Microsoft.PowerShell.Archive cmdlets
     $Help = Get-Help $commandName -ErrorAction SilentlyContinue
-	
+
 	Describe "Test help for $commandName" {
-        
+
 		# If help is not found, synopsis in auto-generated help is the syntax diagram
 		It "should not be auto-generated" -TestCases @{ Help = $Help } {
 			$Help.Synopsis | Should -Not -BeLike '*`[`<CommonParameters`>`]*'
 		}
-        
+
 		# Should be a description for every function
 		It "gets description for $commandName" -TestCases @{ Help = $Help } {
 			$Help.Description | Should -Not -BeNullOrEmpty
 		}
-        
+
 		# Should be at least one example
 		It "gets example code from $commandName" -TestCases @{ Help = $Help } {
 			($Help.Examples.Example | Select-Object -First 1).Code | Should -Not -BeNullOrEmpty
 		}
-	
+
 		# Should be at least one example description
 		It "gets example help from $commandName" -TestCases @{ Help = $Help } {
 			($Help.Examples.Example.Remarks | Select-Object -First 1).Text | Should -Not -BeNullOrEmpty
 		}
-        
+
         Context "Test parameter help for $commandName" {
-            
+
             $common = 'Debug', 'ErrorAction', 'ErrorVariable', 'InformationAction', 'InformationVariable', 'OutBuffer', 'OutVariable', 'PipelineVariable', 'Verbose', 'WarningAction', 'WarningVariable', 'ProgressAction'
-            
+
             $parameters = $command.ParameterSets.Parameters | Sort-Object -Property Name -Unique | Where-Object Name -notin $common
             $parameterNames = $parameters.Name
             $HelpParameterNames = $Help.Parameters.Parameter.Name | Sort-Object -Unique
             foreach ($parameter in $parameters) {
                 $parameterName = $parameter.Name
                 $parameterHelp = $Help.parameters.parameter | Where-Object Name -EQ $parameterName
-			
+
 				# Should be a description for every parameter
 				It "gets help for parameter: $parameterName : in $commandName" -TestCases @{ parameterHelp = $parameterHelp } {
 					$parameterHelp.Description.Text | Should -Not -BeNullOrEmpty
 				}
-                
+
                 $codeMandatory = $parameter.IsMandatory.toString()
 				It "help for $parameterName parameter in $commandName has correct Mandatory value" -TestCases @{ parameterHelp = $parameterHelp; codeMandatory = $codeMandatory } {
 					$parameterHelp.Required | Should -Be $codeMandatory
 				}
-                
+
                 if ($HelpTestSkipParameterType[$commandName] -contains $parameterName) { continue }
-                
+
                 $codeType = $parameter.ParameterType.Name
-                
+
                 if ($parameter.ParameterType.IsEnum) {
                     # Enumerations often have issues with the typename not being reliably available
                     $names = $parameter.ParameterType::GetNames($parameter.ParameterType)

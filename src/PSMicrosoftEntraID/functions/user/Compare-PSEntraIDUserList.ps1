@@ -15,7 +15,7 @@
     .EXAMPLE
             PS C:\> Compare-PSEntraIDUserList -ReferenceIdentity $UserList1 -DifferenceIdentity $UserList2
 
-            Remove memebr to Azure AD group group1
+            Remove member to Azure AD group group1
 
 
 #>

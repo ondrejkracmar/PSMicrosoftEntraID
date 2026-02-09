@@ -1,4 +1,4 @@
-﻿function Remove-PSEntraIDUser {
+function Remove-PSEntraIDUser {
     <#
 	.SYNOPSIS
 		Delete user
@@ -14,7 +14,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -35,7 +35,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 	.EXAMPLE
@@ -81,6 +81,8 @@
                 foreach ($itemInputObject in $InputObject) {
                     [string] $path = ("users/{0}" -f $itemInputObject.Id)
                     if ($PassThru.IsPresent) {
+                        [hashtable] $body = @{}
+                        [hashtable] $header = @{}
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
@@ -94,22 +96,24 @@
             'Identity' {
                 foreach ($user in $Identity) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        [string] $path = ("users/{0}" -f $aADUser.Id)
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
+                    if ([object]::Equals($aADUser, $null)) {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                         }
+                    }
+                    else {
+                        [string] $path = ("users/{0}" -f $aADUser.Id)
+                    if ($PassThru.IsPresent) {
+                        [hashtable] $body = @{}
+                        [hashtable] $header = @{}
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                     }
                 }
             }

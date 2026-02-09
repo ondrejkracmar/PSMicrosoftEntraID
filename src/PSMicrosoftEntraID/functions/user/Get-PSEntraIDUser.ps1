@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDUser {
+function Get-PSEntraIDUser {
     <#
     .SYNOPSIS
         Get the properties of the specified user.
@@ -10,7 +10,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER Name
-        DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
+        DisplayName, GivenName, Surname of the user attribute populated in tenant/directory.
 
     .PARAMETER CompanyName
         CompanyName of the user attribute populated in tenant/directory.
@@ -28,7 +28,7 @@
         Return all accounts in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
@@ -132,12 +132,7 @@
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 if ($Disabled.IsPresent) {
                     $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {

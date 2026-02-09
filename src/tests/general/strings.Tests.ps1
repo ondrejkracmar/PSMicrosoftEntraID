@@ -6,11 +6,9 @@
     It also checks, whether the language files have orphaned entries that need cleaning up.
 #>
 
-
-
 Describe "Testing localization strings" {
 	$moduleRoot = (Get-Module PSMicrosoftEntraID).ModuleBase
-	$stringsResults = Export-PSMDString -ModuleRoot $moduleRoot
+    $stringsResults = Export-PSMDString -ModuleRoot $moduleRoot
 	$exceptions = & "$global:testroot\general\strings.Exceptions.ps1"
 	
 	foreach ($stringEntry in $stringsResults) {

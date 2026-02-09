@@ -1,4 +1,4 @@
-﻿function New-PSEntraIDUser {
+function New-PSEntraIDUser {
     <#
 .SYNOPSIS
     Creates a new user in Microsoft Entra ID (Azure AD).
@@ -74,7 +74,7 @@
     Array of proxy email addresses for the user.
 .PARAMETER FaxNumber
     Fax number associated with the user.
-    
+
 .PARAMETER OtherMails
     List of other email addresses for the user.
 
@@ -88,16 +88,28 @@
     Employee type (e.g. full-time, contractor).
 
 .PARAMETER EnableException
-    Enables throwing of terminating errors.
-
-.PARAMETER PassThru
-    Outputs the created user object.
-
-.PARAMETER Confirm
-    Prompts for confirmation.
+    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien    dly, but allows catching exceptions in calling scripts.
 
 .PARAMETER WhatIf
-    Simulates the command.
+    Enables the function to simulate what it will do instead of actually executing.
+
+.PARAMETER Force
+    The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+    The command then prompts you to acknowledge each action before it continues.
+    When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+    This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+    A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+.PARAMETER Confirm
+    The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+    The command then prompts you to acknowledge each action before it continues.
+    When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+    This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+    A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+.PARAMETER PassThru
+    When specified, the cmdlet will not execute the action but will instead
+    return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 .EXAMPLE
     Import-Csv users.csv | New-PSEntraIDUser
@@ -132,8 +144,13 @@
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $ProxyAddresses,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $FaxNumber,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeId,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeType,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $OtherMails,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $PreferredLanguage,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
         [Parameter()] [switch] $PassThru
     )
 

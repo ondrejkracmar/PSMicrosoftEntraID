@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDGroup {
+function Get-PSEntraIDGroup {
     <#
         .SYNOPSIS
             Get the properties of the specified group.
@@ -7,10 +7,10 @@
             Get the properties of the specified group.
 
         .PARAMETER Identity
-            MailnicName, Mail or Id of the group attribute populated in tenant/directory.
+            Mailnicname, Mail or Id of the group attribute populated in tenant/directory.
 
         .PARAMETER DisplayName
-            DIsplayName of the group attribute populated in tenant/directory.
+            DisplayName of the group attribute populated in tenant/directory.
 
         .PARAMETER Filter
             Filter expressions of accounts in tenant/directory.
@@ -22,7 +22,7 @@
             Return all accounts in tenant/directory.
 
         .PARAMETER EnableException
-            This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+            This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
             but allows catching exceptions in calling scripts.
 
         .EXAMPLE

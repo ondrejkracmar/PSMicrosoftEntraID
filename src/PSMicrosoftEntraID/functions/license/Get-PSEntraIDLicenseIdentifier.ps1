@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDLicenseIdentifier {
+function Get-PSEntraIDLicenseIdentifier {
     <#
 	.SYNOPSIS
 		Get the list of product names and service plan identifiers for licensing.
@@ -7,7 +7,7 @@
 		Get the list of product names and service plan identifiers for licensing.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
 	.EXAMPLE

@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDUserMemberOf {
+function Get-PSEntraIDUserMemberOf {
     <#
     .SYNOPSIS
         List a user's direct memberships.
@@ -17,7 +17,7 @@
         Filter expressions of direct member of accounts in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
@@ -63,7 +63,7 @@
                             [hashtable] $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
                         else {
                             ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
@@ -80,7 +80,7 @@
                             [hashtable] $header = @{}
                             $header['ConsistencyLevel'] = 'eventual'
                             $query['$Filter'] = $Filter
-                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf/{1}' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
                         }
                         else {
                             ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)

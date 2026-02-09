@@ -82,12 +82,7 @@
             'SkuIdCompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
 
                 $query['$Filter'] = 'companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $SkuId
                 Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.Filter' -ActionStringValues ('companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1})' -f $companyNameList, $SkuId) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -97,12 +92,7 @@
             'SkuPartNumberCompanyName' {
                 $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 $singleSkuPartNumber = Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber
                 if (-not([object]::Equals($singleSkuPartNumber, $null))) {
                     $query['$Filter'] = "companyName in ({0}) and assignedLicenses/any(x:x/skuId eq {1}) " -f $companyNameList, $singleSkuPartNumber.SkuId

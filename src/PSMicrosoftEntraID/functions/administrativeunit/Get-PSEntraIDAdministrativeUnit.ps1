@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDAdministrativeUnit {
+function Get-PSEntraIDAdministrativeUnit {
     <#
         .SYNOPSIS
             Get the properties of the specified administrative unit.
@@ -22,7 +22,7 @@
             Return all administrative units in tenant/directory.
 
         .PARAMETER EnableException
-            This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+            This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
             but allows catching exceptions in calling scripts.
 
         .EXAMPLE

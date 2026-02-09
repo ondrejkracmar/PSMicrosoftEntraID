@@ -1,4 +1,4 @@
-﻿function Add-PSEntraIDGroupMember {
+function Add-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Add a member to a security or Microsoft 365 group.
@@ -16,7 +16,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -37,7 +37,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
@@ -133,7 +133,12 @@
             'IdentityUser' {
                 if ($User.Count -eq 1) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $User
-                    if (-not([object]::Equals($aADUser, $null))) {
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
+                        }
+                    }
+                    else {
                         [void] $memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                         [void] $memberObjectIdList.Add($aADUser.Id)
                         [void] $memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
@@ -148,25 +153,20 @@
                             MemberUrlList     = $memberUrlList
                         }
                     }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
-                        }
-                    }
                 }
                 else {
                     foreach ($itemUser in $User) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                        if (-not([object]::Equals($aADUser, $null))) {
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                            }
+                        }
+                        else {
                             [void] $memberUrlList.Add(('{0}/directoryObjects/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             [void] $memberObjectIdList.Add($aADUser.Id)
                             [void] $memberUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                             [void] $memberMailList.Add($aADUser.Mail)
-                        }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
                         }
                     }
                     $requestHash = @{

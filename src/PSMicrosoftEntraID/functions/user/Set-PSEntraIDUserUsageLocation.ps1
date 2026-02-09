@@ -1,4 +1,4 @@
-﻿function Set-PSEntraIDUserUsageLocation {
+function Set-PSEntraIDUserUsageLocation {
     <#
     .SYNOPSIS
         Set usage location property of the specified user.
@@ -19,7 +19,7 @@
         The name of the country corresponding to its usagelocation.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -40,7 +40,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
@@ -98,13 +98,13 @@
     process {
         switch -Regex  ($PSCmdlet.ParameterSetName) {
             '\wUsageLocationCode' {
-                [string] $usgaeLocationTarget = $usageLocationCode
+                [string] $usageLocationTarget = $usageLocationCode
                 [hashtable] $body = @{
                     usageLocation = $usageLocationCode
                 }
             }
             '\wUsageLocationCountry' {
-                [string] $usgaeLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
+                [string] $usageLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
                 [hashtable] $body = @{
                     usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
                 }
@@ -118,7 +118,7 @@
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usageLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
                         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
@@ -128,22 +128,22 @@
             'Identity\w' {
                 foreach ($user in $Identity) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        [string] $path = ("users/{0}" -f $aADUser.Id)
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usgaeLocationTarget -Target $user -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
+                    if ([object]::Equals($aADUser, $null)) {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                         }
+                    }
+                    else {
+                        [string] $path = ("users/{0}" -f $aADUser.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usageLocationTarget -Target $user -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                     }
                 }
             }

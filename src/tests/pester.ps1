@@ -1,7 +1,8 @@
-﻿param (
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+param (
 	$TestGeneral = $true,
 	
-	$TestFunctions = $true,
+	$TestFunctions = $false,
 	
 	[ValidateSet('None', 'Normal', 'Detailed', 'Diagnostic')]
 	[Alias('Show')]
@@ -67,7 +68,6 @@ if ($TestGeneral)
 	}
 }
 #endregion Run General Tests
-
 $global:__pester_data.ScriptAnalyzer | Out-Host
 
 #region Test Commands

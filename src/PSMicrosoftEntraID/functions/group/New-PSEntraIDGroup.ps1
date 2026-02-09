@@ -1,10 +1,10 @@
-﻿function New-PSEntraIDGroup {
+function New-PSEntraIDGroup {
     <#
     .SYNOPSIS
-        Create new  Microsoft EntraID (Azure AD).
+        Create new group Microsoft EntraID (Azure AD).
 
     .DESCRIPTION
-        Create new  Microsoft EntraID (Azure AD).
+        Create new group Microsoft EntraID (Azure AD).
 
     .PARAMETER Displayname
         The display name for the group.
@@ -37,7 +37,7 @@
         List of owners of new group.
 
     .PARAMETER Members
-        List of mwmwbrs of new group.
+        List of members of new group.
 
     .PARAMETER MembersmembershipRule
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
@@ -49,7 +49,7 @@
     	Specifies the group behaviors that can be set for a Microsoft 365 group during creation.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -70,13 +70,13 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
-        PS C:\> New-PSEntraIDUser -DisplayName 'New group' -Description 'Description of new froup'
+        PS C:\> New-PSEntraIDGroup -DisplayName 'New group' -Description 'Description of new group'
 
-		Create new  Microsoft EntraID (Azure AD) group
+		Create new Microsoft EntraID (Azure AD) group
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
@@ -111,12 +111,12 @@
         [ValidateUserIdentity()]
         [string[]] $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [string] $MembersmembershipRule,
+        [string] $MembershipRule,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('On', 'Paused')]
         [string] $MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
+        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]] $ResourceBehaviorOptions,
         [Parameter()]
         [switch] $EnableException,
@@ -173,31 +173,34 @@
                     $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($owner in $Owners) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
-                        if (-not([object]::Equals($aADUser, $null))) {
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $owner)
+                            }
+                        }
+                        else {
                             [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             $body['owners@odata.bind'] = [array]$userIdUriPathList
                         }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
-                        }
                     }
+                }
+                if ($PSBoundParameters.ContainsKey('Members')) {
+                    $userIdUriPathList = [System.Collections.ArrayList]::new()
                     foreach ($member in $Members) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
-                        if (-not([object]::Equals($aADUser, $null))) {
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $member)
+                            }
+                        }
+                        else {
                             [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
-                        }
                     }
                 }
-                if ($PSBoundParameters.ContainsKey('MembersmembershipRule')) {
-                    $body['membershipRule'] = $MembersmembershipRule
+                if ($PSBoundParameters.ContainsKey('MembershipRule')) {
+                    $body['membershipRule'] = $MembershipRule
                     $body['membershipRuleProcessingState'] = 'On'
                     $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
                 }
