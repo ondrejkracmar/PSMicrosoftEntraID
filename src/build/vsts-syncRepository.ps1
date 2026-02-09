@@ -17,8 +17,8 @@ try {
     $gitHubRepoUrl = ('https://{0}:{1}@github.com/{2}/{3}' -f $GitHubUsername,$encodedGitHubToken, $GitHubUsername, $GitHubRepositoryName)
 
     # Log the constructed URLs
-    Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $azureRepoUrl)
-    Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $gitHubRepoUrl)
+    #Write-PSFMessage -Level Host -Message ('Azure DevOps Repository URL: {0}' -f $azureRepoUrl)
+    #Write-PSFMessage -Level Host -Message ('GitHub Repository URL: {0}' -f $gitHubRepoUrl)
 
     # Configure Git to use credentials for Azure DevOps
     Write-Host "Configuring Git credentials for Azure DevOps..."

@@ -1,8 +1,9 @@
 ﻿# List of forbidden commands
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $global:BannedCommands = @(
-	#'Write-Host'
-	#'Write-Verbose'
-	#'Write-Warning'
+	'Write-Host'
+	'Write-Verbose'
+	'Write-Warning'
 	'Write-Error'
 	'Write-Output'
 	'Write-Information'
@@ -26,10 +27,11 @@ $global:BannedCommands = @(
 	Example:
 	"Write-Host"  = @('Write-PSFHostColor.ps1','Write-PSFMessage.ps1')
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $global:MayContainCommand = @{
-	#"Write-Host"  = @()
-	#"Write-Verbose" = @()
-	#"Write-Warning" = @()
+	"Write-Host"  = @()
+	"Write-Verbose" = @()
+	"Write-Warning" = @()
 	"Write-Error"  = @()
 	"Write-Output" = @()
 	"Write-Information" = @()

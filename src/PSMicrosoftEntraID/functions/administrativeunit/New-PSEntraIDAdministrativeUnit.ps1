@@ -1,4 +1,4 @@
-﻿function New-PSEntraIDAdministrativeUnit {
+function New-PSEntraIDAdministrativeUnit {
     <#
     .SYNOPSIS
         Create new administrative unit in Microsoft Entra ID (Azure AD).
@@ -22,7 +22,7 @@
         Default is false.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf

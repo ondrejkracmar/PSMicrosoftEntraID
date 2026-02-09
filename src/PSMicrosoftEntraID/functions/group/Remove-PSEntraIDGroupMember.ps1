@@ -1,4 +1,4 @@
-﻿function  Remove-PSEntraIDGroupMember {
+function  Remove-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Remove a member/owner to a security or Microsoft 365 group.
@@ -16,7 +16,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -37,7 +37,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
@@ -90,22 +90,24 @@
             'IdentityUser' {
                 foreach ($itemUser in  $User) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        [string] $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $aADUser.Id)
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $group.DisplayName -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
+                    if ([object]::Equals($aADUser, $null)) {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
+                    }
+                    else {
+                        [string] $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $aADUser.Id)
+                    if ($PassThru.IsPresent) {
+                        [hashtable] $body = @{}
+                        [hashtable] $header = @{}
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'GroupMember.Delete' -ActionStringValues $aADUser.UserPrincipalName -Target $group.DisplayName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                     }
                 }
             }
@@ -113,6 +115,8 @@
                 foreach ($itemInputObject in  $InputObject) {
                     [string] $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $itemInputObject.Id)
                     if ($PassThru.IsPresent) {
+                        [hashtable] $body = @{}
+                        [hashtable] $header = @{}
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {

@@ -153,7 +153,7 @@
                 if ($PublishedAfter -or $PublishedBefore) {
                     $messageList = $messageList | Where-Object {
                         try {
-                            $published = [datetime]::Parse($_.PublishedDateTime)
+                            $published = [datetime]::Parse($_.StartDateTime)
                             (
                             (-not $PublishedAfter -or $published -ge $PublishedAfter) -and
                             (-not $PublishedBefore -or $published -le $PublishedBefore)

@@ -1,4 +1,4 @@
-﻿function Remove-PSEntraIDAdministrativeUnitMember {
+function Remove-PSEntraIDAdministrativeUnitMember {
     <#
     .SYNOPSIS
         Remove a member from an administrative unit.
@@ -22,7 +22,7 @@
         DisplayName or Id of the device attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -120,53 +120,94 @@
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'IdentityInputObjectUser' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($userObject in $InputObjectUser) {
-                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $userObject.Id)
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($userObject in $InputObjectUser) {
+                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $userObject.Id)
 
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{
-                                Method  = 'DELETE'
-                                Url     = ('/{0}' -f $pathWithRef)
-                                Headers = $header
-                            }
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'DELETE'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Headers = $header
                         }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
+                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }
             'IdentityInputObjectGroup' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($groupObject in $InputObjectGroup) {
-                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $groupObject.Id)
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)                        
+                    }
+                    return
+                }
+                foreach ($groupObject in $InputObjectGroup) {
+                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $groupObject.Id)
 
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{
-                                Method  = 'DELETE'
-                                Url     = ('/{0}' -f $pathWithRef)
-                                Headers = $header
-                            }
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'DELETE'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Headers = $header
                         }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
+                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }
             'IdentityInputObjectDevice' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($deviceObject in $InputObjectDevice) {
-                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $deviceObject.Id)
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($deviceObject in $InputObjectDevice) {
+                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $deviceObject.Id)
+
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'DELETE'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Headers = $header
+                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
+                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'IdentityUser' {
+                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($userIdentity in $User) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $userIdentity
+                    if (-not ([object]::Equals($aADUser, $null))) {
+                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADUser.Id)
 
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{
@@ -176,83 +217,84 @@
                             }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userIdentity)
                         }
                     }
                 }
             }
-            'Identity\w+' {
+            'IdentityGroup' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    switch -Regex ($PSCmdlet.ParameterSetName) {
-                        'IdentityUser' {
-                            foreach ($userIdentity in $User) {
-                                [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $userIdentity
-                                if (-not ([object]::Equals($aADUser, $null))) {
-                                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADUser.Id)
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($groupIdentity in $Group) {
+                    [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $groupIdentity
+                    if (-not ([object]::Equals($aADGroup, $null))) {
+                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADGroup.Id)
 
-                                    if ($PassThru.IsPresent) {
-                                        [PSMicrosoftEntraID.Batch.Request]@{
-                                            Method  = 'DELETE'
-                                            Url     = ('/{0}' -f $pathWithRef)
-                                            Headers = $header
-                                        }
-                                    }
-                                    else {
-                                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                        if (Test-PSFFunctionInterrupt) { return }
-                                    }
-                                }
+
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'DELETE'
+                                Url     = ('/{0}' -f $pathWithRef)
+                                Headers = $header
                             }
                         }
-                        'IdentityGroup' {
-                            foreach ($groupIdentity in $Group) {
-                                [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $groupIdentity
-                                if (-not ([object]::Equals($aADGroup, $null))) {
-                                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADGroup.Id)
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
+                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $groupIdentity)
+                        }
+                    }
+                }
+            }
+            'IdentityDevice' {
+                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($deviceIdentity in $Device) {
+                    [PSObject] $aADDevice = Get-PSEntraIDDevice -Identity $deviceIdentity
+                    if (-not ([object]::Equals($aADDevice, $null))) {
+                        [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADDevice.Id)
 
-                                    if ($PassThru.IsPresent) {
-                                        [PSMicrosoftEntraID.Batch.Request]@{
-                                            Method  = 'DELETE'
-                                            Url     = ('/{0}' -f $pathWithRef)
-                                            Headers = $header
-                                        }
-                                    }
-                                    else {
-                                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                        if (Test-PSFFunctionInterrupt) { return }
-                                    }
-                                }
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'DELETE'
+                                Url     = ('/{0}' -f $pathWithRef)
+                                Headers = $header
                             }
                         }
-                        'IdentityDevice' {
-                            foreach ($deviceIdentity in $Device) {
-                                [PSObject] $aADDevice = Get-PSEntraIDDevice -Identity $deviceIdentity
-                                if (-not ([object]::Equals($aADDevice, $null))) {
-                                    [string] $pathWithRef = ("{0}/{1}/members/{2}/`$ref" -f $path, $aADAdministrativeUnit.Id, $aADDevice.Id)
-
-                                    if ($PassThru.IsPresent) {
-                                        [PSMicrosoftEntraID.Batch.Request]@{
-                                            Method  = 'DELETE'
-                                            Url     = ('/{0}' -f $pathWithRef)
-                                            Headers = $header
-                                        }
-                                    }
-                                    else {
-                                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADDevice.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                        if (Test-PSFFunctionInterrupt) { return }
-                                    }
-                                }
-                            }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADDevice.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
+                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Device.Get.Failed) -f $deviceIdentity)
                         }
                     }
                 }

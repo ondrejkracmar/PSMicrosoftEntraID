@@ -1,4 +1,4 @@
-﻿function Disable-PSEntraIDUserLicense {
+function Disable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
 		Disable user's license.
@@ -19,7 +19,7 @@
         Friendly name Office 365 product of subscribedSku.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -40,7 +40,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 	.EXAMPLE
@@ -92,21 +92,19 @@
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string[]] $bodySkuId = $SkuId
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string] $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
             }
             '\wSkuPartNumber' {
-                [string[]] $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
+                [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
+                [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = Get-PSEntraIDSubscribedSku
+                foreach ($skuPart in $SkuPartNumber) {
+                    [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = $subscribedSkus | Where-Object { $_.SkuPartNumber -eq $skuPart } | Select-Object -First 1
+                    if ($matchedSku) {
+                        $bodySkuIdList.Add($matchedSku.SkuId)
+                    }
                 }
-                else {
-                    [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string[]] $bodySkuId = $bodySkuIdList.ToArray()
+                [string] $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
             }
         }
     }
@@ -118,19 +116,26 @@
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
-                    [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $servivePlanStatus = $itemInputObject |
-                    Get-PSEntraIDUserLicenseDetail |
-                    Select-Object -ExpandProperty ServicePLans
-                    if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                        [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    if (-not ([object]::Equals($itemInputObject.AssignedLicenses, $null)) -and $itemInputObject.AssignedLicenses.Count -gt 0) {
+                        [string[]] $userSkuIds = $itemInputObject.AssignedLicenses.SkuId
+                        [bool] $hasLicenseToRemove = $false
+                        foreach ($skuToRemove in $bodySkuId) {
+                            if ($userSkuIds -contains $skuToRemove) {
+                                $hasLicenseToRemove = $true
+                                break
+                            }
                         }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
+                        if ($hasLicenseToRemove) {
+                            [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
                         }
                     }
                 }
@@ -138,12 +143,23 @@
             'Identity\w' {
                 foreach ($user in  $Identity) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                        [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $servivePlanStatus = $aADUser |
-                        Get-PSEntraIDUserLicenseDetail |
-                        Select-Object -ExpandProperty ServicePLans
-                        if (-not ([object]::Equals($servivePlanStatus, $null))) {
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                    }
+                    else {
+                        if (-not ([object]::Equals($aADUser.AssignedLicenses, $null)) -and $aADUser.AssignedLicenses.Count -gt 0) {
+                        [string[]] $userSkuIds = $aADUser.AssignedLicenses.SkuId
+                        [bool] $hasLicenseToRemove = $false
+                        foreach ($skuToRemove in $bodySkuId) {
+                            if ($userSkuIds -contains $skuToRemove) {
+                                $hasLicenseToRemove = $true
+                                break
+                            }
+                        }
+                        if ($hasLicenseToRemove) {
+                            [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
                             if ($PassThru.IsPresent) {
                                 [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                             }
@@ -155,10 +171,6 @@
                             }
                         }
                     }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                        }
                     }
                 }
             }

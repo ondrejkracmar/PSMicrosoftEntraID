@@ -4,10 +4,10 @@
 		Get User Usage Location hashtable.
 
 	.DESCRIPTION
-		Get User Ysage Location hashtable.
+		Get User Usage Location hashtable.
 
 	.EXAMPLE
-		PS C:\> Get-UserUsageLocation
+		PS C:\> Get-PSEntraIDUsageLocation
 
         Get list of usage locations
 	#>

@@ -89,7 +89,7 @@
             }
 
             'CompanyName' {
-                $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'$_'" } -join ',')
+                $filterString = "companyName in ({0})" -f ($CompanyName | Join-String -SingleQuote -Separator ',')
                 $query['$filter'] = $filterString
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)

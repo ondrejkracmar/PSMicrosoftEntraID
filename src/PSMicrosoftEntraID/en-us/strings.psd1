@@ -58,6 +58,9 @@
 	'GroupMember.List'                 = "List members from the group '{0}'"
 	'GroupMember.Sync'                 = "Sync members of group"
 
+	'Device.Get'                       = "Get device '{0}'"
+	'Device.Get.Failed'                = "Get device '{0}' failed"
+
 	'AdministrativeUnit.Get'           = "Get administrative unit '{0}'"
 	'AdministrativeUnit.Get.Failed'    = "Get administrative unit '{0}' failed"
 	'AdministrativeUnit.Filter'        = "List administrative units with filter '{0}'"

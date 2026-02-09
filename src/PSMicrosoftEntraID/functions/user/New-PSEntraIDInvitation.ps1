@@ -1,34 +1,34 @@
-﻿function New-PSEntraIDInvitation {
+function New-PSEntraIDInvitation {
     <#
     .SYNOPSIS
-        Get the properties of the specified user.
+        Create a new invitation of the specified user.
 
     .DESCRIPTION
-        Get the properties of the specified user.
+        Create a new invitation of the specified user.
 
     .PARAMETER InvitedUserEmailAddress
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER InvitedUserDisplayName
-        DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
+        DisplayName, GivenName, Surname of the user attribute populated in tenant/directory.
 
     .PARAMETER InviteRedirectUrl
         The URL that the user will be redirected to after redemption.
 
     .PARAMETER SendInvitationMessage
-        Switch if senf invitation message
+        Switch if send invitation message
 
     .PARAMETER InviteMessage
         The invitation message
 
     .PARAMETER MessageLanguage
-        Langueage of invite message.
+        Language of invite message.
 
     .PARAMETER CCRecipient
         Name and mail of CC recipients
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -49,7 +49,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
@@ -61,7 +61,7 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [OutputType('PSMicrosoftEntraID.Users.Invitations.Invitation')]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'UserEmailAddres')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'UserEmailAddress')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]
@@ -132,8 +132,8 @@
             $body['sendInvitationMessage'] = $false
         }
 
-        if (Test-PSFParameterBinding -ParameterName 'Language') {
-            $body['messageLanguage'] = $Language
+        if (Test-PSFParameterBinding -ParameterName 'MessageLanguage') {
+            $body['messageLanguage'] = $MessageLanguage
         }
         else {
             $body['messageLanguage'] = $null
@@ -143,10 +143,6 @@
             foreach ($itemCCRecipient in $CCRecipient) {
                 [void] $cCRecipientList.Add($itemCCRecipient)
             }
-        }
-
-        if (Test-PSFParameterBinding -ParameterName CustomizedMessage) {
-
         }
 
         $body['invitedUserMessageInfo'] = @{

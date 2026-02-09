@@ -1,0 +1,242 @@
+BeforeAll {
+    $script:ModuleName = 'PSMicrosoftEntraID'
+
+    if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
+        Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
+    }
+}
+
+Describe 'Add-PSEntraIDGroupOwner Tests' -Tag 'Unit' {
+    Context 'Parameter Sets' {
+        It 'Should have IdentityInputObject parameter set' {
+            $command = Get-Command Add-PSEntraIDGroupOwner
+            $command.ParameterSets.Name | Should -Contain 'IdentityInputObject'
+        }
+
+        It 'Should have IdentityUser parameter set' {
+            $command = Get-Command Add-PSEntraIDGroupOwner
+            $command.ParameterSets.Name | Should -Contain 'IdentityUser'
+        }
+    }
+
+    Context 'Parameter Validation' {
+        It 'Should have EnableException switch parameter' {
+            $command = Get-Command Add-PSEntraIDGroupOwner
+            $param = $command.Parameters['EnableException']
+            $param | Should -Not -BeNullOrEmpty
+            $param.ParameterType | Should -Be ([switch])
+        }
+
+        It 'Should have User parameter' {
+            $command = Get-Command Add-PSEntraIDGroupOwner
+            $param = $command.Parameters['User']
+            $param | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'Error Handling - User Identity' {
+        BeforeAll {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue { 
+                if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
+                if ($FullName -like '*RetryCount') { return 0 }
+                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
+            Mock -ModuleName PSMicrosoftEntraID Get-EntraService { 
+                [PSCustomObject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
+                [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand {
+                & $ScriptBlock
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-EntraRequest { }
+        }
+
+        It 'Should continue processing valid users when one user not found and EnableException is false' {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser { 
+                param($Identity)
+                if ($Identity -eq 'nonexistent@test.com') { return $null }
+                return [PSCustomObject]@{ 
+                    Id = "id-$Identity"
+                    UserPrincipalName = $Identity
+                    Mail = $Identity
+                }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-TerminatingException { }
+
+            $users = @('valid1@test.com', 'nonexistent@test.com', 'valid2@test.com')
+            
+            { Add-PSEntraIDGroupOwner -Identity 'test-group' -User $users -Confirm:$false } | Should -Not -Throw
+            
+            Should -Invoke -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser -Times 3
+            Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-TerminatingException -Times 0
+        }
+
+        It 'Should throw when user not found and EnableException is true' {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser { return $null }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-TerminatingException { 
+                throw "User not found"
+            }
+
+            { Add-PSEntraIDGroupOwner -Identity 'test-group' -User 'nonexistent@test.com' -EnableException -Confirm:$false } | Should -Throw
+            
+            Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-TerminatingException -Times 1
+        }
+
+        It 'Should process all valid users in array and skip invalid ones' {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser { 
+                param($Identity)
+                if ($Identity -match 'invalid') { return $null }
+                return [PSCustomObject]@{ 
+                    Id = "id-$Identity"
+                    UserPrincipalName = $Identity
+                    Mail = $Identity
+                }
+            }
+
+            $users = @('valid1@test.com', 'invalid1@test.com', 'valid2@test.com', 'invalid2@test.com')
+            
+            { Add-PSEntraIDGroupOwner -Identity 'test-group' -User $users -Confirm:$false } | Should -Not -Throw
+            
+            Should -Invoke -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser -Times 4
+        }
+    }
+
+    Context 'IdentityInputObject parameter set' {
+        BeforeAll {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
+                if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
+                if ($FullName -like '*RetryCount') { return 0 }
+                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
+            Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
+                [PSCustomObject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
+                [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand {
+                & $ScriptBlock
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-EntraRequest { }
+        }
+
+        It 'Should add owner via InputObject parameter' {
+            InModuleScope $script:ModuleName {
+                $user = [PSCustomObject]@{
+                    PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                    Id                = 'user-id-1'
+                    UserPrincipalName = 'user1@test.com'
+                    Mail              = 'user1@test.com'
+                }
+                { Add-PSEntraIDGroupOwner -Identity 'group-id' -InputObject $user -Force -Confirm:$false } | Should -Not -Throw
+            }
+            Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
+        }
+    }
+
+    Context 'WhatIf support' {
+        BeforeAll {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
+                if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
+                if ($FullName -like '*RetryCount') { return 0 }
+                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
+            Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
+                [PSCustomObject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
+                [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser {
+                [PSCustomObject]@{
+                    Id                = 'user-id-1'
+                    UserPrincipalName = 'user@domain.com'
+                    Mail              = 'user@domain.com'
+                }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand { }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-EntraRequest { }
+        }
+
+        It 'Should not invoke Invoke-EntraRequest when WhatIf is specified' {
+            InModuleScope $script:ModuleName {
+                Add-PSEntraIDGroupOwner -Identity 'group-id' -User 'user@domain.com' -WhatIf
+            }
+            Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-EntraRequest -Times 0
+        }
+    }
+
+    Context 'Connection verification' {
+        BeforeAll {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
+                if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
+                if ($FullName -like '*RetryCount') { return 0 }
+                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
+            Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
+                [PSCustomObject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
+                [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDUser {
+                [PSCustomObject]@{
+                    Id                = 'user-id-1'
+                    UserPrincipalName = 'user@domain.com'
+                    Mail              = 'user@domain.com'
+                }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand {
+                & $ScriptBlock
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-EntraRequest { }
+        }
+
+        It 'Should call Assert-EntraConnection' {
+            InModuleScope $script:ModuleName {
+                Add-PSEntraIDGroupOwner -Identity 'group-id' -User 'user@domain.com' -Force -Confirm:$false
+            }
+            Should -Invoke -ModuleName PSMicrosoftEntraID Assert-EntraConnection -Times 1
+        }
+    }
+
+    Context 'Pipeline input' {
+        BeforeAll {
+            Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
+                if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
+                if ($FullName -like '*RetryCount') { return 0 }
+                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
+            Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
+                [PSCustomObject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
+                [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand {
+                & $ScriptBlock
+            }
+            Mock -ModuleName PSMicrosoftEntraID Invoke-EntraRequest { }
+        }
+
+        It 'Should accept pipeline input via InputObject' {
+            InModuleScope $script:ModuleName {
+                $user = [PSCustomObject]@{
+                    PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                    Id                = 'user-id-1'
+                    UserPrincipalName = 'user1@test.com'
+                    Mail              = 'user1@test.com'
+                }
+                { $user | Add-PSEntraIDGroupOwner -Identity 'group-id' -Force -Confirm:$false } | Should -Not -Throw
+            }
+            Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
+        }
+    }
+}

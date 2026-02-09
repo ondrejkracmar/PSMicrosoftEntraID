@@ -1,4 +1,4 @@
-﻿function Add-PSEntraIDGroupOwner {
+function Add-PSEntraIDGroupOwner {
     <#
     .SYNOPSIS
         Add a owner to a security or Microsoft 365 group.
@@ -19,7 +19,7 @@
         user's role (Member or Owner)
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -40,7 +40,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
@@ -116,16 +116,16 @@
             'IdentityUser' {
                 foreach ($itemUser in $User) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                    if (-not([object]::Equals($aADUser, $null))) {
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                        }
+                    }
+                    else {
                         [void] $ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                         [void] $ownerObjectIdList.Add($aADUser.Id)
                         [void] $ownerUserPrincipalNameList.Add($aADUser.UserPrincipalName)
                         [void] $ownerMailList.Add($aADUser.Mail)
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                        }
                     }
                 }
             }
@@ -149,7 +149,7 @@
                 [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
             }
             else {
-                $userActionString = ($questHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
+                $userActionString = ($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
                 Invoke-PSFProtectedCommand -ActionString 'GroupOwner.Add' -ActionStringValues $userActionString -Target $group.DisplayName -ScriptBlock {
                     [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
                 } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait

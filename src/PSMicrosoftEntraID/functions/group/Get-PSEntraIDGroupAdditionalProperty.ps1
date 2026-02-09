@@ -1,4 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
+using namespace PSMicrosoftEntraID.Users
 function Get-PSEntraIDGroupAdditionalProperty {
     <#
     .SYNOPSIS
@@ -14,13 +14,13 @@ function Get-PSEntraIDGroupAdditionalProperty {
         MailNickName or Id of group or team.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDGroupProperty -Identity group1@contoso.com
+        PS C:\> Get-PSEntraIDGroupAdditionalProperty -Identity group1@contoso.com
 
-		Get theadditional properties and relationships of a group group1@contoso.com
+		Get the additional properties and relationships of a group group1@contoso.com
 
 #>
     [OutputType('PSMicrosoftEntraID.Groups.GroupAdditionalProperty')]
@@ -63,14 +63,14 @@ function Get-PSEntraIDGroupAdditionalProperty {
                 foreach ($itemIdentity in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.AdditionalProperty' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $itemIdentity
-                        if (-not([object]::Equals($group, $null))) {
-                            [string] $path = ('groups/{0}' -f $group.Id)
-                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
-                        }
-                        else {
+                        if ([object]::Equals($group, $null)) {
                             if ($EnableException.IsPresent) {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
+                        }
+                        else {
+                            [string] $path = ('groups/{0}' -f $group.Id)
+                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         }
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }

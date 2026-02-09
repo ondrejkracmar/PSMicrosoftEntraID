@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDOrganization {
+function Get-PSEntraIDOrganization {
     <#
 	.SYNOPSIS
 		Get the properties and relationships of the currently authenticated organization.
@@ -7,7 +7,7 @@
 		Get the properties and relationships of the currently authenticated organization.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
 	.EXAMPLE

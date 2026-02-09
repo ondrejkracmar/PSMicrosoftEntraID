@@ -41,9 +41,6 @@
         PS C:\> Get-PSEntraIDUserGuest -All
         Returns all Guest accounts in the tenant.
 
-    .NOTES
-        Author: Your Name
-        Last Updated: 2025-03-06
     #>
     [OutputType('PSMicrosoftEntraID.Users.UserGuest')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
@@ -151,12 +148,7 @@
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
                 if ($Disabled.IsPresent) {
                     $completeFilter = Add-GuestFilter ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList)
                     $query['$Filter'] = $completeFilter
@@ -167,7 +159,7 @@
                 }
                 else {
                     $completeFilter = Add-GuestFilter ('companyName in ({0})' -f $companyNameList)
-                    $query['$Filter'] = 'companyName in ({0})' -f $companyNameList
+                    $query['$Filter'] = $completeFilter
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false

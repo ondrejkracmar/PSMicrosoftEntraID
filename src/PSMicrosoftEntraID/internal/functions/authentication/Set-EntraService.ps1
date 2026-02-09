@@ -77,6 +77,6 @@
 		if ($PSBoundParameters.Keys -contains 'DefaultScopes') { $service.DefaultScopes = $DefaultScopes }
 		if ($PSBoundParameters.Keys -contains 'Header') { $service.Header = $Header }
 		if ($PSBoundParameters.Keys -contains 'HelpUrl') { $service.HelpUrl = $HelpUrl }
-		if ($PSBoundParameters.Keys -contains 'NoRefresh') { $service.HelpUrl = $NoRefresh.ToBool() }
+		if ($PSBoundParameters.Keys -contains 'NoRefresh') { $service.NoRefresh = $NoRefresh.ToBool() }
 	}
 }

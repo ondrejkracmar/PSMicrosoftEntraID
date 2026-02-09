@@ -1,10 +1,10 @@
-﻿function Enable-PSEntraIDUserLicenseServicePlan {
+function Enable-PSEntraIDUserLicenseServicePlan {
     <#
 	.SYNOPSIS
-		Enable serivce plan of users's sku subscription.
+		Enable serivce plan of user's sku subscription.
 
 	.DESCRIPTION
-		Enable serivce plan of users's sku subscription.
+		Enable serivce plan of user's sku subscription.
 
     .PARAMETER InputObject
         PSMicrosoftEntraID.Users.User object in tenant/directory.
@@ -22,10 +22,10 @@
 		Service plan Id of subscribedSku.
 
     .PARAMETER ServicePlanName
-        Friendly servcie plan name of subscribedSku.
+        Friendly service plan name of subscribedSku.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
         dly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -46,13 +46,13 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 	.EXAMPLE
 		PS C:\> Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
 
-		Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
+		Enable service plan Office Pro Plus, Exchange Online of subscription ENTERPRISEPACK for user username@contoso.com
 
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
@@ -121,25 +121,16 @@
                 [string] $skuTarget = $SkuId
             }
             '\wSkuPartNumber\w' {
-                [string] $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -EQ -Value $SkuPartNumber).SkuId
+                [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = Get-PSEntraIDSubscribedSku | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber } | Select-Object -First 1
+                [string] $bodySkuId = $matchedSku.SkuId
                 [string] $skuTarget = $SkuPartNumber
             }
             '\wPlanId' {
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string] $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
                 [string[]] $bodyServicePlanId = $ServicePlanId
             }
             '\wPlanName' {
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
+                [string] $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
                 [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
                     Select-Object -ExpandProperty ServicePlans |
                     Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId
@@ -197,55 +188,54 @@
             'Identity\w' {
                 foreach ($user in  $Identity) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $aADUser |
-                        Get-PSEntraIDUserLicenseDetail |
-                        Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                        Select-Object -ExpandProperty ServicePlans
-
-                        if ([object]::Equals($userLicenseDetail, $null)) {
-                            [string[]] $existingDisabledServicePlanList = (Get-PSEntraIDSubscribedLicense |
-                                Where-Object -Property SkuId -Value $bodySkuId -EQ |
-                                Select-Object -ExpandProperty ServicePlans).ServicePlanId
-                        }
-                        else {
-                            [string[]] $existingDisabledServicePlanList = ($userLicenseDetail |
-                                Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
-                        }
-                        if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
-                            [string[]] $bodyDisabledServicePlanList = $existingDisabledServicePlanList |
-                            Where-Object { $PSItem -notin $bodyServicePlanId }
-                        }
-                        If ([object]::Equals($bodyDisabledServicePlanList, $null)) {
-                            [string[]] $bodyDisabledServicePlanList = @()
-                        }
-
-                        [hashtable] $body = @{
-                            addLicenses    = @(
-                                @{
-                                    disabledPlans = $bodyDisabledServicePlanList
-                                    skuId         = $bodySkuId
-                                }
-                            )
-                            removeLicenses = @()
-                        }
-                        [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
+                    if ([object]::Equals($aADUser, $null)) {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
                         }
                     }
+                    else {
+                        [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $aADUser |
+                    Get-PSEntraIDUserLicenseDetail |
+                    Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                    Select-Object -ExpandProperty ServicePlans
 
+                    if ([object]::Equals($userLicenseDetail, $null)) {
+                        [string[]] $existingDisabledServicePlanList = (Get-PSEntraIDSubscribedLicense |
+                            Where-Object -Property SkuId -Value $bodySkuId -EQ |
+                            Select-Object -ExpandProperty ServicePlans).ServicePlanId
+                    }
+                    else {
+                        [string[]] $existingDisabledServicePlanList = ($userLicenseDetail |
+                            Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
+                    }
+                    if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
+                        [string[]] $bodyDisabledServicePlanList = $existingDisabledServicePlanList |
+                        Where-Object { $PSItem -notin $bodyServicePlanId }
+                    }
+                    If ([object]::Equals($bodyDisabledServicePlanList, $null)) {
+                        [string[]] $bodyDisabledServicePlanList = @()
+                    }
+
+                    [hashtable] $body = @{
+                        addLicenses    = @(
+                            @{
+                                disabledPlans = $bodyDisabledServicePlanList
+                                skuId         = $bodySkuId
+                            }
+                        )
+                        removeLicenses = @()
+                    }
+                    [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                    }
                 }
             }
         }

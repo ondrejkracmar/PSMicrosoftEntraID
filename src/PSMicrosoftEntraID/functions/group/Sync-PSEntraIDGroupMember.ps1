@@ -42,7 +42,7 @@
     .EXAMPLE
             PS C:\> Sync-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
-            Sync memebrs between group1 and group2
+            Sync members between group1 and group2
 
 
 #>
@@ -87,52 +87,59 @@
     process {
 
         [PSMicrosoftEntraID.Groups.Group] $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
-        if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
-            [string[]] $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
-            switch ($PSCmdlet.ParameterSetName) {
-                'UserIdentity' {
-                    foreach ($itemUser in  $ReferenceUserIdentity) {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            $addUser = $aADUser | Select-Object -Property Id
-                            [void]$referenceMemberList.Add($addUser)
+        if ([object]::Equals($differenceEntraIDGroup, $null)) {
+            return
+        }
+
+        $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -ExpandProperty Id
+        switch ($PSCmdlet.ParameterSetName) {
+            'UserIdentity' {
+                foreach ($itemUser in $ReferenceUserIdentity) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
                     }
-                }
-                'GroupIdentity' {
-                    [PSMicrosoftEntraID.Groups.Group] $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
-                    [string[]] $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
+                    else {
+                        $addUser = $aADUser | Select-Object -ExpandProperty Id
+                        [void]$referenceMemberList.Add($addUser)
+                    }
                 }
             }
-            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
+            'GroupIdentity' {
+                [PSMicrosoftEntraID.Groups.Group] $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
+                $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -ExpandProperty Id
+            }
+        }
+        $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
 
-            if ($SyncView.IsPresent) {
-                if (-not ([object]::Equals($syncOperationList, $null))) {
-                    $syncOperationList
-                }
+        if ($SyncView.IsPresent) {
+            if (-not ([object]::Equals($syncOperationList, $null))) {
+                $syncOperationList
             }
-            else {
-                if (-not ([object]::Equals($syncOperationList, $null))) {
-                    foreach ($syncOperation in $syncOperationList) {
-                        switch ($syncOperation.Crud) {
-                            'Create' {
-                                [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                    [void] (Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                if (Test-PSFFunctionInterrupt) { return }
-                            }
-                            'Update' {
-                            }
-                            'Delete' {
-                                [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                    [void] (Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                if (Test-PSFFunctionInterrupt) { return }
-                            }
-                            Default {}
+        }
+        else {
+            if (-not ([object]::Equals($syncOperationList, $null))) {
+                foreach ($syncOperation in $syncOperationList) {
+                    switch ($syncOperation.Crud) {
+                        'Create' {
+                            [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
+                                [void] (Add-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
+                        'Update' {
+                        }
+                        'Delete' {
+                            [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
+                                [void] (Remove-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                        Default {}
                     }
                 }
             }

@@ -1,4 +1,4 @@
-﻿function Remove-PSEntraIDAdministrativeUnit {
+function Remove-PSEntraIDAdministrativeUnit {
     <#
 	.SYNOPSIS
 		Delete administrative unit
@@ -15,7 +15,7 @@
         DisplayName or Id of the administrative unit attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -113,27 +113,27 @@
             'Identity' {
                 foreach ($administrativeUnit in $Identity) {
                     [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
-                    if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                        [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
-
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{
-                                Method  = 'DELETE'
-                                Url     = ('/{0}' -f $path)
-                                Headers = $header
-                            }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
+                    if ([object]::Equals($aADAdministrativeUnit, $null)) {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Remove.Failed) -f $administrativeUnit)
                         }
+                    }
+                    else {
+                        [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
+
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'DELETE'
+                            Url     = ('/{0}' -f $path)
+                            Headers = $header
+                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
+                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                     }
                 }
             }

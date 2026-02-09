@@ -45,6 +45,7 @@
 		'Disconnect-PSMicrosoftEntraID'
 		'Get-PSEntraIDOrganization'
 		'Get-PSEntraIDMessageCenter'
+		'Get-PSEntraIDDevice'
 		'Disable-PSEntraIDUserLicense'
 		'Enable-PSEntraIDUserLicense'
 		'Disable-PSEntraIDUserLicenseServicePlan'
