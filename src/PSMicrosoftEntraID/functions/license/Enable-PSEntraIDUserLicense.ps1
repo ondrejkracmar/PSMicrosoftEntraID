@@ -92,7 +92,7 @@ function Enable-PSEntraIDUserLicense {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string[]] $bodySkuId = $SkuId
-                [string] $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
+                [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 [System.Collections.ArrayList] $addLicensesList = [System.Collections.ArrayList]::new()
                 foreach ($skuIdItem in $bodySkuId) {
                     [void] $addLicensesList.Add(@{
@@ -115,7 +115,7 @@ function Enable-PSEntraIDUserLicense {
                     }
                 }
                 [string[]] $bodySkuId = $bodySkuIdList.ToArray()
-                [string] $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
+                [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 [System.Collections.ArrayList] $addLicensesList = [System.Collections.ArrayList]::new()
                 foreach ($skuIdItem in $bodySkuId) {
                     [void] $addLicensesList.Add(@{

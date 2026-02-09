@@ -132,7 +132,7 @@ function Get-PSEntraIDUser {
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 if ($Disabled.IsPresent) {
                     $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {

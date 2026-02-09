@@ -126,11 +126,11 @@ function Disable-PSEntraIDUserLicenseServicePlan {
                 [string] $skuTarget = $SkuPartNumber
             }
             '\wPlanId' {
-                [string] $servicePlanTarget = ($ServicePlanId | Join-String -SingleQuote -Separator ',')
+                [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 [string[]] $bodyServicePlanId = $ServicePlanId
             }
             '\wPlanName' {
-                [string] $servicePlanTarget = ($ServicePlanName | Join-String -SingleQuote -Separator ',')
+                [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
                     Select-Object -ExpandProperty ServicePlans |
                     Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId

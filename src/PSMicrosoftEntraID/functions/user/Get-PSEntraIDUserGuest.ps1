@@ -148,7 +148,7 @@
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | Join-String -SingleQuote -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
                 if ($Disabled.IsPresent) {
                     $completeFilter = Add-GuestFilter ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList)
                     $query['$Filter'] = $completeFilter
