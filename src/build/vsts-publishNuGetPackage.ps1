@@ -13,40 +13,32 @@ param (
 )
 
 # Variables
-$packageSourceUrl = "https://pkgs.dev.azure.com/$($OrganizationName)/$ArtifactRepositoryName/_packaging/$ArtifactFeedName/nuget/v2" # NOTE: v2 Feed
+# NOTE: Using v3 feed URL for dotnet nuget compatibility
+$packageSourceUrl = "https://pkgs.dev.azure.com/$($OrganizationName)/$ArtifactRepositoryName/_packaging/$ArtifactFeedName/nuget/v3/index.json"
 
-$nugetPath = 'nuget'
-
-# Create credential
-$password = ConvertTo-SecureString -String $PersonalAccessToken -AsPlainText -Force
-$credential = New-Object System.Management.Automation.PSCredential ($FeedUsername, $password)
-
-
-# Step 1 - "Install NuGet" Agent job task now handles this
-# Upgrade PowerShellGet
-# Install-Module PowerShellGet -RequiredVersion $powershellGetVersion -Force
-# Remove-Module PowerShellGet -Force
-# Import-Module PowerShellGet -RequiredVersion $powershellGetVersion -Force
+# Step 1
+# Register NuGet Package Source (remove existing source first to avoid duplicates)
+dotnet nuget remove source $ArtifactFeedName 2>$null
+dotnet nuget add source $packageSourceUrl --name $ArtifactFeedName --username $FeedUsername --password $PersonalAccessToken --store-password-in-clear-text
+if ($LASTEXITCODE -ne 0) {
+    throw "[vsts-publishNuGetPackage] Failed to add NuGet source '$ArtifactFeedName'!"
+}
 
 # Step 2
-# Check NuGet is listed
-#Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
-
-# Step 3
-# Register NuGet Package Source
-& $nugetPath source add -Name $ArtifactFeedName -Source $packageSourceUrl -Username $FeedUsername -Password $PersonalAccessToken
-
-# Step 4
 # Upload NuGet Package
 if (-not ([string]::IsNullOrEmpty($PreRelease))) {
     # Sestavení prerelease části a odstranění nevalidních znaků
     $sanitizedSuffix = ($PreRelease + $CommitsSinceVersion) -replace '[^a-zA-Z0-9]', ''
     $packageName = "$ModuleName.$ModuleVersion-$sanitizedSuffix.nupkg"
 
-    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) $packageName -SkipDuplicate
+    dotnet nuget push $packageName --source $ArtifactFeedName --api-key ((New-Guid).Guid) --skip-duplicate
 }
 else {
     $packageName = "$ModuleName.$ModuleVersion.nupkg"
 
-    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) $packageName -SkipDuplicate
+    dotnet nuget push $packageName --source $ArtifactFeedName --api-key ((New-Guid).Guid) --skip-duplicate
+}
+
+if ($LASTEXITCODE -ne 0) {
+    throw "[vsts-publishNuGetPackage] Failed to push package '$packageName'!"
 }
