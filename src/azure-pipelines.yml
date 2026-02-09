@@ -1,7 +1,7 @@
 ﻿name: Publish Powershell Module To Private Repository
 
 pool:
-  vmImage: 'ubuntu-22.04'
+  vmImage: 'ubuntu-latest'
 
 trigger:
   branches:
