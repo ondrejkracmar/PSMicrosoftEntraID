@@ -134,11 +134,5 @@ namespace PSMicrosoftEntraID.Groups
         /// </summary>
         [DataMember(Name = "securityIdentifier")]
         public string SecurityIdentifier { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group.
-        /// </summary>
-        [DataMember(Name = "assignedLabels")]
-        public AssignedLabel[] AssignedLabels { get; set; }
     }
 }

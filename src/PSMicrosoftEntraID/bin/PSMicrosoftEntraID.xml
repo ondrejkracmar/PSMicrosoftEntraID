@@ -459,6 +459,21 @@
             </summary>
             <returns>The name of the provider.</returns>
         </member>
+        <member name="T:PSMicrosoftEntraID.Groups.AssignedLabel">
+            <summary>
+            Represents a sensitivity label assigned to a Microsoft 365 group, as per Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLabel.LabelId">
+            <summary>
+            Gets or sets the unique identifier of the label.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLabel.DisplayName">
+            <summary>
+            Gets or sets the display name of the label.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Groups.Group">
             <summary>
             Represents a group in Microsoft Entra ID.
@@ -563,6 +578,11 @@
         <member name="P:PSMicrosoftEntraID.Groups.Group.SecurityIdentifier">
             <summary>
             Gets or sets the security identifier (SID) for the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.AssignedLabels">
+            <summary>
+            Gets or sets the list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group.
             </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty">
