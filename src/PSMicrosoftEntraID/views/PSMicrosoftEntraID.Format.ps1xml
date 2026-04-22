@@ -502,6 +502,9 @@
 					<TableColumnHeader>
 						<Width>16</Width>
 					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>24</Width>
+					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
 					<TableRowEntry>
