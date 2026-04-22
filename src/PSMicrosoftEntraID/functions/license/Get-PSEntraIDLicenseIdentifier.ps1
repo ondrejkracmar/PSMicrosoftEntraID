@@ -1,4 +1,4 @@
-function Get-PSEntraIDLicenseIdentifier {
+﻿function Get-PSEntraIDLicenseIdentifier {
     <#
 	.SYNOPSIS
 		Get the list of product names and service plan identifiers for licensing.

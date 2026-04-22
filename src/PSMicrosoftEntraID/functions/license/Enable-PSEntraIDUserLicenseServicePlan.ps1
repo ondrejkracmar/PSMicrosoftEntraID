@@ -1,4 +1,4 @@
-function Enable-PSEntraIDUserLicenseServicePlan {
+﻿function Enable-PSEntraIDUserLicenseServicePlan {
     <#
 	.SYNOPSIS
 		Enable service plan of user's sku subscription.

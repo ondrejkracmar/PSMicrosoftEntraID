@@ -1,4 +1,4 @@
-function New-PSEntraIDGroup {
+﻿function New-PSEntraIDGroup {
     <#
     .SYNOPSIS
         Create new group Microsoft EntraID (Azure AD).

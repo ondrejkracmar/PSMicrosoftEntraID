@@ -1,4 +1,4 @@
-function Add-PSEntraIDAdministrativeUnitMember {
+﻿function Add-PSEntraIDAdministrativeUnitMember {
     <#
     .SYNOPSIS
         Add a member to an administrative unit.

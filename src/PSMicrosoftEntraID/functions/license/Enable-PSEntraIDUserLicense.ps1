@@ -1,4 +1,4 @@
-function Enable-PSEntraIDUserLicense {
+﻿function Enable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
 		Enable user license of users's sku subscription.

@@ -38,13 +38,13 @@ Param (
 	$SkipTest,
 
 	[string[]]
-	$CommandPath = @("$global:testroot\..\PSMicrosoftEntraID\functions", "$global:testroot\..\PSMicrosoftEntraID\internal\functions"),
+	$CommandPath = @((Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'functions'), (Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'internal' 'functions')),
 
 	[string]
 	$ModuleName = "PSMicrosoftEntraID",
 
 	[string]
-	$ExceptionsFile = "$global:testroot\general\Help.Exceptions.ps1"
+	$ExceptionsFile = (Join-Path $global:testroot 'general' 'Help.Exceptions.ps1')
 )
 if ($SkipTest) { return }
 . $ExceptionsFile

@@ -1,4 +1,4 @@
-function New-PSEntraIDInvitation {
+﻿function New-PSEntraIDInvitation {
     <#
     .SYNOPSIS
         Create a new invitation of the specified user.

@@ -1,4 +1,4 @@
-function Get-PSEntraIDUserLicenseDetail {
+﻿function Get-PSEntraIDUserLicenseDetail {
     <#
 	.SYNOPSIS
 		Return details for licenses that are directly assigned and those transitively assigned through memberships in licensed groups.

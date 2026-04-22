@@ -1,4 +1,4 @@
-function Set-PSEntraIDAdministrativeUnit {
+﻿function Set-PSEntraIDAdministrativeUnit {
     <#
     .SYNOPSIS
         Updates the specified properties of an administrative unit.

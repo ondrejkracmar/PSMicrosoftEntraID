@@ -1,4 +1,4 @@
-function Remove-PSEntraIDGroup {
+﻿function Remove-PSEntraIDGroup {
     <#
 	.SYNOPSIS
 		Delete group

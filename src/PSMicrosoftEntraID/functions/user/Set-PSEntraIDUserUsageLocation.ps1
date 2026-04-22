@@ -1,4 +1,4 @@
-function Set-PSEntraIDUserUsageLocation {
+﻿function Set-PSEntraIDUserUsageLocation {
     <#
     .SYNOPSIS
         Set usage location property of the specified user.

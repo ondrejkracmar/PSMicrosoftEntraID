@@ -1,7 +1,7 @@
 ﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-$moduleRoot = (Resolve-Path "$global:testroot\..\PSMicrosoftEntraID").Path
+$moduleRoot = (Resolve-Path (Join-Path $global:testroot '..' 'PSMicrosoftEntraID')).Path
 
-. "$global:testroot\general\FileIntegrity.Exceptions.ps1"
+. (Join-Path $global:testroot 'general' 'FileIntegrity.Exceptions.ps1')
 
 Describe "Verifying integrity of module files" {
 	BeforeAll {
@@ -44,11 +44,11 @@ Describe "Verifying integrity of module files" {
 	}
 
 	Context "Validating PS1 Script files" {
-		$allFiles = Get-ChildItem -Path $moduleRoot -Recurse | Where-Object Name -like "*.ps1" | Where-Object FullName -NotLike "$moduleRoot\tests\*"
+		$allFiles = Get-ChildItem -Path $moduleRoot -Recurse | Where-Object Name -like "*.ps1" | Where-Object { $_.FullName -NotLike (Join-Path $moduleRoot 'tests' '*') }
 		
 		foreach ($file in $allFiles)
 		{
-			$name = $file.FullName.Replace("$moduleRoot\", '')
+			$name = $file.FullName.Replace($moduleRoot + [System.IO.Path]::DirectorySeparatorChar, '')
 			
 			It "[$name] Should have UTF8 encoding with Byte Order Mark" -TestCases @{ file = $file } {
 				Get-FileEncoding -Path $file.FullName | Should -Be 'UTF8 BOM'
@@ -60,7 +60,6 @@ Describe "Verifying integrity of module files" {
 			
 			$tokens = $null
 			$parseErrors = $null
-			PSUseDeclaredVarsMoreThanAssignments
 			$ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$parseErrors)
 			
 			It "[$name] Should have no syntax errors" -TestCases @{ parseErrors = $parseErrors } {
@@ -80,11 +79,11 @@ Describe "Verifying integrity of module files" {
 	}
 	
 	Context "Validating help.txt help files" {
-		$allFiles = Get-ChildItem -Path $moduleRoot -Recurse | Where-Object Name -like "*.help.txt" | Where-Object FullName -NotLike "$moduleRoot\tests\*"
+		$allFiles = Get-ChildItem -Path $moduleRoot -Recurse | Where-Object Name -like "*.help.txt" | Where-Object { $_.FullName -NotLike (Join-Path $moduleRoot 'tests' '*') }
 		
 		foreach ($file in $allFiles)
 		{
-			$name = $file.FullName.Replace("$moduleRoot\", '')
+			$name = $file.FullName.Replace($moduleRoot + [System.IO.Path]::DirectorySeparatorChar, '')
 			
 			It "[$name] Should have UTF8 encoding" -TestCases @{ file = $file } {
 				Get-FileEncoding -Path $file.FullName | Should -Be 'UTF8 BOM'

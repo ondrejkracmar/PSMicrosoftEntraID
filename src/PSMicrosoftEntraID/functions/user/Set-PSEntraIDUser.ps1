@@ -1,4 +1,4 @@
-function Set-PSEntraIDUser {
+﻿function Set-PSEntraIDUser {
     <#
 .SYNOPSIS
     Updates the specified properties of one or more Microsoft Entra ID (Azure AD) users.
