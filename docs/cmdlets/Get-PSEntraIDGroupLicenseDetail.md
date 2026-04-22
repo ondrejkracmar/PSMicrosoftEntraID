@@ -144,4 +144,4 @@ HelpMessage: ''
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku
+### PSMicrosoftEntraID.Groups.AssignedLicenseDetail

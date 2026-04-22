@@ -20,7 +20,7 @@
               DefaultDisplayProperty
             </Name>
             <Value>
-              Name
+              SkuPartNumber
             </Value>
           </NoteProperty>
         </Members>
@@ -47,7 +47,7 @@
               DefaultDisplayProperty
             </Name>
             <Value>
-              Name
+              ServicePlanName
             </Value>
           </NoteProperty>
         </Members>

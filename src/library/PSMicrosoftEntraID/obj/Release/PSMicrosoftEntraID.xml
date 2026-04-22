@@ -644,25 +644,25 @@
         </member>
         <member name="T:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense">
             <summary>
-            Represents a license assigned to a group in Microsoft Entra ID.
-            When a license is assigned to a group, all members of the group inherit the license.
-            See https://learn.microsoft.com/en-us/graph/api/resources/assignedlicense for details.
+            Represents an assigned license in Microsoft Entra ID.
+            This class contains properties for identifying the service SKU and
+            the plans that are disabled under this license.
             </summary>
         </member>
         <member name="M:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense"/> class.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense.DisabledPlans">
-            <summary>
-            Gets or sets the collection of the unique identifiers (GUIDs) for plans
-            that have been disabled within this assigned license.
+            Creates an empty assigned license.
             </summary>
         </member>
         <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense.SkuId">
             <summary>
             Gets or sets the unique identifier (GUID) for the service SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.AssignedLicense.DisabledPlans">
+            <summary>
+            Gets or sets the list of disabled plans under this license.
             </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan">
@@ -688,14 +688,14 @@
             Gets or sets the name of the service plan.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan.ServicePlanFriendlyName">
+            <summary>
+            Gets or sets the friendly name of the service plan.
+            </summary>
+        </member>
         <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan.AppliesTo">
             <summary>
             Gets or sets the target object to which the service plan can be assigned.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan.ProvisioningStatus">
-            <summary>
-            Gets or sets the provisioning status of the service plan.
             </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku">
@@ -724,6 +724,11 @@
         <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku.SkuPartNumber">
             <summary>
             Unique SKU display name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku.SkuFriendlyName">
+            <summary>
+            Friendly name of the SKU.
             </summary>
         </member>
         <member name="P:PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku.ServicePlans">
@@ -1497,6 +1502,11 @@
             Gets or sets the name of the service plan.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.ServicePlanFriendlyName">
+            <summary>
+            Gets or sets the friendly name of the service plan.
+            </summary>
+        </member>
         <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan.AppliesTo">
             <summary>
             Gets or sets the target object to which the service plan can be assigned.
@@ -1533,6 +1543,11 @@
         <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.SkuPartNumber">
             <summary>
             Unique SKU display name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.SkuFriendlyName">
+            <summary>
+            Friendly name of the SKU.
             </summary>
         </member>
         <member name="P:PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku.ServicePlans">

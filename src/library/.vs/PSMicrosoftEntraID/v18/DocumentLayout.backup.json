@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\licensemanagement\\subscriptionsku.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\licensemanagement\\subscriptionsku.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|c:\\projects\\psmodules\\psmicrosoftentraid\\src\\library\\psmicrosoftentraid\\users\\licensemanagement\\serviceplan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09E7B831-F03A-4E4D-B75F-A7142650CDD6}|PSMicrosoftEntraID\\PSMicrosoftEntraID.csproj|solutionrelative:psmicrosoftentraid\\users\\licensemanagement\\serviceplan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SubscriptionSku.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\LicenseManagement\\SubscriptionSku.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\LicenseManagement\\SubscriptionSku.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\LicenseManagement\\SubscriptionSku.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\LicenseManagement\\SubscriptionSku.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAAwC8AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-22T19:00:26.117Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ServicePlan.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\LicenseManagement\\ServicePlan.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftEntraID\\Users\\LicenseManagement\\ServicePlan.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftEntraID\\src\\library\\PSMicrosoftEntraID\\Users\\LicenseManagement\\ServicePlan.cs",
+              "RelativeToolTip": "PSMicrosoftEntraID\\Users\\LicenseManagement\\ServicePlan.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAQwCkAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-22T18:59:54.472Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

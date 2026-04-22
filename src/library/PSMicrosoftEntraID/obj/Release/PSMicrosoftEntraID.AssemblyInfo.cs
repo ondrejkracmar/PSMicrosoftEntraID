@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35c787cf14913ef5e7af9de738fc0ab05d652ca1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e66909a1cde75b83bcb7fe604c251f03b27af25")]
 [assembly: System.Reflection.AssemblyProductAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PSMicrosoftEntraID")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
