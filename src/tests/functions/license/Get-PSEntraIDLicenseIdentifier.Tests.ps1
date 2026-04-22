@@ -48,7 +48,7 @@ Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
 
         It 'Should not require any mandatory parameters' {
             $command = Get-Command Get-PSEntraIDLicenseIdentifier
-            $mandatoryParams = $command.Parameters.Values | Where-Object { $_.Attributes.Mandatory -eq $true }
+            $mandatoryParams = $command.Parameters.Values | Where-Object { @($_.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count -gt 0 }
             $mandatoryParams | Should -BeNullOrEmpty
         }
     }
@@ -109,8 +109,8 @@ Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
 
             $result = Get-PSEntraIDLicenseIdentifier
 
-            $result.Count | Should -Be 1
-            $result[0].SkuPartNumber | Should -Be 'CACHED_TEST'
+            @($result).Count | Should -Be 1
+            @($result)[0].SkuPartNumber | Should -Be 'CACHED_TEST'
         }
 
         It 'Should fall back to bundled catalog when configured cache file is missing' {

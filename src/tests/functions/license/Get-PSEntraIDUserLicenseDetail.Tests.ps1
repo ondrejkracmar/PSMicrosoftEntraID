@@ -88,12 +88,12 @@ Describe "Get-PSEntraIDUserLicenseDetail" -Tag 'Unit' {
 
         It 'Should have InputObject parameter accept pipeline input' {
             $parameter = (Get-Command Get-PSEntraIDUserLicenseDetail).Parameters['InputObject']
-            $parameter.Attributes.ValueFromPipeline | Should -Contain $true
+            @($parameter.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipeline }).Count | Should -BeGreaterThan 0
         }
 
         It 'Should have Identity parameter accept pipeline input' {
             $parameter = (Get-Command Get-PSEntraIDUserLicenseDetail).Parameters['Identity']
-            $parameter.Attributes.ValueFromPipeline | Should -Contain $true
+            @($parameter.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipeline }).Count | Should -BeGreaterThan 0
         }
     }
 

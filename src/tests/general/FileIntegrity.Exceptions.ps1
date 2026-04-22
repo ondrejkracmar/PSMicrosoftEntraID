@@ -29,9 +29,9 @@ $global:BannedCommands = @(
 #>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $global:MayContainCommand = @{
-	"Write-Host"  = @()
-	"Write-Verbose" = @()
-	"Write-Warning" = @('assembly.ps1')
+	"Write-Host"  = @('Connect-ServiceBrowser.ps1','Connect-ServiceDeviceCode.ps1')
+	"Write-Verbose" = @('Disconnect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1','Connect-ServiceBrowser.ps1','Connect-ServiceIdentity.ps1','Invoke-EntraRequest.ps1')
+	"Write-Warning" = @('assembly.ps1','Connect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1','Invoke-EntraRequest.ps1','Assert-ServiceName.ps1','federationproviders.ps1')
 	"Write-Error"  = @()
 	"Write-Output" = @()
 	"Write-Information" = @()

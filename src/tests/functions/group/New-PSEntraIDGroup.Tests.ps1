@@ -12,21 +12,21 @@ Describe 'New-PSEntraIDGroup Tests' -Tag 'Unit' {
             $command = Get-Command New-PSEntraIDGroup
             $param = $command.Parameters['Displayname']
             $param | Should -Not -BeNullOrEmpty
-            $param.Attributes.Mandatory | Should -Contain $true
+            @($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count | Should -BeGreaterThan 0
         }
 
         It 'Should have mandatory MailNickname parameter' {
             $command = Get-Command New-PSEntraIDGroup
             $param = $command.Parameters['MailNickname']
             $param | Should -Not -BeNullOrEmpty
-            $param.Attributes.Mandatory | Should -Contain $true
+            @($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count | Should -BeGreaterThan 0
         }
 
         It 'Should have optional Owners parameter' {
             $command = Get-Command New-PSEntraIDGroup
             $param = $command.Parameters['Owners']
             $param | Should -Not -BeNullOrEmpty
-            $param.Attributes.Mandatory | Should -Not -Contain $true
+            @($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count | Should -Be 0
         }
 
         It 'Should have optional Members parameter' {

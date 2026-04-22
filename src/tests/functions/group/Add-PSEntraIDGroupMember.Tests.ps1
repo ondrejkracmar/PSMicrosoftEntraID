@@ -140,7 +140,7 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
             Mock -ModuleName PSMicrosoftEntraID Get-PSEntraIDGroup {
                 [PSCustomObject]@{ Id = 'group-id'; DisplayName = 'Test Group' }
             }
-            Mock -ModuleName PSMicrosoftEntraID Step-Array { return $InputObject }
+            Mock -ModuleName PSMicrosoftEntraID Step-Array { param($InputObject) return ,$InputObject }
             Mock -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand {
                 & $ScriptBlock
             }
