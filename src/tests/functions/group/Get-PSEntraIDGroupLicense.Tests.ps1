@@ -1,6 +1,5 @@
 ﻿BeforeAll {
     $moduleName = 'PSMicrosoftEntraID'
-    $commandName = 'Get-PSEntraIDGroupLicense'
 
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
 }
@@ -13,10 +12,11 @@ Describe 'Get-PSEntraIDGroupLicense' -Tag 'Unit' {
                 [string[]] $DisabledPlans = @()
             )
 
-            $assignedLicense = New-Object -TypeName 'PSMicrosoftEntraID.Groups.AssignedLicense'
-            $assignedLicense.SkuId = [guid]$SkuId
-            $assignedLicense.DisabledPlans = @($DisabledPlans | ForEach-Object { [guid]$_ })
-            $assignedLicense
+            [PSCustomObject]@{
+                PSTypeName = 'PSMicrosoftEntraID.Groups.AssignedLicense'
+                SkuId = [guid]$SkuId
+                DisabledPlans = @($DisabledPlans | ForEach-Object { [guid]$_ })
+            }
         }
 
         function New-TestGroup {
