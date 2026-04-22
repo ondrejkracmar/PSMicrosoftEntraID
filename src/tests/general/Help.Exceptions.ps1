@@ -12,6 +12,7 @@ $global:FunctionHelpTestExceptions = @(
     'ConvertFrom-RestGroupLicenseDetail'
     'ConvertFrom-RestInvitation'
     'ConvertFrom-RestUserLicenseDetail'
+    'ConvertFrom-GroupLicenseDetailSubscriptionSku'
     'ConvertTo-ODataFilterString'
     'Resolve-PSEntraIDConfirmPreference'
     'Resolve-PSEntraIDLicenseIdentifierPath'

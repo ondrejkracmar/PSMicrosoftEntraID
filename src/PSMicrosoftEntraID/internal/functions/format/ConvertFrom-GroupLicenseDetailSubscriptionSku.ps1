@@ -1,4 +1,4 @@
-function ConvertFrom-GroupLicenseDetailSubscriptionSku {
+﻿function ConvertFrom-GroupLicenseDetailSubscriptionSku {
     param (
         [Parameter(Mandatory = $true)]
         $LicenseDetail
