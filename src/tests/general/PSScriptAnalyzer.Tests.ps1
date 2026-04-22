@@ -25,9 +25,13 @@ Describe 'Invoking PSScriptAnalyzer against commandbase' {
 			{
 				$ruleName = $rule.RuleName
 				It "Should pass $ruleName" -TestCases @{ analysis = $analysis; ruleName = $ruleName } {
-					If ($analysis.RuleName -contains $ruleName)
+					$failures = @($analysis | Where-Object {
+						$null -ne $_ -and $_.RuleName -eq $ruleName
+					})
+
+					If ($failures.Count -gt 0)
 					{
-						$analysis | Where-Object { $_.RuleName -EQ $ruleName } -OutVariable failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
+						$failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
 						
 						1 | Should -Be 0
 					}
