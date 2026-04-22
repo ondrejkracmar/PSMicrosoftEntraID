@@ -1,72 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="25" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:44">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="25" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:34:57">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="22.6779" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="23.8858" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDLicenseIdentifier.Tests.ps1" executed="True" result="Success" success="True" time="22.6779" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDLicenseIdentifier.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDLicenseIdentifier.Tests.ps1" executed="True" result="Success" success="True" time="23.8858" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDLicenseIdentifier.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier" executed="True" result="Success" success="True" time="10.4734" asserts="0" description="Get-PSEntraIDLicenseIdentifier">
+          <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier" executed="True" result="Success" success="True" time="7.6647" asserts="0" description="Get-PSEntraIDLicenseIdentifier">
             <results>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation" executed="True" result="Success" success="True" time="0.1184" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Parameter Validation">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation" executed="True" result="Success" success="True" time="0.07" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Parameter Validation">
                 <results>
-                  <test-case description="Should have EnableException as a switch parameter" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should have EnableException as a switch parameter" time="0.0823" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have correct output type" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should have correct output type" time="0.0105" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not require any mandatory parameters" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should not require any mandatory parameters" time="0.0206" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException as a switch parameter" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should have EnableException as a switch parameter" time="0.0228" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have correct output type" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should have correct output type" time="0.0308" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not require any mandatory parameters" name="Get-PSEntraIDLicenseIdentifier.Parameter Validation.Should not require any mandatory parameters" time="0.0131" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality" executed="True" result="Success" success="True" time="2.9259" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Basic Functionality">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality" executed="True" result="Success" success="True" time="1.3223" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Basic Functionality">
                 <results>
-                  <test-case description="Should retrieve license identifiers from JSON file" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should retrieve license identifiers from JSON file" time="0.9174" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return license identifiers with required properties" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should return license identifiers with required properties" time="0.3565" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include service plans in results" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should include service plans in results" time="0.9906" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return objects of correct type" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should return objects of correct type" time="0.5351" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should retrieve license identifiers from JSON file" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should retrieve license identifiers from JSON file" time="0.2839" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return license identifiers with required properties" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should return license identifiers with required properties" time="0.3288" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include service plans in results" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should include service plans in results" time="0.3594" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return objects of correct type" name="Get-PSEntraIDLicenseIdentifier.Basic Functionality.Should return objects of correct type" time="0.2749" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.File Path Construction" executed="True" result="Success" success="True" time="3.5194" asserts="0" description="Get-PSEntraIDLicenseIdentifier.File Path Construction">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.File Path Construction" executed="True" result="Success" success="True" time="1.6995" asserts="0" description="Get-PSEntraIDLicenseIdentifier.File Path Construction">
                 <results>
-                  <test-case description="Should read from LicenseIdentifiers.json in module" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should read from LicenseIdentifiers.json in module" time="0.1944" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should prefer configured cache file when it exists" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should prefer configured cache file when it exists" time="0.3806" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should fall back to bundled catalog when configured cache file is missing" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should fall back to bundled catalog when configured cache file is missing" time="0.0142" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should read from LicenseIdentifiers.json in module" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should read from LicenseIdentifiers.json in module" time="0.3435" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should prefer configured cache file when it exists" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should prefer configured cache file when it exists" time="0.0204" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should fall back to bundled catalog when configured cache file is missing" name="Get-PSEntraIDLicenseIdentifier.File Path Construction.Should fall back to bundled catalog when configured cache file is missing" time="0.0105" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Import Registration" executed="True" result="Success" success="True" time="5.7499" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Import Registration">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Import Registration" executed="True" result="Success" success="True" time="3.5001" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Import Registration">
                 <results>
-                  <test-case description="Should trigger cache refresh when auto update on import is enabled" name="Get-PSEntraIDLicenseIdentifier.Import Registration.Should trigger cache refresh when auto update on import is enabled" time="1.0566" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should skip cache refresh when auto update on import is disabled" name="Get-PSEntraIDLicenseIdentifier.Import Registration.Should skip cache refresh when auto update on import is disabled" time="1.1609" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should trigger cache refresh when auto update on import is enabled" name="Get-PSEntraIDLicenseIdentifier.Import Registration.Should trigger cache refresh when auto update on import is enabled" time="0.8896" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should skip cache refresh when auto update on import is disabled" name="Get-PSEntraIDLicenseIdentifier.Import Registration.Should skip cache refresh when auto update on import is disabled" time="0.9084" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization" executed="True" result="Success" success="True" time="7.9961" asserts="0" description="Get-PSEntraIDLicenseIdentifier.JSON Deserialization">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization" executed="True" result="Success" success="True" time="5.0935" asserts="0" description="Get-PSEntraIDLicenseIdentifier.JSON Deserialization">
                 <results>
-                  <test-case description="Should deserialize JSON using DataContractJsonSerializer" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should deserialize JSON using DataContractJsonSerializer" time="1.7409" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle UTF-8 encoding" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should handle UTF-8 encoding" time="0.2843" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return array of license identifier objects" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should return array of license identifier objects" time="0.2144" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should deserialize JSON using DataContractJsonSerializer" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should deserialize JSON using DataContractJsonSerializer" time="1.0826" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle UTF-8 encoding" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should handle UTF-8 encoding" time="0.2642" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return array of license identifier objects" name="Get-PSEntraIDLicenseIdentifier.JSON Deserialization.Should return array of license identifier objects" time="0.2437" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Return Values" executed="True" result="Success" success="True" time="8.9578" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Return Values">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Return Values" executed="True" result="Success" success="True" time="6.1777" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Return Values">
                 <results>
-                  <test-case description="Should return objects with SkuId property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with SkuId property" time="0.1785" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return objects with SkuPartNumber property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with SkuPartNumber property" time="0.1809" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return objects with ProductName property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with ProductName property" time="0.1995" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include service plan IDs" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should include service plan IDs" time="0.202" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include service plan names" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should include service plan names" time="0.1948" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return objects with SkuId property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with SkuId property" time="0.2444" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return objects with SkuPartNumber property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with SkuPartNumber property" time="0.2072" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return objects with ProductName property" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should return objects with ProductName property" time="0.2372" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include service plan IDs" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should include service plan IDs" time="0.1951" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include service plan names" name="Get-PSEntraIDLicenseIdentifier.Return Values.Should include service plan names" time="0.1967" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Error Handling" executed="True" result="Success" success="True" time="9.2249" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Error Handling">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Error Handling" executed="True" result="Success" success="True" time="6.3994" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Error Handling">
                 <results>
-                  <test-case description="Should respect EnableException parameter" name="Get-PSEntraIDLicenseIdentifier.Error Handling.Should respect EnableException parameter" time="0.2638" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should respect EnableException parameter" name="Get-PSEntraIDLicenseIdentifier.Error Handling.Should respect EnableException parameter" time="0.219" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies" executed="True" result="Success" success="True" time="9.9985" asserts="0" description="Get-PSEntraIDLicenseIdentifier.No External Dependencies">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies" executed="True" result="Success" success="True" time="7.0984" asserts="0" description="Get-PSEntraIDLicenseIdentifier.No External Dependencies">
                 <results>
-                  <test-case description="Should not require Entra connection" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies.Should not require Entra connection" time="0.3658" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not make API calls" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies.Should not make API calls" time="0.4003" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not require Entra connection" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies.Should not require Entra connection" time="0.3068" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not make API calls" name="Get-PSEntraIDLicenseIdentifier.No External Dependencies.Should not make API calls" time="0.3893" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling" executed="True" result="Success" success="True" time="10.3868" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling">
+              <test-suite type="TestFixture" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling" executed="True" result="Success" success="True" time="7.6488" asserts="0" description="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling">
                 <results>
-                  <test-case description="Should properly handle memory stream for deserialization" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling.Should properly handle memory stream for deserialization" time="0.1733" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle large JSON files" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling.Should handle large JSON files" time="0.2108" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should properly handle memory stream for deserialization" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling.Should properly handle memory stream for deserialization" time="0.3282" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle large JSON files" name="Get-PSEntraIDLicenseIdentifier.Memory Stream Handling.Should handle large JSON files" time="0.2195" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

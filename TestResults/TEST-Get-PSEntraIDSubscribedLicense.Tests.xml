@@ -1,57 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="22" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:06:07">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="22" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:35:21">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="19.7967" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="13.2257" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDSubscribedLicense.Tests.ps1" executed="True" result="Success" success="True" time="19.7967" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDSubscribedLicense.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDSubscribedLicense.Tests.ps1" executed="True" result="Success" success="True" time="13.2257" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/license/Get-PSEntraIDSubscribedLicense.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense" executed="True" result="Success" success="True" time="4.8921" asserts="0" description="Get-PSEntraIDSubscribedLicense">
+          <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense" executed="True" result="Success" success="True" time="0.5935" asserts="0" description="Get-PSEntraIDSubscribedLicense">
             <results>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Parameter Validation" executed="True" result="Success" success="True" time="0.0795" asserts="0" description="Get-PSEntraIDSubscribedLicense.Parameter Validation">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Parameter Validation" executed="True" result="Success" success="True" time="0.025" asserts="0" description="Get-PSEntraIDSubscribedLicense.Parameter Validation">
                 <results>
-                  <test-case description="Should have EnableException as a switch parameter" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should have EnableException as a switch parameter" time="0.0297" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have correct output type" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should have correct output type" time="0.0095" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not require any mandatory parameters" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should not require any mandatory parameters" time="0.0138" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException as a switch parameter" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should have EnableException as a switch parameter" time="0.0124" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have correct output type" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should have correct output type" time="0.0055" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not require any mandatory parameters" name="Get-PSEntraIDSubscribedLicense.Parameter Validation.Should not require any mandatory parameters" time="0.003" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Basic Functionality" executed="True" result="Success" success="True" time="3.5801" asserts="0" description="Get-PSEntraIDSubscribedLicense.Basic Functionality">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Basic Functionality" executed="True" result="Success" success="True" time="0.1796" asserts="0" description="Get-PSEntraIDSubscribedLicense.Basic Functionality">
                 <results>
-                  <test-case description="Should retrieve all subscribed licenses" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should retrieve all subscribed licenses" time="0.1532" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return licenses with correct properties" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should return licenses with correct properties" time="0.0789" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use subscribedSkus API endpoint" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should use subscribedSkus API endpoint" time="0.0573" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should pass correct query parameters with select" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should pass correct query parameters with select" time="2.6577" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use GET method" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should use GET method" time="0.0356" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should retrieve all subscribed licenses" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should retrieve all subscribed licenses" time="0.0667" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return licenses with correct properties" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should return licenses with correct properties" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use subscribedSkus API endpoint" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should use subscribedSkus API endpoint" time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass correct query parameters with select" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should pass correct query parameters with select" time="0.0182" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use GET method" name="Get-PSEntraIDSubscribedLicense.Basic Functionality.Should use GET method" time="0.0272" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration" executed="True" result="Success" success="True" time="3.7152" asserts="0" description="Get-PSEntraIDSubscribedLicense.Connection and Configuration">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration" executed="True" result="Success" success="True" time="0.2465" asserts="0" description="Get-PSEntraIDSubscribedLicense.Connection and Configuration">
                 <results>
-                  <test-case description="Should assert connection to Entra" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should assert connection to Entra" time="0.0286" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use Graph service" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should use Graph service" time="0.0557" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should retrieve configuration values" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should retrieve configuration values" time="0.0472" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should assert connection to Entra" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should assert connection to Entra" time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Graph service" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should use Graph service" time="0.0221" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should retrieve configuration values" name="Get-PSEntraIDSubscribedLicense.Connection and Configuration.Should retrieve configuration values" time="0.0223" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Error Handling" executed="True" result="Success" success="True" time="4.1405" asserts="0" description="Get-PSEntraIDSubscribedLicense.Error Handling">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Error Handling" executed="True" result="Success" success="True" time="0.3267" asserts="0" description="Get-PSEntraIDSubscribedLicense.Error Handling">
                 <results>
-                  <test-case description="Should respect EnableException parameter" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should respect EnableException parameter" time="0.0387" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle API errors gracefully without EnableException" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should handle API errors gracefully without EnableException" time="0.1262" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle function interrupt" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should handle function interrupt" time="0.1698" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use ErrorAction Stop in API call" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should use ErrorAction Stop in API call" time="0.0858" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should respect EnableException parameter" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should respect EnableException parameter" time="0.0162" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle API errors gracefully without EnableException" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should handle API errors gracefully without EnableException" time="0.0176" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle function interrupt" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should handle function interrupt" time="0.023" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ErrorAction Stop in API call" name="Get-PSEntraIDSubscribedLicense.Error Handling.Should use ErrorAction Stop in API call" time="0.0201" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Return Values" executed="True" result="Success" success="True" time="4.6507" asserts="0" description="Get-PSEntraIDSubscribedLicense.Return Values">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Return Values" executed="True" result="Success" success="True" time="0.4463" asserts="0" description="Get-PSEntraIDSubscribedLicense.Return Values">
                 <results>
-                  <test-case description="Should return correct object type" name="Get-PSEntraIDSubscribedLicense.Return Values.Should return correct object type" time="0.3969" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include service plans in results" name="Get-PSEntraIDSubscribedLicense.Return Values.Should include service plans in results" time="0.0373" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include prepaid units information" name="Get-PSEntraIDSubscribedLicense.Return Values.Should include prepaid units information" time="0.0257" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should enrich subscribed licenses with friendly SKU names" name="Get-PSEntraIDSubscribedLicense.Return Values.Should enrich subscribed licenses with friendly SKU names" time="0.0246" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should enrich service plans with friendly names" name="Get-PSEntraIDSubscribedLicense.Return Values.Should enrich service plans with friendly names" time="0.021" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return correct object type" name="Get-PSEntraIDSubscribedLicense.Return Values.Should return correct object type" time="0.0207" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include service plans in results" name="Get-PSEntraIDSubscribedLicense.Return Values.Should include service plans in results" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include prepaid units information" name="Get-PSEntraIDSubscribedLicense.Return Values.Should include prepaid units information" time="0.0213" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should enrich subscribed licenses with friendly SKU names" name="Get-PSEntraIDSubscribedLicense.Return Values.Should enrich subscribed licenses with friendly SKU names" time="0.0316" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should enrich service plans with friendly names" name="Get-PSEntraIDSubscribedLicense.Return Values.Should enrich service plans with friendly names" time="0.0228" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Retry Configuration" executed="True" result="Success" success="True" time="4.709" asserts="0" description="Get-PSEntraIDSubscribedLicense.Retry Configuration">
+              <test-suite type="TestFixture" name="Get-PSEntraIDSubscribedLicense.Retry Configuration" executed="True" result="Success" success="True" time="0.4958" asserts="0" description="Get-PSEntraIDSubscribedLicense.Retry Configuration">
                 <results>
-                  <test-case description="Should configure retry count from configuration" name="Get-PSEntraIDSubscribedLicense.Retry Configuration.Should configure retry count from configuration" time="0.0281" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should configure retry wait time from configuration" name="Get-PSEntraIDSubscribedLicense.Retry Configuration.Should configure retry wait time from configuration" time="0.0263" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should configure retry count from configuration" name="Get-PSEntraIDSubscribedLicense.Retry Configuration.Should configure retry count from configuration" time="0.0262" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should configure retry wait time from configuration" name="Get-PSEntraIDSubscribedLicense.Retry Configuration.Should configure retry wait time from configuration" time="0.0203" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>
