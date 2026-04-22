@@ -70,6 +70,7 @@
 		'Get-PSEntraIDSubscribedLicense'
 		'Get-PSEntraIDGroup'
 		'Get-PSEntraIDGroupLicense'
+		'Get-PSEntraIDGroupLicenseDetail'
 		'Get-PSEntraIDGroupAdditionalProperty'
 		'New-PSEntraIDGroup'
 		'Remove-PSEntraIDGroup'

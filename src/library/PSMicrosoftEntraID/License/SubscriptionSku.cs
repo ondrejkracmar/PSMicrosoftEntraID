@@ -41,6 +41,12 @@ namespace PSMicrosoftEntraID.License
         public string SkuPartNumber { get; set; }
 
         /// <summary>
+        /// Gets or sets the friendly name for the SKU.
+        /// </summary>
+        [DataMember(Name = "skuFriendlyName")]
+        public string SkuFriendlyName { get; set; }
+
+        /// <summary>
         /// Gets or sets the applicable scope of the SKU (e.g., User or Organization).
         /// </summary>
         [DataMember(Name = "appliesTo")]

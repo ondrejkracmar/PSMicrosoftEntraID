@@ -527,6 +527,9 @@
 							<TableColumnItem>
 								<PropertyName>SkuPartNumber</PropertyName>
 							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>SkuFriendlyName</PropertyName>
+							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>
 				</TableRowEntries>
@@ -545,6 +548,41 @@
           			</TableColumnHeader>
           			<TableColumnHeader>
             			<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>SkuId</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>SkuPartNumber</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ServicePlans</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
+			<Name>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+	            		<Width>16</Width>
+	          		</TableColumnHeader>
+	          		<TableColumnHeader>
+	            		<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
 						<Width>16</Width>

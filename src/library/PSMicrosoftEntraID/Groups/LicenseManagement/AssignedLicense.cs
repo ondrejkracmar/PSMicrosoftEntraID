@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace PSMicrosoftEntraID.Groups
+namespace PSMicrosoftEntraID.Groups.LicenseManagement
 {
     /// <summary>
     /// Represents a license assigned to a group in Microsoft Entra ID.

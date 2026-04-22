@@ -69,12 +69,14 @@
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuIdServicePlanName')]
         [ValidateGuid()]
         [string] $SkuId,
+        [ArgumentCompleter({ Get-SubscribedLicenseCompletion $args })]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanName')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string] $SkuPartNumber,
+        [ArgumentCompleter({ Get-SubscribedLicenseCompletion $args -ServicePlan })]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]

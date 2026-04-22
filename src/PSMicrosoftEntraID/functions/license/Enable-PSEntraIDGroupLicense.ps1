@@ -57,6 +57,7 @@
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuId')]
         [ValidateGuid()]
         [string[]] $SkuId,
+        [ArgumentCompleter({ Get-SubscribedLicenseCompletion $args })]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumber')]
         [ValidateNotNullOrEmpty()]
