@@ -67,6 +67,7 @@
             <Name>ServicePlanName</Name>
             <Name>ServicePlanFriendlyName</Name>
             <Name>AppliesTo</Name>
+            <Name>ProvisioningStatus</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>

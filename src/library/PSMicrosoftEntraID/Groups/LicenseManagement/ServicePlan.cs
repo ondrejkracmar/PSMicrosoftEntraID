@@ -47,5 +47,11 @@ namespace PSMicrosoftEntraID.Groups.LicenseManagement
         /// </summary>
         [DataMember(Name = "appliesTo")]
         public string AppliesTo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the provisioning status of the service plan.
+        /// </summary>
+        [DataMember(Name = "provisioningStatus")]
+        public string ProvisioningStatus { get; set; }
     }
 }
