@@ -47,7 +47,7 @@
               DefaultDisplayProperty
             </Name>
             <Value>
-              ServicePlanName
+              SkuFriendlyName
             </Value>
           </NoteProperty>
         </Members>
@@ -65,8 +65,8 @@
           <ReferencedProperties>
             <Name>ServicePlanId</Name>
             <Name>ServicePlanName</Name>
+            <Name>ServicePlanFriendlyName</Name>
             <Name>AppliesTo</Name>
-            <Name>ProvisioningStatus</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -74,7 +74,7 @@
               DefaultDisplayProperty
             </Name>
             <Value>
-              Name
+              ServicePlanFriendlyName
             </Value>
           </NoteProperty>
         </Members>
