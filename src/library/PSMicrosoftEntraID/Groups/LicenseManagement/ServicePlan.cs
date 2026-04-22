@@ -36,15 +36,16 @@ namespace PSMicrosoftEntraID.Groups.LicenseManagement
         public string ServicePlanName { get; set; }
 
         /// <summary>
+        /// Gets or sets the friendly name of the service plan.
+        /// </summary>
+        [DataMember(Name = "servicePlanFriendlyName")]
+        public string ServicePlanFriendlyName { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the target object to which the service plan can be assigned.
         /// </summary>
         [DataMember(Name = "appliesTo")]
         public string AppliesTo { get; set; }
-
-        /// <summary>
-        /// Gets or sets the provisioning status of the service plan.
-        /// </summary>
-        [DataMember(Name = "provisioningStatus")]
-        public string ProvisioningStatus { get; set; }
     }
 }

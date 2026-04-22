@@ -38,6 +38,12 @@ namespace PSMicrosoftEntraID.Groups.LicenseManagement
         public string SkuPartNumber { get; set; }
 
         /// <summary>
+        /// Friendly name of the SKU.
+        /// </summary>
+        [DataMember(Name = "skuFriendlyName")]
+        public string SkuFriendlyName { get; set; }
+
+        /// <summary>
         /// List of service plans associated with the license.
         /// Contains information about the specific services included in the subscription.
         /// </summary>
