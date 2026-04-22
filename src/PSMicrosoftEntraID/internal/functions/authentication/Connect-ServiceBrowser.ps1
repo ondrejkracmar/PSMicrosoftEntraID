@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Interactive logon using the Authorization flow and browser. Supports SSO.
-	
+
 	.DESCRIPTION
 		Interactive logon using the Authorization flow and browser. Supports SSO.
 
@@ -10,18 +10,18 @@
 		Its redirect Uri must be "http://localhost"
 
 		On successful authentication
-	
+
 	.PARAMETER ClientID
 		The ID of the registered app used with this authentication request.
-	
+
 	.PARAMETER TenantID
 		The ID of the tenant connected to with this authentication request.
-	
+
 	.PARAMETER SelectAccount
 		Forces account selection on logon.
 		As this flow supports single-sign-on, it will otherwise not prompt for anything if already signed in.
 		This could be a problem if you want to connect using another (e.g. an admin) account.
-	
+
 	.PARAMETER Scopes
         Generally doesn't need to be changed from the default '.default'
 
@@ -30,7 +30,7 @@
 		In order to process the authentication response, we need to listen to a local web request on some port.
 		Usually needs not be redirected.
 		Defaults to: 8080
-	
+
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
 
@@ -49,17 +49,17 @@
 		Options:
 		+ Auto (default): Automatically use the default browser.
 		+ PrintLink: The link to open is printed on console and user selects which browser to paste it into (must be used on the same machine)
-	
+
 	.PARAMETER NoReconnect
 		Disables automatic reconnection.
 		By default, this module will automatically try to reaquire a new token before the old one expires.
 
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceBrowser -ClientID '<ClientID>' -TenantID '<TenantID>'
-	
+
 		Connects to the specified tenant using the specified client, prompting the user to authorize via Browser.
 	#>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
@@ -144,7 +144,7 @@
 		if ((Get-Random -Minimum 10 -Maximum 99) -eq 66) {
 			$redirectTo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 		}
-		
+
 		# Start local server to catch the redirect
 		$http = [System.Net.HttpListener]::new()
 		$http.Prefixes.Add(("$RedirectUri/" -replace '//$', '/'))

@@ -2,19 +2,19 @@
 	<#
 	.SYNOPSIS
 		Connects to Azure AD using the Device Code authentication workflow.
-	
+
 	.DESCRIPTION
 		Connects to Azure AD using the Device Code authentication workflow.
-	
+
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
 
 	.PARAMETER ClientID
 		The ID of the registered app used with this authentication request.
-	
+
 	.PARAMETER TenantID
 		The ID of the tenant connected to with this authentication request.
-	
+
 	.PARAMETER Scopes
 		The scopes to request.
 		Automatically scoped to the service specified via Service Url.
@@ -26,10 +26,10 @@
 
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceDeviceCode -Resource 'https://graph.microsoft.com' -ClientID '<ClientID>' -TenantID '<TenantID>' -AuthenticationUrl 'https://login.microsoftonline.com'
-	
+
 		Connects to the specified tenant using the specified client, prompting the user to authorize via Device Code workflow.
 	#>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
@@ -42,11 +42,11 @@
 		[Parameter(Mandatory = $true)]
 		[string]
 		$ClientID,
-        
+
 		[Parameter(Mandatory = $true)]
 		[string]
 		$TenantID,
-        
+
 		[AllowEmptyCollection()]
 		[string[]]
 		$Scopes,

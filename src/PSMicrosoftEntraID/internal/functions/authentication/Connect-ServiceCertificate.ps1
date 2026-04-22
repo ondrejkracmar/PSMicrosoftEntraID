@@ -2,30 +2,30 @@
     <#
 	.SYNOPSIS
 		Connects to AAD using a application ID and a certificate.
-	
+
 	.DESCRIPTION
 		Connects to AAD using a application ID and a certificate.
-	
+
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
-	
+
 	.PARAMETER Certificate
 		The certificate to use for authentication.
-	
+
 	.PARAMETER TenantID
 		The ID of the tenant/directory to connect to.
-	
+
 	.PARAMETER ClientID
 		The ID of the registered application used to authenticate as.
 
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceCertificate -Certificate $cert -TenantID $tenantID -ClientID $clientID
-	
+
 		Connects to the specified tenant using the specified app & cert.
-	
+
 	.LINK
 		https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-certificate-credentials
 #>
@@ -38,11 +38,11 @@
 		[Parameter(Mandatory = $true)]
         [System.Security.Cryptography.X509Certificates.X509Certificate2]
         $Certificate,
-		
+
         [Parameter(Mandatory = $true)]
         [string]
         $TenantID,
-		
+
         [Parameter(Mandatory = $true)]
         [string]
         $ClientID,
@@ -51,7 +51,7 @@
         [string]
 		$AuthenticationUrl
     )
-	
+
     #region Build Signature Payload
     $jwtHeader = @{
         alg = "RS256"
@@ -72,7 +72,7 @@
     $jwtSigned = ($jwtPreliminary | ConvertTo-SignedString -Certificate $Certificate) -replace '\+', '-' -replace '/', '_' -replace '='
     $jwt = $jwtPreliminary, $jwtSigned -join '.'
     #endregion Build Signature Payload
-	
+
     $body = @{
         client_id             = $ClientID
         client_assertion      = $jwt
@@ -84,9 +84,9 @@
         Authorization = "Bearer $jwt"
     }
     $uri = "$AuthenticationUrl/$TenantID/oauth2/v2.0/token"
-	
+
     try { $authResponse = Invoke-RestMethod -Method Post -Uri $uri -Body $body -Headers $header -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
     catch { throw }
-	
+
     Read-AuthResponse -AuthResponse $authResponse
 }

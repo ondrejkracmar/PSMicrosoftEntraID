@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Creates a helper type designed to help make a module implementing EntraAuth more flexible about what EntraAUth service to use.
-	
+
 	.DESCRIPTION
 		Creates a helper type designed to help make a module implementing EntraAuth more flexible about what EntraAUth service to use.
 
@@ -12,7 +12,7 @@
 
 		The Service Selector aims to be a simple solution to this problem.
 		It is intended for _Modules_ that implement EntraAuth, not individual scripts.
-		
+
 		To fully execute on this, you will need to implement this in three locations:
 		- During Module Import: Declare defaults & Selector.
 		- At the beginning of your functions: Select chosen services.
@@ -42,17 +42,17 @@
 		  https://github.com/FriedrichWeinmann/EntraAuth.Graph.Application/blob/master/EntraAuth.Graph.Application/internal/scripts/variables.ps1
 		- Used in Functions:
 		  https://github.com/FriedrichWeinmann/EntraAuth.Graph.Application/blob/3c5e9f3de31fd7946e6fe9ebdb938986165ff5ca/EntraAuth.Graph.Application/functions/Get-EAGAppRegistration.ps1#L78
-	
+
 	.PARAMETER DefaultServices
 		The Default services to use.
 		Provide a hashtable of Labels mapping to EntraAuth services.
 		Example:
 		@{ Graph = 'Graph'; MDE = 'Endpoint' }
 		The key is what you use in your code as a label, the Value is the actual service in EntraAuth.
-	
+
 	.EXAMPLE
 		PS C:\> $script:_serviceSelector = New-EntraServiceSelector -DefaultServices $script:_services
-		
+
 		Creates a new ServiceSelector object and stores it in $script:_serviceSelector
 	#>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]

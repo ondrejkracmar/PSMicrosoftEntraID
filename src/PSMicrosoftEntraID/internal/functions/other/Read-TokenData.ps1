@@ -2,16 +2,16 @@
 	<#
 	.SYNOPSIS
 		Reads a JWT token and converts it into a custom object showing its properties.
-	
+
 	.DESCRIPTION
 		Reads a JWT token and converts it into a custom object showing its properties.
-	
+
 	.PARAMETER Token
 		The JWT Token to parse
-	
+
 	.EXAMPLE
 		PS C:\> Read-TokenData -Token $authresponse.access_token
-		
+
 		Reads the settings on the returned access token.
 	#>
 	[CmdletBinding()]

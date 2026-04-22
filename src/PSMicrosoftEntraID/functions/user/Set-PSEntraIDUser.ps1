@@ -55,19 +55,19 @@
 
 .PARAMETER Mail
     Specifies the user's primary email address.
-    
+
 .PARAMETER ProxyAddresses
     Specifies an array of proxy email addresses for the user.
-    
+
 .PARAMETER UserPrincipalName
     Specifies the user principal name (UPN) used for sign-in.
-    
+
 .PARAMETER MailNickname
     Specifies the mail alias (nickname) for the user.
 
 .PARAMETER FaxNumber
     Specifies the fax number associated with the user.
-    
+
 .PARAMETER EmployeeId
     Specifies the employee ID of the user.
 

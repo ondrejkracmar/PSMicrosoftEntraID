@@ -2,20 +2,20 @@
 	<#
 	.SYNOPSIS
 		Define a new Entra ID Service to connect to.
-	
+
 	.DESCRIPTION
 		Define a new Entra ID Service to connect to.
 		This allows defining new endpoints to connect to ... or overriding existing endpoints to a different configuration.
-	
+
 	.PARAMETER Name
 		Name of the Service.
-	
+
 	.PARAMETER ServiceUrl
 		The base Url requests will use.
-	
+
 	.PARAMETER Resource
 		The Resource ID. Used when connecting to identify which scopes of an App Registration to use.
-	
+
 	.PARAMETER DefaultScopes
 		Default scopes to request.
 		Used in interactive delegate flows to provide a good default user experience.
@@ -23,7 +23,7 @@
 
 	.PARAMETER Header
 		Header data to include in each request.
-	
+
 	.PARAMETER HelpUrl
 		Link for more information about this service.
 		Ideally to documentation that helps setting up the connection.
@@ -60,7 +60,7 @@
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
 		Usually determined by the "Environment" parameter, but may be overridden in case of need.
-	
+
 	.EXAMPLE
 		PS C:\> Register-EntraService -Name Endpoint -ServiceUrl 'https://api.securitycenter.microsoft.com/api' -Resource 'https://api.securitycenter.microsoft.com'
 

@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Connect with the refresh token provided previously.
-	
+
 	.DESCRIPTION
 		Connect with the refresh token provided previously.
 		Used mostly for delegate authentication flows to avoid interactivity.
@@ -30,17 +30,17 @@
 
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceRefreshToken -Token $token
-		
+
 		Connect with the refresh token provided previously.
 
 	.EXAMPLE
         PS C:\> Connect-ServiceRefreshToken -RefreshToken $refreshToken -TenantID '<TenantID>' -ClientID '<ClientID>' -Resource 'https://graph.microsoft.com' -Scopes @('User.Read', 'Mail.Read') -AuthenticationUrl 'https://login.microsoftonline.com'
-        
+
         Connect using specific refresh token details with custom scopes for Microsoft Graph.
-		
+
 	#>
 	[CmdletBinding()]
 	param (
@@ -77,9 +77,9 @@
 				if (-not $Token.RefreshToken) {
 					throw "Failed to refresh token: No refresh token found!"
 				}
-		
+
 				$effectiveScopes = $Token.Scopes
-		
+
 				$body = @{
 					client_id = $Token.ClientID
 					scope = @($effectiveScopes).ForEach{"$($Token.Audience)/$($_)"} -join " "

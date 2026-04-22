@@ -2,27 +2,27 @@
 	<#
 	.SYNOPSIS
 		Imports a token into the local token store.
-	
+
 	.DESCRIPTION
 		Imports a token into the local token store.
 		This command is intended for use in a runspace scenario, for passing tokens from the main runspace into background environments.
 		The input-token object is cloned into a runspace-local token object and registered to its service.
 
 		After performing the conversion, it will try to renew the token object.
-	
+
 	.PARAMETER Token
 		The token object to import.
 		Should be a token object created by EntraAuth's Connect-EntraService command.
 		Usually returned by Get-EntraToken, after finishing the connection.
-	
+
 	.PARAMETER PassThru
 		Rather than registering the token into the Entra token store in memory, return it as an object.
 		Useful for ronspace-localizing a token not associated with any given service.
-	
+
 	.PARAMETER NoRenew
 		Do not renew the token after importing it.
 		By default, newly localized tokens will try to renew themselves, to avoid parallel use of the same access token instance.
-	
+
 	.EXAMPLE
 		PS C:\> Import-EntraToken -Token $using:tokens
 

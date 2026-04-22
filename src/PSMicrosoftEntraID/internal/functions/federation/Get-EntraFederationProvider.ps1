@@ -2,16 +2,16 @@
 	<#
 	.SYNOPSIS
 		Lists all registered Federation Providers.
-		
+
 	.DESCRIPTION
 		Lists all registered Federation Providers.
 		Federation Providers are an EntraAuth concept and used to automatically do what is needed to access and use a Federated Credential, based on its environment.
 		See the documentation on Register-EntraFederationProvider for more details.
-	
+
 	.PARAMETER Name
 		The name of the provider to filter by.
 		Defaults to: *
-	
+
 	.EXAMPLE
 		PS C:\> Get-EntraFederationProvider
 

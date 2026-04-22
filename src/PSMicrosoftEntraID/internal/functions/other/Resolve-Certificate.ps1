@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Helper function to resolve certificate input.
-	
+
 	.DESCRIPTION
 		Helper function to resolve certificate input.
 		This function expects the full $PSBoundParameters from the calling command and will (in this order) look for these parameter names:
@@ -11,11 +11,11 @@
 		+ CertificateThumbprint: The thumbprint of a certificate to use. Will look first in the user store, then the machine store for it.
 		+ CertificateName: The subject of the certificate to look for. Will look first in the user store, then the machine store for it. Will select the certificate with the longest expiration period.
 		+ CertificatePath: Path to a PFX file to load. Also expects a CertificatePassword parameter to unlock the file.
-	
+
 	.PARAMETER BoundParameters
 		The $PSBoundParameter variable of the caller to simplify passthrough.
 		See Description for more details on what the command expects,
-	
+
 	.EXAMPLE
 		PS C:\> $certificateObject = Resolve-Certificate -BoundParameters $PSBoundParameters
 
@@ -26,7 +26,7 @@
 	param (
 		$BoundParameters
 	)
-	
+
 	if ($BoundParameters.Certificate) { return $BoundParameters.Certificate }
 	if ($BoundParameters.CertificateThumbprint) {
 		if (Test-Path -Path "cert:\CurrentUser\My\$($BoundParameters.CertificateThumbprint)") {

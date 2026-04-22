@@ -2,20 +2,20 @@
 	<#
 	.SYNOPSIS
 		Normalizes scope names.
-	
+
 	.DESCRIPTION
 		Normalizes scope names.
 		To help manage correct scopes naming with services that don't map directly to their urls.
-	
+
 	.PARAMETER Scopes
 		The scopes to normalize.
-	
+
 	.PARAMETER Resource
 		The Resource the scopes are meant for.
-	
+
 	.EXAMPLE
 		PS C:\> $scopes | Resolve-ScopeName -Resource $Resource
-		
+
 		Resolves all them scopes
 	#>
 	[CmdletBinding()]

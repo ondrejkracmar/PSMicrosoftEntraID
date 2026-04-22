@@ -2,17 +2,17 @@
 	<#
 	.SYNOPSIS
 		Connect with the authentication response.
-	
+
 	.DESCRIPTION
 		Connect with the Connect with the authentication response.
 		Used mostly for delegate authentication flows to avoid interactivity.
 
 	.PARAMETER AzToken
 		AzToken object.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceAzToken -AzToken $AzToken
-		
+
 		Connect with the authentication response.
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
