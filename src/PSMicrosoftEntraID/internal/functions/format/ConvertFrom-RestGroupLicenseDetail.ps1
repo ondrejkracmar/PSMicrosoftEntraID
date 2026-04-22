@@ -1,4 +1,4 @@
-function ConvertFrom-RestGroupLicenseDetail {
+﻿function ConvertFrom-RestGroupLicenseDetail {
     <#
 	.SYNOPSIS
 		Converts Group Office 365 License Detail objects to look nice.

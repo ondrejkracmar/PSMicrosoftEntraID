@@ -151,14 +151,16 @@
                         $appliesTo = $servicePlan.PSObject.Properties['AppliesTo'].Value
                     }
 
-                        $servicePlanDetail = New-Object -TypeName 'PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail'
-                        $servicePlanDetail.ServicePlanId = $servicePlanId
-                        $servicePlanDetail.ServicePlanName = $servicePlan.ServicePlanName
-                        $servicePlanDetail.ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
-                        $servicePlanDetail.AppliesTo = $appliesTo
-                        $servicePlanDetail.ProvisioningStatus = $provisioningStatus
-                        $servicePlanDetail.Status = if ($isDisabled) { 'Disabled' } else { 'Enabled' }
-                        $servicePlanDetail.IsDisabled = $isDisabled
+                        $servicePlanDetail = [PSCustomObject]@{
+                            ServicePlanId = $servicePlanId
+                            ServicePlanName = $servicePlan.ServicePlanName
+                            ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
+                            AppliesTo = $appliesTo
+                            ProvisioningStatus = $provisioningStatus
+                            Status = if ($isDisabled) { 'Disabled' } else { 'Enabled' }
+                            IsDisabled = $isDisabled
+                        }
+                        $servicePlanDetail.PSObject.TypeNames.Insert(0, 'PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail')
                         [void]$servicePlanDetails.Add($servicePlanDetail)
                 }
 
@@ -173,32 +175,36 @@
                         $servicePlanIdentifier = $servicePlanIdentifierById[$disabledPlanKey]
                     }
 
-                    $servicePlanDetail = New-Object -TypeName 'PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail'
-                    $servicePlanDetail.ServicePlanId = $disabledPlanId
-                    $servicePlanDetail.ServicePlanName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanName } else { $null }
-                    $servicePlanDetail.ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
-                    $servicePlanDetail.AppliesTo = $null
-                    $servicePlanDetail.ProvisioningStatus = $null
-                    $servicePlanDetail.Status = 'Disabled'
-                    $servicePlanDetail.IsDisabled = $true
+                    $servicePlanDetail = [PSCustomObject]@{
+                        ServicePlanId = $disabledPlanId
+                        ServicePlanName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanName } else { $null }
+                        ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
+                        AppliesTo = $null
+                        ProvisioningStatus = $null
+                        Status = 'Disabled'
+                        IsDisabled = $true
+                    }
+                    $servicePlanDetail.PSObject.TypeNames.Insert(0, 'PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail')
                     [void]$servicePlanDetails.Add($servicePlanDetail)
                 }
 
                 [object[]] $servicePlanDetailArray = @($servicePlanDetails)
 
-                $licenseDetail = New-Object -TypeName 'PSMicrosoftEntraID.Groups.AssignedLicenseDetail'
-                $licenseDetail.GroupId = $GroupObject.Id
-                $licenseDetail.GroupDisplayName = $GroupObject.DisplayName
-                $licenseDetail.GroupMail = $GroupObject.Mail
-                $licenseDetail.GroupMailNickname = $GroupObject.MailNickname
-                $licenseDetail.SkuId = $skuId
-                $licenseDetail.SkuPartNumber = if ($subscribedLicense) { $subscribedLicense.SkuPartNumber } elseif ($licenseIdentifier) { $licenseIdentifier.SkuPartNumber } else { $null }
-                $licenseDetail.SkuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
-                $licenseDetail.DisabledPlanIds = $disabledPlanIds
-                $licenseDetail.DisabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $true).Count
-                $licenseDetail.EnabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $false).Count
-                $licenseDetail.TotalPlanCount = $servicePlanDetailArray.Count
-                $licenseDetail.ServicePlans = $servicePlanDetailArray
+                $licenseDetail = [PSCustomObject]@{
+                    GroupId = $GroupObject.Id
+                    GroupDisplayName = $GroupObject.DisplayName
+                    GroupMail = $GroupObject.Mail
+                    GroupMailNickname = $GroupObject.MailNickname
+                    SkuId = $skuId
+                    SkuPartNumber = if ($subscribedLicense) { $subscribedLicense.SkuPartNumber } elseif ($licenseIdentifier) { $licenseIdentifier.SkuPartNumber } else { $null }
+                    SkuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
+                    DisabledPlanIds = $disabledPlanIds
+                    DisabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $true).Count
+                    EnabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $false).Count
+                    TotalPlanCount = $servicePlanDetailArray.Count
+                    ServicePlans = $servicePlanDetailArray
+                }
+                $licenseDetail.PSObject.TypeNames.Insert(0, 'PSMicrosoftEntraID.Groups.AssignedLicenseDetail')
                 $licenseDetail
             }
         }

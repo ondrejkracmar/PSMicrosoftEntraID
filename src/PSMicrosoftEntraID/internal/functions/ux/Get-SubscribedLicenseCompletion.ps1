@@ -1,4 +1,4 @@
-function global:Get-SubscribedLicenseCompletion {
+﻿function global:Get-SubscribedLicenseCompletion {
 	<#
 	.SYNOPSIS
 		Returns completion values for subscribed licenses.
