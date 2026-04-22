@@ -18,7 +18,6 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 "$moduleRoot\internal\classes\attributes\ValidateMailAddressAttribute.ps1"
 "$moduleRoot\internal\classes\attributes\ValidateUserIdentityAttribute.ps1"
 "$moduleRoot\internal\classes\attributes\ValidateGuidAttribute.ps1"
-"$moduleRoot\internal\classes\other\AssignedLicense.ps1"
 
 #"$moduleRoot\internal\classes\other\FederationProvider.ps1"
 "$moduleRoot\internal\classes\token\EntraToken.ps1"
