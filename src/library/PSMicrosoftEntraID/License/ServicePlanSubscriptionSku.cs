@@ -33,5 +33,11 @@ namespace PSMicrosoftEntraID.License
         /// </summary>
         [DataMember(Name = "appliesTo")]
         public string AppliesTo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the friendly name for the service plan.
+        /// </summary>
+        [DataMember(Name = "servicePlanFriendlyName")]
+        public string ServicePlanFriendlyName { get; set; }
     }
 }

@@ -12,7 +12,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
-            <Name>ServicePLans</Name>
+            <Name>ServicePlans</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -27,6 +27,60 @@
       </MemberSet>
     </Members>
     </Type>
+    <Type>
+    <Name>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>SkuId</Name>
+            <Name>SkuPartNumber</Name>
+            <Name>ServicePlans</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              Name
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+    </Type>
+    <Type>
+    <Name>PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>ServicePlanId</Name>
+            <Name>ServicePlanName</Name>
+            <Name>AppliesTo</Name>
+            <Name>ProvisioningStatus</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              Name
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
     <Type>
     <Name>PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan</Name>
     <Members>
@@ -424,6 +478,7 @@
           <ReferencedProperties>
             <Name>ServicePlanId</Name>
             <Name>ServicePlanName</Name>
+            <Name>ServicePlanFriendlyName</Name>
             <Name>ProvisioningStatus</Name>
             <Name>AppliesTo</Name>
           </ReferencedProperties>
@@ -452,6 +507,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
+            <Name>SkuFriendlyName</Name>
             <Name>AppliesTo</Name>
             <Name>ConsumedUnits</Name>
             <Name>PrepaidUnits</Name>
@@ -487,6 +543,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
+            <Name>SkuFriendlyName</Name>
             <Name>SubscriptionIds</Name>
             <Name>PrepaidUnits</Name>
             <Name>ServicePlans</Name>

@@ -9,6 +9,7 @@ $global:FunctionHelpTestExceptions = @(
     'Connect-ServiceAzToken'
     'ConvertFrom-RestAdministrativeUnit'
     'ConvertFrom-RestGroup'
+    'ConvertFrom-RestGroupLicenseDetail'
     'ConvertFrom-RestInvitation'
     'ConvertFrom-RestUserLicenseDetail'
     'ConvertTo-ODataFilterString'

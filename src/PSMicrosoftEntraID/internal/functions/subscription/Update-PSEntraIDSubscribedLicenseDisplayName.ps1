@@ -35,8 +35,7 @@
             }
         }
 
-        [string] $skuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
-        Add-Member -InputObject $subscribedLicense -MemberType NoteProperty -Name 'SkuFriendlyName' -Value $skuFriendlyName -Force
+        $subscribedLicense.SkuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
 
         if ($null -eq $subscribedLicense.ServicePlans) {
             continue
@@ -64,7 +63,7 @@
                 }
             }
 
-            Add-Member -InputObject $servicePlan -MemberType NoteProperty -Name 'ServicePlanFriendlyName' -Value $servicePlanFriendlyName -Force
+            $servicePlan.ServicePlanFriendlyName = $servicePlanFriendlyName
         }
     }
 
