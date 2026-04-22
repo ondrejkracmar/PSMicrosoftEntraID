@@ -35,7 +35,11 @@
             }
         }
 
-        $subscribedLicense | Add-Member -NotePropertyName SkuFriendlyName -NotePropertyValue (if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }) -Force
+        [string] $skuFriendlyName = $null
+        if ($licenseIdentifier) {
+            $skuFriendlyName = $licenseIdentifier.SkuFriendlyName
+        }
+        $subscribedLicense | Add-Member -NotePropertyName SkuFriendlyName -NotePropertyValue $skuFriendlyName -Force
 
         if ($null -eq $subscribedLicense.ServicePlans) {
             continue

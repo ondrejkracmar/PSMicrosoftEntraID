@@ -91,7 +91,7 @@
 		[int]
 		$SerializationDepth = 99,
 
-		[EntraToken]
+		[object]
 		$Token,
 
 		[switch]
