@@ -574,6 +574,47 @@
 			</TableControl>
 		</View>
 		<View>
+			<Name>PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Width>22</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>32</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>18</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>12</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>ServicePlanId</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ServicePlanFriendlyName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ProvisioningStatus</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>AppliesTo</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
 			<Name>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</Name>
 			<ViewSelectedBy>
 				<TypeName>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</TypeName>

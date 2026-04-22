@@ -101,8 +101,10 @@ Describe 'Get-PSEntraIDGroupLicenseDetail' -Tag 'Unit' {
             $result.SkuPartNumber | Should -Be 'ENTERPRISEPACK'
             $result.SkuFriendlyName | Should -Be 'Office 365 E3'
             $result.PSTypeNames[0] | Should -Be 'PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku'
+            $result.ServicePlans | Should -HaveCount 2
+            ($result.ServicePlans | Where-Object ServicePlanId -EQ 'plan-enabled').ProvisioningStatus | Should -Be 'Success'
+            ($result.ServicePlans | Where-Object ServicePlanId -EQ 'plan-disabled').ProvisioningStatus | Should -Be 'Disabled'
             $result.ServicePlans[0].ServicePlanFriendlyName | Should -Be 'Exchange Online Plan 2'
-            $result.ServicePlans | Should -HaveCount 1
             $result.ServicePlans[0].ServicePlanId | Should -Be 'plan-enabled'
             Should -Invoke Get-PSEntraIDSubscribedLicense -ModuleName PSMicrosoftEntraID -Times 1 -Scope It
         }
@@ -137,7 +139,9 @@ Describe 'Get-PSEntraIDGroupLicenseDetail' -Tag 'Unit' {
             $result.SkuPartNumber | Should -Be 'ENTERPRISEPACK'
             $result.SkuFriendlyName | Should -Be 'Office 365 E3'
             $result.PSTypeNames[0] | Should -Be 'PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku'
-            $result.ServicePlans | Should -HaveCount 1
+            $result.ServicePlans | Should -HaveCount 2
+            ($result.ServicePlans | Where-Object ServicePlanId -EQ 'plan-enabled').ProvisioningStatus | Should -Be 'Success'
+            ($result.ServicePlans | Where-Object ServicePlanId -EQ 'plan-disabled').ProvisioningStatus | Should -Be 'Disabled'
             $result.ServicePlans[0].ServicePlanId | Should -Be 'plan-enabled'
             Should -Invoke Get-PSEntraIDGroup -ModuleName PSMicrosoftEntraID -Times 1 -Scope It
             Should -Invoke Get-PSEntraIDSubscribedLicense -ModuleName PSMicrosoftEntraID -Times 1 -Scope It

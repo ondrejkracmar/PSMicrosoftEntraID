@@ -1,4 +1,16 @@
 ﻿function ConvertFrom-GroupLicenseDetailSubscriptionSku {
+    <#
+    .SYNOPSIS
+        Converts a group assigned license into a subscription SKU object.
+
+    .DESCRIPTION
+        Builds a PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku object from
+        the group's assigned license and the subscribed SKU catalog, including service plan
+        provisioning status.
+
+    .PARAMETER LicenseDetail
+        The assigned license details for a group.
+    #>
     param (
         [Parameter(Mandatory = $true)]
         $LicenseDetail
@@ -30,6 +42,8 @@
         }
     }
 
+    [hashtable] $seenServicePlanLookup = @{}
+
     [object[]] $servicePlans = @(
         foreach ($servicePlan in @($subscribedLicense.ServicePlans)) {
             if ($null -eq $servicePlan) {
@@ -37,8 +51,10 @@
             }
 
             [string] $servicePlanId = [string] $servicePlan.ServicePlanId
-            if (-not [string]::IsNullOrWhiteSpace($servicePlanId) -and $disabledPlanLookup.ContainsKey($servicePlanId.ToLowerInvariant())) {
-                continue
+            [string] $servicePlanKey = $null
+            if (-not [string]::IsNullOrWhiteSpace($servicePlanId)) {
+                $servicePlanKey = $servicePlanId.ToLowerInvariant()
+                $seenServicePlanLookup[$servicePlanKey] = $true
             }
 
             $servicePlanObject = [PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan]::new()
@@ -46,9 +62,21 @@
             $servicePlanObject.ServicePlanName = $servicePlan.ServicePlanName
             $servicePlanObject.ServicePlanFriendlyName = $servicePlan.ServicePlanFriendlyName
             $servicePlanObject.AppliesTo = $servicePlan.AppliesTo
+            $servicePlanObject.ProvisioningStatus = if ($servicePlanKey -and $disabledPlanLookup.ContainsKey($servicePlanKey)) { 'Disabled' } else { 'Success' }
             $servicePlanObject
         }
     )
+
+    foreach ($disabledPlanId in $disabledPlanLookup.Keys) {
+        if ($seenServicePlanLookup.ContainsKey($disabledPlanId)) {
+            continue
+        }
+
+        $servicePlanObject = [PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan]::new()
+        $servicePlanObject.ServicePlanId = $disabledPlanId
+        $servicePlanObject.ProvisioningStatus = 'Disabled'
+        $servicePlanObject
+    }
 
     $subscriptionSku = [PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku]::new()
     $subscriptionSku.Id = $subscribedLicense.SkuId
