@@ -6,11 +6,11 @@
 		$files = Get-ChildItem (Join-Path $moduleRoot 'functions') -Recurse -File | Where-Object Name -like "*.ps1"
 		It "Exports all functions in the public folder" -TestCases @{ files = $files; manifest = $manifest } {
 			
-			$functions = (Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '<=').InputObject
+			$functions = Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '<=' | Select-Object -ExpandProperty InputObject
 			$functions | Should -BeNullOrEmpty
 		}
 		It "Exports no function that isn't also present in the public folder" -TestCases @{ files = $files; manifest = $manifest } {
-			$functions = (Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '=>').InputObject
+			$functions = Compare-Object -ReferenceObject $files.BaseName -DifferenceObject $manifest.FunctionsToExport | Where-Object SideIndicator -Like '=>' | Select-Object -ExpandProperty InputObject
 			$functions | Should -BeNullOrEmpty
 		}
 		

@@ -11,9 +11,9 @@ Describe 'Get-PSEntraIDUsageLocation Tests' -Tag 'Unit' {
     Context 'Parameter Validation' {
         It 'Should not have any parameters' {
             $command = Get-Command Get-PSEntraIDUsageLocation
-            $params = $command.Parameters.Keys | Where-Object {
+            $params = @($command.Parameters.Keys | Where-Object {
                 $_ -notin [System.Management.Automation.Cmdlet]::CommonParameters
-            }
+            })
 
             $params.Count | Should -Be 0
         }

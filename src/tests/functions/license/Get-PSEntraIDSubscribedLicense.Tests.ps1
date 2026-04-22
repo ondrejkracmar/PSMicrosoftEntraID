@@ -78,6 +78,7 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
 
         Mock ConvertFrom-RestSubscribedSku -ModuleName PSMicrosoftEntraID {
             param($InputObject)
+            if ($null -eq $InputObject) { return }
             foreach ($item in $InputObject.value) {
                 [PSCustomObject]@{
                     PSTypeName = 'PSMicrosoftEntraID.License.SubscriptionSkuLicense'
@@ -139,7 +140,7 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
 
         It 'Should not require any mandatory parameters' {
             $command = Get-Command Get-PSEntraIDSubscribedLicense
-            $mandatoryParams = $command.Parameters.Values | Where-Object { $_.Attributes.Mandatory -eq $true }
+            $mandatoryParams = $command.Parameters.Values | Where-Object { @($_.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count -gt 0 }
             $mandatoryParams | Should -BeNullOrEmpty
         }
     }
