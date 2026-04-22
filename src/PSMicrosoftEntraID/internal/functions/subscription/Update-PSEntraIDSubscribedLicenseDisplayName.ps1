@@ -35,7 +35,7 @@
             }
         }
 
-        $subscribedLicense.SkuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
+        $subscribedLicense | Add-Member -NotePropertyName SkuFriendlyName -NotePropertyValue (if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }) -Force
 
         if ($null -eq $subscribedLicense.ServicePlans) {
             continue
@@ -63,7 +63,7 @@
                 }
             }
 
-            $servicePlan.ServicePlanFriendlyName = $servicePlanFriendlyName
+            $servicePlan | Add-Member -NotePropertyName ServicePlanFriendlyName -NotePropertyValue $servicePlanFriendlyName -Force
         }
     }
 
