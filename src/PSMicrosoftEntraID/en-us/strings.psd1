@@ -42,6 +42,7 @@
 	'User.LicenseDetail.List'           = "List license detail of user '{0}'"
 
 	'Group.Get'                        = "Get group '{0}'"
+	'Group.LicenseDetail.List'          = "List license detail of group '{0}'"
 	'Group.License.List'               = "List assigned licenses of group '{0}'"
 	'Group.AdditionalProperty'         = "Get group additional properties '{0}'"
 	'Group.Get.Failed'                 = "Get group '{0}' failed"

@@ -151,13 +151,23 @@
                         $appliesTo = $servicePlan.PSObject.Properties['AppliesTo'].Value
                     }
 
+                    [string] $servicePlanFriendlyName = $null
+                    if ($servicePlanIdentifier) {
+                        $servicePlanFriendlyName = $servicePlanIdentifier.ServicePlanFriendlyName
+                    }
+
+                    [string] $servicePlanStatus = 'Enabled'
+                    if ($isDisabled) {
+                        $servicePlanStatus = 'Disabled'
+                    }
+
                         $servicePlanDetail = [PSCustomObject]@{
                             ServicePlanId = $servicePlanId
                             ServicePlanName = $servicePlan.ServicePlanName
-                            ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
+                            ServicePlanFriendlyName = $servicePlanFriendlyName
                             AppliesTo = $appliesTo
                             ProvisioningStatus = $provisioningStatus
-                            Status = if ($isDisabled) { 'Disabled' } else { 'Enabled' }
+                            Status = $servicePlanStatus
                             IsDisabled = $isDisabled
                         }
                         $servicePlanDetail.PSObject.TypeNames.Insert(0, 'PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail')
@@ -175,10 +185,20 @@
                         $servicePlanIdentifier = $servicePlanIdentifierById[$disabledPlanKey]
                     }
 
+                    [string] $disabledServicePlanName = $null
+                    if ($servicePlanIdentifier) {
+                        $disabledServicePlanName = $servicePlanIdentifier.ServicePlanName
+                    }
+
+                    [string] $disabledServicePlanFriendlyName = $null
+                    if ($servicePlanIdentifier) {
+                        $disabledServicePlanFriendlyName = $servicePlanIdentifier.ServicePlanFriendlyName
+                    }
+
                     $servicePlanDetail = [PSCustomObject]@{
                         ServicePlanId = $disabledPlanId
-                        ServicePlanName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanName } else { $null }
-                        ServicePlanFriendlyName = if ($servicePlanIdentifier) { $servicePlanIdentifier.ServicePlanFriendlyName } else { $null }
+                        ServicePlanName = $disabledServicePlanName
+                        ServicePlanFriendlyName = $disabledServicePlanFriendlyName
                         AppliesTo = $null
                         ProvisioningStatus = $null
                         Status = 'Disabled'
@@ -190,14 +210,27 @@
 
                 [object[]] $servicePlanDetailArray = @($servicePlanDetails)
 
+                [string] $skuPartNumber = $null
+                if ($subscribedLicense) {
+                    $skuPartNumber = $subscribedLicense.SkuPartNumber
+                }
+                elseif ($licenseIdentifier) {
+                    $skuPartNumber = $licenseIdentifier.SkuPartNumber
+                }
+
+                [string] $skuFriendlyName = $null
+                if ($licenseIdentifier) {
+                    $skuFriendlyName = $licenseIdentifier.SkuFriendlyName
+                }
+
                 $licenseDetail = [PSCustomObject]@{
                     GroupId = $GroupObject.Id
                     GroupDisplayName = $GroupObject.DisplayName
                     GroupMail = $GroupObject.Mail
                     GroupMailNickname = $GroupObject.MailNickname
                     SkuId = $skuId
-                    SkuPartNumber = if ($subscribedLicense) { $subscribedLicense.SkuPartNumber } elseif ($licenseIdentifier) { $licenseIdentifier.SkuPartNumber } else { $null }
-                    SkuFriendlyName = if ($licenseIdentifier) { $licenseIdentifier.SkuFriendlyName } else { $null }
+                    SkuPartNumber = $skuPartNumber
+                    SkuFriendlyName = $skuFriendlyName
                     DisabledPlanIds = $disabledPlanIds
                     DisabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $true).Count
                     EnabledPlanCount = @($servicePlanDetailArray | Where-Object -Property IsDisabled -EQ -Value $false).Count
