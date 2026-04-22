@@ -33,7 +33,7 @@ Describe 'New-PSEntraIDGroup Tests' -Tag 'Unit' {
             $command = Get-Command New-PSEntraIDGroup
             $param = $command.Parameters['Members']
             $param | Should -Not -BeNullOrEmpty
-            $param.Attributes.Mandatory | Should -Not -Contain $true
+            @($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count | Should -Be 0
         }
 
         It 'Should have EnableException switch parameter' {
