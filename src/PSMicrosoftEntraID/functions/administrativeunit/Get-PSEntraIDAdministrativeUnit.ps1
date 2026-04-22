@@ -1,4 +1,4 @@
-function Get-PSEntraIDAdministrativeUnit {
+﻿function Get-PSEntraIDAdministrativeUnit {
     <#
         .SYNOPSIS
             Get the properties of the specified administrative unit.
@@ -88,7 +88,7 @@ function Get-PSEntraIDAdministrativeUnit {
             }
             'DisplayName' {
                 foreach ($name in $DisplayName) {
-                    $query['$filter'] = ("startswith(displayName,'{0}')" -f $name)
+                    $query['$filter'] = ("startswith(displayName,'{0}')" -f (ConvertTo-ODataFilterString -Value $name))
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Get' -ActionStringValues $name -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false

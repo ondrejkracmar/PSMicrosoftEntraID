@@ -9,6 +9,15 @@ function Remove-PSEntraIDAdministrativeUnitMember {
     .PARAMETER InputObject
         PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit object in tenant/directory.
 
+    .PARAMETER InputObjectUser
+        User object(s) to remove from the administrative unit.
+
+    .PARAMETER InputObjectGroup
+        Group object(s) to remove from the administrative unit.
+
+    .PARAMETER InputObjectDevice
+        Device object(s) to remove from the administrative unit.
+
     .PARAMETER Identity
         DisplayName or Id of the administrative unit.
 
@@ -63,8 +72,8 @@ function Remove-PSEntraIDAdministrativeUnitMember {
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObjectUser')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'IdentityInputObjectUser')]
     param(
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUser')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityGroup')]
@@ -108,12 +117,7 @@ function Remove-PSEntraIDAdministrativeUnitMember {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

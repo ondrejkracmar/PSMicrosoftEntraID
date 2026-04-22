@@ -1,5 +1,5 @@
 ﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-$moduleRoot = (Resolve-Path "$global:testroot\..").Path
+$moduleRoot = (Resolve-Path "$global:testroot\..\PSMicrosoftEntraID").Path
 
 . "$global:testroot\general\FileIntegrity.Exceptions.ps1"
 

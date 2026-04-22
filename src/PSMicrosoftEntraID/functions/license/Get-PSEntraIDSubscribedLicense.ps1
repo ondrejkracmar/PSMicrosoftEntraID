@@ -1,4 +1,4 @@
-function Get-PSEntraIDSubscribedLicense {
+﻿function Get-PSEntraIDSubscribedLicense {
     <#
 	.SYNOPSIS
 		Register the list of commercial subscriptions that an organization has acquired.
@@ -33,7 +33,11 @@ function Get-PSEntraIDSubscribedLicense {
     }
     process {
         $result = Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.List' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            ConvertFrom-RestSubscribedSku -InputObject (Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop)
+            [object[]] $subscribedLicenses = @(ConvertFrom-RestSubscribedSku -InputObject (Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop))
+            if ($subscribedLicenses.Count -eq 0) {
+                return $subscribedLicenses
+            }
+            Update-PSEntraIDSubscribedLicenseDisplayName -InputObject $subscribedLicenses
         } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
         $result

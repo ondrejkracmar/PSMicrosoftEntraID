@@ -1,4 +1,4 @@
-﻿function Connect-ServiceAzToken {
+function Connect-ServiceAzToken {
 	<#
 	.SYNOPSIS
 		Connect with the authentication response.
@@ -15,6 +15,7 @@
 		
 		Connect with the authentication response.
 	#>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
 	[CmdletBinding()]
 	param (
 		$AzToken,

@@ -16,9 +16,13 @@
 .EXAMPLE
     Set-PSEntraIDCommandRetry -RetryCount 3 -RetryWaitInSeconds 5
 
+    Configures the module to retry failing commands up to 3 times with 5 seconds between attempts.
+
 .NOTES
     Updates configuration settings under $script:ModuleName.
 #>
+    [OutputType([void])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Configuration setter only updates in-memory PSFConfig values; no remote state is changed.')]
     [CmdletBinding()]
     param (
         [Parameter()]

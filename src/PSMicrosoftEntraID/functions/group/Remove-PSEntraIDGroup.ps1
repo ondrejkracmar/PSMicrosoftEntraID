@@ -14,8 +14,7 @@ function Remove-PSEntraIDGroup {
         groupPrincipalName, Mail or Id of the group attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -46,8 +45,8 @@ function Remove-PSEntraIDGroup {
 	#>
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Groups.Group[]] $InputObject,
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
@@ -66,12 +65,7 @@ function Remove-PSEntraIDGroup {
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

@@ -1,4 +1,4 @@
-function Get-PSEntraIDGroup {
+﻿function Get-PSEntraIDGroup {
     <#
         .SYNOPSIS
             Get the properties of the specified group.
@@ -74,7 +74,7 @@ function Get-PSEntraIDGroup {
                         '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value -join ',')
                     }
-                    $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f $group)
+                    $mailNickNameQuery['$Filter'] = ("mailNickName eq '{0}'" -f (ConvertTo-ODataFilterString -Value $group))
 
                     Invoke-PSFProtectedCommand -ActionString 'Group.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Groups.Group[]] $mailNickName = ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $mailNickNameQuery -Method Get  -ErrorAction Stop)
@@ -91,7 +91,7 @@ function Get-PSEntraIDGroup {
             }
             'DisplayName' {
                 foreach ($group in $DisplayName) {
-                    $query['$Filter'] = ("startswith(displayName,'{0}')" -f $group)
+                    $query['$Filter'] = ("startswith(displayName,'{0}')" -f (ConvertTo-ODataFilterString -Value $group))
                     Invoke-PSFProtectedCommand -ActionString 'Group.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get  -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false

@@ -19,8 +19,7 @@ function Set-PSEntraIDUserUsageLocation {
         The name of the country corresponding to its usagelocation.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -51,8 +50,8 @@ function Set-PSEntraIDUserUsageLocation {
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'InputObjectUsageLocationCode')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCode')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCountry')]
@@ -87,12 +86,7 @@ function Set-PSEntraIDUserUsageLocation {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

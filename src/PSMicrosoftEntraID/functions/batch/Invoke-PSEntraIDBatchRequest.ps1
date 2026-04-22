@@ -1,8 +1,8 @@
-﻿Function Invoke-PSEntraIDBatchRequest {
+﻿function Invoke-PSEntraIDBatchRequest {
     <#
     .SYNOPSIS
         Invokes a Microsoft Graph batch request using an array of BatchRequestPayload objects,
-        then returns a combined object with both .requests and .responses.
+        then returns a combined object with both the requests and responses.
 
     .DESCRIPTION
         This function expects pipeline input of BatchRequestPayload objects
@@ -10,11 +10,11 @@
         Each BatchRequestPayload contains up to 20 sub-requests (ID=1..20).
 
         For each batch payload, this function can validate the requests (Test-PSMicrosoftEntraIDBatchRequest),
-        then send them to the Graph $batch endpoint (via Invoke-EntraRequest).
-        It captures the Graph response (which typically has a "responses" array)
-        and outputs a combined [pscustomobject] with:
-           .requests   = the sub-requests
-           .responses  = the sub-responses from Graph
+        then send them to the Graph batch endpoint (via Invoke-EntraRequest).
+        It captures the Graph response (which typically has a 'responses' array)
+        and outputs a combined PSCustomObject with:
+            requests   = the sub-requests
+            responses  = the sub-responses from Graph
 
         This allows a subsequent cmdlet (e.g. Invoke-PSMicrosoftEntraIDBatchResponse) to correlate them by id.
 
@@ -41,14 +41,11 @@
         and want precise control over the operation of the Shell.
 
     .EXAMPLE
-        # Suppose $payloads are returned from New-PSEntraIDBatchRequest -InputObject $requests
-        $payloads = New-PSEntraIDBatchRequest -InputObject $requests
+        PS C:\> $payloads | Invoke-PSEntraIDBatchRequest -EnableException
 
-        # Then call:
-        $result = $payloads | Invoke-PSMicrosoftEntraIDBatchRequest -EnableException -WhatIf -Force
-
-        # $result now is an array of objects with .requests and .responses,
-        # ready to be analyzed by a separate cmdlet that correlates them.
+        Sends one or more BatchRequestPayload objects (created by New-PSEntraIDBatchRequest)
+        to the Microsoft Graph $batch endpoint and returns BatchResponsePayload objects that
+        correlate the original requests with the responses returned by Graph.
 
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
@@ -57,7 +54,7 @@
         SupportsShouldProcess = $true, # enables -WhatIf and -Confirm
         ConfirmImpact = 'High'
     )]
-    Param(
+    param(
         [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true,
@@ -70,22 +67,17 @@
         [switch] $Force
     )
 
-    Begin {
+    begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = '$batch'
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
-    Process {
+    process {
         foreach ($payload in $InputObject) {
 
             [hashtable] $body = @{
@@ -115,7 +107,7 @@
         }
     }
 
-    End {
+    end {
 
     }
 }

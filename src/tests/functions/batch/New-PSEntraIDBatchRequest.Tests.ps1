@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     # Create dummy EntraToken class to prevent type loading errors in tests

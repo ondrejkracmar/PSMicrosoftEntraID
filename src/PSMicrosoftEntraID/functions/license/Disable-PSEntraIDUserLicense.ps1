@@ -19,8 +19,7 @@ function Disable-PSEntraIDUserLicense {
         Friendly name Office 365 product of subscribedSku.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -50,8 +49,8 @@ function Disable-PSEntraIDUserLicense {
 
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumber')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
         [PSMicrosoftEntraID.Users.User[]]$InputObject,
@@ -83,12 +82,7 @@ function Disable-PSEntraIDUserLicense {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId' {
                 [string[]] $bodySkuId = $SkuId

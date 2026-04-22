@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDUserGuest {
+function Get-PSEntraIDUserGuest {
     <#
     .SYNOPSIS
         Retrieves properties of users in Entra ID (Azure AD), but only Guest accounts.
@@ -35,14 +35,17 @@
 
     .EXAMPLE
         PS C:\> Get-PSEntraIDUserGuest -Identity user1@contoso.com
+
         Returns details for user1@contoso.com, only if it is a Guest account.
 
     .EXAMPLE
         PS C:\> Get-PSEntraIDUserGuest -All
+
         Returns all Guest accounts in the tenant.
 
     #>
     [OutputType('PSMicrosoftEntraID.Users.UserGuest')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
@@ -99,7 +102,7 @@
                         '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
-                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
+                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $user))
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Users.UserGuest[]] $userMail = ConvertFrom-RestUserGuest -InputObject (
                             Invoke-EntraRequest -Service $service -Path 'users' -Query $mailQuery -Method Get -ErrorAction Stop
@@ -148,12 +151,12 @@
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f (ConvertTo-ODataFilterString -Value $_) } | Join-String -Separator ',')
                 if ($Disabled.IsPresent) {
                     $completeFilter = Add-GuestFilter ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList)
                     $query['$Filter'] = $completeFilter
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestUserGuest -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -161,7 +164,7 @@
                     $completeFilter = Add-GuestFilter ('companyName in ({0})' -f $companyNameList)
                     $query['$Filter'] = $completeFilter
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0})' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestUserGuest -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }

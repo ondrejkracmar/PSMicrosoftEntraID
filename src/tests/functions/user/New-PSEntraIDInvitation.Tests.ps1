@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
@@ -96,7 +96,7 @@ Describe 'New-PSEntraIDInvitation' -Tag 'Unit' {
         It 'Should include SendInvitationMessage when specified' {
             Mock -ModuleName $script:ModuleName Test-PSFParameterBinding { $true } -ParameterFilter { $ParameterName -eq 'SendInvitationMessage' }
 
-            New-PSEntraIDInvitation -InvitedUserEmailAddress 'guest@partner.com' -InvitedUserDisplayName 'Guest User' -InviteRedirectUrl 'https://myapp.contoso.com' -SendInvitationMessage $true -Confirm:$false
+            New-PSEntraIDInvitation -InvitedUserEmailAddress 'guest@partner.com' -InvitedUserDisplayName 'Guest User' -InviteRedirectUrl 'https://myapp.contoso.com' -SendInvitationMessage -Confirm:$false
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.sendInvitationMessage -eq $true

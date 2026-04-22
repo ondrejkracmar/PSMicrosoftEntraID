@@ -1,4 +1,4 @@
-using namespace PSMicrosoftEntraID.Users
+﻿using namespace PSMicrosoftEntraID.Users
 function Get-PSEntraIDGroupAdditionalProperty {
     <#
     .SYNOPSIS

@@ -55,8 +55,7 @@ function Set-PSEntraIDGroup {
         Sets the processing state of the membership rule. Accepted values are `On`, `Paused`, and `Off`. This should be used with `MembershipRule` and is specific to dynamic groups.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -82,11 +81,17 @@ function Set-PSEntraIDGroup {
     .EXAMPLE
         Set-PSEntraIDGroup -Identity "mailnickname1" -DisplayName "New Group Name" -Description "Updated group description" -Visibility "Private"
 
+        Updates the display name, description and visibility of the specified group.
+
     .EXAMPLE
         Set-PSEntraIDGroup -Identity "mailnickname@domain.com" -AllowExternalSenders $true
 
+        Allows external senders to send mail to the specified group.
+
     .EXAMPLE
         Set-PSEntraIDGroup -Identity "mailnickname1" -MembershipRule "(user.department -eq 'Sales')" -MembershipRuleProcessingState "On"
+
+        Configures the dynamic membership rule for the group and enables rule processing.
 
     .NOTES
         - Properties like `AllowExternalSenders`, `AutoSubscribeNewMembers`, `HideFromAddressLists`, and `HideFromOutlookClients` must each be set in separate requests.
@@ -94,8 +99,8 @@ function Set-PSEntraIDGroup {
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectUpdateGroupCommon')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectUpdateGroupCommon')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectAllowExternalSenders')]
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectAutoSubscribeNewMembers')]
@@ -165,12 +170,7 @@ function Set-PSEntraIDGroup {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

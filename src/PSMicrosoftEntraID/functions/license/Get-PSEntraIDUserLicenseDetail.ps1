@@ -12,6 +12,10 @@ function Get-PSEntraIDUserLicenseDetail {
 	.PARAMETER Identity
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
+    .PARAMETER AdvancedFilter
+        Returns the full assigned-license detail including expanded service plan
+        information instead of the simplified default projection.
+
     .PARAMETER EnableException
         This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
@@ -19,9 +23,10 @@ function Get-PSEntraIDUserLicenseDetail {
 	.EXAMPLE
 		PS C:\> Get-PSEntraIDUserLicenseDetail -Identity user@domain.com
 
-		Get Office 365 subscriptions with their service plansPlans of specific user
+		Get Office 365 subscriptions with their service plans of specific user
 	#>
     [OutputType('PSMicrosoftEntraID.Users.LicenseManagement.SubscriptionSku')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
@@ -48,7 +53,7 @@ function Get-PSEntraIDUserLicenseDetail {
         switch ($PSCmdlet.ParameterSetName) {
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetai.List' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetail.List' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $itemInputObject.Id) -Query $query -Method Get)
                                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
@@ -64,7 +69,7 @@ function Get-PSEntraIDUserLicenseDetail {
                         }
                     }
                     else {
-                        $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetai.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetail.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $aADUser.Id) -Query $query -Method Get)
                                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }

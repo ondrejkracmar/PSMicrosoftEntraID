@@ -25,8 +25,13 @@
         
     }
     process {
-        $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
-        Get-Content -Path $licenseIdentifiers | ConvertFrom-Json| Set-PSFResultCache
+        [bool] $autoUpdateOnImport = Get-PSFConfigValue -FullName ('{0}.LicenseIdentifiers.AutoUpdateOnImport' -f $script:ModuleName) -Fallback $false
+        if ($autoUpdateOnImport) {
+            Update-PSEntraIDLicenseIdentifierCache | Out-Null
+        }
+
+        [string] $licenseIdentifiers = Resolve-PSEntraIDLicenseIdentifierPath
+        Get-Content -Path $licenseIdentifiers -Raw | ConvertFrom-Json | Set-PSFResultCache
     }
     end
     {}

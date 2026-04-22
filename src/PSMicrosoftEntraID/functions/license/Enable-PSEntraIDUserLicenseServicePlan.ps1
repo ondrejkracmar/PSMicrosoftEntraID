@@ -1,10 +1,10 @@
 function Enable-PSEntraIDUserLicenseServicePlan {
     <#
 	.SYNOPSIS
-		Enable serivce plan of user's sku subscription.
+		Enable service plan of user's sku subscription.
 
 	.DESCRIPTION
-		Enable serivce plan of user's sku subscription.
+		Enable service plan of user's sku subscription.
 
     .PARAMETER InputObject
         PSMicrosoftEntraID.Users.User object in tenant/directory.
@@ -25,8 +25,7 @@ function Enable-PSEntraIDUserLicenseServicePlan {
         Friendly service plan name of subscribedSku.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -56,8 +55,8 @@ function Enable-PSEntraIDUserLicenseServicePlan {
 
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanName')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
@@ -109,12 +108,7 @@ function Enable-PSEntraIDUserLicenseServicePlan {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId\w' {
                 [string] $bodySkuId = $SkuId
@@ -177,7 +171,7 @@ function Enable-PSEntraIDUserLicenseServicePlan {
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
 
                             [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
@@ -230,7 +224,7 @@ function Enable-PSEntraIDUserLicenseServicePlan {
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                        Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }

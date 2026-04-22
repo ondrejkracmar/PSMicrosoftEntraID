@@ -19,7 +19,7 @@
         List user identities via query expression
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
@@ -48,7 +48,7 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSMicrosoftEntraID.Sync')]
-    [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
+    [CmdletBinding(DefaultParameterSetName = 'UserIdentity', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [ValidateGroupIdentity()]
@@ -72,16 +72,11 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [System.Collections.ArrayList]$referenceMemberList = [System.Collections.ArrayList]::New()
-        [System.Collections.ArrayList] $differenceMemberList = [System.Collections.ArrayList]::New()
+        [System.Collections.Generic.List[object]] $referenceMemberList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $differenceMemberList = [System.Collections.Generic.List[object]]::new()
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

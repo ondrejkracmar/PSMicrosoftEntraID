@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {

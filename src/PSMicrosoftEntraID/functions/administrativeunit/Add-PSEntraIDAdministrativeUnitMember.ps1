@@ -9,6 +9,12 @@ function Add-PSEntraIDAdministrativeUnitMember {
     .PARAMETER InputObject
         PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit object in tenant/directory.
 
+    .PARAMETER InputObjectGroup
+        PSMicrosoftEntraID.Groups.Group object(s) to add as member(s) of the administrative unit.
+
+    .PARAMETER InputObjectDevice
+        Device object(s) to add as member(s) of the administrative unit.
+
     .PARAMETER Identity
         DisplayName or Id of the administrative unit.
 
@@ -63,8 +69,8 @@ function Add-PSEntraIDAdministrativeUnitMember {
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityUser')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'IdentityUser')]
     param(
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentityUser')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentityGroup')]
@@ -107,12 +113,7 @@ function Add-PSEntraIDAdministrativeUnitMember {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

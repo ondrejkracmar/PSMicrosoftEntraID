@@ -1,11 +1,11 @@
-﻿function Get-PSEntraIDContact {
+function Get-PSEntraIDContact {
     <#
 .SYNOPSIS
     Get the properties of the specified organizational contact.
 
 .DESCRIPTION
     Get the properties of the specified contact from Microsoft Entra ID (Microsoft Graph orgContact entity).
-    Requires delegated Graph permission: OrgContact.Read.Al
+    Requires delegated Graph permission: OrgContact.Read.Alll
 
 .PARAMETER Identity
     Mail or Id of the contact.
@@ -27,8 +27,11 @@
 
 .EXAMPLE
     Get-PSEntraIDContact -Identity "contact1@contoso.com"
+
+    Returns the contact whose mail or id matches "contact1@contoso.com".
 #>
     [OutputType('PSMicrosoftEntraID.Contacts.Contact')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
@@ -89,7 +92,7 @@
             }
 
             'CompanyName' {
-                $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+                $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'{0}'" -f (ConvertTo-ODataFilterString -Value $_) } | Join-String -Separator ',')
                 $query['$filter'] = $filterString
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)

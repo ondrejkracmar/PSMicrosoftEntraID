@@ -115,6 +115,10 @@
 		This authentication flow requires the 'Az.Accounts' module to be present, loaded and connected.
 		Use 'Connect-AzAccount' to connect first.
 
+	.PARAMETER AzToken
+		Reuse an existing token object obtained from an Az.Accounts session (e.g. via Get-AzAccessToken)
+		to authenticate. Bypasses the regular interactive authentication flow.
+
 	.PARAMETER ShowDialog
 		Whether to show an interactive dialog when connecting using the existing Az.Accounts session.
 		Defaults to: "auto"

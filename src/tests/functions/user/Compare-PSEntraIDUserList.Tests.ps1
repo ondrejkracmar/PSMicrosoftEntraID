@@ -1,9 +1,11 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
         Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
     }
+
+    Import-Module "$PSScriptRoot/../../../$script:ModuleName/$script:ModuleName.psd1" -Force
 }
 
 Describe 'Compare-PSEntraIDUserList' -Tag 'Unit' {
@@ -11,13 +13,7 @@ Describe 'Compare-PSEntraIDUserList' -Tag 'Unit' {
     BeforeAll {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
 
-        # Assert-RestConnection is not defined in the module — define it so it can be mocked.
-        # Use script: scope so the function persists beyond the InModuleScope scriptblock.
-        InModuleScope $script:ModuleName {
-            function script:Assert-RestConnection { param($Service, $Cmdlet) }
-        }
-
-        Mock -ModuleName $script:ModuleName Assert-RestConnection { }
+        Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
     }
 
     Context 'Parameter Validation' {
@@ -114,7 +110,7 @@ Describe 'Compare-PSEntraIDUserList' -Tag 'Unit' {
 
             Compare-PSEntraIDUserList -ReferenceIdentity $list1 -DifferenceIdentity $list2
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-RestConnection -Times 1 -Exactly
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
     }
 }

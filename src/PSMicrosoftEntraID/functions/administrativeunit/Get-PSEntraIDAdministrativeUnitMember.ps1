@@ -1,4 +1,4 @@
-using namespace PSMicrosoftEntraID.Users
+﻿using namespace PSMicrosoftEntraID.Users
 function Get-PSEntraIDAdministrativeUnitMember {
     <#
     .SYNOPSIS
@@ -104,22 +104,22 @@ function Get-PSEntraIDAdministrativeUnitMember {
                     }
                     else {
                         if ($PSBoundParameters.ContainsKey('Filter')) {
-                        $query['$filter'] = $Filter
-                    }
+                            $query['$filter'] = $Filter
+                        }
 
-                    if ($AdvancedFilter.IsPresent) {
-                        [hashtable] $header = @{}
-                        $header['ConsistencyLevel'] = 'eventual'
-                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                    }
-                    if (Test-PSFFunctionInterrupt) { return }
+                        if ($AdvancedFilter.IsPresent) {
+                            [hashtable] $header = @{}
+                            $header['ConsistencyLevel'] = 'eventual'
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
+                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
+                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        }
+                        if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }

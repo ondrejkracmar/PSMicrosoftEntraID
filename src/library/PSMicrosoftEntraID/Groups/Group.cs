@@ -140,5 +140,12 @@ namespace PSMicrosoftEntraID.Groups
         /// </summary>
         [DataMember(Name = "assignedLabels")]
         public AssignedLabel[] AssignedLabels { get; set; }
+
+        /// <summary>
+        /// Gets or sets the licenses that are assigned to the group.
+        /// Returned only on $select. Supports $filter (eq). Read-only.
+        /// </summary>
+        [DataMember(Name = "assignedLicenses")]
+        public AssignedLicense[] AssignedLicenses { get; set; }
     }
 }

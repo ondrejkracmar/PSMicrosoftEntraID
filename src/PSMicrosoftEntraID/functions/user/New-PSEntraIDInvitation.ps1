@@ -28,8 +28,7 @@ function New-PSEntraIDInvitation {
         Name and mail of CC recipients
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -60,8 +59,8 @@ function New-PSEntraIDInvitation {
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [OutputType('PSMicrosoftEntraID.Users.Invitations.Invitation')]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'UserEmailAddress')]
+    [OutputType('PSMicrosoftEntraID.Users.Invitations.Invitation', [PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'UserEmailAddress')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("UserEmailAddress", "EmailAddres", "Mail", "UserPrincipalName", "InvitedUserPrincipalName")]
@@ -77,7 +76,7 @@ function New-PSEntraIDInvitation {
         [string] $InviteRedirectUrl,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [ValidateNotNullOrEmpty()]
-        [bool] $SendInvitationMessage,
+        [switch] $SendInvitationMessage,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'UserEmailAddress')]
         [Alias("Message")]
         [ValidateNotNullOrEmpty()]
@@ -101,16 +100,11 @@ function New-PSEntraIDInvitation {
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = 'invitations'
-        [System.Collections.ArrayList] $cCRecipientList = [System.Collections.ArrayList]::New()
+        [System.Collections.Generic.List[object]] $cCRecipientList = [System.Collections.Generic.List[object]]::new()
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -126,7 +120,7 @@ function New-PSEntraIDInvitation {
         }
 
         if (Test-PSFParameterBinding -ParameterName 'SendInvitationMessage') {
-            $body['sendInvitationMessage'] = $SendInvitationMessage
+            $body['sendInvitationMessage'] = [bool] $SendInvitationMessage
         }
         else {
             $body['sendInvitationMessage'] = $false

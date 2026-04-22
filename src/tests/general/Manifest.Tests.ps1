@@ -1,5 +1,5 @@
 ﻿Describe "Validating the module manifest" {
-	$moduleRoot = (Resolve-Path "$global:testroot\..").Path
+	$moduleRoot = (Resolve-Path "$global:testroot\..\PSMicrosoftEntraID").Path
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '')]
 	$manifest = ((Get-Content "$moduleRoot\PSMicrosoftEntraID.psd1") -join "`n") | Invoke-Expression
 	Context "Basic resources validation" {

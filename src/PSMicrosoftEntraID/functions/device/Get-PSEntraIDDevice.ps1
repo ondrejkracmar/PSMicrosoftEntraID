@@ -1,4 +1,4 @@
-function Get-PSEntraIDDevice {
+﻿function Get-PSEntraIDDevice {
     <#
     .SYNOPSIS
         Get the properties of the specified device.
@@ -46,7 +46,7 @@ function Get-PSEntraIDDevice {
                     '$top'    = 1
                     '$select' = 'id,displayName'
                 }
-                $lookupQuery['$Filter'] = ("displayName eq '{0}'" -f $deviceIdentity)
+                $lookupQuery['$Filter'] = ("displayName eq '{0}'" -f (ConvertTo-ODataFilterString -Value $deviceIdentity))
 
                 $deviceMatch = Invoke-EntraRequest -Service $service -Path ('devices') -Query $lookupQuery -Method Get -ErrorAction Stop
                 if (-not([object]::Equals($deviceMatch, $null))) {

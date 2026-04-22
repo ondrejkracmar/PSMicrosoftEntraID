@@ -1,4 +1,4 @@
-function Get-PSEntraIDOrganization {
+﻿function Get-PSEntraIDOrganization {
     <#
 	.SYNOPSIS
 		Get the properties and relationships of the currently authenticated organization.

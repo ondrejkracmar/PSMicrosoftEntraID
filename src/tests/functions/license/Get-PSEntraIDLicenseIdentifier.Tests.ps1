@@ -3,12 +3,36 @@
     $commandName = 'Get-PSEntraIDLicenseIdentifier'
 
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
+
+    $script:originalLicenseCatalogCachePath = Get-PSFConfigValue -FullName "$moduleName.LicenseIdentifiers.CachePath"
+    $script:originalAutoUpdateOnImport = Get-PSFConfigValue -FullName "$moduleName.LicenseIdentifiers.AutoUpdateOnImport"
+    $script:testCatalogDirectory = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([guid]::NewGuid().ToString())
+
+    New-Item -Path $script:testCatalogDirectory -ItemType Directory -Force | Out-Null
 }
 
 Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
     BeforeAll {
         # Don't run the actual function, just test that it works
         # The function reads from a real JSON file in the module
+    }
+
+    AfterEach {
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $script:originalLicenseCatalogCachePath
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $script:originalAutoUpdateOnImport
+
+        if (Test-Path -Path $script:testCatalogDirectory) {
+            Get-ChildItem -Path $script:testCatalogDirectory -Force -ErrorAction Ignore | Remove-Item -Recurse -Force
+        }
+    }
+
+    AfterAll {
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $script:originalLicenseCatalogCachePath
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $script:originalAutoUpdateOnImport
+
+        if (Test-Path -Path $script:testCatalogDirectory) {
+            Remove-Item -Path $script:testCatalogDirectory -Recurse -Force
+        }
     }
 
     Context 'Parameter Validation' {
@@ -65,6 +89,67 @@ Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
 
             # Function successfully reads and deserializes the file
             $result | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should prefer configured cache file when it exists' {
+            $cacheCatalogPath = Join-Path -Path $script:testCatalogDirectory -ChildPath 'LicenseIdentifiers.json'
+            $cacheCatalogJson = @'
+[
+  {
+    "skuId": "11111111-1111-1111-1111-111111111111",
+    "skuPartNumber": "CACHED_TEST",
+    "skuFriendlyName": "Cached Test License",
+    "servicePlans": []
+  }
+]
+'@
+
+            [System.IO.File]::WriteAllText($cacheCatalogPath, $cacheCatalogJson, [System.Text.UTF8Encoding]::new($false))
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $cacheCatalogPath
+
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result.Count | Should -Be 1
+            $result[0].SkuPartNumber | Should -Be 'CACHED_TEST'
+        }
+
+        It 'Should fall back to bundled catalog when configured cache file is missing' {
+            $missingCatalogPath = Join-Path -Path $script:testCatalogDirectory -ChildPath 'missing.json'
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $missingCatalogPath
+
+            $resolvedCatalogPath = InModuleScope $moduleName {
+                Resolve-PSEntraIDLicenseIdentifierPath
+            }
+
+            $resolvedCatalogPath | Should -Match 'internal[\\/]+identifiers[\\/]+LicenseIdentifiers\.json$'
+        }
+    }
+
+    Context 'Import Registration' {
+        It 'Should trigger cache refresh when auto update on import is enabled' {
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $true
+
+            InModuleScope $moduleName {
+                Mock Update-PSEntraIDLicenseIdentifierCache { }
+                Mock Set-PSFResultCache { }
+
+                Register-PSEntraIDLicenseIdentifier
+
+                Should -Invoke Update-PSEntraIDLicenseIdentifierCache -Times 1 -Exactly
+            }
+        }
+
+        It 'Should skip cache refresh when auto update on import is disabled' {
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $false
+
+            InModuleScope $moduleName {
+                Mock Update-PSEntraIDLicenseIdentifierCache { }
+                Mock Set-PSFResultCache { }
+
+                Register-PSEntraIDLicenseIdentifier
+
+                Should -Invoke Update-PSEntraIDLicenseIdentifierCache -Times 0 -Exactly
+            }
         }
     }
 
