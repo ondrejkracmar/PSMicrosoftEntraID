@@ -47,12 +47,15 @@
                         continue
                     }
 
-                    foreach ($assignedLicense in @($groupObject.AssignedLicenses)) {
-                        if ($null -eq $assignedLicense) {
-                            continue
+                    [string] $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
+                    Invoke-PSFProtectedCommand -ActionString 'Group.LicenseDetail.List' -ActionStringValues $groupTarget -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        foreach ($assignedLicense in @($groupObject.AssignedLicenses)) {
+                            if ($null -eq $assignedLicense) {
+                                continue
+                            }
+                            ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
                         }
-                        ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
-                    }
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount 0 -RetryWait ([TimeSpan]::Zero) -WhatIf:$false
                 }
             }
             'Identity' {
@@ -70,12 +73,15 @@
                         continue
                     }
 
-                    foreach ($assignedLicense in @($groupObject.AssignedLicenses)) {
-                        if ($null -eq $assignedLicense) {
-                            continue
+                    [string] $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
+                    Invoke-PSFProtectedCommand -ActionString 'Group.LicenseDetail.List' -ActionStringValues $groupTarget -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        foreach ($assignedLicense in @($groupObject.AssignedLicenses)) {
+                            if ($null -eq $assignedLicense) {
+                                continue
+                            }
+                            ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
                         }
-                        ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
-                    }
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount 0 -RetryWait ([TimeSpan]::Zero) -WhatIf:$false
                 }
             }
         }
