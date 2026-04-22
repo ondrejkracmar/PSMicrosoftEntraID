@@ -585,10 +585,10 @@
 	            		<Width>16</Width>
 	          		</TableColumnHeader>
 	          		<TableColumnHeader>
-	            		<Width>16</Width>
+	            		<Width>28</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>44</Width>
 					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
@@ -601,7 +601,7 @@
 								<PropertyName>SkuPartNumber</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>ServicePlans</PropertyName>
+								<PropertyName>SkuFriendlyName</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>
