@@ -1,4 +1,4 @@
-function Get-PSEntraIDUserMemberOf {
+﻿function Get-PSEntraIDUserMemberOf {
     <#
     .SYNOPSIS
         List a user's direct memberships.

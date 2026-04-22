@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="21" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="06:57:39">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.4032" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Remove-PSEntraIDAdministrativeUnitMember.Tests.ps1" executed="True" result="Success" success="True" time="1.4032" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Remove-PSEntraIDAdministrativeUnitMember.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember" executed="True" result="Success" success="True" time="1.2385" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember">
+            <results>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Parameter Validation" executed="True" result="Success" success="True" time="0.0504" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory Identity parameter" name="Remove-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have mandatory Identity parameter" time="0.0214" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObjectUser" name="Remove-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should accept pipeline input for InputObjectUser" time="0.006" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have PassThru switch parameter" name="Remove-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have PassThru switch parameter" time="0.0048" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity" executed="True" result="Success" success="True" time="0.2861" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity">
+                <results>
+                  <test-case description="Should call API with correct path" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity.Should call API with correct path" time="0.0604" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use DELETE method" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity.Should use DELETE method" time="0.0383" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Get-PSEntraIDAdministrativeUnit" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity.Should call Get-PSEntraIDAdministrativeUnit" time="0.0293" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Get-PSEntraIDUser" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity.Should call Get-PSEntraIDUser" time="0.0493" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple users" name="Remove-PSEntraIDAdministrativeUnitMember.Remove user member by Identity.Should handle multiple users" time="0.0446" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Remove group member by Identity" executed="True" result="Success" success="True" time="0.379" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Remove group member by Identity">
+                <results>
+                  <test-case description="Should call API with correct path for group" name="Remove-PSEntraIDAdministrativeUnitMember.Remove group member by Identity.Should call API with correct path for group" time="0.0359" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Get-PSEntraIDGroup" name="Remove-PSEntraIDAdministrativeUnitMember.Remove group member by Identity.Should call Get-PSEntraIDGroup" time="0.0525" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Remove device member by Identity" executed="True" result="Success" success="True" time="0.4995" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Remove device member by Identity">
+                <results>
+                  <test-case description="Should call API with correct path for device" name="Remove-PSEntraIDAdministrativeUnitMember.Remove device member by Identity.Should call API with correct path for device" time="0.1134" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Remove member with InputObject" executed="True" result="Success" success="True" time="0.6785" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Remove member with InputObject">
+                <results>
+                  <test-case description="Should accept user object from pipeline" name="Remove-PSEntraIDAdministrativeUnitMember.Remove member with InputObject.Should accept user object from pipeline" time="0.0646" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Get-PSEntraIDUser when using InputObjectUser" name="Remove-PSEntraIDAdministrativeUnitMember.Remove member with InputObject.Should not call Get-PSEntraIDUser when using InputObjectUser" time="0.0355" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple objects from pipeline" name="Remove-PSEntraIDAdministrativeUnitMember.Remove member with InputObject.Should handle multiple objects from pipeline" time="0.0741" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.PassThru parameter" executed="True" result="Success" success="True" time="0.7497" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request when PassThru is specified" name="Remove-PSEntraIDAdministrativeUnitMember.PassThru parameter.Should return batch request when PassThru is specified" time="0.0381" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="Remove-PSEntraIDAdministrativeUnitMember.PassThru parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0182" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Error handling" executed="True" result="Success" success="True" time="0.9323" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Error handling">
+                <results>
+                  <test-case description="Should throw error when AU not found" name="Remove-PSEntraIDAdministrativeUnitMember.Error handling.Should throw error when AU not found" time="0.0459" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw error when user not found" name="Remove-PSEntraIDAdministrativeUnitMember.Error handling.Should throw error when user not found" time="0.0582" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand" name="Remove-PSEntraIDAdministrativeUnitMember.Error handling.Should use Invoke-PSFProtectedCommand" time="0.0678" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.WhatIf execution" executed="True" result="Success" success="True" time="1.0156" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.WhatIf execution">
+                <results>
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Remove-PSEntraIDAdministrativeUnitMember.WhatIf execution.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.0633" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnitMember.Pipeline input with typed object" executed="True" result="Success" success="True" time="1.1593" asserts="0" description="Remove-PSEntraIDAdministrativeUnitMember.Pipeline input with typed object">
+                <results>
+                  <test-case description="Should accept pipeline input and invoke Invoke-PSFProtectedCommand" name="Remove-PSEntraIDAdministrativeUnitMember.Pipeline input with typed object.Should accept pipeline input and invoke Invoke-PSFProtectedCommand" time="0.1093" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

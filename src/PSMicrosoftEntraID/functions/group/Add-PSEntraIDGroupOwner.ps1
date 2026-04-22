@@ -49,8 +49,8 @@ function Add-PSEntraIDGroupOwner {
             Add owners user1,user2 to Azure group group1
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'IdentityInputObject')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
@@ -79,12 +79,7 @@ function Add-PSEntraIDGroupOwner {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
         if ([object]::Equals($group, $null)) {
             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
@@ -92,10 +87,10 @@ function Add-PSEntraIDGroupOwner {
     }
 
     process {
-        [System.Collections.ArrayList] $ownerUrlList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $ownerObjectIdList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $ownerUserPrincipalNameList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $ownerMailList = [System.Collections.ArrayList]::new()
+        [System.Collections.Generic.List[object]] $ownerUrlList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $ownerObjectIdList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $ownerUserPrincipalNameList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $ownerMailList = [System.Collections.Generic.List[object]]::new()
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityUser' {
                 [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','

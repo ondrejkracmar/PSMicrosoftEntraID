@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="14" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:04">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.894" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUserMemberOf.Tests.ps1" executed="True" result="Success" success="True" time="0.894" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUserMemberOf.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf" executed="True" result="Success" success="True" time="0.7903" asserts="0" description="Get-PSEntraIDUserMemberOf">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf.Parameter Validation" executed="True" result="Success" success="True" time="0.0186" asserts="0" description="Get-PSEntraIDUserMemberOf.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory InputObject parameter" name="Get-PSEntraIDUserMemberOf.Parameter Validation.Should have mandatory InputObject parameter" time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter" name="Get-PSEntraIDUserMemberOf.Parameter Validation.Should have mandatory Identity parameter" time="0.0043" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject" name="Get-PSEntraIDUserMemberOf.Parameter Validation.Should accept pipeline input for InputObject" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Groups.Group" name="Get-PSEntraIDUserMemberOf.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Groups.Group" time="0.0025" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf.Get memberOf by Identity" executed="True" result="Success" success="True" time="0.2377" asserts="0" description="Get-PSEntraIDUserMemberOf.Get memberOf by Identity">
+                <results>
+                  <test-case description="Should resolve identity via Get-PSEntraIDUser" name="Get-PSEntraIDUserMemberOf.Get memberOf by Identity.Should resolve identity via Get-PSEntraIDUser" time="0.0514" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with memberOf path" name="Get-PSEntraIDUserMemberOf.Get memberOf by Identity.Should call API with memberOf path" time="0.0351" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Get-PSEntraIDUserMemberOf.Get memberOf by Identity.Should handle multiple identities" time="0.06" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert response using ConvertFrom-RestGroup" name="Get-PSEntraIDUserMemberOf.Get memberOf by Identity.Should convert response using ConvertFrom-RestGroup" time="0.0615" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf.Get memberOf by InputObject" executed="True" result="Success" success="True" time="0.4478" asserts="0" description="Get-PSEntraIDUserMemberOf.Get memberOf by InputObject">
+                <results>
+                  <test-case description="Should call API with user Id in path" name="Get-PSEntraIDUserMemberOf.Get memberOf by InputObject.Should call API with user Id in path" time="0.0788" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Get-PSEntraIDUser for InputObject" name="Get-PSEntraIDUserMemberOf.Get memberOf by InputObject.Should not call Get-PSEntraIDUser for InputObject" time="0.048" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input" name="Get-PSEntraIDUserMemberOf.Get memberOf by InputObject.Should accept pipeline input" time="0.0665" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf.Filter support" executed="True" result="Success" success="True" time="0.5399" asserts="0" description="Get-PSEntraIDUserMemberOf.Filter support">
+                <results>
+                  <test-case description="Should pass filter query parameter when Filter is specified with Identity" name="Get-PSEntraIDUserMemberOf.Filter support.Should pass filter query parameter when Filter is specified with Identity" time="0.0852" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserMemberOf.Error handling" executed="True" result="Success" success="True" time="0.6885" asserts="0" description="Get-PSEntraIDUserMemberOf.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="Get-PSEntraIDUserMemberOf.Error handling.Should call Assert-EntraConnection" time="0.0743" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand for retries" name="Get-PSEntraIDUserMemberOf.Error handling.Should use Invoke-PSFProtectedCommand for retries" time="0.0693" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

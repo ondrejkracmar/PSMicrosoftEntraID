@@ -14,8 +14,7 @@ function Remove-PSEntraIDUser {
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -46,8 +45,8 @@ function Remove-PSEntraIDUser {
 	#>
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High',
         DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
@@ -67,12 +66,7 @@ function Remove-PSEntraIDUser {
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -103,17 +97,17 @@ function Remove-PSEntraIDUser {
                     }
                     else {
                         [string] $path = ("users/{0}" -f $aADUser.Id)
-                    if ($PassThru.IsPresent) {
-                        [hashtable] $body = @{}
-                        [hashtable] $header = @{}
-                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
-                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
+                        if ($PassThru.IsPresent) {
+                            [hashtable] $body = @{}
+                            [hashtable] $header = @{}
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'DELETE'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'User.Delete' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
                     }
                 }
             }

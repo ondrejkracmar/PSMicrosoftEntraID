@@ -38,6 +38,7 @@ function Get-PSEntraIDGroupMember {
 
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]
     param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Groups.Group[]]$InputObject,

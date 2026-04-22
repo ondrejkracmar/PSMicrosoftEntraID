@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="42" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:11">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.9833" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/contact/Get-PSEntraIDContact.Tests.ps1" executed="True" result="Success" success="True" time="2.9833" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/contact/Get-PSEntraIDContact.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDContact" executed="True" result="Success" success="True" time="2.7993" asserts="0" description="Get-PSEntraIDContact">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Parameter Validation" executed="True" result="Success" success="True" time="0.0841" asserts="0" description="Get-PSEntraIDContact.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory Identity parameter for Identity parameter set" name="Get-PSEntraIDContact.Parameter Validation.Should have mandatory Identity parameter for Identity parameter set" time="0.01" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Name parameter for Name parameter set" name="Get-PSEntraIDContact.Parameter Validation.Should have mandatory Name parameter for Name parameter set" time="0.0094" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory CompanyName parameter for CompanyName parameter set" name="Get-PSEntraIDContact.Parameter Validation.Should have mandatory CompanyName parameter for CompanyName parameter set" time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Filter parameter for Filter parameter set" name="Get-PSEntraIDContact.Parameter Validation.Should have mandatory Filter parameter for Filter parameter set" time="0.0065" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory All parameter for All parameter set" name="Get-PSEntraIDContact.Parameter Validation.Should have mandatory All parameter for All parameter set" time="0.0046" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept string array for Identity parameter" name="Get-PSEntraIDContact.Parameter Validation.Should accept string array for Identity parameter" time="0.024" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Id and Mail aliases for Identity parameter" name="Get-PSEntraIDContact.Parameter Validation.Should have Id and Mail aliases for Identity parameter" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept string array for Name parameter" name="Get-PSEntraIDContact.Parameter Validation.Should accept string array for Name parameter" time="0.0125" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept string array for CompanyName parameter" name="Get-PSEntraIDContact.Parameter Validation.Should accept string array for CompanyName parameter" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException switch parameter" name="Get-PSEntraIDContact.Parameter Validation.Should have EnableException switch parameter" time="0.0031" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Get contact by Identity" executed="True" result="Success" success="True" time="0.5001" asserts="0" description="Get-PSEntraIDContact.Get contact by Identity">
+                <results>
+                  <test-case description="Should call API with correct path and filter" name="Get-PSEntraIDContact.Get contact by Identity.Should call API with correct path and filter" time="0.174" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return contact object" name="Get-PSEntraIDContact.Get contact by Identity.Should return contact object" time="0.0591" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Get-PSEntraIDContact.Get contact by Identity.Should handle multiple identities" time="0.0505" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Assert-EntraConnection" name="Get-PSEntraIDContact.Get contact by Identity.Should call Assert-EntraConnection" time="0.0488" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call ConvertFrom-RestContact" name="Get-PSEntraIDContact.Get contact by Identity.Should call ConvertFrom-RestContact" time="0.0735" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Get contact by Name" executed="True" result="Success" success="True" time="0.7004" asserts="0" description="Get-PSEntraIDContact.Get contact by Name">
+                <results>
+                  <test-case description="Should call API with correct filter for name search" name="Get-PSEntraIDContact.Get contact by Name.Should call API with correct filter for name search" time="0.0537" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should search across displayName, givenName, and surname" name="Get-PSEntraIDContact.Get contact by Name.Should search across displayName, givenName, and surname" time="0.0394" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return contact objects" name="Get-PSEntraIDContact.Get contact by Name.Should return contact objects" time="0.0351" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple names" name="Get-PSEntraIDContact.Get contact by Name.Should handle multiple names" time="0.0652" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Get contact by CompanyName" executed="True" result="Success" success="True" time="0.9815" asserts="0" description="Get-PSEntraIDContact.Get contact by CompanyName">
+                <results>
+                  <test-case description="Should call API with correct filter for company name" name="Get-PSEntraIDContact.Get contact by CompanyName.Should call API with correct filter for company name" time="0.1348" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple company names" name="Get-PSEntraIDContact.Get contact by CompanyName.Should handle multiple company names" time="0.0403" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include ConsistencyLevel header" name="Get-PSEntraIDContact.Get contact by CompanyName.Should include ConsistencyLevel header" time="0.064" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return contact objects" name="Get-PSEntraIDContact.Get contact by CompanyName.Should return contact objects" time="0.0371" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Get contact by Filter" executed="True" result="Success" success="True" time="1.7486" asserts="0" description="Get-PSEntraIDContact.Get contact by Filter">
+                <results>
+                  <test-case description="Should call API with custom filter" name="Get-PSEntraIDContact.Get contact by Filter.Should call API with custom filter" time="0.0616" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include ConsistencyLevel header with Filter" name="Get-PSEntraIDContact.Get contact by Filter.Should include ConsistencyLevel header with Filter" time="0.6296" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return contact objects" name="Get-PSEntraIDContact.Get contact by Filter.Should return contact objects" time="0.0353" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle complex filter expressions" name="Get-PSEntraIDContact.Get contact by Filter.Should handle complex filter expressions" time="0.0338" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Get all contacts" executed="True" result="Success" success="True" time="1.8585" asserts="0" description="Get-PSEntraIDContact.Get all contacts">
+                <results>
+                  <test-case description="Should call API without filter when -All is specified" name="Get-PSEntraIDContact.Get all contacts.Should call API without filter when -All is specified" time="0.0301" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return contact objects" name="Get-PSEntraIDContact.Get all contacts.Should return contact objects" time="0.0334" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call ConvertFrom-RestContact" name="Get-PSEntraIDContact.Get all contacts.Should call ConvertFrom-RestContact" time="0.0342" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Query Parameters" executed="True" result="Success" success="True" time="1.9592" asserts="0" description="Get-PSEntraIDContact.Query Parameters">
+                <results>
+                  <test-case description="Should include $count parameter" name="Get-PSEntraIDContact.Query Parameters.Should include $count parameter" time="0.0346" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include $top parameter with page size" name="Get-PSEntraIDContact.Query Parameters.Should include $top parameter with page size" time="0.0218" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include $select parameter with contact properties" name="Get-PSEntraIDContact.Query Parameters.Should include $select parameter with contact properties" time="0.0411" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Error Handling" executed="True" result="Success" success="True" time="2.1748" asserts="0" description="Get-PSEntraIDContact.Error Handling">
+                <results>
+                  <test-case description="Should call Invoke-PSFProtectedCommand" name="Get-PSEntraIDContact.Error Handling.Should call Invoke-PSFProtectedCommand" time="0.0311" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should respect EnableException parameter" name="Get-PSEntraIDContact.Error Handling.Should respect EnableException parameter" time="0.054" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle Test-PSFFunctionInterrupt" name="Get-PSEntraIDContact.Error Handling.Should handle Test-PSFFunctionInterrupt" time="0.0367" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include retry count in protected command" name="Get-PSEntraIDContact.Error Handling.Should include retry count in protected command" time="0.0496" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include retry wait in protected command" name="Get-PSEntraIDContact.Error Handling.Should include retry wait in protected command" time="0.0396" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Output Type" executed="True" result="Success" success="True" time="2.3161" asserts="0" description="Get-PSEntraIDContact.Output Type">
+                <results>
+                  <test-case description="Should have correct output type attribute" name="Get-PSEntraIDContact.Output Type.Should have correct output type attribute" time="0.1301" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDContact.Integration Scenarios" executed="True" result="Success" success="True" time="2.6729" asserts="0" description="Get-PSEntraIDContact.Integration Scenarios">
+                <results>
+                  <test-case description="Should handle contact not found gracefully" name="Get-PSEntraIDContact.Integration Scenarios.Should handle contact not found gracefully" time="0.1159" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process multiple contacts" name="Get-PSEntraIDContact.Integration Scenarios.Should process multiple contacts" time="0.0792" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should work with different parameter sets sequentially" name="Get-PSEntraIDContact.Integration Scenarios.Should work with different parameter sets sequentially" time="0.1515" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

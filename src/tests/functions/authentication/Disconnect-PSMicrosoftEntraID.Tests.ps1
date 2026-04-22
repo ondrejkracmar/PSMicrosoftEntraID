@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $moduleName = 'PSMicrosoftEntraID'
 
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="28" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="06:56:54">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="15.1245" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Get-PSEntraIDAdministrativeUnitMember.Tests.ps1" executed="True" result="Success" success="True" time="15.1245" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Get-PSEntraIDAdministrativeUnitMember.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember" executed="True" result="Success" success="True" time="12.9057" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation" executed="True" result="Success" success="True" time="0.1678" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory InputObject parameter for InputObject parameter set" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have mandatory InputObject parameter for InputObject parameter set" time="0.025" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter for Identity parameter set" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have mandatory Identity parameter for Identity parameter set" time="0.0087" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should accept pipeline input for InputObject" time="0.0683" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Filter parameter" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have optional Filter parameter" time="0.0219" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have AdvancedFilter switch parameter" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should have AdvancedFilter switch parameter" time="0.008" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept string array for Identity parameter" name="Get-PSEntraIDAdministrativeUnitMember.Parameter Validation.Should accept string array for Identity parameter" time="0.0074" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject" executed="True" result="Success" success="True" time="0.9944" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject">
+                <results>
+                  <test-case description="Should call API with correct path" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should call API with correct path" time="0.4017" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return member objects" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should return member objects" time="0.1119" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept object from pipeline" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should accept object from pipeline" time="0.108" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple AUs from pipeline" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should handle multiple AUs from pipeline" time="0.0578" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include count and top parameters" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should include count and top parameters" time="0.0442" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Get-PSEntraIDAdministrativeUnit when using InputObject" name="Get-PSEntraIDAdministrativeUnitMember.Get members by InputObject.Should not call Get-PSEntraIDAdministrativeUnit when using InputObject" time="0.0591" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity" executed="True" result="Success" success="True" time="2.0432" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity">
+                <results>
+                  <test-case description="Should call Get-PSEntraIDAdministrativeUnit to resolve identity" name="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity.Should call Get-PSEntraIDAdministrativeUnit to resolve identity" time="0.1439" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with correct path" name="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity.Should call API with correct path" time="0.2168" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity.Should handle multiple identities" time="0.397" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw error when AU not found" name="Get-PSEntraIDAdministrativeUnitMember.Get members by Identity.Should throw error when AU not found" time="0.2451" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Filter members" executed="True" result="Success" success="True" time="2.8583" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Filter members">
+                <results>
+                  <test-case description="Should apply filter when specified" name="Get-PSEntraIDAdministrativeUnitMember.Filter members.Should apply filter when specified" time="0.2261" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ConsistencyLevel header with AdvancedFilter" name="Get-PSEntraIDAdministrativeUnitMember.Filter members.Should use ConsistencyLevel header with AdvancedFilter" time="0.1478" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not use ConsistencyLevel header without AdvancedFilter" name="Get-PSEntraIDAdministrativeUnitMember.Filter members.Should not use ConsistencyLevel header without AdvancedFilter" time="0.2371" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should work with filter and Identity parameter" name="Get-PSEntraIDAdministrativeUnitMember.Filter members.Should work with filter and Identity parameter" time="0.1621" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Response conversion" executed="True" result="Success" success="True" time="5.1572" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Response conversion">
+                <results>
+                  <test-case description="Should convert response using ConvertFrom-RestUser" name="Get-PSEntraIDAdministrativeUnitMember.Response conversion.Should convert response using ConvertFrom-RestUser" time="0.6955" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return user objects with correct properties" name="Get-PSEntraIDAdministrativeUnitMember.Response conversion.Should return user objects with correct properties" time="1.4494" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Error handling" executed="True" result="Success" success="True" time="12.1938" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="Get-PSEntraIDAdministrativeUnitMember.Error handling.Should call Assert-EntraConnection" time="1.6464" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand for retries" name="Get-PSEntraIDAdministrativeUnitMember.Error handling.Should use Invoke-PSFProtectedCommand for retries" time="1.9907" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use retry configuration" name="Get-PSEntraIDAdministrativeUnitMember.Error handling.Should use retry configuration" time="3.2558" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should check for function interrupts" name="Get-PSEntraIDAdministrativeUnitMember.Error handling.Should check for function interrupts" time="0.1007" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDAdministrativeUnitMember.Integration scenarios" executed="True" result="Success" success="True" time="12.3856" asserts="0" description="Get-PSEntraIDAdministrativeUnitMember.Integration scenarios">
+                <results>
+                  <test-case description="Should handle empty member list" name="Get-PSEntraIDAdministrativeUnitMember.Integration scenarios.Should handle empty member list" time="0.1039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should work in pipeline chain" name="Get-PSEntraIDAdministrativeUnitMember.Integration scenarios.Should work in pipeline chain" time="0.0757" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

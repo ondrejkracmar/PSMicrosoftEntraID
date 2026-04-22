@@ -20,7 +20,7 @@
 
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('System.Collections.ArrayList')]
+    [OutputType([System.Collections.ArrayList])]
     [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'UserIdentity')]
@@ -32,7 +32,7 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        Assert-EntraConnection -Service 'graph' -Cmdlet $PSCmdlet
         [System.Collections.ArrayList] $changeUserList = [System.Collections.ArrayList]::New()
     }
 

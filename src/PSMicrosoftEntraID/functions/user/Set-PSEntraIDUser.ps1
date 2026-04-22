@@ -93,8 +93,7 @@ function Set-PSEntraIDUser {
     Specifies whether the user must change password at next sign-in using MFA.
 
 .PARAMETER EnableException
-    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-    dly, but allows catching exceptions in calling scripts.
+    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
 .PARAMETER WhatIf
     Enables the function to simulate what it will do instead of actually executing.
@@ -120,12 +119,16 @@ function Set-PSEntraIDUser {
 .EXAMPLE
     Set-PSEntraIDUser -Identity "john.doe@contoso.com" -JobTitle "Manager"
 
+    Updates the JobTitle attribute of the specified user.
+
 .EXAMPLE
     Get-PSEntraIDUser -Filter "department eq 'IT'" | Set-PSEntraIDUser -UsageLocation "CZ" -Department "IT"
+
+    Pipes IT department users into Set-PSEntraIDUser to update their UsageLocation and Department in bulk.
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectUpdateUser')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectUpdateUser')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateUser')]
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
@@ -222,12 +225,7 @@ function Set-PSEntraIDUser {
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {

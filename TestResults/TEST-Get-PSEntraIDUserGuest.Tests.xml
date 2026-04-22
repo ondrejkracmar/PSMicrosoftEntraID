@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="19" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:03">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.8916" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUserGuest.Tests.ps1" executed="True" result="Success" success="True" time="0.8916" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUserGuest.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest" executed="True" result="Success" success="True" time="0.7795" asserts="0" description="Get-PSEntraIDUserGuest">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Parameter Validation" executed="True" result="Success" success="True" time="0.0517" asserts="0" description="Get-PSEntraIDUserGuest.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory Identity parameter" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have mandatory Identity parameter" time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Name parameter" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have mandatory Name parameter" time="0.0138" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory CompanyName parameter" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have mandatory CompanyName parameter" time="0.0063" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Filter parameter" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have mandatory Filter parameter" time="0.0077" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory All parameter" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have mandatory All parameter" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for Identity" name="Get-PSEntraIDUserGuest.Parameter Validation.Should accept pipeline input for Identity" time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Users.UserGuest" name="Get-PSEntraIDUserGuest.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Users.UserGuest" time="0.0067" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Get guest user by Identity" executed="True" result="Success" success="True" time="0.307" asserts="0" description="Get-PSEntraIDUserGuest.Get guest user by Identity">
+                <results>
+                  <test-case description="Should call API with users path" name="Get-PSEntraIDUserGuest.Get guest user by Identity.Should call API with users path" time="0.113" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return guest user object" name="Get-PSEntraIDUserGuest.Get guest user by Identity.Should return guest user object" time="0.0467" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Get-PSEntraIDUserGuest.Get guest user by Identity.Should handle multiple identities" time="0.0571" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ConvertFrom-RestUserGuest for response" name="Get-PSEntraIDUserGuest.Get guest user by Identity.Should use ConvertFrom-RestUserGuest for response" time="0.0321" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Get guest users by Filter" executed="True" result="Success" success="True" time="0.4158" asserts="0" description="Get-PSEntraIDUserGuest.Get guest users by Filter">
+                <results>
+                  <test-case description="Should combine filter with guest type filter" name="Get-PSEntraIDUserGuest.Get guest users by Filter.Should combine filter with guest type filter" time="0.0673" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ConsistencyLevel header with AdvancedFilter" name="Get-PSEntraIDUserGuest.Get guest users by Filter.Should use ConsistencyLevel header with AdvancedFilter" time="0.0381" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Get guest users by CompanyName" executed="True" result="Success" success="True" time="0.4788" asserts="0" description="Get-PSEntraIDUserGuest.Get guest users by CompanyName">
+                <results>
+                  <test-case description="Should build companyName filter with guest filter" name="Get-PSEntraIDUserGuest.Get guest users by CompanyName.Should build companyName filter with guest filter" time="0.0299" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add disabled filter when Disabled is present" name="Get-PSEntraIDUserGuest.Get guest users by CompanyName.Should add disabled filter when Disabled is present" time="0.0299" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Get all guest users" executed="True" result="Success" success="True" time="0.6073" asserts="0" description="Get-PSEntraIDUserGuest.Get all guest users">
+                <results>
+                  <test-case description="Should add guest userType filter" name="Get-PSEntraIDUserGuest.Get all guest users.Should add guest userType filter" time="0.0552" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add disabled filter with Disabled switch" name="Get-PSEntraIDUserGuest.Get all guest users.Should add disabled filter with Disabled switch" time="0.0632" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUserGuest.Error handling" executed="True" result="Success" success="True" time="0.7038" asserts="0" description="Get-PSEntraIDUserGuest.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="Get-PSEntraIDUserGuest.Error handling.Should call Assert-EntraConnection" time="0.0549" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand" name="Get-PSEntraIDUserGuest.Error handling.Should use Invoke-PSFProtectedCommand" time="0.0379" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

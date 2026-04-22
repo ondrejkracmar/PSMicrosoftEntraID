@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:18">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.9085" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/device/Get-PSEntraIDDevice.Tests.ps1" executed="True" result="Success" success="True" time="0.9085" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/device/Get-PSEntraIDDevice.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDDevice" executed="True" result="Success" success="True" time="0.5677" asserts="0" description="Get-PSEntraIDDevice">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDDevice.Parameter Validation" executed="True" result="Success" success="True" time="0.1153" asserts="0" description="Get-PSEntraIDDevice.Parameter Validation">
+                <results>
+                  <test-case description="Should have Identity parameter set" name="Get-PSEntraIDDevice.Parameter Validation.Should have Identity parameter set" time="0.0571" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Devices.Device" name="Get-PSEntraIDDevice.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Devices.Device" time="0.0045" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter with aliases" name="Get-PSEntraIDDevice.Parameter Validation.Should have mandatory Identity parameter with aliases" time="0.0104" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for Identity" name="Get-PSEntraIDDevice.Parameter Validation.Should accept pipeline input for Identity" time="0.0055" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDDevice.Get device by displayName (lookup match found)" executed="True" result="Success" success="True" time="0.2938" asserts="0" description="Get-PSEntraIDDevice.Get device by displayName (lookup match found)">
+                <results>
+                  <test-case description="Should first query by displayName then fetch by resolved Id" name="Get-PSEntraIDDevice.Get device by displayName (lookup match found).Should first query by displayName then fetch by resolved Id" time="0.1391" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return device details with PSTypeName" name="Get-PSEntraIDDevice.Get device by displayName (lookup match found).Should return device details with PSTypeName" time="0.0334" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDDevice.Get device by Id directly (no displayName match)" executed="True" result="Success" success="True" time="0.3523" asserts="0" description="Get-PSEntraIDDevice.Get device by Id directly (no displayName match)">
+                <results>
+                  <test-case description="Should fall back to using Identity as Id" name="Get-PSEntraIDDevice.Get device by Id directly (no displayName match).Should fall back to using Identity as Id" time="0.0487" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDDevice.Get device when API returns null details" executed="True" result="Success" success="True" time="0.4231" asserts="0" description="Get-PSEntraIDDevice.Get device when API returns null details">
+                <results>
+                  <test-case description="Should return fallback device object with PSTypeName" name="Get-PSEntraIDDevice.Get device when API returns null details.Should return fallback device object with PSTypeName" time="0.0626" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDDevice.Connection handling" executed="True" result="Success" success="True" time="0.4861" asserts="0" description="Get-PSEntraIDDevice.Connection handling">
+                <results>
+                  <test-case description="Should assert Entra connection" name="Get-PSEntraIDDevice.Connection handling.Should assert Entra connection" time="0.0411" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

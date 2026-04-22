@@ -56,8 +56,8 @@ function Remove-PSEntraIDAdministrativeUnit {
 	#>
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSTypeName('PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit')]
         [object[]] $InputObject,
@@ -81,12 +81,7 @@ function Remove-PSEntraIDAdministrativeUnit {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -121,19 +116,19 @@ function Remove-PSEntraIDAdministrativeUnit {
                     else {
                         [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
 
-                    if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{
-                            Method  = 'DELETE'
-                            Url     = ('/{0}' -f $path)
-                            Headers = $header
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'DELETE'
+                                Url     = ('/{0}' -f $path)
+                                Headers = $header
+                            }
                         }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
-                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
+                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
                     }
                 }
             }

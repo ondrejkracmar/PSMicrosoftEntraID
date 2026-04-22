@@ -46,8 +46,8 @@ function Add-PSEntraIDGroupMember {
             Add member to Azure AD group group1
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'IdentityInputObject')]
     param(
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityInputObject')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUser')]
@@ -77,12 +77,7 @@ function Add-PSEntraIDGroupMember {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
         if ([object]::Equals($group, $null)) {
             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
@@ -90,10 +85,10 @@ function Add-PSEntraIDGroupMember {
     }
 
     process {
-        [System.Collections.ArrayList] $memberUrlList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $memberObjectIdList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $memberUserPrincipalNameList = [System.Collections.ArrayList]::new()
-        [System.Collections.ArrayList] $memberMailList = [System.Collections.ArrayList]::new()
+        [System.Collections.Generic.List[object]] $memberUrlList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $memberObjectIdList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $memberUserPrincipalNameList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $memberMailList = [System.Collections.Generic.List[object]]::new()
 
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityInputObject' {

@@ -20,11 +20,12 @@
 	'SubscribedSku.List'               = "List subscribed Sku"
 	'SubscribedSku.Get.Failed'         = "Get subscribed Sku '{0}' failed"
 	'SubscribedSku.Filter'             = "List subscribed Sku with filter '{0}'"
+	'SubscribedSku.SkuPartNumber.NotFound' = "SkuPartNumber '{0}' was not found in the subscribed Sku catalog of the tenant"
 	'ServicePlan.Filter'               = "List service plan with filter '{0}'"
 	'ServicePlanName.Get.Failed'       = "Get service plan '{0}' failed"
 
-	'LicenseServicePLan.Enable'        = "Enable service plans '{0}' in subscription '{1}'"
-	'LicenseServicePLan.Disable'       = "Disable service plans '{0}' in subscription '{1}'"
+	'LicenseServicePlan.Enable'        = "Enable service plans '{0}' in subscription '{1}'"
+	'LicenseServicePlan.Disable'       = "Disable service plans '{0}' in subscription '{1}'"
 	'License.Enable'                   = "Enable license '{0}'"
 	'License.Disable'                  = "Disable license '{0}'"
 
@@ -38,9 +39,10 @@
 	'User.List'                        = "List users '{0}'"
 	'User.Name'                        = "List users by name '{0}'"
 	'User.Invitation'                  = "Invite user '{0}'"
-	'User.LicenseDetai.List'           = "List license detail of user '{0}'"
+	'User.LicenseDetail.List'           = "List license detail of user '{0}'"
 
 	'Group.Get'                        = "Get group '{0}'"
+	'Group.License.List'               = "List assigned licenses of group '{0}'"
 	'Group.AdditionalProperty'         = "Get group additional properties '{0}'"
 	'Group.Get.Failed'                 = "Get group '{0}' failed"
 	'Group.Filter'                     = "List groups with filter '{0}'"

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="18" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:06">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.3265" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/New-PSEntraIDUser.Tests.ps1" executed="True" result="Success" success="True" time="1.3265" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/New-PSEntraIDUser.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-PSEntraIDUser" executed="True" result="Success" success="True" time="0.9069" asserts="0" description="New-PSEntraIDUser">
+            <results>
+              <test-suite type="TestFixture" name="New-PSEntraIDUser.Parameter Validation" executed="True" result="Success" success="True" time="0.0825" asserts="0" description="New-PSEntraIDUser.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory DisplayName parameter" name="New-PSEntraIDUser.Parameter Validation.Should have mandatory DisplayName parameter" time="0.0103" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory UserPrincipalName parameter" name="New-PSEntraIDUser.Parameter Validation.Should have mandatory UserPrincipalName parameter" time="0.0065" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory MailNickname parameter" name="New-PSEntraIDUser.Parameter Validation.Should have mandatory MailNickname parameter" time="0.0097" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Password as SecureString" name="New-PSEntraIDUser.Parameter Validation.Should have mandatory Password as SecureString" time="0.03" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="New-PSEntraIDUser.Parameter Validation.Should support ShouldProcess" time="0.0094" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input by property name" name="New-PSEntraIDUser.Parameter Validation.Should accept pipeline input by property name" time="0.0114" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDUser.Create user with required parameters" executed="True" result="Success" success="True" time="0.3396" asserts="0" description="New-PSEntraIDUser.Create user with required parameters">
+                <results>
+                  <test-case description="Should call API with POST method" name="New-PSEntraIDUser.Create user with required parameters.Should call API with POST method" time="0.1395" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should build body with required properties" name="New-PSEntraIDUser.Create user with required parameters.Should build body with required properties" time="0.0587" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Content-Type header" name="New-PSEntraIDUser.Create user with required parameters.Should include Content-Type header" time="0.0525" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDUser.Create user with optional parameters" executed="True" result="Success" success="True" time="0.5514" asserts="0" description="New-PSEntraIDUser.Create user with optional parameters">
+                <results>
+                  <test-case description="Should include GivenName and Surname in body" name="New-PSEntraIDUser.Create user with optional parameters.Should include GivenName and Surname in body" time="0.042" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include UsageLocation in body" name="New-PSEntraIDUser.Create user with optional parameters.Should include UsageLocation in body" time="0.0446" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include job details in body" name="New-PSEntraIDUser.Create user with optional parameters.Should include job details in body" time="0.0585" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include AccountEnabled as false" name="New-PSEntraIDUser.Create user with optional parameters.Should include AccountEnabled as false" time="0.0534" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDUser.PassThru parameter" executed="True" result="Success" success="True" time="0.6448" asserts="0" description="New-PSEntraIDUser.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request when PassThru is specified" name="New-PSEntraIDUser.PassThru parameter.Should return batch request when PassThru is specified" time="0.0313" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="New-PSEntraIDUser.PassThru parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0252" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include body in batch request" name="New-PSEntraIDUser.PassThru parameter.Should include body in batch request" time="0.0301" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDUser.Error handling" executed="True" result="Success" success="True" time="0.7219" asserts="0" description="New-PSEntraIDUser.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="New-PSEntraIDUser.Error handling.Should call Assert-EntraConnection" time="0.0408" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand" name="New-PSEntraIDUser.Error handling.Should use Invoke-PSFProtectedCommand" time="0.0295" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="26" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:01">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.1627" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUser.Tests.ps1" executed="True" result="Success" success="True" time="1.1627" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Get-PSEntraIDUser.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDUser" executed="True" result="Success" success="True" time="1.0688" asserts="0" description="Get-PSEntraIDUser">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Parameter Validation" executed="True" result="Success" success="True" time="0.0389" asserts="0" description="Get-PSEntraIDUser.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory Identity parameter" name="Get-PSEntraIDUser.Parameter Validation.Should have mandatory Identity parameter" time="0.003" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Name parameter" name="Get-PSEntraIDUser.Parameter Validation.Should have mandatory Name parameter" time="0.0118" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory CompanyName parameter" name="Get-PSEntraIDUser.Parameter Validation.Should have mandatory CompanyName parameter" time="0.0031" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Filter parameter" name="Get-PSEntraIDUser.Parameter Validation.Should have mandatory Filter parameter" time="0.0031" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory All parameter" name="Get-PSEntraIDUser.Parameter Validation.Should have mandatory All parameter" time="0.0036" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for Identity" name="Get-PSEntraIDUser.Parameter Validation.Should accept pipeline input for Identity" time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Users.User" name="Get-PSEntraIDUser.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Users.User" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Get user by Identity" executed="True" result="Success" success="True" time="0.3806" asserts="0" description="Get-PSEntraIDUser.Get user by Identity">
+                <results>
+                  <test-case description="Should call API with correct path" name="Get-PSEntraIDUser.Get user by Identity.Should call API with correct path" time="0.0555" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return user object" name="Get-PSEntraIDUser.Get user by Identity.Should return user object" time="0.0393" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Get-PSEntraIDUser.Get user by Identity.Should handle multiple identities" time="0.072" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should first try mail query to resolve user" name="Get-PSEntraIDUser.Get user by Identity.Should first try mail query to resolve user" time="0.0807" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process pipeline input" name="Get-PSEntraIDUser.Get user by Identity.Should process pipeline input" time="0.0842" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Get user by Name" executed="True" result="Success" success="True" time="0.4937" asserts="0" description="Get-PSEntraIDUser.Get user by Name">
+                <results>
+                  <test-case description="Should call API with displayName/givenName/surname filter" name="Get-PSEntraIDUser.Get user by Name.Should call API with displayName/givenName/surname filter" time="0.0493" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple names" name="Get-PSEntraIDUser.Get user by Name.Should handle multiple names" time="0.0594" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Get user by Filter" executed="True" result="Success" success="True" time="0.6255" asserts="0" description="Get-PSEntraIDUser.Get user by Filter">
+                <results>
+                  <test-case description="Should pass custom filter to API" name="Get-PSEntraIDUser.Get user by Filter.Should pass custom filter to API" time="0.0427" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ConsistencyLevel header with AdvancedFilter" name="Get-PSEntraIDUser.Get user by Filter.Should use ConsistencyLevel header with AdvancedFilter" time="0.0449" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not set ConsistencyLevel without AdvancedFilter" name="Get-PSEntraIDUser.Get user by Filter.Should not set ConsistencyLevel without AdvancedFilter" time="0.0355" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Get user by CompanyName" executed="True" result="Success" success="True" time="0.7365" asserts="0" description="Get-PSEntraIDUser.Get user by CompanyName">
+                <results>
+                  <test-case description="Should build companyName in filter" name="Get-PSEntraIDUser.Get user by CompanyName.Should build companyName in filter" time="0.0258" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add disabled filter when Disabled switch is present" name="Get-PSEntraIDUser.Get user by CompanyName.Should add disabled filter when Disabled switch is present" time="0.0369" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use ConsistencyLevel header" name="Get-PSEntraIDUser.Get user by CompanyName.Should use ConsistencyLevel header" time="0.0451" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Get all users" executed="True" result="Success" success="True" time="0.8556" asserts="0" description="Get-PSEntraIDUser.Get all users">
+                <results>
+                  <test-case description="Should call API with users path" name="Get-PSEntraIDUser.Get all users.Should call API with users path" time="0.0506" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include count and top query parameters" name="Get-PSEntraIDUser.Get all users.Should include count and top query parameters" time="0.0252" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add disabled filter with Disabled switch" name="Get-PSEntraIDUser.Get all users.Should add disabled filter with Disabled switch" time="0.0381" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUser.Error handling" executed="True" result="Success" success="True" time="1.0275" asserts="0" description="Get-PSEntraIDUser.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="Get-PSEntraIDUser.Error handling.Should call Assert-EntraConnection" time="0.058" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand for retries" name="Get-PSEntraIDUser.Error handling.Should use Invoke-PSFProtectedCommand for retries" time="0.0619" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert response using ConvertFrom-RestUser" name="Get-PSEntraIDUser.Error handling.Should convert response using ConvertFrom-RestUser" time="0.0468" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

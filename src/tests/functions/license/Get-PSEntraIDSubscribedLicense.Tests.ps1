@@ -3,6 +3,9 @@
     $commandName = 'Get-PSEntraIDSubscribedLicense'
 
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
+    if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
+        Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
+    }
 }
 
 Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
@@ -86,6 +89,35 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
                     ServicePlans = $item.servicePlans
                 }
             }
+        }
+
+        Mock Get-PSEntraIDLicenseIdentifier -ModuleName PSMicrosoftEntraID {
+            @(
+                [PSCustomObject]@{
+                    SkuId = 'sku1-guid'
+                    SkuPartNumber = 'ENTERPRISEPACK'
+                    SkuFriendlyName = 'Microsoft 365 E3'
+                    ServicePlans = @(
+                        [PSCustomObject]@{
+                            ServicePlanId = 'plan1-guid'
+                            ServicePlanName = 'EXCHANGE_S_ENTERPRISE'
+                            ServicePlanFriendlyName = 'Exchange Online Plan 2'
+                        }
+                    )
+                },
+                [PSCustomObject]@{
+                    SkuId = 'sku2-guid'
+                    SkuPartNumber = 'EMSPREMIUM'
+                    SkuFriendlyName = 'Enterprise Mobility + Security E5'
+                    ServicePlans = @(
+                        [PSCustomObject]@{
+                            ServicePlanId = 'plan2-guid'
+                            ServicePlanName = 'INTUNE_A'
+                            ServicePlanFriendlyName = 'Microsoft Intune'
+                        }
+                    )
+                }
+            )
         }
 
         Mock Stop-PSFFunction -ModuleName PSMicrosoftEntraID { return $true } -ParameterFilter { $EnableException -eq $false }
@@ -256,6 +288,20 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
 
             $result[0].PrepaidUnits | Should -Not -BeNullOrEmpty
             $result[0].PrepaidUnits.enabled | Should -Be 25
+        }
+
+        It 'Should enrich subscribed licenses with friendly SKU names' {
+            $result = Get-PSEntraIDSubscribedLicense
+
+            $result[0].SkuFriendlyName | Should -Be 'Microsoft 365 E3'
+            $result[1].SkuFriendlyName | Should -Be 'Enterprise Mobility + Security E5'
+        }
+
+        It 'Should enrich service plans with friendly names' {
+            $result = Get-PSEntraIDSubscribedLicense
+
+            $result[0].ServicePlans[0].ServicePlanFriendlyName | Should -Be 'Exchange Online Plan 2'
+            $result[1].ServicePlans[0].ServicePlanFriendlyName | Should -Be 'Microsoft Intune'
         }
     }
 

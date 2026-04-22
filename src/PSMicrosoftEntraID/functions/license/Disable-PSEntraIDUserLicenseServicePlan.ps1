@@ -25,8 +25,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
         Friendly service plan name of subscribedSku.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -56,8 +55,8 @@ function Disable-PSEntraIDUserLicenseServicePlan {
 
 	#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanName')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
@@ -109,12 +108,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         switch -Regex ($PSCmdlet.ParameterSetName) {
             '\wSkuId\w' {
                 [string] $bodySkuId = $SkuId
@@ -141,7 +135,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
-                    [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
+                    [System.Collections.Generic.List[object]] $bodyDisabledServicePlanList = [System.Collections.Generic.List[object]]::new()
                     [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $itemInputObject |
                     Get-PSEntraIDUserLicenseDetail |
                     Where-Object -Property SkuId -EQ -Value $bodySkuId |
@@ -177,7 +171,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
                     }
                     else {
                         if ($bodyDisabledServicePlanList.Count -gt 0) {
-                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                             } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
@@ -187,7 +181,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
             }
             'Identity\w' {
                 foreach ($user in  $Identity) {
-                    [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
+                    [System.Collections.Generic.List[object]] $bodyDisabledServicePlanList = [System.Collections.Generic.List[object]]::new()
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
                     if ([object]::Equals($aADUser, $null)) {
                         if ($EnableException.IsPresent) {
@@ -231,7 +225,7 @@ function Disable-PSEntraIDUserLicenseServicePlan {
                     }
                     else {
                         if (($bodyDisabledServicePlanList.Count -gt 0)) {
-                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePLan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Disable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $user -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
                             } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }

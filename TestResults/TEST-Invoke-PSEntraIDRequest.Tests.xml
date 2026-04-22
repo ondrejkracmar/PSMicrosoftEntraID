@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:16">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.9009" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Invoke-PSEntraIDRequest.Tests.ps1" executed="True" result="Success" success="True" time="0.9009" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Invoke-PSEntraIDRequest.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Invoke-PSEntraIDRequest" executed="True" result="Success" success="True" time="0.7764" asserts="0" description="Invoke-PSEntraIDRequest">
+            <results>
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDRequest.Parameter Validation" executed="True" result="Success" success="True" time="0.1745" asserts="0" description="Invoke-PSEntraIDRequest.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory Path parameter" name="Invoke-PSEntraIDRequest.Parameter Validation.Should have mandatory Path parameter" time="0.0515" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType pscustomobject" name="Invoke-PSEntraIDRequest.Parameter Validation.Should have OutputType pscustomobject" time="0.0289" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="Invoke-PSEntraIDRequest.Parameter Validation.Should support ShouldProcess" time="0.03" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Method parameter defaulting to GET" name="Invoke-PSEntraIDRequest.Parameter Validation.Should have Method parameter defaulting to GET" time="0.0194" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have expected optional parameters" name="Invoke-PSEntraIDRequest.Parameter Validation.Should have expected optional parameters" time="0.0258" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have SerializationDepth with ValidateRange 1 to 666" name="Invoke-PSEntraIDRequest.Parameter Validation.Should have SerializationDepth with ValidateRange 1 to 666" time="0.0139" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDRequest.Execute request" executed="True" result="Success" success="True" time="0.5823" asserts="0" description="Invoke-PSEntraIDRequest.Execute request">
+                <results>
+                  <test-case description="Should call Invoke-EntraRequest with provided path" name="Invoke-PSEntraIDRequest.Execute request.Should call Invoke-EntraRequest with provided path" time="0.2609" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use the default service from config" name="Invoke-PSEntraIDRequest.Execute request.Should use the default service from config" time="0.0576" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass through parameters via ConvertTo-PSFHashtable" name="Invoke-PSEntraIDRequest.Execute request.Should pass through parameters via ConvertTo-PSFHashtable" time="0.0828" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDRequest.Connection handling" executed="True" result="Success" success="True" time="0.6315" asserts="0" description="Invoke-PSEntraIDRequest.Connection handling">
+                <results>
+                  <test-case description="Should assert Entra connection" name="Invoke-PSEntraIDRequest.Connection handling.Should assert Entra connection" time="0.0438" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

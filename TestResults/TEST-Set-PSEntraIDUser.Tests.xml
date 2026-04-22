@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="18" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:10">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="3.6905" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Set-PSEntraIDUser.Tests.ps1" executed="True" result="Success" success="True" time="3.6905" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/Set-PSEntraIDUser.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Set-PSEntraIDUser" executed="True" result="Success" success="True" time="3.5348" asserts="0" description="Set-PSEntraIDUser">
+            <results>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Parameter Validation" executed="True" result="Success" success="True" time="0.0725" asserts="0" description="Set-PSEntraIDUser.Parameter Validation">
+                <results>
+                  <test-case description="Should have InputObjectUpdateUser and IdentityUpdateUser parameter sets" name="Set-PSEntraIDUser.Parameter Validation.Should have InputObjectUpdateUser and IdentityUpdateUser parameter sets" time="0.0032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="Set-PSEntraIDUser.Parameter Validation.Should support ShouldProcess" time="0.0108" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have all expected user property parameters" name="Set-PSEntraIDUser.Parameter Validation.Should have all expected user property parameters" time="0.0442" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have PassThru parameter" name="Set-PSEntraIDUser.Parameter Validation.Should have PassThru parameter" time="0.0067" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Update user by InputObject" executed="True" result="Success" success="True" time="0.3598" asserts="0" description="Set-PSEntraIDUser.Update user by InputObject">
+                <results>
+                  <test-case description="Should call API with PATCH method" name="Set-PSEntraIDUser.Update user by InputObject.Should call API with PATCH method" time="0.1761" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include only specified properties in body" name="Set-PSEntraIDUser.Update user by InputObject.Should include only specified properties in body" time="0.0594" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Content-Type header" name="Set-PSEntraIDUser.Update user by InputObject.Should include Content-Type header" time="0.0425" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Update user by Identity" executed="True" result="Success" success="True" time="0.4311" asserts="0" description="Set-PSEntraIDUser.Update user by Identity">
+                <results>
+                  <test-case description="Should resolve user and call PATCH" name="Set-PSEntraIDUser.Update user by Identity.Should resolve user and call PATCH" time="0.0281" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle user not found with EnableException" name="Set-PSEntraIDUser.Update user by Identity.Should handle user not found with EnableException" time="0.0258" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call API when user not found without EnableException" name="Set-PSEntraIDUser.Update user by Identity.Should not call API when user not found without EnableException" time="0.014" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Password with passwordProfile" executed="True" result="Success" success="True" time="2.7557" asserts="0" description="Set-PSEntraIDUser.Password with passwordProfile">
+                <results>
+                  <test-case description="Should build passwordProfile body when Password specified" name="Set-PSEntraIDUser.Password with passwordProfile.Should build passwordProfile body when Password specified" time="2.2519" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include ForceChangePasswordNextSignIn in passwordProfile" name="Set-PSEntraIDUser.Password with passwordProfile.Should include ForceChangePasswordNextSignIn in passwordProfile" time="0.0627" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Multiple property updates" executed="True" result="Success" success="True" time="2.8506" asserts="0" description="Set-PSEntraIDUser.Multiple property updates">
+                <results>
+                  <test-case description="Should include multiple properties in body" name="Set-PSEntraIDUser.Multiple property updates.Should include multiple properties in body" time="0.0904" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.PassThru parameter" executed="True" result="Success" success="True" time="2.9876" asserts="0" description="Set-PSEntraIDUser.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request with PATCH method" name="Set-PSEntraIDUser.PassThru parameter.Should return batch request with PATCH method" time="0.0572" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru" name="Set-PSEntraIDUser.PassThru parameter.Should not call Invoke-EntraRequest when PassThru" time="0.0371" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Connection handling" executed="True" result="Success" success="True" time="3.1204" asserts="0" description="Set-PSEntraIDUser.Connection handling">
+                <results>
+                  <test-case description="Should assert Entra connection" name="Set-PSEntraIDUser.Connection handling.Should assert Entra connection" time="0.124" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.WhatIf support" executed="True" result="Success" success="True" time="3.2645" asserts="0" description="Set-PSEntraIDUser.WhatIf support">
+                <results>
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Set-PSEntraIDUser.WhatIf support.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.1371" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSEntraIDUser.Pipeline input" executed="True" result="Success" success="True" time="3.4277" asserts="0" description="Set-PSEntraIDUser.Pipeline input">
+                <results>
+                  <test-case description="Should accept pipeline input and call Invoke-PSFProtectedCommand" name="Set-PSEntraIDUser.Pipeline input.Should accept pipeline input and call Invoke-PSFProtectedCommand" time="0.1372" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -1,4 +1,4 @@
-﻿function Get-PSEntraIDMessageCenter {
+function Get-PSEntraIDMessageCenter {
     <#
 .SYNOPSIS
     Retrieves announcements from Microsoft 365 Message Center via Graph API using .NET deserialization.
@@ -29,12 +29,17 @@
 .EXAMPLE
     Get-PSEntraIDMessageCenter -Service "Microsoft Teams" -Category feature -PublishedAfter (Get-Date).AddDays(-7)
 
+    Returns Microsoft Teams feature announcements published in the last 7 days.
+
 .EXAMPLE
     Get-PSEntraIDMessageCenter -Service All -Severity high
+
+    Returns all high severity Message Center announcements across all services.
 
 .OUTPUTS
     PSMicrosoftEntraID.MessageCenter.Message[]
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding()]
     [OutputType('PSMicrosoftEntraID.MessageCenter.Message[]')]
     param (
@@ -164,7 +169,7 @@
                         }
                     }
                 }
-                return $messageList#>
+                return $messageList
 
             } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
             if (Test-PSFFunctionInterrupt) { return }

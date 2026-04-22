@@ -1,4 +1,4 @@
-function New-PSEntraIDUser {
+﻿function New-PSEntraIDUser {
     <#
 .SYNOPSIS
     Creates a new user in Microsoft Entra ID (Azure AD).
@@ -88,7 +88,7 @@ function New-PSEntraIDUser {
     Employee type (e.g. full-time, contractor).
 
 .PARAMETER EnableException
-    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien    dly, but allows catching exceptions in calling scripts.
+    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
 .PARAMETER WhatIf
     Enables the function to simulate what it will do instead of actually executing.
@@ -114,10 +114,15 @@ function New-PSEntraIDUser {
 .EXAMPLE
     Import-Csv users.csv | New-PSEntraIDUser
 
+    Creates one user per row from users.csv by piping objects whose property names match the parameter names.
+
 .EXAMPLE
     New-PSEntraIDUser -DisplayName "John Doe" -UserPrincipalName "john.doe@contoso.com" -MailNickname "jdoe" -Password (Read-Host -AsSecureString "Enter password")
+
+    Creates a new user account with the supplied display name, UPN, mail nickname and password.
 #>
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'CreateUser')]
     param (
         [Parameter(ParameterSetName = 'CreateUser', Mandatory = $true, ValueFromPipelineByPropertyName = $true)] [string] $DisplayName,
@@ -160,12 +165,7 @@ function New-PSEntraIDUser {
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -205,8 +205,6 @@ function New-PSEntraIDUser {
                 if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
                 if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
                 if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
-                if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
-                if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
                 if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
                 if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
                 if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }

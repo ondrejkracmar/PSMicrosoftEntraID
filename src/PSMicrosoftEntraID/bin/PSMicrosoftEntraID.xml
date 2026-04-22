@@ -474,6 +474,144 @@
             Gets or sets the display name of the label.
             </summary>
         </member>
+        <member name="T:PSMicrosoftEntraID.Groups.AssignedLicense">
+            <summary>
+            Represents a license assigned to a group in Microsoft Entra ID.
+            When a license is assigned to a group, all members of the group inherit the license.
+            See https://learn.microsoft.com/en-us/graph/api/resources/assignedlicense for details.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.AssignedLicense.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.AssignedLicense"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicense.DisabledPlans">
+            <summary>
+            Gets or sets the collection of the unique identifiers (GUIDs) for plans
+            that have been disabled within this assigned license.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicense.SkuId">
+            <summary>
+            Gets or sets the unique identifier (GUID) for the service SKU.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Groups.AssignedLicenseDetail">
+            <summary>
+            Represents a resolved overview of a license assigned to a group.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.AssignedLicenseDetail"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.GroupId">
+            <summary>
+            Gets or sets the unique identifier of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.GroupDisplayName">
+            <summary>
+            Gets or sets the display name of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.GroupMail">
+            <summary>
+            Gets or sets the primary mail address of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.GroupMailNickname">
+            <summary>
+            Gets or sets the mail nickname of the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.SkuId">
+            <summary>
+            Gets or sets the unique identifier of the assigned SKU.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.SkuPartNumber">
+            <summary>
+            Gets or sets the SKU part number.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.SkuFriendlyName">
+            <summary>
+            Gets or sets the friendly SKU name.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.DisabledPlanIds">
+            <summary>
+            Gets or sets the identifiers of disabled service plans.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.DisabledPlanCount">
+            <summary>
+            Gets or sets the number of disabled service plans.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.EnabledPlanCount">
+            <summary>
+            Gets or sets the number of enabled service plans.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.TotalPlanCount">
+            <summary>
+            Gets or sets the total number of resolved service plans.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseDetail.ServicePlans">
+            <summary>
+            Gets or sets the resolved service plan details for the assigned SKU.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail">
+            <summary>
+            Represents a resolved service plan state within a group assigned license.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail"/> class.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.ServicePlanId">
+            <summary>
+            Gets or sets the unique identifier of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.ServicePlanName">
+            <summary>
+            Gets or sets the technical name of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.ServicePlanFriendlyName">
+            <summary>
+            Gets or sets the friendly name of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.AppliesTo">
+            <summary>
+            Gets or sets the AppliesTo value from the subscribed SKU metadata.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.ProvisioningStatus">
+            <summary>
+            Gets or sets the provisioning status of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.Status">
+            <summary>
+            Gets or sets the readable state of the service plan.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail.IsDisabled">
+            <summary>
+            Gets or sets a value indicating whether the service plan is disabled.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Groups.Group">
             <summary>
             Represents a group in Microsoft Entra ID.
@@ -583,6 +721,12 @@
         <member name="P:PSMicrosoftEntraID.Groups.Group.AssignedLabels">
             <summary>
             Gets or sets the list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.AssignedLicenses">
+            <summary>
+            Gets or sets the licenses that are assigned to the group.
+            Returned only on $select. Supports $filter (eq). Read-only.
             </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.Groups.GroupAdditionalProperty">

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="11" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:27">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.8881" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroupMember.Tests.ps1" executed="True" result="Success" success="True" time="0.8881" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroupMember.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember" executed="True" result="Success" success="True" time="0.7741" asserts="0" description="Get-PSEntraIDGroupMember">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember.Parameter Validation" executed="True" result="Success" success="True" time="0.0896" asserts="0" description="Get-PSEntraIDGroupMember.Parameter Validation">
+                <results>
+                  <test-case description="Should have InputObject and Identity parameter sets" name="Get-PSEntraIDGroupMember.Parameter Validation.Should have InputObject and Identity parameter sets" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Users.User" name="Get-PSEntraIDGroupMember.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Users.User" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Owner switch parameter" name="Get-PSEntraIDGroupMember.Parameter Validation.Should have Owner switch parameter" time="0.0535" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Filter and AdvancedFilter parameters" name="Get-PSEntraIDGroupMember.Parameter Validation.Should have Filter and AdvancedFilter parameters" time="0.0243" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember.Get members by InputObject" executed="True" result="Success" success="True" time="0.331" asserts="0" description="Get-PSEntraIDGroupMember.Get members by InputObject">
+                <results>
+                  <test-case description="Should call API with members path" name="Get-PSEntraIDGroupMember.Get members by InputObject.Should call API with members path" time="0.0868" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with owners path when Owner switch specified" name="Get-PSEntraIDGroupMember.Get members by InputObject.Should call API with owners path when Owner switch specified" time="0.0359" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert response using ConvertFrom-RestUser" name="Get-PSEntraIDGroupMember.Get members by InputObject.Should convert response using ConvertFrom-RestUser" time="0.1155" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember.Get members by Identity" executed="True" result="Success" success="True" time="0.4999" asserts="0" description="Get-PSEntraIDGroupMember.Get members by Identity">
+                <results>
+                  <test-case description="Should resolve group and call API for members" name="Get-PSEntraIDGroupMember.Get members by Identity.Should resolve group and call API for members" time="0.0732" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should get owners when Owner switch and Identity are used" name="Get-PSEntraIDGroupMember.Get members by Identity.Should get owners when Owner switch and Identity are used" time="0.0931" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember.Group not found handling" executed="True" result="Success" success="True" time="0.5813" asserts="0" description="Get-PSEntraIDGroupMember.Group not found handling">
+                <results>
+                  <test-case description="Should not call API when group is not found" name="Get-PSEntraIDGroupMember.Group not found handling.Should not call API when group is not found" time="0.0773" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroupMember.Connection handling" executed="True" result="Success" success="True" time="0.6161" asserts="0" description="Get-PSEntraIDGroupMember.Connection handling">
+                <results>
+                  <test-case description="Should assert Entra connection" name="Get-PSEntraIDGroupMember.Connection handling.Should assert Entra connection" time="0.0318" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="11" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:07:23">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="4.5262" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/organization/Get-PSEntraIDUsageLocation.Tests.ps1" executed="True" result="Success" success="True" time="4.5262" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/organization/Get-PSEntraIDUsageLocation.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests" executed="True" result="Success" success="True" time="4.2809" asserts="0" description="Get-PSEntraIDUsageLocation Tests">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.08" asserts="0" description="Get-PSEntraIDUsageLocation Tests.Parameter Validation">
+                <results>
+                  <test-case description="Should not have any parameters" name="Get-PSEntraIDUsageLocation Tests.Parameter Validation.Should not have any parameters" time="0.0602" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests.Output Type" executed="True" result="Success" success="True" time="0.8706" asserts="0" description="Get-PSEntraIDUsageLocation Tests.Output Type">
+                <results>
+                  <test-case description="Should have System.Collections.Hashtable as output type" name="Get-PSEntraIDUsageLocation Tests.Output Type.Should have System.Collections.Hashtable as output type" time="0.007" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return a hashtable" name="Get-PSEntraIDUsageLocation Tests.Output Type.Should return a hashtable" time="0.6768" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests.CmdletBinding" executed="True" result="Success" success="True" time="1.0378" asserts="0" description="Get-PSEntraIDUsageLocation Tests.CmdletBinding">
+                <results>
+                  <test-case description="Should be an advanced function" name="Get-PSEntraIDUsageLocation Tests.CmdletBinding.Should be an advanced function" time="0.1641" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests.Functionality" executed="True" result="Success" success="True" time="4.109" asserts="0" description="Get-PSEntraIDUsageLocation Tests.Functionality">
+                <results>
+                  <test-case description="Should load usage locations from JSON file" name="Get-PSEntraIDUsageLocation Tests.Functionality.Should load usage locations from JSON file" time="0.096" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should contain common country codes" name="Get-PSEntraIDUsageLocation Tests.Functionality.Should contain common country codes" time="0.1899" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have string keys and string values" name="Get-PSEntraIDUsageLocation Tests.Functionality.Should have string keys and string values" time="0.8813" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return consistent results on multiple calls" name="Get-PSEntraIDUsageLocation Tests.Functionality.Should return consistent results on multiple calls" time="1.8611" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSEntraIDUsageLocation Tests.File Access" executed="True" result="Success" success="True" time="4.1826" asserts="0" description="Get-PSEntraIDUsageLocation Tests.File Access">
+                <results>
+                  <test-case description="Should reference UsageLocation.json file" name="Get-PSEntraIDUsageLocation Tests.File Access.Should reference UsageLocation.json file" time="0.0493" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Join-Path for file location" name="Get-PSEntraIDUsageLocation Tests.File Access.Should use Join-Path for file location" time="0.0086" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert JSON to hashtable" name="Get-PSEntraIDUsageLocation Tests.File Access.Should convert JSON to hashtable" time="0.0071" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

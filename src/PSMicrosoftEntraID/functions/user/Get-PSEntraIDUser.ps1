@@ -1,4 +1,4 @@
-function Get-PSEntraIDUser {
+﻿function Get-PSEntraIDUser {
     <#
     .SYNOPSIS
         Get the properties of the specified user.
@@ -88,7 +88,7 @@ function Get-PSEntraIDUser {
                         '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
                         '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
                     }
-                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f $user)
+                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $user))
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Users.User[]] $userMail = ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get  -ErrorAction Stop)
                         if (-not([object]::Equals($userMail, $null))) {
@@ -105,7 +105,8 @@ function Get-PSEntraIDUser {
             }
             'Name' {
                 foreach ($user in $Name) {
-                    $query['$Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surName,'{0}')" -f $User)
+                    $userEscaped = ConvertTo-ODataFilterString -Value $User
+                    $query['$Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surName,'{0}')" -f $userEscaped)
                     Invoke-PSFProtectedCommand -ActionString 'User.Name' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $query -Method Get  -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
@@ -132,7 +133,7 @@ function Get-PSEntraIDUser {
             'CompanyName' {
                 [hashtable] $header = @{}
                 $header['ConsistencyLevel'] = 'eventual'
-                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+                [string] $companyNameList = ($CompanyName | ForEach-Object { "'{0}'" -f (ConvertTo-ODataFilterString -Value $_) } | Join-String -Separator ',')
                 if ($Disabled.IsPresent) {
                     $query['$Filter'] = 'companyName in ({0}) and accountEnabled eq false' -f $companyNameList
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues ('companyName in ({0}) and accountEnabled eq false' -f $companyNameList) -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {

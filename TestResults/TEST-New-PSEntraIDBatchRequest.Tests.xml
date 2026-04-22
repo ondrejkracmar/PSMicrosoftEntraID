@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="26" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:11">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.4979" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/New-PSEntraIDBatchRequest.Tests.ps1" executed="True" result="Success" success="True" time="0.4979" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/New-PSEntraIDBatchRequest.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest" executed="True" result="Success" success="True" time="0.3526" asserts="0" description="New-PSEntraIDBatchRequest">
+            <results>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Parameter Validation" executed="True" result="Success" success="True" time="0.0829" asserts="0" description="New-PSEntraIDBatchRequest.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory InputObject parameter" name="New-PSEntraIDBatchRequest.Parameter Validation.Should have mandatory InputObject parameter" time="0.0558" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject" name="New-PSEntraIDBatchRequest.Parameter Validation.Should accept pipeline input for InputObject" time="0.0124" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="New-PSEntraIDBatchRequest.Parameter Validation.Should support ShouldProcess" time="0.0094" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Basic Functionality" executed="True" result="Success" success="True" time="0.1566" asserts="0" description="New-PSEntraIDBatchRequest.Basic Functionality">
+                <results>
+                  <test-case description="Should accept a single request object" name="New-PSEntraIDBatchRequest.Basic Functionality.Should accept a single request object" time="0.0448" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept multiple request objects" name="New-PSEntraIDBatchRequest.Basic Functionality.Should accept multiple request objects" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should reindex request Ids starting from 1" name="New-PSEntraIDBatchRequest.Basic Functionality.Should reindex request Ids starting from 1" time="0.0173" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should output PSMicrosoftEntraID.Batch.BatchRequestPayload type" name="New-PSEntraIDBatchRequest.Basic Functionality.Should output PSMicrosoftEntraID.Batch.BatchRequestPayload type" time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Batch Size Handling" executed="True" result="Success" success="True" time="0.2251" asserts="0" description="New-PSEntraIDBatchRequest.Batch Size Handling">
+                <results>
+                  <test-case description="Should create single batch for exactly 20 requests" name="New-PSEntraIDBatchRequest.Batch Size Handling.Should create single batch for exactly 20 requests" time="0.0125" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should create single batch for less than 20 requests" name="New-PSEntraIDBatchRequest.Batch Size Handling.Should create single batch for less than 20 requests" time="0.0038" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should create multiple batches for more than 20 requests" name="New-PSEntraIDBatchRequest.Batch Size Handling.Should create multiple batches for more than 20 requests" time="0.0148" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should create 3 batches for 50 requests" name="New-PSEntraIDBatchRequest.Batch Size Handling.Should create 3 batches for 50 requests" time="0.0134" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should reindex each batch starting from 1" name="New-PSEntraIDBatchRequest.Batch Size Handling.Should reindex each batch starting from 1" time="0.018" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Request Properties Preservation" executed="True" result="Success" success="True" time="0.2583" asserts="0" description="New-PSEntraIDBatchRequest.Request Properties Preservation">
+                <results>
+                  <test-case description="Should preserve Method property" name="New-PSEntraIDBatchRequest.Request Properties Preservation.Should preserve Method property" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should preserve Url property" name="New-PSEntraIDBatchRequest.Request Properties Preservation.Should preserve Url property" time="0.0043" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should preserve Headers property" name="New-PSEntraIDBatchRequest.Request Properties Preservation.Should preserve Headers property" time="0.0064" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should preserve Body property" name="New-PSEntraIDBatchRequest.Request Properties Preservation.Should preserve Body property" time="0.0153" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Edge Cases" executed="True" result="Success" success="True" time="0.2895" asserts="0" description="New-PSEntraIDBatchRequest.Edge Cases">
+                <results>
+                  <test-case description="Should handle empty array input gracefully" name="New-PSEntraIDBatchRequest.Edge Cases.Should handle empty array input gracefully" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle exactly 40 requests (2 full batches)" name="New-PSEntraIDBatchRequest.Edge Cases.Should handle exactly 40 requests (2 full batches)" time="0.007" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle exactly 60 requests (3 full batches)" name="New-PSEntraIDBatchRequest.Edge Cases.Should handle exactly 60 requests (3 full batches)" time="0.0169" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Pipeline Processing" executed="True" result="Success" success="True" time="0.3033" asserts="0" description="New-PSEntraIDBatchRequest.Pipeline Processing">
+                <results>
+                  <test-case description="Should process multiple arrays passed via pipeline" name="New-PSEntraIDBatchRequest.Pipeline Processing.Should process multiple arrays passed via pipeline" time="0.0064" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle individual requests passed one at a time" name="New-PSEntraIDBatchRequest.Pipeline Processing.Should handle individual requests passed one at a time" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDBatchRequest.Different HTTP Methods" executed="True" result="Success" success="True" time="0.3481" asserts="0" description="New-PSEntraIDBatchRequest.Different HTTP Methods">
+                <results>
+                  <test-case description="Should handle GET requests" name="New-PSEntraIDBatchRequest.Different HTTP Methods.Should handle GET requests" time="0.0147" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle POST requests" name="New-PSEntraIDBatchRequest.Different HTTP Methods.Should handle POST requests" time="0.0027" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle PATCH requests" name="New-PSEntraIDBatchRequest.Different HTTP Methods.Should handle PATCH requests" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle DELETE requests" name="New-PSEntraIDBatchRequest.Different HTTP Methods.Should handle DELETE requests" time="0.0048" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle mixed method types in single batch" name="New-PSEntraIDBatchRequest.Different HTTP Methods.Should handle mixed method types in single batch" time="0.0146" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -39,7 +39,7 @@ function New-PSEntraIDGroup {
     .PARAMETER Members
         List of members of new group.
 
-    .PARAMETER MembersmembershipRule
+    .PARAMETER MembershipRule
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
 
     .PARAMETER MembershipRuleProcessingState
@@ -49,8 +49,7 @@ function New-PSEntraIDGroup {
     	Specifies the group behaviors that can be set for a Microsoft 365 group during creation.
 
     .PARAMETER EnableException
-        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
@@ -79,8 +78,8 @@ function New-PSEntraIDGroup {
 		Create new Microsoft EntraID (Azure AD) group
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'CreateGroup')]
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -135,12 +134,7 @@ function New-PSEntraIDGroup {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -170,7 +164,7 @@ function New-PSEntraIDGroup {
                 }
 
                 if ($PSBoundParameters.ContainsKey('Owners')) {
-                    $userIdUriPathList = [System.Collections.ArrayList]::new()
+                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
                     foreach ($owner in $Owners) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
                         if ([object]::Equals($aADUser, $null)) {
@@ -185,7 +179,7 @@ function New-PSEntraIDGroup {
                     }
                 }
                 if ($PSBoundParameters.ContainsKey('Members')) {
-                    $userIdUriPathList = [System.Collections.ArrayList]::new()
+                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
                     foreach ($member in $Members) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
                         if ([object]::Equals($aADUser, $null)) {

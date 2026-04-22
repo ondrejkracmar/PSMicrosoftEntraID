@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="26" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="06:57:37">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.4286" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Remove-PSEntraIDAdministrativeUnit.Tests.ps1" executed="True" result="Success" success="True" time="1.4286" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/Remove-PSEntraIDAdministrativeUnit.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit" executed="True" result="Success" success="True" time="1.0793" asserts="0" description="Remove-PSEntraIDAdministrativeUnit">
+            <results>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation" executed="True" result="Success" success="True" time="0.0795" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory InputObject parameter for InputObject parameter set" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation.Should have mandatory InputObject parameter for InputObject parameter set" time="0.0576" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter for Identity parameter set" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation.Should have mandatory Identity parameter for Identity parameter set" time="0.0057" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation.Should accept pipeline input for InputObject" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept string array for Identity parameter" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation.Should accept string array for Identity parameter" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have PassThru switch parameter" name="Remove-PSEntraIDAdministrativeUnit.Parameter Validation.Should have PassThru switch parameter" time="0.0053" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject" executed="True" result="Success" success="True" time="0.3487" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject">
+                <results>
+                  <test-case description="Should call API with correct path" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should call API with correct path" time="0.1142" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use DELETE method" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should use DELETE method" time="0.0244" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should execute the delete operation" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should execute the delete operation" time="0.0257" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept object from pipeline" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should accept object from pipeline" time="0.0267" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple objects from pipeline" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should handle multiple objects from pipeline" time="0.049" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Get-PSEntraIDAdministrativeUnit when using InputObject" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by InputObject.Should not call Get-PSEntraIDAdministrativeUnit when using InputObject" time="0.0221" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity" executed="True" result="Success" success="True" time="0.6438" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity">
+                <results>
+                  <test-case description="Should call Get-PSEntraIDAdministrativeUnit to resolve identity" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity.Should call Get-PSEntraIDAdministrativeUnit to resolve identity" time="0.1401" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with correct path" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity.Should call API with correct path" time="0.0543" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle multiple identities" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity.Should handle multiple identities" time="0.0494" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw error when AU not found" name="Remove-PSEntraIDAdministrativeUnit.Remove administrative unit by Identity.Should throw error when AU not found" time="0.0472" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.PassThru parameter" executed="True" result="Success" success="True" time="0.7328" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request when PassThru is specified with InputObject" name="Remove-PSEntraIDAdministrativeUnit.PassThru parameter.Should return batch request when PassThru is specified with InputObject" time="0.0202" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return batch request when PassThru is specified with Identity" name="Remove-PSEntraIDAdministrativeUnit.PassThru parameter.Should return batch request when PassThru is specified with Identity" time="0.027" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="Remove-PSEntraIDAdministrativeUnit.PassThru parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0293" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.WhatIf and Confirm support" executed="True" result="Success" success="True" time="0.7858" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.WhatIf and Confirm support">
+                <results>
+                  <test-case description="Should support WhatIf" name="Remove-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should support WhatIf" time="0.0138" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support Confirm" name="Remove-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should support Confirm" time="0.0044" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand for confirmation" name="Remove-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should use Invoke-PSFProtectedCommand for confirmation" time="0.031" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.Error handling" executed="True" result="Success" success="True" time="0.9072" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="Remove-PSEntraIDAdministrativeUnit.Error handling.Should call Assert-EntraConnection" time="0.0338" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use retry configuration" name="Remove-PSEntraIDAdministrativeUnit.Error handling.Should use retry configuration" time="0.0353" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Force switch correctly" name="Remove-PSEntraIDAdministrativeUnit.Error handling.Should use Force switch correctly" time="0.0263" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.WhatIf execution" executed="True" result="Success" success="True" time="0.9553" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.WhatIf execution">
+                <results>
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Remove-PSEntraIDAdministrativeUnit.WhatIf execution.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.0363" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Remove-PSEntraIDAdministrativeUnit.Pipeline input with typed object" executed="True" result="Success" success="True" time="1.0022" asserts="0" description="Remove-PSEntraIDAdministrativeUnit.Pipeline input with typed object">
+                <results>
+                  <test-case description="Should accept pipeline input and invoke Invoke-PSFProtectedCommand" name="Remove-PSEntraIDAdministrativeUnit.Pipeline input with typed object.Should accept pipeline input and invoke Invoke-PSFProtectedCommand" time="0.0441" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

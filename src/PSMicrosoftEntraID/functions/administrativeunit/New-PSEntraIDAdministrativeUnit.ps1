@@ -62,8 +62,8 @@ function New-PSEntraIDAdministrativeUnit {
 
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit')]
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [OutputType('PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit', [PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -91,12 +91,7 @@ function New-PSEntraIDAdministrativeUnit {
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         [string] $path = "directory/administrativeUnits"
     }
 

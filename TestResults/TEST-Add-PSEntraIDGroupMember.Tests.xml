@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:19">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.1188" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupMember.Tests.ps1" executed="True" result="Success" success="True" time="2.1188" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupMember.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests" executed="True" result="Success" success="True" time="1.9574" asserts="0" description="Add-PSEntraIDGroupMember Tests">
+            <results>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.0395" asserts="0" description="Add-PSEntraIDGroupMember Tests.Parameter Validation">
+                <results>
+                  <test-case description="Should have EnableException switch parameter" name="Add-PSEntraIDGroupMember Tests.Parameter Validation.Should have EnableException switch parameter" time="0.0208" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have User parameter" name="Add-PSEntraIDGroupMember Tests.Parameter Validation.Should have User parameter" time="0.0142" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.Error Handling - User Identity" executed="True" result="Success" success="True" time="0.6435" asserts="0" description="Add-PSEntraIDGroupMember Tests.Error Handling - User Identity">
+                <results>
+                  <test-case description="Should continue processing valid users when one user not found and EnableException is false" name="Add-PSEntraIDGroupMember Tests.Error Handling - User Identity.Should continue processing valid users when one user not found and EnableException is false" time="0.3105" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw when user not found and EnableException is true" name="Add-PSEntraIDGroupMember Tests.Error Handling - User Identity.Should throw when user not found and EnableException is true" time="0.1234" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process all valid users and skip invalid ones when EnableException is false" name="Add-PSEntraIDGroupMember Tests.Error Handling - User Identity.Should process all valid users and skip invalid ones when EnableException is false" time="0.0867" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.IdentityInputObject single user" executed="True" result="Success" success="True" time="0.8177" asserts="0" description="Add-PSEntraIDGroupMember Tests.IdentityInputObject single user">
+                <results>
+                  <test-case description="Should add a single InputObject user via POST to members/$ref" name="Add-PSEntraIDGroupMember Tests.IdentityInputObject single user.Should add a single InputObject user via POST to members/$ref" time="0.1058" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.IdentityInputObject multiple users" executed="True" result="Success" success="True" time="1.1283" asserts="0" description="Add-PSEntraIDGroupMember Tests.IdentityInputObject multiple users">
+                <results>
+                  <test-case description="Should add multiple InputObject users via PATCH with members@odata.bind" name="Add-PSEntraIDGroupMember Tests.IdentityInputObject multiple users.Should add multiple InputObject users via PATCH with members@odata.bind" time="0.1856" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.WhatIf support" executed="True" result="Success" success="True" time="1.3157" asserts="0" description="Add-PSEntraIDGroupMember Tests.WhatIf support">
+                <results>
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Add-PSEntraIDGroupMember Tests.WhatIf support.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.1114" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.Connection verification" executed="True" result="Success" success="True" time="1.4888" asserts="0" description="Add-PSEntraIDGroupMember Tests.Connection verification">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection during execution" name="Add-PSEntraIDGroupMember Tests.Connection verification.Should call Assert-EntraConnection during execution" time="0.0659" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupMember Tests.Pipeline input" executed="True" result="Success" success="True" time="1.9535" asserts="0" description="Add-PSEntraIDGroupMember Tests.Pipeline input">
+                <results>
+                  <test-case description="Should accept pipeline input for InputObject parameter" name="Add-PSEntraIDGroupMember Tests.Pipeline input.Should accept pipeline input for InputObject parameter" time="0.337" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

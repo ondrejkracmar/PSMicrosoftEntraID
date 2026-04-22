@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="28" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="06:57:10">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="27.2168" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1" executed="True" result="Success" success="True" time="27.2168" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/administrativeunit/New-PSEntraIDAdministrativeUnit.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit" executed="True" result="Success" success="True" time="27.0481" asserts="0" description="New-PSEntraIDAdministrativeUnit">
+            <results>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Parameter Validation" executed="True" result="Success" success="True" time="0.0742" asserts="0" description="New-PSEntraIDAdministrativeUnit.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory DisplayName parameter" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should have mandatory DisplayName parameter" time="0.013" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for DisplayName" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should accept pipeline input for DisplayName" time="0.011" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Description parameter" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should have optional Description parameter" time="0.0053" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should validate Visibility parameter values" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should validate Visibility parameter values" time="0.0226" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have bool IsMemberManagementRestricted parameter with default false" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should have bool IsMemberManagementRestricted parameter with default false" time="0.0062" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have PassThru switch parameter" name="New-PSEntraIDAdministrativeUnit.Parameter Validation.Should have PassThru switch parameter" time="0.0077" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters" executed="True" result="Success" success="True" time="0.5042" asserts="0" description="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters">
+                <results>
+                  <test-case description="Should call API with correct path" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters.Should call API with correct path" time="0.0593" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use POST method" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters.Should use POST method" time="0.0561" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with correct body structure" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters.Should call API with correct body structure" time="0.1019" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Content-Type header" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters.Should include Content-Type header" time="0.1011" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should execute the create operation" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with required parameters.Should execute the create operation" time="0.0857" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters" executed="True" result="Success" success="True" time="0.8727" asserts="0" description="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters">
+                <results>
+                  <test-case description="Should include description in body when specified" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters.Should include description in body when specified" time="0.0766" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include visibility in body when specified" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters.Should include visibility in body when specified" time="0.0931" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should set IsMemberManagementRestricted to true when specified" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters.Should set IsMemberManagementRestricted to true when specified" time="0.0878" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should create AU with all parameters" name="New-PSEntraIDAdministrativeUnit.Create administrative unit with all parameters.Should create AU with all parameters" time="0.0863" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.PassThru parameter" executed="True" result="Success" success="True" time="1.034" asserts="0" description="New-PSEntraIDAdministrativeUnit.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request when PassThru is specified" name="New-PSEntraIDAdministrativeUnit.PassThru parameter.Should return batch request when PassThru is specified" time="0.0526" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="New-PSEntraIDAdministrativeUnit.PassThru parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0253" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include body in batch request" name="New-PSEntraIDAdministrativeUnit.PassThru parameter.Should include body in batch request" time="0.0471" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.WhatIf and Confirm support" executed="True" result="Success" success="True" time="1.8049" asserts="0" description="New-PSEntraIDAdministrativeUnit.WhatIf and Confirm support">
+                <results>
+                  <test-case description="Should support WhatIf" name="New-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should support WhatIf" time="0.1333" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support Confirm" name="New-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should support Confirm" time="0.1221" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Invoke-PSFProtectedCommand for confirmation" name="New-PSEntraIDAdministrativeUnit.WhatIf and Confirm support.Should use Invoke-PSFProtectedCommand for confirmation" time="0.4223" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Pipeline input" executed="True" result="Success" success="True" time="8.033" asserts="0" description="New-PSEntraIDAdministrativeUnit.Pipeline input">
+                <results>
+                  <test-case description="Should process pipeline input from DisplayName property" name="New-PSEntraIDAdministrativeUnit.Pipeline input.Should process pipeline input from DisplayName property" time="0.8664" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process multiple objects from pipeline" name="New-PSEntraIDAdministrativeUnit.Pipeline input.Should process multiple objects from pipeline" time="5.2165" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Error handling" executed="True" result="Success" success="True" time="16.7878" asserts="0" description="New-PSEntraIDAdministrativeUnit.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="New-PSEntraIDAdministrativeUnit.Error handling.Should call Assert-EntraConnection" time="3.179" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use retry configuration" name="New-PSEntraIDAdministrativeUnit.Error handling.Should use retry configuration" time="3.5897" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Force switch correctly" name="New-PSEntraIDAdministrativeUnit.Error handling.Should use Force switch correctly" time="1.7202" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.WhatIf execution" executed="True" result="Success" success="True" time="25.1881" asserts="0" description="New-PSEntraIDAdministrativeUnit.WhatIf execution">
+                <results>
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="New-PSEntraIDAdministrativeUnit.WhatIf execution.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="8.1347" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDAdministrativeUnit.Pipeline input with typed object" executed="True" result="Success" success="True" time="26.9854" asserts="0" description="New-PSEntraIDAdministrativeUnit.Pipeline input with typed object">
+                <results>
+                  <test-case description="Should accept pipeline input and invoke Invoke-PSFProtectedCommand" name="New-PSEntraIDAdministrativeUnit.Pipeline input with typed object.Should accept pipeline input and invoke Invoke-PSFProtectedCommand" time="1.6463" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

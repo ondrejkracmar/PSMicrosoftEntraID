@@ -17,6 +17,7 @@ function Get-PSEntraIDLicenseIdentifier {
 
 	#>
     [OutputType('PSMicrosoftEntraID.License.LicenseIdentifier')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding()]
     param (
         [Parameter()]
@@ -26,8 +27,8 @@ function Get-PSEntraIDLicenseIdentifier {
 
     }
     process {
-        [string] $licenseIdentifiers = Join-Path -Path (Join-Path -Path $script:ModuleRoot -ChildPath 'internal') -ChildPath (Join-Path -Path 'identifiers' -ChildPath 'LicenseIdentifiers.json' )
-        [string] $jsonString = Get-Content -Path $licenseIdentifiers
+        [string] $licenseIdentifiers = Resolve-PSEntraIDLicenseIdentifierPath
+        [string] $jsonString = Get-Content -Path $licenseIdentifiers -Raw
         [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
         [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
         [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.LicenseIdentifier[]])

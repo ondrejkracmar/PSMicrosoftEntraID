@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:03:49">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="17.9027" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/authentication/Disconnect-PSMicrosoftEntraID.Tests.ps1" executed="True" result="Success" success="True" time="17.9027" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/authentication/Disconnect-PSMicrosoftEntraID.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Disconnect-PSMicrosoftEntraID" executed="True" result="Success" success="True" time="1.4399" asserts="0" description="Disconnect-PSMicrosoftEntraID">
+            <results>
+              <test-case description="Should clear token for default service" name="Disconnect-PSMicrosoftEntraID.Should clear token for default service" time="0.1783" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="Should clear cache when verbose" name="Disconnect-PSMicrosoftEntraID.Should clear cache when verbose" time="1.0913" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="14" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:08:05">
+  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.9112" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/New-PSEntraIDInvitation.Tests.ps1" executed="True" result="Success" success="True" time="0.9112" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/user/New-PSEntraIDInvitation.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="New-PSEntraIDInvitation" executed="True" result="Success" success="True" time="0.7916" asserts="0" description="New-PSEntraIDInvitation">
+            <results>
+              <test-suite type="TestFixture" name="New-PSEntraIDInvitation.Parameter Validation" executed="True" result="Success" success="True" time="0.0671" asserts="0" description="New-PSEntraIDInvitation.Parameter Validation">
+                <results>
+                  <test-case description="Should have mandatory InvitedUserEmailAddress parameter" name="New-PSEntraIDInvitation.Parameter Validation.Should have mandatory InvitedUserEmailAddress parameter" time="0.0233" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory InvitedUserDisplayName parameter" name="New-PSEntraIDInvitation.Parameter Validation.Should have mandatory InvitedUserDisplayName parameter" time="0.0054" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory InviteRedirectUrl parameter" name="New-PSEntraIDInvitation.Parameter Validation.Should have mandatory InviteRedirectUrl parameter" time="0.0095" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="New-PSEntraIDInvitation.Parameter Validation.Should support ShouldProcess" time="0.0107" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Users.Invitations.Invitation" name="New-PSEntraIDInvitation.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Users.Invitations.Invitation" time="0.0133" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDInvitation.Create invitation with required parameters" executed="True" result="Success" success="True" time="0.4417" asserts="0" description="New-PSEntraIDInvitation.Create invitation with required parameters">
+                <results>
+                  <test-case description="Should call API with POST to invitations path" name="New-PSEntraIDInvitation.Create invitation with required parameters.Should call API with POST to invitations path" time="0.1481" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include email address in body" name="New-PSEntraIDInvitation.Create invitation with required parameters.Should include email address in body" time="0.0271" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should set sendInvitationMessage to false by default" name="New-PSEntraIDInvitation.Create invitation with required parameters.Should set sendInvitationMessage to false by default" time="0.0586" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Content-Type header" name="New-PSEntraIDInvitation.Create invitation with required parameters.Should include Content-Type header" time="0.068" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert response using ConvertFrom-RestInvitation" name="New-PSEntraIDInvitation.Create invitation with required parameters.Should convert response using ConvertFrom-RestInvitation" time="0.0666" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDInvitation.Create invitation with optional parameters" executed="True" result="Success" success="True" time="0.5109" asserts="0" description="New-PSEntraIDInvitation.Create invitation with optional parameters">
+                <results>
+                  <test-case description="Should include SendInvitationMessage when specified" name="New-PSEntraIDInvitation.Create invitation with optional parameters.Should include SendInvitationMessage when specified" time="0.0548" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDInvitation.PassThru parameter" executed="True" result="Success" success="True" time="0.5948" asserts="0" description="New-PSEntraIDInvitation.PassThru parameter">
+                <results>
+                  <test-case description="Should return batch request when PassThru is specified" name="New-PSEntraIDInvitation.PassThru parameter.Should return batch request when PassThru is specified" time="0.0354" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru is specified" name="New-PSEntraIDInvitation.PassThru parameter.Should not call Invoke-EntraRequest when PassThru is specified" time="0.0398" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="New-PSEntraIDInvitation.Error handling" executed="True" result="Success" success="True" time="0.6616" asserts="0" description="New-PSEntraIDInvitation.Error handling">
+                <results>
+                  <test-case description="Should call Assert-EntraConnection" name="New-PSEntraIDInvitation.Error handling.Should call Assert-EntraConnection" time="0.0613" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
