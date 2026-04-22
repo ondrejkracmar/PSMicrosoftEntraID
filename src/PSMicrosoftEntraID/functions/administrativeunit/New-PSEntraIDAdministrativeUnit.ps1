@@ -1,4 +1,4 @@
-function New-PSEntraIDAdministrativeUnit {
+﻿function New-PSEntraIDAdministrativeUnit {
     <#
     .SYNOPSIS
         Create new administrative unit in Microsoft Entra ID (Azure AD).

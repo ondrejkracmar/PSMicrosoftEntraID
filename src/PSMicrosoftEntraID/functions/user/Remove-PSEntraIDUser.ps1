@@ -1,4 +1,4 @@
-function Remove-PSEntraIDUser {
+﻿function Remove-PSEntraIDUser {
     <#
 	.SYNOPSIS
 		Delete user

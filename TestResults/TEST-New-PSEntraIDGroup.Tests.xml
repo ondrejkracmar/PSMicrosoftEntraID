@@ -1,68 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="17" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:28">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="17" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:34:49">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.9248" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.7066" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/New-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="0.9248" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/New-PSEntraIDGroup.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/New-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="0.7066" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/New-PSEntraIDGroup.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests" executed="True" result="Success" success="True" time="0.826" asserts="0" description="New-PSEntraIDGroup Tests">
+          <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests" executed="True" result="Success" success="True" time="0.5685" asserts="0" description="New-PSEntraIDGroup Tests">
             <results>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.0869" asserts="0" description="New-PSEntraIDGroup Tests.Parameter Validation">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.0262" asserts="0" description="New-PSEntraIDGroup Tests.Parameter Validation">
                 <results>
-                  <test-case description="Should have mandatory Displayname parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have mandatory Displayname parameter" time="0.0083" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have mandatory MailNickname parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have mandatory MailNickname parameter" time="0.0043" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have optional Owners parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have optional Owners parameter" time="0.0049" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have optional Members parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have optional Members parameter" time="0.0037" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have EnableException switch parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have EnableException switch parameter" time="0.0032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Displayname parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have mandatory Displayname parameter" time="0.0063" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory MailNickname parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have mandatory MailNickname parameter" time="0.0027" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Owners parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have optional Owners parameter" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Members parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have optional Members parameter" time="0.0024" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException switch parameter" name="New-PSEntraIDGroup Tests.Parameter Validation.Should have EnableException switch parameter" time="0.0082" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Pipeline Support" executed="True" result="Success" success="True" time="0.0988" asserts="0" description="New-PSEntraIDGroup Tests.Pipeline Support">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Pipeline Support" executed="True" result="Success" success="True" time="0.036" asserts="0" description="New-PSEntraIDGroup Tests.Pipeline Support">
                 <results>
-                  <test-case description="Should accept parameters from pipeline by property name" name="New-PSEntraIDGroup Tests.Pipeline Support.Should accept parameters from pipeline by property name" time="0.009" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept parameters from pipeline by property name" name="New-PSEntraIDGroup Tests.Pipeline Support.Should accept parameters from pipeline by property name" time="0.0069" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.ShouldProcess Support" executed="True" result="Success" success="True" time="0.1065" asserts="0" description="New-PSEntraIDGroup Tests.ShouldProcess Support">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.ShouldProcess Support" executed="True" result="Success" success="True" time="0.044" asserts="0" description="New-PSEntraIDGroup Tests.ShouldProcess Support">
                 <results>
-                  <test-case description="Should support WhatIf and Confirm" name="New-PSEntraIDGroup Tests.ShouldProcess Support.Should support WhatIf and Confirm" time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support WhatIf and Confirm" name="New-PSEntraIDGroup Tests.ShouldProcess Support.Should support WhatIf and Confirm" time="0.005" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Error Handling - Owners" executed="True" result="Success" success="True" time="0.4395" asserts="0" description="New-PSEntraIDGroup Tests.Error Handling - Owners">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Error Handling - Owners" executed="True" result="Success" success="True" time="0.2909" asserts="0" description="New-PSEntraIDGroup Tests.Error Handling - Owners">
                 <results>
-                  <test-case description="Should continue processing valid owners when one owner not found and EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should continue processing valid owners when one owner not found and EnableException is false" time="0.1181" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should throw when owner not found and EnableException is true" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should throw when owner not found and EnableException is true" time="0.0714" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should process all valid owners and skip invalid ones when EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should process all valid owners and skip invalid ones when EnableException is false" time="0.0801" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should continue processing valid owners when one owner not found and EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should continue processing valid owners when one owner not found and EnableException is false" time="0.1168" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw when owner not found and EnableException is true" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should throw when owner not found and EnableException is true" time="0.0441" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process all valid owners and skip invalid ones when EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Owners.Should process all valid owners and skip invalid ones when EnableException is false" time="0.0528" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Error Handling - Members" executed="True" result="Success" success="True" time="0.5858" asserts="0" description="New-PSEntraIDGroup Tests.Error Handling - Members">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Error Handling - Members" executed="True" result="Success" success="True" time="0.3719" asserts="0" description="New-PSEntraIDGroup Tests.Error Handling - Members">
                 <results>
-                  <test-case description="Should continue processing valid members when one member not found and EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Members.Should continue processing valid members when one member not found and EnableException is false" time="0.0761" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should process both owners and members with mixed valid/invalid identities" name="New-PSEntraIDGroup Tests.Error Handling - Members.Should process both owners and members with mixed valid/invalid identities" time="0.0357" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should continue processing valid members when one member not found and EnableException is false" name="New-PSEntraIDGroup Tests.Error Handling - Members.Should continue processing valid members when one member not found and EnableException is false" time="0.0299" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process both owners and members with mixed valid/invalid identities" name="New-PSEntraIDGroup Tests.Error Handling - Members.Should process both owners and members with mixed valid/invalid identities" time="0.0205" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Dynamic group creation" executed="True" result="Success" success="True" time="0.6433" asserts="0" description="New-PSEntraIDGroup Tests.Dynamic group creation">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Dynamic group creation" executed="True" result="Success" success="True" time="0.408" asserts="0" description="New-PSEntraIDGroup Tests.Dynamic group creation">
                 <results>
-                  <test-case description="Should create a dynamic group with MembershipRule and MembershipRuleProcessingState" name="New-PSEntraIDGroup Tests.Dynamic group creation.Should create a dynamic group with MembershipRule and MembershipRuleProcessingState" time="0.0249" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should create a dynamic group with MembershipRule and MembershipRuleProcessingState" name="New-PSEntraIDGroup Tests.Dynamic group creation.Should create a dynamic group with MembershipRule and MembershipRuleProcessingState" time="0.0205" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter" executed="True" result="Success" success="True" time="0.6986" asserts="0" description="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter" executed="True" result="Success" success="True" time="0.4451" asserts="0" description="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter">
                 <results>
-                  <test-case description="Should pass ResourceBehaviorOptions when specified" name="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter.Should pass ResourceBehaviorOptions when specified" time="0.0208" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass ResourceBehaviorOptions when specified" name="New-PSEntraIDGroup Tests.ResourceBehaviorOptions parameter.Should pass ResourceBehaviorOptions when specified" time="0.0166" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Connection verification" executed="True" result="Success" success="True" time="0.7474" asserts="0" description="New-PSEntraIDGroup Tests.Connection verification">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.Connection verification" executed="True" result="Success" success="True" time="0.4876" asserts="0" description="New-PSEntraIDGroup Tests.Connection verification">
                 <results>
-                  <test-case description="Should call Assert-EntraConnection during execution" name="New-PSEntraIDGroup Tests.Connection verification.Should call Assert-EntraConnection during execution" time="0.0204" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Assert-EntraConnection during execution" name="New-PSEntraIDGroup Tests.Connection verification.Should call Assert-EntraConnection during execution" time="0.0176" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.WhatIf support" executed="True" result="Success" success="True" time="0.7893" asserts="0" description="New-PSEntraIDGroup Tests.WhatIf support">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.WhatIf support" executed="True" result="Success" success="True" time="0.5289" asserts="0" description="New-PSEntraIDGroup Tests.WhatIf support">
                 <results>
-                  <test-case description="Should not invoke Invoke-EntraRequest when using -WhatIf" name="New-PSEntraIDGroup Tests.WhatIf support.Should not invoke Invoke-EntraRequest when using -WhatIf" time="0.0155" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not invoke Invoke-EntraRequest when using -WhatIf" name="New-PSEntraIDGroup Tests.WhatIf support.Should not invoke Invoke-EntraRequest when using -WhatIf" time="0.0187" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.PassThru parameter" executed="True" result="Success" success="True" time="0.8227" asserts="0" description="New-PSEntraIDGroup Tests.PassThru parameter">
+              <test-suite type="TestFixture" name="New-PSEntraIDGroup Tests.PassThru parameter" executed="True" result="Success" success="True" time="0.5611" asserts="0" description="New-PSEntraIDGroup Tests.PassThru parameter">
                 <results>
-                  <test-case description="Should return a batch request object when -PassThru is specified" name="New-PSEntraIDGroup Tests.PassThru parameter.Should return a batch request object when -PassThru is specified" time="0.0176" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return a batch request object when -PassThru is specified" name="New-PSEntraIDGroup Tests.PassThru parameter.Should return a batch request object when -PassThru is specified" time="0.0112" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

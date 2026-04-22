@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="06:55:21">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="2" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:31:07">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.0512" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.8094" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/general/FileIntegrity.Tests.ps1" executed="True" result="Success" success="True" time="2.0512" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/general/FileIntegrity.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/general/FileIntegrity.Tests.ps1" executed="True" result="Success" success="True" time="2.8094" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/general/FileIntegrity.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Verifying integrity of module files" executed="True" result="Success" success="True" time="0.2324" asserts="0" description="Verifying integrity of module files">
+          <test-suite type="TestFixture" name="Verifying integrity of module files" executed="True" result="Success" success="True" time="0.2432" asserts="0" description="Verifying integrity of module files">
             <results>
-              <test-suite type="TestFixture" name="Verifying integrity of module files.Validating PS1 Script files" executed="True" result="Success" success="True" time="0.2098" asserts="0" description="Verifying integrity of module files.Validating PS1 Script files">
+              <test-suite type="TestFixture" name="Verifying integrity of module files.Validating PS1 Script files" executed="True" result="Success" success="True" time="0.2073" asserts="0" description="Verifying integrity of module files.Validating PS1 Script files">
                 <results>
-                  <test-suite type="ParameterizedTest" name="Verifying integrity of module files.Validating PS1 Script files.[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark" executed="True" result="Success" success="True" time="0.1552" asserts="0" description="[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark">
+                  <test-suite type="ParameterizedTest" name="Verifying integrity of module files.Validating PS1 Script files.[bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark" executed="True" result="Success" success="True" time="0.1509" asserts="0" description="[bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark">
                     <results>
-                      <test-case description="[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark" name="Verifying integrity of module files.Validating PS1 Script files.[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark(/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1)" time="0.1552" asserts="0" success="True" result="Success" executed="True" />
+                      <test-case description="[bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark" name="Verifying integrity of module files.Validating PS1 Script files.[bin/assembly.ps1] Should have UTF8 encoding with Byte Order Mark(/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1)" time="0.1509" asserts="0" success="True" result="Success" executed="True" />
                     </results>
                   </test-suite>
-                  <test-suite type="ParameterizedTest" name="Verifying integrity of module files.Validating PS1 Script files.[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have no trailing space" executed="True" result="Success" success="True" time="0.0282" asserts="0" description="[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have no trailing space">
+                  <test-suite type="ParameterizedTest" name="Verifying integrity of module files.Validating PS1 Script files.[bin/assembly.ps1] Should have no trailing space" executed="True" result="Success" success="True" time="0.0211" asserts="0" description="[bin/assembly.ps1] Should have no trailing space">
                     <results>
-                      <test-case description="[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have no trailing space" name="Verifying integrity of module files.Validating PS1 Script files.[/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1] Should have no trailing space(/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1)" time="0.0282" asserts="0" success="True" result="Success" executed="True" />
+                      <test-case description="[bin/assembly.ps1] Should have no trailing space" name="Verifying integrity of module files.Validating PS1 Script files.[bin/assembly.ps1] Should have no trailing space(/workspaces/PSMicrosoftEntraID/src/PSMicrosoftEntraID/bin/assembly.ps1)" time="0.0211" asserts="0" success="True" result="Success" executed="True" />
                     </results>
                   </test-suite>
                 </results>

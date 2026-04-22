@@ -1,4 +1,4 @@
-function Disable-PSEntraIDGroupLicense {
+﻿function Disable-PSEntraIDGroupLicense {
     <#
     .SYNOPSIS
         Disable a license on a group.

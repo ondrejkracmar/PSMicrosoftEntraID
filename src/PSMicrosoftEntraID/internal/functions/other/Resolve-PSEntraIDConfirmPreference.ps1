@@ -1,4 +1,4 @@
-function Resolve-PSEntraIDConfirmPreference {
+﻿function Resolve-PSEntraIDConfirmPreference {
     <#
     .SYNOPSIS
         Resolves the effective confirmation preference for a PSEntraID cmdlet.

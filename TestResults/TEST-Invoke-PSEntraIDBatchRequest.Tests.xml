@@ -1,84 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="33" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:07">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="33" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:33:36">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.733" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.9085" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1" executed="True" result="Success" success="True" time="2.733" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1" executed="True" result="Success" success="True" time="0.9085" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest" executed="True" result="Success" success="True" time="2.4246" asserts="0" description="Invoke-PSEntraIDBatchRequest">
+          <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest" executed="True" result="Success" success="True" time="0.7572" asserts="0" description="Invoke-PSEntraIDBatchRequest">
             <results>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Parameter Validation" executed="True" result="Success" success="True" time="0.0869" asserts="0" description="Invoke-PSEntraIDBatchRequest.Parameter Validation">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Parameter Validation" executed="True" result="Success" success="True" time="0.0254" asserts="0" description="Invoke-PSEntraIDBatchRequest.Parameter Validation">
                 <results>
-                  <test-case description="Should have mandatory InputObject parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have mandatory InputObject parameter" time="0.029" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should accept pipeline input for InputObject" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should accept pipeline input for InputObject" time="0.0049" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have EnableException switch parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have EnableException switch parameter" time="0.0051" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have Force switch parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have Force switch parameter" time="0.0058" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should support ShouldProcess" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should support ShouldProcess" time="0.0314" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory InputObject parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have mandatory InputObject parameter" time="0.004" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should accept pipeline input for InputObject" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException switch parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have EnableException switch parameter" time="0.0023" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Force switch parameter" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should have Force switch parameter" time="0.0022" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="Invoke-PSEntraIDBatchRequest.Parameter Validation.Should support ShouldProcess" time="0.01" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Basic Functionality" executed="True" result="Success" success="True" time="0.9701" asserts="0" description="Invoke-PSEntraIDBatchRequest.Basic Functionality">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Basic Functionality" executed="True" result="Success" success="True" time="0.2003" asserts="0" description="Invoke-PSEntraIDBatchRequest.Basic Functionality">
                 <results>
-                  <test-case description="Should invoke batch request with single payload" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should invoke batch request with single payload" time="0.6039" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return BatchResponsePayload object" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should return BatchResponsePayload object" time="0.0528" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include Requests property in result" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should include Requests property in result" time="0.0704" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include Responses property in result" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should include Responses property in result" time="0.0691" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should call Assert-EntraConnection" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should call Assert-EntraConnection" time="0.0791" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should invoke batch request with single payload" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should invoke batch request with single payload" time="0.0782" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return BatchResponsePayload object" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should return BatchResponsePayload object" time="0.0275" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Requests property in result" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should include Requests property in result" time="0.0259" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Responses property in result" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should include Responses property in result" time="0.0208" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Assert-EntraConnection" name="Invoke-PSEntraIDBatchRequest.Basic Functionality.Should call Assert-EntraConnection" time="0.0195" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Batch Processing" executed="True" result="Success" success="True" time="1.2784" asserts="0" description="Invoke-PSEntraIDBatchRequest.Batch Processing">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Batch Processing" executed="True" result="Success" success="True" time="0.2882" asserts="0" description="Invoke-PSEntraIDBatchRequest.Batch Processing">
                 <results>
-                  <test-case description="Should process multiple payloads sequentially" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should process multiple payloads sequentially" time="0.1388" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle maximum batch size (20 requests)" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should handle maximum batch size (20 requests)" time="0.0597" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should preserve request order in result" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should preserve request order in result" time="0.1051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process multiple payloads sequentially" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should process multiple payloads sequentially" time="0.0337" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle maximum batch size (20 requests)" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should handle maximum batch size (20 requests)" time="0.0283" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should preserve request order in result" name="Invoke-PSEntraIDBatchRequest.Batch Processing.Should preserve request order in result" time="0.0231" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Request Construction" executed="True" result="Success" success="True" time="1.4788" asserts="0" description="Invoke-PSEntraIDBatchRequest.Request Construction">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Request Construction" executed="True" result="Success" success="True" time="0.3878" asserts="0" description="Invoke-PSEntraIDBatchRequest.Request Construction">
                 <results>
-                  <test-case description="Should call Invoke-EntraRequest with correct service" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with correct service" time="0.038" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should call Invoke-EntraRequest with $batch path" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with $batch path" time="0.0272" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should call Invoke-EntraRequest with POST method" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with POST method" time="0.0551" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should call Invoke-EntraRequest with JSON content type header" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with JSON content type header" time="0.0306" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should send body with requests array" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should send body with requests array" time="0.0438" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-EntraRequest with correct service" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with correct service" time="0.0164" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-EntraRequest with $batch path" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with $batch path" time="0.0228" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-EntraRequest with POST method" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with POST method" time="0.0174" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-EntraRequest with JSON content type header" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should call Invoke-EntraRequest with JSON content type header" time="0.0207" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should send body with requests array" name="Invoke-PSEntraIDBatchRequest.Request Construction.Should send body with requests array" time="0.0191" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Response Handling" executed="True" result="Success" success="True" time="1.6707" asserts="0" description="Invoke-PSEntraIDBatchRequest.Response Handling">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Response Handling" executed="True" result="Success" success="True" time="0.4825" asserts="0" description="Invoke-PSEntraIDBatchRequest.Response Handling">
                 <results>
-                  <test-case description="Should map response IDs correctly" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should map response IDs correctly" time="0.0589" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include response status codes" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response status codes" time="0.0628" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include response headers" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response headers" time="0.0331" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include response body" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response body" time="0.032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should map response IDs correctly" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should map response IDs correctly" time="0.0264" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include response status codes" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response status codes" time="0.0226" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include response headers" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response headers" time="0.0191" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include response body" name="Invoke-PSEntraIDBatchRequest.Response Handling.Should include response body" time="0.0231" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Error Handling" executed="True" result="Success" success="True" time="1.8265" asserts="0" description="Invoke-PSEntraIDBatchRequest.Error Handling">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Error Handling" executed="True" result="Success" success="True" time="0.5497" asserts="0" description="Invoke-PSEntraIDBatchRequest.Error Handling">
                 <results>
-                  <test-case description="Should handle failed requests gracefully" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should handle failed requests gracefully" time="0.0423" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should invoke Invoke-PSFProtectedCommand for error handling" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should invoke Invoke-PSFProtectedCommand for error handling" time="0.0627" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should respect EnableException parameter" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should respect EnableException parameter" time="0.0344" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle failed requests gracefully" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should handle failed requests gracefully" time="0.0233" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should invoke Invoke-PSFProtectedCommand for error handling" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should invoke Invoke-PSFProtectedCommand for error handling" time="0.0205" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should respect EnableException parameter" name="Invoke-PSEntraIDBatchRequest.Error Handling.Should respect EnableException parameter" time="0.0206" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.WhatIf Support" executed="True" result="Success" success="True" time="1.9269" asserts="0" description="Invoke-PSEntraIDBatchRequest.WhatIf Support">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.WhatIf Support" executed="True" result="Success" success="True" time="0.5917" asserts="0" description="Invoke-PSEntraIDBatchRequest.WhatIf Support">
                 <results>
-                  <test-case description="Should support -WhatIf parameter" name="Invoke-PSEntraIDBatchRequest.WhatIf Support.Should support -WhatIf parameter" time="0.043" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not invoke batch request with -WhatIf" name="Invoke-PSEntraIDBatchRequest.WhatIf Support.Should not invoke batch request with -WhatIf" time="0.0418" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support -WhatIf parameter" name="Invoke-PSEntraIDBatchRequest.WhatIf Support.Should support -WhatIf parameter" time="0.0183" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not invoke batch request with -WhatIf" name="Invoke-PSEntraIDBatchRequest.WhatIf Support.Should not invoke batch request with -WhatIf" time="0.0205" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Confirm Support" executed="True" result="Success" success="True" time="2.0228" asserts="0" description="Invoke-PSEntraIDBatchRequest.Confirm Support">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Confirm Support" executed="True" result="Success" success="True" time="0.6173" asserts="0" description="Invoke-PSEntraIDBatchRequest.Confirm Support">
                 <results>
-                  <test-case description="Should support -Confirm parameter" name="Invoke-PSEntraIDBatchRequest.Confirm Support.Should support -Confirm parameter" time="0.0427" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use Force parameter to bypass confirmation" name="Invoke-PSEntraIDBatchRequest.Confirm Support.Should use Force parameter to bypass confirmation" time="0.047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support -Confirm parameter" name="Invoke-PSEntraIDBatchRequest.Confirm Support.Should support -Confirm parameter" time="0.0036" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use Force parameter to bypass confirmation" name="Invoke-PSEntraIDBatchRequest.Confirm Support.Should use Force parameter to bypass confirmation" time="0.0193" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Retry Logic" executed="True" result="Success" success="True" time="2.1355" asserts="0" description="Invoke-PSEntraIDBatchRequest.Retry Logic">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Retry Logic" executed="True" result="Success" success="True" time="0.6658" asserts="0" description="Invoke-PSEntraIDBatchRequest.Retry Logic">
                 <results>
-                  <test-case description="Should pass retry count to Invoke-PSFProtectedCommand" name="Invoke-PSEntraIDBatchRequest.Retry Logic.Should pass retry count to Invoke-PSFProtectedCommand" time="0.0454" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should pass retry wait to Invoke-PSFProtectedCommand" name="Invoke-PSEntraIDBatchRequest.Retry Logic.Should pass retry wait to Invoke-PSFProtectedCommand" time="0.0575" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass retry count to Invoke-PSFProtectedCommand" name="Invoke-PSEntraIDBatchRequest.Retry Logic.Should pass retry count to Invoke-PSFProtectedCommand" time="0.02" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass retry wait to Invoke-PSFProtectedCommand" name="Invoke-PSEntraIDBatchRequest.Retry Logic.Should pass retry wait to Invoke-PSFProtectedCommand" time="0.02" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios" executed="True" result="Success" success="True" time="2.3067" asserts="0" description="Invoke-PSEntraIDBatchRequest.Integration Scenarios">
+              <test-suite type="TestFixture" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios" executed="True" result="Success" success="True" time="0.7161" asserts="0" description="Invoke-PSEntraIDBatchRequest.Integration Scenarios">
                 <results>
-                  <test-case description="Should handle mixed request types (GET, POST, PATCH, DELETE)" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios.Should handle mixed request types (GET, POST, PATCH, DELETE)" time="0.094" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should preserve request properties in result" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios.Should preserve request properties in result" time="0.072" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle mixed request types (GET, POST, PATCH, DELETE)" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios.Should handle mixed request types (GET, POST, PATCH, DELETE)" time="0.0258" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should preserve request properties in result" name="Invoke-PSEntraIDBatchRequest.Integration Scenarios.Should preserve request properties in result" time="0.0216" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

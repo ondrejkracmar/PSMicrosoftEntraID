@@ -1,83 +1,83 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="20" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:32">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="20" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:34:51">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.0443" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.644" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Set-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="1.0443" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Set-PSEntraIDGroup.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Set-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="0.644" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Set-PSEntraIDGroup.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Set-PSEntraIDGroup" executed="True" result="Success" success="True" time="0.9182" asserts="0" description="Set-PSEntraIDGroup">
+          <test-suite type="TestFixture" name="Set-PSEntraIDGroup" executed="True" result="Success" success="True" time="0.4894" asserts="0" description="Set-PSEntraIDGroup">
             <results>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Parameter Validation" executed="True" result="Success" success="True" time="0.0319" asserts="0" description="Set-PSEntraIDGroup.Parameter Validation">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Parameter Validation" executed="True" result="Success" success="True" time="0.04" asserts="0" description="Set-PSEntraIDGroup.Parameter Validation">
                 <results>
-                  <test-case description="Should have multiple parameter sets for separate-update properties" name="Set-PSEntraIDGroup.Parameter Validation.Should have multiple parameter sets for separate-update properties" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should support ShouldProcess" name="Set-PSEntraIDGroup.Parameter Validation.Should support ShouldProcess" time="0.0047" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have expected group property parameters" name="Set-PSEntraIDGroup.Parameter Validation.Should have expected group property parameters" time="0.018" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have Visibility with ValidateSet" name="Set-PSEntraIDGroup.Parameter Validation.Should have Visibility with ValidateSet" time="0.0039" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have multiple parameter sets for separate-update properties" name="Set-PSEntraIDGroup.Parameter Validation.Should have multiple parameter sets for separate-update properties" time="0.014" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="Set-PSEntraIDGroup.Parameter Validation.Should support ShouldProcess" time="0.0055" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have expected group property parameters" name="Set-PSEntraIDGroup.Parameter Validation.Should have expected group property parameters" time="0.0134" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Visibility with ValidateSet" name="Set-PSEntraIDGroup.Parameter Validation.Should have Visibility with ValidateSet" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update common group properties by InputObject" executed="True" result="Success" success="True" time="0.1178" asserts="0" description="Set-PSEntraIDGroup.Update common group properties by InputObject">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update common group properties by InputObject" executed="True" result="Success" success="True" time="0.1224" asserts="0" description="Set-PSEntraIDGroup.Update common group properties by InputObject">
                 <results>
-                  <test-case description="Should call API with PATCH method" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should call API with PATCH method" time="0.0399" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include only specified properties in body" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should include only specified properties in body" time="0.0248" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should include Content-Type header" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should include Content-Type header" time="0.0188" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with PATCH method" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should call API with PATCH method" time="0.0353" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include only specified properties in body" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should include only specified properties in body" time="0.0228" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include Content-Type header" name="Set-PSEntraIDGroup.Update common group properties by InputObject.Should include Content-Type header" time="0.0211" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update group by Identity" executed="True" result="Success" success="True" time="0.1602" asserts="0" description="Set-PSEntraIDGroup.Update group by Identity">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update group by Identity" executed="True" result="Success" success="True" time="0.1809" asserts="0" description="Set-PSEntraIDGroup.Update group by Identity">
                 <results>
-                  <test-case description="Should resolve group and call PATCH" name="Set-PSEntraIDGroup.Update group by Identity.Should resolve group and call PATCH" time="0.0219" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle group not found with EnableException" name="Set-PSEntraIDGroup.Update group by Identity.Should handle group not found with EnableException" time="0.0178" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should resolve group and call PATCH" name="Set-PSEntraIDGroup.Update group by Identity.Should resolve group and call PATCH" time="0.0287" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle group not found with EnableException" name="Set-PSEntraIDGroup.Update group by Identity.Should handle group not found with EnableException" time="0.0249" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update visibility" executed="True" result="Success" success="True" time="0.1906" asserts="0" description="Set-PSEntraIDGroup.Update visibility">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Update visibility" executed="True" result="Success" success="True" time="0.208" asserts="0" description="Set-PSEntraIDGroup.Update visibility">
                 <results>
-                  <test-case description="Should include visibility in body" name="Set-PSEntraIDGroup.Update visibility.Should include visibility in body" time="0.0275" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should include visibility in body" name="Set-PSEntraIDGroup.Update visibility.Should include visibility in body" time="0.0236" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.PassThru parameter" executed="True" result="Success" success="True" time="0.22" asserts="0" description="Set-PSEntraIDGroup.PassThru parameter">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.PassThru parameter" executed="True" result="Success" success="True" time="0.2327" asserts="0" description="Set-PSEntraIDGroup.PassThru parameter">
                 <results>
-                  <test-case description="Should return batch request with PATCH method" name="Set-PSEntraIDGroup.PassThru parameter.Should return batch request with PATCH method" time="0.0098" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not call Invoke-EntraRequest when PassThru" name="Set-PSEntraIDGroup.PassThru parameter.Should not call Invoke-EntraRequest when PassThru" time="0.0151" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return batch request with PATCH method" name="Set-PSEntraIDGroup.PassThru parameter.Should return batch request with PATCH method" time="0.0141" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru" name="Set-PSEntraIDGroup.PassThru parameter.Should not call Invoke-EntraRequest when PassThru" time="0.0077" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Connection handling" executed="True" result="Success" success="True" time="0.2615" asserts="0" description="Set-PSEntraIDGroup.Connection handling">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Connection handling" executed="True" result="Success" success="True" time="0.2668" asserts="0" description="Set-PSEntraIDGroup.Connection handling">
                 <results>
-                  <test-case description="Should assert Entra connection" name="Set-PSEntraIDGroup.Connection handling.Should assert Entra connection" time="0.0321" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should assert Entra connection" name="Set-PSEntraIDGroup.Connection handling.Should assert Entra connection" time="0.0302" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.AllowExternalSenders parameter set" executed="True" result="Success" success="True" time="0.2875" asserts="0" description="Set-PSEntraIDGroup.AllowExternalSenders parameter set">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.AllowExternalSenders parameter set" executed="True" result="Success" success="True" time="0.2956" asserts="0" description="Set-PSEntraIDGroup.AllowExternalSenders parameter set">
                 <results>
-                  <test-case description="Should call Invoke-PSFProtectedCommand with AllowExternalSenders" name="Set-PSEntraIDGroup.AllowExternalSenders parameter set.Should call Invoke-PSFProtectedCommand with AllowExternalSenders" time="0.0232" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-PSFProtectedCommand with AllowExternalSenders" name="Set-PSEntraIDGroup.AllowExternalSenders parameter set.Should call Invoke-PSFProtectedCommand with AllowExternalSenders" time="0.0254" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set" executed="True" result="Success" success="True" time="0.3109" asserts="0" description="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set" executed="True" result="Success" success="True" time="0.3199" asserts="0" description="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set">
                 <results>
-                  <test-case description="Should call Invoke-PSFProtectedCommand with AutoSubscribeNewMembers" name="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set.Should call Invoke-PSFProtectedCommand with AutoSubscribeNewMembers" time="0.0204" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-PSFProtectedCommand with AutoSubscribeNewMembers" name="Set-PSEntraIDGroup.AutoSubscribeNewMembers parameter set.Should call Invoke-PSFProtectedCommand with AutoSubscribeNewMembers" time="0.0212" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.HideFromAddressLists parameter set" executed="True" result="Success" success="True" time="0.3364" asserts="0" description="Set-PSEntraIDGroup.HideFromAddressLists parameter set">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.HideFromAddressLists parameter set" executed="True" result="Success" success="True" time="0.3456" asserts="0" description="Set-PSEntraIDGroup.HideFromAddressLists parameter set">
                 <results>
-                  <test-case description="Should call Invoke-PSFProtectedCommand with HideFromAddressLists" name="Set-PSEntraIDGroup.HideFromAddressLists parameter set.Should call Invoke-PSFProtectedCommand with HideFromAddressLists" time="0.023" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-PSFProtectedCommand with HideFromAddressLists" name="Set-PSEntraIDGroup.HideFromAddressLists parameter set.Should call Invoke-PSFProtectedCommand with HideFromAddressLists" time="0.0227" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.HideFromOutlookClients parameter set" executed="True" result="Success" success="True" time="0.3583" asserts="0" description="Set-PSEntraIDGroup.HideFromOutlookClients parameter set">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.HideFromOutlookClients parameter set" executed="True" result="Success" success="True" time="0.3695" asserts="0" description="Set-PSEntraIDGroup.HideFromOutlookClients parameter set">
                 <results>
-                  <test-case description="Should call Invoke-PSFProtectedCommand with HideFromOutlookClients" name="Set-PSEntraIDGroup.HideFromOutlookClients parameter set.Should call Invoke-PSFProtectedCommand with HideFromOutlookClients" time="0.0191" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-PSFProtectedCommand with HideFromOutlookClients" name="Set-PSEntraIDGroup.HideFromOutlookClients parameter set.Should call Invoke-PSFProtectedCommand with HideFromOutlookClients" time="0.0197" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set" executed="True" result="Success" success="True" time="0.3803" asserts="0" description="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set" executed="True" result="Success" success="True" time="0.3947" asserts="0" description="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set">
                 <results>
-                  <test-case description="Should call Invoke-PSFProtectedCommand with MembershipRule" name="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set.Should call Invoke-PSFProtectedCommand with MembershipRule" time="0.0195" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Invoke-PSFProtectedCommand with MembershipRule" name="Set-PSEntraIDGroup.UpdateDynamicGroup parameter set.Should call Invoke-PSFProtectedCommand with MembershipRule" time="0.0207" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.WhatIf support" executed="True" result="Success" success="True" time="0.407" asserts="0" description="Set-PSEntraIDGroup.WhatIf support">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.WhatIf support" executed="True" result="Success" success="True" time="0.43" asserts="0" description="Set-PSEntraIDGroup.WhatIf support">
                 <results>
-                  <test-case description="Should not call Invoke-EntraRequest when WhatIf is specified" name="Set-PSEntraIDGroup.WhatIf support.Should not call Invoke-EntraRequest when WhatIf is specified" time="0.0183" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when WhatIf is specified" name="Set-PSEntraIDGroup.WhatIf support.Should not call Invoke-EntraRequest when WhatIf is specified" time="0.0231" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Pipeline input" executed="True" result="Success" success="True" time="0.4343" asserts="0" description="Set-PSEntraIDGroup.Pipeline input">
+              <test-suite type="TestFixture" name="Set-PSEntraIDGroup.Pipeline input" executed="True" result="Success" success="True" time="0.4534" asserts="0" description="Set-PSEntraIDGroup.Pipeline input">
                 <results>
-                  <test-case description="Should accept pipeline input and call Invoke-PSFProtectedCommand" name="Set-PSEntraIDGroup.Pipeline input.Should accept pipeline input and call Invoke-PSFProtectedCommand" time="0.0241" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input and call Invoke-PSFProtectedCommand" name="Set-PSEntraIDGroup.Pipeline input.Should accept pipeline input and call Invoke-PSFProtectedCommand" time="0.0204" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

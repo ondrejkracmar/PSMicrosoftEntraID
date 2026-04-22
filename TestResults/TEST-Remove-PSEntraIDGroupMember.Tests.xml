@@ -1,51 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:30">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:34:50">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.4109" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.4303" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Remove-PSEntraIDGroupMember.Tests.ps1" executed="True" result="Success" success="True" time="0.4109" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Remove-PSEntraIDGroupMember.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Remove-PSEntraIDGroupMember.Tests.ps1" executed="True" result="Success" success="True" time="0.4303" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Remove-PSEntraIDGroupMember.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember" executed="True" result="Success" success="True" time="0.3298" asserts="0" description="Remove-PSEntraIDGroupMember">
+          <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember" executed="True" result="Success" success="True" time="0.3191" asserts="0" description="Remove-PSEntraIDGroupMember">
             <results>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Parameter Validation" executed="True" result="Success" success="True" time="0.0191" asserts="0" description="Remove-PSEntraIDGroupMember.Parameter Validation">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Parameter Validation" executed="True" result="Success" success="True" time="0.0176" asserts="0" description="Remove-PSEntraIDGroupMember.Parameter Validation">
                 <results>
-                  <test-case description="Should have IdentityInputObject and IdentityUser parameter sets" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should have IdentityInputObject and IdentityUser parameter sets" time="0.0072" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should support ShouldProcess" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should support ShouldProcess" time="0.0065" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have mandatory Identity parameter" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should have mandatory Identity parameter" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have IdentityInputObject and IdentityUser parameter sets" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should have IdentityInputObject and IdentityUser parameter sets" time="0.0058" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should support ShouldProcess" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should support ShouldProcess" time="0.0047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter" name="Remove-PSEntraIDGroupMember.Parameter Validation.Should have mandatory Identity parameter" time="0.0033" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Remove member by User string" executed="True" result="Success" success="True" time="0.113" asserts="0" description="Remove-PSEntraIDGroupMember.Remove member by User string">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Remove member by User string" executed="True" result="Success" success="True" time="0.1119" asserts="0" description="Remove-PSEntraIDGroupMember.Remove member by User string">
                 <results>
-                  <test-case description="Should resolve group and user, then call DELETE with members/$ref path" name="Remove-PSEntraIDGroupMember.Remove member by User string.Should resolve group and user, then call DELETE with members/$ref path" time="0.066" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should handle user not found with EnableException" name="Remove-PSEntraIDGroupMember.Remove member by User string.Should handle user not found with EnableException" time="0.0243" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should resolve group and user, then call DELETE with members/$ref path" name="Remove-PSEntraIDGroupMember.Remove member by User string.Should resolve group and user, then call DELETE with members/$ref path" time="0.0593" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle user not found with EnableException" name="Remove-PSEntraIDGroupMember.Remove member by User string.Should handle user not found with EnableException" time="0.0315" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Remove member by InputObject" executed="True" result="Success" success="True" time="0.1377" asserts="0" description="Remove-PSEntraIDGroupMember.Remove member by InputObject">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Remove member by InputObject" executed="True" result="Success" success="True" time="0.1493" asserts="0" description="Remove-PSEntraIDGroupMember.Remove member by InputObject">
                 <results>
-                  <test-case description="Should call DELETE with members/$ref path using InputObject Id" name="Remove-PSEntraIDGroupMember.Remove member by InputObject.Should call DELETE with members/$ref path using InputObject Id" time="0.0221" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call DELETE with members/$ref path using InputObject Id" name="Remove-PSEntraIDGroupMember.Remove member by InputObject.Should call DELETE with members/$ref path using InputObject Id" time="0.0343" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.PassThru parameter" executed="True" result="Success" success="True" time="0.199" asserts="0" description="Remove-PSEntraIDGroupMember.PassThru parameter">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.PassThru parameter" executed="True" result="Success" success="True" time="0.1931" asserts="0" description="Remove-PSEntraIDGroupMember.PassThru parameter">
                 <results>
-                  <test-case description="Should return batch request with DELETE method for User" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should return batch request with DELETE method for User" time="0.0169" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should return batch request for InputObject" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should return batch request for InputObject" time="0.0166" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should not call Invoke-EntraRequest when PassThru" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should not call Invoke-EntraRequest when PassThru" time="0.0237" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return batch request with DELETE method for User" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should return batch request with DELETE method for User" time="0.0149" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return batch request for InputObject" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should return batch request for InputObject" time="0.0165" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not call Invoke-EntraRequest when PassThru" name="Remove-PSEntraIDGroupMember.PassThru parameter.Should not call Invoke-EntraRequest when PassThru" time="0.0094" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Connection handling" executed="True" result="Success" success="True" time="0.2254" asserts="0" description="Remove-PSEntraIDGroupMember.Connection handling">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Connection handling" executed="True" result="Success" success="True" time="0.2171" asserts="0" description="Remove-PSEntraIDGroupMember.Connection handling">
                 <results>
-                  <test-case description="Should assert Entra connection" name="Remove-PSEntraIDGroupMember.Connection handling.Should assert Entra connection" time="0.0234" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should assert Entra connection" name="Remove-PSEntraIDGroupMember.Connection handling.Should assert Entra connection" time="0.0172" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.WhatIf support" executed="True" result="Success" success="True" time="0.2535" asserts="0" description="Remove-PSEntraIDGroupMember.WhatIf support">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.WhatIf support" executed="True" result="Success" success="True" time="0.2382" asserts="0" description="Remove-PSEntraIDGroupMember.WhatIf support">
                 <results>
-                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Remove-PSEntraIDGroupMember.WhatIf support.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.0242" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not invoke Invoke-EntraRequest when -WhatIf is specified" name="Remove-PSEntraIDGroupMember.WhatIf support.Should not invoke Invoke-EntraRequest when -WhatIf is specified" time="0.0173" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Pipeline input" executed="True" result="Success" success="True" time="0.2951" asserts="0" description="Remove-PSEntraIDGroupMember.Pipeline input">
+              <test-suite type="TestFixture" name="Remove-PSEntraIDGroupMember.Pipeline input" executed="True" result="Success" success="True" time="0.2626" asserts="0" description="Remove-PSEntraIDGroupMember.Pipeline input">
                 <results>
-                  <test-case description="Should accept pipeline input for InputObject parameter" name="Remove-PSEntraIDGroupMember.Pipeline input.Should accept pipeline input for InputObject parameter" time="0.0384" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for InputObject parameter" name="Remove-PSEntraIDGroupMember.Pipeline input.Should accept pipeline input for InputObject parameter" time="0.0214" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

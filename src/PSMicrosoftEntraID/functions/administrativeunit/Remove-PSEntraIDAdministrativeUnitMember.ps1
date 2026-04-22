@@ -1,4 +1,4 @@
-function Remove-PSEntraIDAdministrativeUnitMember {
+﻿function Remove-PSEntraIDAdministrativeUnitMember {
     <#
     .SYNOPSIS
         Remove a member from an administrative unit.

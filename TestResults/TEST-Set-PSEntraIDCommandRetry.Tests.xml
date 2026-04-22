@@ -1,32 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:17">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:33:40">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.3777" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.156" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Set-PSEntraIDCommandRetry.Tests.ps1" executed="True" result="Success" success="True" time="0.3777" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Set-PSEntraIDCommandRetry.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Set-PSEntraIDCommandRetry.Tests.ps1" executed="True" result="Success" success="True" time="0.156" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/core/Set-PSEntraIDCommandRetry.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests" executed="True" result="Success" success="True" time="0.2582" asserts="0" description="Set-PSEntraIDCommandRetry Tests">
+          <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests" executed="True" result="Success" success="True" time="0.0659" asserts="0" description="Set-PSEntraIDCommandRetry Tests">
             <results>
-              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.2044" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Parameter Validation">
+              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.0367" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Parameter Validation">
                 <results>
-                  <test-case description="Should accept valid RetryCount values (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should accept valid RetryCount values (0-10)" time="0.0101" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should accept valid RetryWaitInSeconds values (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should accept valid RetryWaitInSeconds values (0-10)" time="0.0122" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should reject RetryCount values outside range (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should reject RetryCount values outside range (0-10)" time="0.0441" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should reject RetryWaitInSeconds values outside range (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should reject RetryWaitInSeconds values outside range (0-10)" time="0.0265" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept valid RetryCount values (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should accept valid RetryCount values (0-10)" time="0.014" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept valid RetryWaitInSeconds values (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should accept valid RetryWaitInSeconds values (0-10)" time="0.0054" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should reject RetryCount values outside range (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should reject RetryCount values outside range (0-10)" time="0.0059" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should reject RetryWaitInSeconds values outside range (0-10)" name="Set-PSEntraIDCommandRetry Tests.Parameter Validation.Should reject RetryWaitInSeconds values outside range (0-10)" time="0.008" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates" executed="True" result="Success" success="True" time="0.2378" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Configuration Updates">
+              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates" executed="True" result="Success" success="True" time="0.0474" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Configuration Updates">
                 <results>
-                  <test-case description="Should update RetryCount configuration" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update RetryCount configuration" time="0.0041" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should update RetryWaitInSeconds configuration" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update RetryWaitInSeconds configuration" time="0.0031" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should update both parameters simultaneously" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update both parameters simultaneously" time="0.0215" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should update RetryCount configuration" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update RetryCount configuration" time="0.0026" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should update RetryWaitInSeconds configuration" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update RetryWaitInSeconds configuration" time="0.0022" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should update both parameters simultaneously" name="Set-PSEntraIDCommandRetry Tests.Configuration Updates.Should update both parameters simultaneously" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Default Values" executed="True" result="Success" success="True" time="0.2539" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Default Values">
+              <test-suite type="TestFixture" name="Set-PSEntraIDCommandRetry Tests.Default Values" executed="True" result="Success" success="True" time="0.0632" asserts="0" description="Set-PSEntraIDCommandRetry Tests.Default Values">
                 <results>
-                  <test-case description="Should use default value 0 for RetryCount when not specified" name="Set-PSEntraIDCommandRetry Tests.Default Values.Should use default value 0 for RetryCount when not specified" time="0.0047" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should use default value 0 for RetryWaitInSeconds when not specified" name="Set-PSEntraIDCommandRetry Tests.Default Values.Should use default value 0 for RetryWaitInSeconds when not specified" time="0.0065" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use default value 0 for RetryCount when not specified" name="Set-PSEntraIDCommandRetry Tests.Default Values.Should use default value 0 for RetryCount when not specified" time="0.0107" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should use default value 0 for RetryWaitInSeconds when not specified" name="Set-PSEntraIDCommandRetry Tests.Default Values.Should use default value 0 for RetryWaitInSeconds when not specified" time="0.0022" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

@@ -5,7 +5,7 @@ Param (
 	$SkipTest,
 	
 	[string[]]
-	$CommandPath = @("$global:testroot\..\PSMicrosoftEntraID\functions", "$global:testroot\..\PSMicrosoftEntraID\internal\functions")
+	$CommandPath = @((Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'functions'), (Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'internal' 'functions'))
 )
 
 if ($SkipTest) { return }
@@ -23,10 +23,11 @@ Describe 'Invoking PSScriptAnalyzer against commandbase' {
 			
 			forEach ($rule in $scriptAnalyzerRules)
 			{
-				It "Should pass $rule" -TestCases @{ analysis = $analysis; rule = $rule } {
-					If ($analysis.RuleName -contains $rule)
+				$ruleName = $rule.RuleName
+				It "Should pass $ruleName" -TestCases @{ analysis = $analysis; ruleName = $ruleName } {
+					If ($analysis.RuleName -contains $ruleName)
 					{
-						$analysis | Where-Object RuleName -EQ $rule -outvariable failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
+						$analysis | Where-Object { $_.RuleName -EQ $ruleName } -OutVariable failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
 						
 						1 | Should -Be 0
 					}

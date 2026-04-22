@@ -1,4 +1,4 @@
-function Add-PSEntraIDGroupMember {
+﻿function Add-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Add a member to a security or Microsoft 365 group.

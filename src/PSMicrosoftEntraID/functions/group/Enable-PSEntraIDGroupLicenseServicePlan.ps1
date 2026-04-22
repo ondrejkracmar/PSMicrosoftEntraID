@@ -1,4 +1,4 @@
-function Enable-PSEntraIDGroupLicenseServicePlan {
+﻿function Enable-PSEntraIDGroupLicenseServicePlan {
     <#
     .SYNOPSIS
         Enable service plans of a license on a group.

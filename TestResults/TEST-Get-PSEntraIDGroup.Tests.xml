@@ -1,47 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:05:11">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:34:33">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.7954" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.4199" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="0.7954" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroup.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroup.Tests.ps1" executed="True" result="Success" success="True" time="0.4199" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Get-PSEntraIDGroup.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Get-PSEntraIDGroup" executed="True" result="Success" success="True" time="0.7149" asserts="0" description="Get-PSEntraIDGroup">
+          <test-suite type="TestFixture" name="Get-PSEntraIDGroup" executed="True" result="Success" success="True" time="0.3497" asserts="0" description="Get-PSEntraIDGroup">
             <results>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Parameter Validation" executed="True" result="Success" success="True" time="0.035" asserts="0" description="Get-PSEntraIDGroup.Parameter Validation">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Parameter Validation" executed="True" result="Success" success="True" time="0.025" asserts="0" description="Get-PSEntraIDGroup.Parameter Validation">
                 <results>
-                  <test-case description="Should have Identity, DisplayName, Filter, and All parameter sets" name="Get-PSEntraIDGroup.Parameter Validation.Should have Identity, DisplayName, Filter, and All parameter sets" time="0.0102" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have OutputType PSMicrosoftEntraID.Groups.Group" name="Get-PSEntraIDGroup.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Groups.Group" time="0.0066" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have mandatory Identity parameter with aliases" name="Get-PSEntraIDGroup.Parameter Validation.Should have mandatory Identity parameter with aliases" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should accept pipeline input for Identity" name="Get-PSEntraIDGroup.Parameter Validation.Should accept pipeline input for Identity" time="0.012" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Identity, DisplayName, Filter, and All parameter sets" name="Get-PSEntraIDGroup.Parameter Validation.Should have Identity, DisplayName, Filter, and All parameter sets" time="0.005" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have OutputType PSMicrosoftEntraID.Groups.Group" name="Get-PSEntraIDGroup.Parameter Validation.Should have OutputType PSMicrosoftEntraID.Groups.Group" time="0.0102" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Identity parameter with aliases" name="Get-PSEntraIDGroup.Parameter Validation.Should have mandatory Identity parameter with aliases" time="0.0028" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input for Identity" name="Get-PSEntraIDGroup.Parameter Validation.Should accept pipeline input for Identity" time="0.0029" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by Identity" executed="True" result="Success" success="True" time="0.5002" asserts="0" description="Get-PSEntraIDGroup.Get group by Identity">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by Identity" executed="True" result="Success" success="True" time="0.1527" asserts="0" description="Get-PSEntraIDGroup.Get group by Identity">
                 <results>
-                  <test-case description="Should call API with mailNickName query then by Id" name="Get-PSEntraIDGroup.Get group by Identity.Should call API with mailNickName query then by Id" time="0.382" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should query mailNickName filter first" name="Get-PSEntraIDGroup.Get group by Identity.Should query mailNickName filter first" time="0.039" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should convert response using ConvertFrom-RestGroup" name="Get-PSEntraIDGroup.Get group by Identity.Should convert response using ConvertFrom-RestGroup" time="0.0389" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API with mailNickName query then by Id" name="Get-PSEntraIDGroup.Get group by Identity.Should call API with mailNickName query then by Id" time="0.0547" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should query mailNickName filter first" name="Get-PSEntraIDGroup.Get group by Identity.Should query mailNickName filter first" time="0.0311" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should convert response using ConvertFrom-RestGroup" name="Get-PSEntraIDGroup.Get group by Identity.Should convert response using ConvertFrom-RestGroup" time="0.0381" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by DisplayName" executed="True" result="Success" success="True" time="0.5318" asserts="0" description="Get-PSEntraIDGroup.Get group by DisplayName">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by DisplayName" executed="True" result="Success" success="True" time="0.1867" asserts="0" description="Get-PSEntraIDGroup.Get group by DisplayName">
                 <results>
-                  <test-case description="Should query with startswith displayName filter" name="Get-PSEntraIDGroup.Get group by DisplayName.Should query with startswith displayName filter" time="0.029" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should query with startswith displayName filter" name="Get-PSEntraIDGroup.Get group by DisplayName.Should query with startswith displayName filter" time="0.0312" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by Filter" executed="True" result="Success" success="True" time="0.5963" asserts="0" description="Get-PSEntraIDGroup.Get group by Filter">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get group by Filter" executed="True" result="Success" success="True" time="0.2429" asserts="0" description="Get-PSEntraIDGroup.Get group by Filter">
                 <results>
-                  <test-case description="Should pass custom filter to query" name="Get-PSEntraIDGroup.Get group by Filter.Should pass custom filter to query" time="0.0301" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should add ConsistencyLevel header with AdvancedFilter" name="Get-PSEntraIDGroup.Get group by Filter.Should add ConsistencyLevel header with AdvancedFilter" time="0.0314" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should pass custom filter to query" name="Get-PSEntraIDGroup.Get group by Filter.Should pass custom filter to query" time="0.0232" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add ConsistencyLevel header with AdvancedFilter" name="Get-PSEntraIDGroup.Get group by Filter.Should add ConsistencyLevel header with AdvancedFilter" time="0.0292" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get all groups" executed="True" result="Success" success="True" time="0.6299" asserts="0" description="Get-PSEntraIDGroup.Get all groups">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Get all groups" executed="True" result="Success" success="True" time="0.2718" asserts="0" description="Get-PSEntraIDGroup.Get all groups">
                 <results>
-                  <test-case description="Should call API for all groups" name="Get-PSEntraIDGroup.Get all groups.Should call API for all groups" time="0.0308" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call API for all groups" name="Get-PSEntraIDGroup.Get all groups.Should call API for all groups" time="0.0257" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Connection handling" executed="True" result="Success" success="True" time="0.6668" asserts="0" description="Get-PSEntraIDGroup.Connection handling">
+              <test-suite type="TestFixture" name="Get-PSEntraIDGroup.Connection handling" executed="True" result="Success" success="True" time="0.315" asserts="0" description="Get-PSEntraIDGroup.Connection handling">
                 <results>
-                  <test-case description="Should assert Entra connection" name="Get-PSEntraIDGroup.Connection handling.Should assert Entra connection" time="0.0339" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should assert Entra connection" name="Get-PSEntraIDGroup.Connection handling.Should assert Entra connection" time="0.0402" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

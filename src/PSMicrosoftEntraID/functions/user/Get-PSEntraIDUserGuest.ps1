@@ -1,4 +1,4 @@
-function Get-PSEntraIDUserGuest {
+﻿function Get-PSEntraIDUserGuest {
     <#
     .SYNOPSIS
         Retrieves properties of users in Entra ID (Azure AD), but only Guest accounts.

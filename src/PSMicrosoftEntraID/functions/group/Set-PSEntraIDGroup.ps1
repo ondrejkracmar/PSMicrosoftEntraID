@@ -1,4 +1,4 @@
-function Set-PSEntraIDGroup {
+﻿function Set-PSEntraIDGroup {
     <#
     .SYNOPSIS
         Updates the specified properties of a Microsoft 365 Group.

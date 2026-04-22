@@ -1,4 +1,4 @@
-function Disable-PSEntraIDUserLicenseServicePlan {
+﻿function Disable-PSEntraIDUserLicenseServicePlan {
     <#
 	.SYNOPSIS
 		Disable service plan of users's sku subscription.

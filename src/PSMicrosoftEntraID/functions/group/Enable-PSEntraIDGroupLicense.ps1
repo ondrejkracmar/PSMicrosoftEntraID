@@ -1,4 +1,4 @@
-function Enable-PSEntraIDGroupLicense {
+﻿function Enable-PSEntraIDGroupLicense {
     <#
     .SYNOPSIS
         Enable a license on a group.

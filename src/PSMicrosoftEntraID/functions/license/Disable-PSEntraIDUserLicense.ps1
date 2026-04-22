@@ -1,4 +1,4 @@
-function Disable-PSEntraIDUserLicense {
+﻿function Disable-PSEntraIDUserLicense {
     <#
 	.SYNOPSIS
 		Disable user's license.

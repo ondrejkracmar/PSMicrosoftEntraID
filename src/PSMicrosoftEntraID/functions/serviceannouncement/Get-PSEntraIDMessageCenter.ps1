@@ -1,4 +1,4 @@
-function Get-PSEntraIDMessageCenter {
+﻿function Get-PSEntraIDMessageCenter {
     <#
 .SYNOPSIS
     Retrieves announcements from Microsoft 365 Message Center via Graph API using .NET deserialization.

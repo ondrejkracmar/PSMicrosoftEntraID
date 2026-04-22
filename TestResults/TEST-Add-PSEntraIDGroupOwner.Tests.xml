@@ -1,50 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="11" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="07:04:22">
-  <environment user-domain="" platform="Linux" clr-version="9.0.1" machine-name="cfd01f1abd0b" user="root" nunit-version="2.5.8.0" os-version="6.6.87.2-microsoft-standard-WSL2" cwd="/workspaces/PSMicrosoftEntraID/src/tests" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="11" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-04-22" time="10:33:41">
+  <environment cwd="/workspaces/PSMicrosoftEntraID/src/tests" platform="Linux" os-version="6.6.87.2-microsoft-standard-WSL2" user="root" machine-name="cfd01f1abd0b" user-domain="" clr-version="9.0.1" nunit-version="2.5.8.0" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="1.6811" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.5577" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupOwner.Tests.ps1" executed="True" result="Success" success="True" time="1.6811" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupOwner.Tests.ps1">
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupOwner.Tests.ps1" executed="True" result="Success" success="True" time="0.5577" asserts="0" description="/workspaces/PSMicrosoftEntraID/src/tests/functions/group/Add-PSEntraIDGroupOwner.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests" executed="True" result="Success" success="True" time="1.5098" asserts="0" description="Add-PSEntraIDGroupOwner Tests">
+          <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests" executed="True" result="Success" success="True" time="0.4475" asserts="0" description="Add-PSEntraIDGroupOwner Tests">
             <results>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets" executed="True" result="Success" success="True" time="0.0112" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Parameter Sets">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets" executed="True" result="Success" success="True" time="0.0141" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Parameter Sets">
                 <results>
-                  <test-case description="Should have IdentityInputObject parameter set" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets.Should have IdentityInputObject parameter set" time="0.0048" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have IdentityUser parameter set" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets.Should have IdentityUser parameter set" time="0.0034" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have IdentityInputObject parameter set" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets.Should have IdentityInputObject parameter set" time="0.0035" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have IdentityUser parameter set" name="Add-PSEntraIDGroupOwner Tests.Parameter Sets.Should have IdentityUser parameter set" time="0.0032" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.0311" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Parameter Validation">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation" executed="True" result="Success" success="True" time="0.04" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Parameter Validation">
                 <results>
-                  <test-case description="Should have EnableException switch parameter" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation.Should have EnableException switch parameter" time="0.0084" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should have User parameter" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation.Should have User parameter" time="0.0085" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException switch parameter" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation.Should have EnableException switch parameter" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have User parameter" name="Add-PSEntraIDGroupOwner Tests.Parameter Validation.Should have User parameter" time="0.0024" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity" executed="True" result="Success" success="True" time="0.5467" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity" executed="True" result="Success" success="True" time="0.205" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity">
                 <results>
-                  <test-case description="Should continue processing valid users when one user not found and EnableException is false" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should continue processing valid users when one user not found and EnableException is false" time="0.2014" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should throw when user not found and EnableException is true" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should throw when user not found and EnableException is true" time="0.1285" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Should process all valid users in array and skip invalid ones" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should process all valid users in array and skip invalid ones" time="0.0812" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should continue processing valid users when one user not found and EnableException is false" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should continue processing valid users when one user not found and EnableException is false" time="0.0683" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should throw when user not found and EnableException is true" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should throw when user not found and EnableException is true" time="0.0256" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process all valid users in array and skip invalid ones" name="Add-PSEntraIDGroupOwner Tests.Error Handling - User Identity.Should process all valid users in array and skip invalid ones" time="0.0412" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set" executed="True" result="Success" success="True" time="0.8556" asserts="0" description="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set" executed="True" result="Success" success="True" time="0.2557" asserts="0" description="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set">
                 <results>
-                  <test-case description="Should add owner via InputObject parameter" name="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set.Should add owner via InputObject parameter" time="0.1562" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should add owner via InputObject parameter" name="Add-PSEntraIDGroupOwner Tests.IdentityInputObject parameter set.Should add owner via InputObject parameter" time="0.0259" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.WhatIf support" executed="True" result="Success" success="True" time="1.0357" asserts="0" description="Add-PSEntraIDGroupOwner Tests.WhatIf support">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.WhatIf support" executed="True" result="Success" success="True" time="0.3177" asserts="0" description="Add-PSEntraIDGroupOwner Tests.WhatIf support">
                 <results>
-                  <test-case description="Should not invoke Invoke-EntraRequest when WhatIf is specified" name="Add-PSEntraIDGroupOwner Tests.WhatIf support.Should not invoke Invoke-EntraRequest when WhatIf is specified" time="0.0465" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should not invoke Invoke-EntraRequest when WhatIf is specified" name="Add-PSEntraIDGroupOwner Tests.WhatIf support.Should not invoke Invoke-EntraRequest when WhatIf is specified" time="0.021" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Connection verification" executed="True" result="Success" success="True" time="1.1941" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Connection verification">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Connection verification" executed="True" result="Success" success="True" time="0.3712" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Connection verification">
                 <results>
-                  <test-case description="Should call Assert-EntraConnection" name="Add-PSEntraIDGroupOwner Tests.Connection verification.Should call Assert-EntraConnection" time="0.0367" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should call Assert-EntraConnection" name="Add-PSEntraIDGroupOwner Tests.Connection verification.Should call Assert-EntraConnection" time="0.0239" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Pipeline input" executed="True" result="Success" success="True" time="1.5066" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Pipeline input">
+              <test-suite type="TestFixture" name="Add-PSEntraIDGroupOwner Tests.Pipeline input" executed="True" result="Success" success="True" time="0.4444" asserts="0" description="Add-PSEntraIDGroupOwner Tests.Pipeline input">
                 <results>
-                  <test-case description="Should accept pipeline input via InputObject" name="Add-PSEntraIDGroupOwner Tests.Pipeline input.Should accept pipeline input via InputObject" time="0.1512" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept pipeline input via InputObject" name="Add-PSEntraIDGroupOwner Tests.Pipeline input.Should accept pipeline input via InputObject" time="0.0436" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
             </results>

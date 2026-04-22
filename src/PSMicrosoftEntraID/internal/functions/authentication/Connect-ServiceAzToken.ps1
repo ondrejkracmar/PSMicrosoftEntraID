@@ -1,4 +1,4 @@
-function Connect-ServiceAzToken {
+﻿function Connect-ServiceAzToken {
 	<#
 	.SYNOPSIS
 		Connect with the authentication response.

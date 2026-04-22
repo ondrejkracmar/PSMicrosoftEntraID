@@ -1,4 +1,4 @@
-function Remove-PSEntraIDAdministrativeUnit {
+﻿function Remove-PSEntraIDAdministrativeUnit {
     <#
 	.SYNOPSIS
 		Delete administrative unit

@@ -1,4 +1,4 @@
-function Disable-PSEntraIDGroupLicenseServicePlan {
+﻿function Disable-PSEntraIDGroupLicenseServicePlan {
     <#
     .SYNOPSIS
         Disable service plans of a license on a group.
