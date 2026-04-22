@@ -1,7 +1,7 @@
 ﻿class FilterBuilder {
 	[System.Collections.ArrayList]$Entries = @()
 	[System.Collections.ArrayList]$CustomFilter = @()
-	
+
 	[ValidateSet('AND','OR')][string]$Logic = 'AND'
 
 	FilterBuilder()	{ }

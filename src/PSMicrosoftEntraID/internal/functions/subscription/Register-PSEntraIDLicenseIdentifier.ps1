@@ -22,7 +22,7 @@
 
     )
     begin {
-        
+
     }
     process {
         [bool] $autoUpdateOnImport = Get-PSFConfigValue -FullName ('{0}.LicenseIdentifiers.AutoUpdateOnImport' -f $script:ModuleName) -Fallback $false

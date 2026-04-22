@@ -2,28 +2,28 @@
     <#
 	.SYNOPSIS
 		Connets using a client secret.
-	
+
 	.DESCRIPTION
 		Connets using a client secret.
-	
+
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
-	
+
 	.PARAMETER ClientID
 		The ID of the registered app used with this authentication request.
-	
+
 	.PARAMETER TenantID
 		The ID of the tenant connected to with this authentication request.
-	
+
 	.PARAMETER ClientSecret
 		The actual secret used for authenticating the request.
 
 	.PARAMETER AuthenticationUrl
 		The url used for the authentication requests to retrieve tokens.
-	
+
 	.EXAMPLE
 		PS C:\> Connect-ServiceClientSecret -ClientID '<ClientID>' -TenantID '<TenantID>' -ClientSecret $secret -Resource '<Resource>' -AuthenticationUrl 'https://login.microsoftonline.com'
-	
+
 		Connects to the specified tenant using the specified client and secret.
 #>
     [CmdletBinding()]
@@ -35,11 +35,11 @@
 		[Parameter(Mandatory = $true)]
         [string]
         $ClientID,
-		
+
         [Parameter(Mandatory = $true)]
         [string]
         $TenantID,
-		
+
         [Parameter(Mandatory = $true)]
         [securestring]
         $ClientSecret,
@@ -48,7 +48,7 @@
         [string]
 		$AuthenticationUrl
     )
-	
+
     process {
         $body = @{
             resource      = $Resource
@@ -58,7 +58,7 @@
         }
         try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/token" -Body $body -ErrorAction Stop }
         catch { throw }
-		
+
         Read-AuthResponse -AuthResponse $authResponse
     }
 }

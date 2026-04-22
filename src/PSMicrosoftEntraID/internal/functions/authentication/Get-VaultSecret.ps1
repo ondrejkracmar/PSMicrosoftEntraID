@@ -2,7 +2,7 @@
 	<#
 	.SYNOPSIS
 		Retrieve a secret from Azure Key Vault.
-	
+
 	.DESCRIPTION
 		Retrieve a secret from Azure Key Vault.
 		Works for both certificates and secrets.
@@ -10,20 +10,20 @@
 		Requires one of ...
 		- An established connection with the AzureKeyVault service.
 		- An established AZ session via Az.Accounts with the Az.KeyVault module present.
-	
+
 	.PARAMETER VaultName
 		Name of the Vault to query.
-	
+
 	.PARAMETER SecretName
 		Name of the Secret to retrieve.
-	
+
 	.PARAMETER Cmdlet
 		The $PSCmdlet object of the caller, enabling errors to happen within the scope of the caller.
 		Defaults to the current command's $PSCmdlet
-	
+
 	.EXAMPLE
 		PS C:\> Get-VaultSecret -VaultName myvault -SecretName mysecret
-		
+
 		Retrieves the latest enabled version of mysecret from myvault
 	#>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
@@ -32,7 +32,7 @@
 		[Parameter(Mandatory = $true)]
 		[string]
 		$VaultName,
-		
+
 		[Parameter(Mandatory = $true)]
 		[string]
 		$SecretName,
@@ -95,7 +95,7 @@
 				$certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($bytes)
 				$clientSecret = $null
 			}
-			
+
 			[PSCustomObject]@{
 				Type         = $type
 				Certificate  = $certificate

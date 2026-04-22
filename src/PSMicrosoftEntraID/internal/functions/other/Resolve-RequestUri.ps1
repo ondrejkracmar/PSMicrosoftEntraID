@@ -2,22 +2,22 @@
 	<#
 	.SYNOPSIS
 		Resolves the actual Uri used for a request in Invoke-EntraRequest.
-	
+
 	.DESCRIPTION
 		Resolves the actual Uri used for a request in Invoke-EntraRequest.
 		If the path provided is a full url, it will be returned as is.
 		Otherwise, any present parameters will be resolved in the base service url before merging it with the specified path.
-	
+
 	.PARAMETER TokenObject
 		The object representing the token used for the request.
-	
+
 	.PARAMETER ServiceObject
 		The service object (if any) used with the request.
 		The parameters to be inserted into the query will be read from here.
-	
+
 	.PARAMETER BoundParameters
 		The parameters provided to Invoke-EntraRequest.
-	
+
 	.EXAMPLE
 		PS C:\> Resolve-RequestUri -TokenObject $tokenObject -ServiceObject $script:_EntraEndpoints.$($tokenObject.Service) -BoundParameters $PSBoundParameters
 

@@ -2,14 +2,14 @@
 	<#
 	.SYNOPSIS
 		Produces a standard output representation of the authentication response received.
-	
+
 	.DESCRIPTION
 		Produces a standard output representation of the authentication response received.
 		This streamlines the token processing and simplifies the connection code.
-	
+
 	.PARAMETER AuthResponse
 		The authentication response received.
-	
+
 	.EXAMPLE
 		PS C:\> Read-AuthResponse -AuthResponse $authResponse
 

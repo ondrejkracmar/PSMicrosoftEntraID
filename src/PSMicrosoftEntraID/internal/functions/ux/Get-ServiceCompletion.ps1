@@ -2,18 +2,18 @@
 	<#
 	.SYNOPSIS
 		Returns the values to complete for.service names.
-	
+
 	.DESCRIPTION
 		Returns the values to complete for.service names.
 		Use this command in argument completers.
-	
+
 	.PARAMETER ArgumentList
 		The arguments an argumentcompleter receives.
 		The third item will be the word to complete.
-	
+
 	.EXAMPLE
 		PS C:\> Get-ServiceCompletion -ArgumentList $args
-		
+
 		Returns the values to complete for.service names.
 	#>
 	[OutputType([System.Management.Automation.CompletionResult])]

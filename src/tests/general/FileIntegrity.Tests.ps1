@@ -55,7 +55,11 @@ Describe "Verifying integrity of module files" {
 			}
 			
 			It "[$name] Should have no trailing space" -TestCases @{ file = $file } {
-				($file | Select-String "\s$" | Where-Object { $_.Line.Trim().Length -gt 0}).LineNumber | Should -BeNullOrEmpty
+				$badLines = @($file | Select-String "\s$" | Where-Object { $_.Line.Trim().Length -gt 0 })
+				if ($badLines.Count -gt 0) {
+					$lineNumbers = ($badLines | ForEach-Object { $_.LineNumber }) -join ', '
+					throw "Trailing whitespace found on line(s): $lineNumbers"
+				}
 			}
 			
 			$tokens = $null

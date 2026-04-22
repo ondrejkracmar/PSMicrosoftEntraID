@@ -2,17 +2,17 @@
 	<#
     .SYNOPSIS
         Convert conditions in a hashtable to a Query string to append to a webrequest.
-    
+
     .DESCRIPTION
         Convert conditions in a hashtable to a Query string to append to a webrequest.
-    
+
     .PARAMETER QueryHash
         Hashtable of query modifiers - usually filter conditions - to include in a web request.
 
 	.PARAMETER DefaultQuery
 		Default query parameters defined in the service configuration.
 		Default query settings are overriden by explicit query parameters.
-    
+
     .EXAMPLE
         PS C:\> ConvertTo-QueryString -QueryHash $Query
 

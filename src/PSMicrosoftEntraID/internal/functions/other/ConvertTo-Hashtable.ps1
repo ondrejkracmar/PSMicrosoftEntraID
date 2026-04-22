@@ -2,24 +2,24 @@
 	<#
 	.SYNOPSIS
 		Converts input objects into hashtables.
-	
+
 	.DESCRIPTION
 		Converts input objects into hashtables.
 		Allows explicitly including some properties only and remapping key-names as required.
-	
+
 	.PARAMETER Include
 		Only select the specified properties.
-	
+
 	.PARAMETER Mapping
 		Remap hashtable/property keys.
 		This allows you to rename parameters before passing them through to other commands.
 		Example:
 		@{ Select = '$select' }
 		This will map the "Select"-property/key on the input object to be '$select' on the output item.
-	
+
 	.PARAMETER InputObject
 		The object to convert.
-	
+
 	.EXAMPLE
 		PS C:\> $__body = $PSBoundParameters | ConvertTo-Hashtable -Include Name, UserID -Mapping $__mapping
 

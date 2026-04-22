@@ -2,20 +2,20 @@
 	<#
 	.SYNOPSIS
 		Modify the settings on an existing Service configuration.
-	
+
 	.DESCRIPTION
 		Modify the settings on an existing Service configuration.
 		Service configurations are defined using Register-EntraService and define how connections and requests to a specific API service / endpoint are performed.
-	
+
 	.PARAMETER Name
 		The name of the already existing Service configuration.
-	
+
 	.PARAMETER ServiceUrl
 		The base Url requests will use.
-	
+
 	.PARAMETER Resource
 		The Resource ID. Used when connecting to identify which scopes of an App Registration to use.
-	
+
 	.PARAMETER DefaultScopes
 		Default scopes to request.
 		Used in interactive delegate flows to provide a good default user experience.
@@ -23,7 +23,7 @@
 
 	.PARAMETER Header
 		Header data to include in each request.
-	
+
 	.PARAMETER HelpUrl
 		Link for more information about this service.
 		Ideally to documentation that helps setting up the connection.
@@ -34,7 +34,7 @@
 		This refresh token allows requesting new tokens when the current one is expiring without requiring additional
 		interactive logon actions.
 		However, not all services support this scope.
-	
+
 	.EXAMPLE
 		PS C:\> Set-EntraService -Name Endpoint -ServiceUrl 'https://api-us.securitycenter.microsoft.com/api'
 
