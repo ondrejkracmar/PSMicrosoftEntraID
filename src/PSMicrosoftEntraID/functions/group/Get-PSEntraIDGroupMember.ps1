@@ -76,7 +76,14 @@ function Get-PSEntraIDGroupMember {
     }
 
     process {
+        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+            $query['$Filter'] = $Filter
+            if ($AdvancedFilter.IsPresent) {
+                $header['ConsistencyLevel'] = 'eventual'
+            }
+        }
         switch ($PSCmdlet.ParameterSetName) {
+            
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemInputObject.MailnickName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -85,12 +92,6 @@ function Get-PSEntraIDGroupMember {
                         }
                         else {
                             [string] $path = ('groups/{0}/members' -f $itemInputObject.Id)
-                        }
-                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                            $query['$Filter'] = $Filter
-                            if ($AdvancedFilter.IsPresent) {
-                                $header['ConsistencyLevel'] = 'eventual'
-                            }
                         }
                         ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         if (Test-PSFFunctionInterrupt) { return }
@@ -108,12 +109,6 @@ function Get-PSEntraIDGroupMember {
                             }
                             else {
                                 [string] $path = ('groups/{0}/members' -f $group.Id)
-                            }
-                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                                $query['$Filter'] = $Filter
-                                if ($AdvancedFilter.IsPresent) {
-                                    $header['ConsistencyLevel'] = 'eventual'
-                                }
                             }
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                             if (Test-PSFFunctionInterrupt) { return }

@@ -22,7 +22,7 @@
 	)
 
 	if (-not $InputObject) { return }
-	$jsonString = $InputObject | ConvertTo-Json -Depth 3
+	$jsonString = $InputObject | ConvertTo-Json -Depth 4
 
 	$type = if ($InputObject -is [array]) {
 		[PSMicrosoftEntraID.Groups.Group[]]
