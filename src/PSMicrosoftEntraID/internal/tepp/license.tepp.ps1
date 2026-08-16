@@ -66,6 +66,13 @@ function New-PSEntraIDTeppCompletionItem {
 		if ($Text -notlike "$bare*") { return }
 	}
 
+	# Drop whatever the tooltip repeats from the value itself - for -SkuPartNumber the
+	# part number is already the thing being completed. Done here rather than in the
+	# tooltip builders because the same tooltip serves -SkuId, where the value is a GUID
+	# and the part number is the useful part.
+	if (-not [string]::IsNullOrWhiteSpace($ToolTip)) {
+		$ToolTip = (@($ToolTip -split ' \| ') | Where-Object { $_ -ne $Text }) -join ' | '
+	}
 	if ([string]::IsNullOrWhiteSpace($ToolTip)) { $ToolTip = $Text }
 
 	# Values with spaces must go back quoted or the command line breaks apart.

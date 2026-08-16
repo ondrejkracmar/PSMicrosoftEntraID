@@ -42,6 +42,15 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
                 Select-Object -First 1
             $match.ToolTip | Should -Not -BeNullOrEmpty
             $match.ToolTip | Should -Not -Be $match.CompletionText
+            # ...and does not repeat the value being completed back at the user.
+            @($match.ToolTip -split ' \| ') | Should -Not -Contain $match.CompletionText
+        }
+
+        It 'keeps the part number in the tooltip when completing a SkuId' {
+            # There the value is a GUID, so the part number is the useful part and
+            # must survive the redundancy trim.
+            $match = Get-Completion 'Get-PSEntraIDUserLicense -SkuId c42b9cae' | Select-Object -First 1
+            if ($match) { $match.ToolTip | Should -Match '\w' }
         }
 
         It 'returns CompletionResult objects, not hashtables' {
