@@ -75,17 +75,15 @@
 
                 $deviceDetails = Invoke-EntraRequest -Service $service -Path ('devices/{0}' -f $deviceId) -Method Get -ErrorAction Stop
                 if ([object]::Equals($deviceDetails, $null)) {
-                    [PSCustomObject]@{
-                        PSTypeName  = 'PSMicrosoftEntraID.Devices.Device'
+                    # Nothing came back, but we know what was asked for - return that much
+                    # as the real type rather than a look-alike PSCustomObject.
+                    [PSMicrosoftEntraID.Devices.Device]@{
                         Id          = $deviceId
                         DisplayName = $deviceIdentity
                     }
                 }
                 else {
-                    if ($deviceDetails.PSObject.TypeNames -notcontains 'PSMicrosoftEntraID.Devices.Device') {
-                        $deviceDetails.PSObject.TypeNames.Insert(0, 'PSMicrosoftEntraID.Devices.Device')
-                    }
-                    $deviceDetails
+                    ConvertFrom-RestDevice -InputObject $deviceDetails
                 }
             } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
 

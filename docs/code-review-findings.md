@@ -45,6 +45,17 @@ could gate on it. It is now 927/927.
 They do — `ConfirmImpact = 'High'`, on the line after `SupportsShouldProcess`. A
 single-line grep missed it. Not a finding.
 
+**`Get-PSEntraIDDevice` declares an output type that does not exist.** It declares
+`[OutputType('PSMicrosoftEntraID.Devices.Device')]` and there was no .NET type by that
+name — but that is a **PSTypeName**, which the cmdlet stamps onto its result with
+`PSObject.TypeNames.Insert(0, ...)`. A perfectly valid PowerShell pattern; the
+declaration pointed at something real. Checking for a .NET type and concluding from its
+absence was the mistake.
+
+The cmdlet does now return a real `Devices.Device` — not because the old form was wrong,
+but because `DeviceDelta` has to derive from an actual class, and having two things that
+merely share a name would be worse than either.
+
 ---
 
 ## Known behaviour — deliberately not changed
