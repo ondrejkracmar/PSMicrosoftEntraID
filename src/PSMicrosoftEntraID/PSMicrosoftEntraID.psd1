@@ -41,6 +41,13 @@
 
 	# Functions to export from this module
 	FunctionsToExport  = @(
+		'Get-PSEntraIDUserDelta'
+		'Get-PSEntraIDGroupDelta'
+		'Get-PSEntraIDDeviceDelta'
+		'Get-PSEntraIDContactDelta'
+		'Get-PSEntraIDAdministrativeUnitDelta'
+		'Export-PSEntraIDDeltaSession'
+		'Import-PSEntraIDDeltaSession'
 		'Connect-PSMicrosoftEntraID'
 		'Disconnect-PSMicrosoftEntraID'
 		'Get-PSEntraIDOrganization'
