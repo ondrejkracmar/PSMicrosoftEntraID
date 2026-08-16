@@ -140,7 +140,10 @@
                     if ((-not $itemInputObject.PSObject.Properties['AssignedLicenses'] -or [object]::Equals($itemInputObject.AssignedLicenses, $null)) -and -not [string]::IsNullOrWhiteSpace($itemInputObject.Id)) {
                         $groupObject = Get-PSEntraIDGroup -Identity $itemInputObject.Id -EnableException:$EnableException
                     }
-                    if ([object]::Equals($groupObject, $null)) { continue }
+                    if ([object]::Equals($groupObject, $null)) {
+                        Write-PSFMessage -Level Warning -String 'License.Target.NotFound' -StringValues $itemInputObject.Id
+                        continue
+                    }
                     $assignedLicense = @($groupObject.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId }) | Select-Object -First 1
                     if ([object]::Equals($assignedLicense, $null)) {
                         [string[]] $existingDisabledServicePlanList = $allServicePlanIds

@@ -137,9 +137,17 @@
                     if ((-not $itemInputObject.PSObject.Properties['AssignedLicenses'] -or [object]::Equals($itemInputObject.AssignedLicenses, $null)) -and -not [string]::IsNullOrWhiteSpace($itemInputObject.Id)) {
                         $groupObject = Get-PSEntraIDGroup -Identity $itemInputObject.Id -EnableException:$EnableException
                     }
-                    if ([object]::Equals($groupObject, $null)) { continue }
+                    if ([object]::Equals($groupObject, $null)) {
+                        Write-PSFMessage -Level Warning -String 'License.Target.NotFound' -StringValues $itemInputObject.Id
+                        continue
+                    }
                     $assignedLicense = @($groupObject.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId }) | Select-Object -First 1
-                    if ([object]::Equals($assignedLicense, $null)) { continue }
+                    if ([object]::Equals($assignedLicense, $null)) {
+                        # Not an error: the SKU simply is not on this target. Say so, though -
+                        # silence here reads as success and it is not.
+                        Write-PSFMessage -Level Warning -String 'License.Sku.NotAssigned' -StringValues $skuTarget, $(if ($groupObject.DisplayName) { $groupObject.DisplayName } else { $groupObject.Id })
+                        continue
+                    }
                     [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
                     [string[]] $existingDisabledServicePlanList = @($assignedLicense.DisabledPlans | ForEach-Object { [string]$_ })
                     if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
@@ -176,7 +184,12 @@
                     }
                     else {
                         $assignedLicense = @($aADGroup.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId }) | Select-Object -First 1
-                        if ([object]::Equals($assignedLicense, $null)) { continue }
+                        if ([object]::Equals($assignedLicense, $null)) {
+                            # Not an error: the SKU simply is not on this target. Say so, though -
+                            # silence here reads as success and it is not.
+                            Write-PSFMessage -Level Warning -String 'License.Sku.NotAssigned' -StringValues $skuTarget, $group
+                            continue
+                        }
                         [System.Collections.ArrayList] $bodyDisabledServicePlanList = [System.Collections.ArrayList]::new()
                         [string[]] $existingDisabledServicePlanList = @($assignedLicense.DisabledPlans | ForEach-Object { [string]$_ })
                         if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {

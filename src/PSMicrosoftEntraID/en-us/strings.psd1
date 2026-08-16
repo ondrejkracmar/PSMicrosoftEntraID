@@ -46,6 +46,11 @@
 	'Group.License.List'                   = "List assigned licenses of group '{0}'"
 	'Group.AdditionalProperty'             = "Get group additional properties '{0}'"
 	'Group.Get.Failed'                     = "Get group '{0}' failed"
+	# Emitted where the code used to `continue` in silence. A caller could not tell
+	# "done" from "did nothing", which is how a group template looked configured while
+	# nothing had been written to it.
+	'License.Sku.NotAssigned'              = "Subscription '{0}' is not assigned to '{1}'; nothing to change"
+	'License.Target.NotFound'              = "Target '{0}' could not be resolved; skipping"
 	'Group.Filter'                         = "List groups with filter '{0}'"
 	'Group.List'                           = "List groups '{0}'"
 	'Group.New'                            = "Create new group '{0}'"
