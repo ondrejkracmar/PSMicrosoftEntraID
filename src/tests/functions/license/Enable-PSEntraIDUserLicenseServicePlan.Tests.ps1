@@ -15,6 +15,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
 
         # Mock dependencies
+        # Catch-all fallbacks, declared FIRST so the filtered mocks below still win.
+        # Without them any config key or localized string the filters do not name
+        # blows up with "No mock for command ... matched the call", which is what the
+        # pipeline-input paths were hitting. Returning $Fallback mirrors what
+        # Get-PSFConfigValue really does when the setting is not present.
+        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { $Fallback }
+        Mock -ModuleName $script:ModuleName Get-PSFLocalizedString { $Name }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
