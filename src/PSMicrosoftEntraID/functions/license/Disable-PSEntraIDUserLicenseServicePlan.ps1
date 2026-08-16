@@ -157,7 +157,7 @@
                     [hashtable] $body = @{
                         addLicenses    = @(
                             @{
-                                disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique)
+                                disabledPlans = @($bodyDisabledServicePlanList | Select-Object -Unique)
                                 skuId         = $bodySkuId
                             }
                         )
@@ -210,7 +210,7 @@
                     [hashtable] $body = @{
                         addLicenses    = @(
                             @{
-                                disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique)
+                                disabledPlans = @($bodyDisabledServicePlanList | Select-Object -Unique)
                                 skuId         = $bodySkuId
                             }
                         )

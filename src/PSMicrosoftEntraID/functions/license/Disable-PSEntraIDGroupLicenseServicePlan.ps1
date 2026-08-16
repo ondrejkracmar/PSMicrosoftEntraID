@@ -151,7 +151,7 @@
                         $bodyServicePlanId | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
                     }
                     if ($bodyDisabledServicePlanList.Count -gt 0) {
-                        [hashtable] $body = @{ addLicenses = @(@{ disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique); skuId = $bodySkuId }); removeLicenses = @() }
+                        [hashtable] $body = @{ addLicenses = @(@{ disabledPlans = @($bodyDisabledServicePlanList | Select-Object -Unique); skuId = $bodySkuId }); removeLicenses = @() }
                         [string] $path = ('groups/{0}/{1}' -f $groupObject.Id, 'assignLicense')
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
@@ -188,7 +188,7 @@
                             $bodyServicePlanId | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
                         }
                         if ($bodyDisabledServicePlanList.Count -gt 0) {
-                            [hashtable] $body = @{ addLicenses = @(@{ disabledPlans = ($bodyDisabledServicePlanList | Select-Object -Unique); skuId = $bodySkuId }); removeLicenses = @() }
+                            [hashtable] $body = @{ addLicenses = @(@{ disabledPlans = @($bodyDisabledServicePlanList | Select-Object -Unique); skuId = $bodySkuId }); removeLicenses = @() }
                             [string] $path = ('groups/{0}/{1}' -f $aADGroup.Id, 'assignLicense')
                             if ($PassThru.IsPresent) {
                                 [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
