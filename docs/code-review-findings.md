@@ -37,6 +37,37 @@ single-line grep missed it. Not a finding.
 
 ---
 
+## Open — found in the batch / license pass
+
+### A batch call reports success even when its sub-requests failed
+
+`Invoke-PSEntraIDBatchRequest` posts up to 20 sub-requests, maps each response into
+`PSMicrosoftEntraID.Batch.Response` — carrying a `Status` — and returns. **Nothing ever
+looks at that Status**, anywhere in the module (verified: no comparison against 400, 200
+or any status code exists).
+
+Graph returns HTTP 200 for the batch envelope even when individual sub-requests fail with
+403, 404 or 429. So a batch where every operation was rejected returns exactly like one
+where every operation succeeded, with no warning. The caller has to walk `.Responses`
+themselves and know to do so.
+
+Worse for 429 specifically: throttling of a *sub-request* is reported inside the batch
+body, not as an HTTP error, so the retry logic in `Invoke-EntraRequest` — which inspects
+`$_.ErrorDetails.Message` for `TooManyRequests` — never sees it. A throttled sub-request
+is silently dropped rather than retried, in the one feature that exists specifically for
+bulk work.
+
+At minimum the cmdlet should warn when any sub-response has a failing status. Retrying
+throttled sub-requests is a bigger change and a separate decision.
+
+### 20 Graph calls omit `-ErrorAction Stop` inside a protected block
+
+Of 122 `Invoke-EntraRequest` calls, 20 lack `-ErrorAction Stop`; 11 of those are in
+`Get-PSEntraIDUserLicense` alone. `Invoke-PSFProtectedCommand` only reports what
+*terminates* — a non-terminating error inside the scriptblock passes straight through it,
+so those paths return nothing and say nothing when the request fails. Same class as the
+silent `continue` in finding #7, and the same consequence: silence reads as success.
+
 ## Known behaviour — deliberately not changed
 
 ### `| Select-Object -First N` logs a warning that is not a failure
