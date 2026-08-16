@@ -1,1 +1,5 @@
 src/PSMicrosoftEntraID/internal/functions/subscription/Update-PSEntraIDSubscribedLicenseDisplayName.ps1
+
+# Build output: vsts-build.ps1 assembles the shippable module here, including the
+# compiled psm1 and the C# library. Never committed - the pipeline rebuilds it.
+src/publish/

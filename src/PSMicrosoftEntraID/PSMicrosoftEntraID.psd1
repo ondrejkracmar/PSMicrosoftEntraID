@@ -130,16 +130,13 @@
 			ExternalModuleDependencies = @('PSFramework')
 
 			# A URL to the license for this module.
-			# LicenseUri = ''
+			LicenseUri                 = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID/blob/main/LICENSE'
 
 			# A URL to the main website for this project.
-			# ProjectUri = ''
-
-			# A URL to an icon representing this module.
-			# IconUri = ''
+			ProjectUri                 = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID'
 
 			# ReleaseNotes of this module
-			# ReleaseNotes = ''
+			ReleaseNotes               = 'See changelog.md in the project repository.'
 
 		} # End of PSData hashtable
 
