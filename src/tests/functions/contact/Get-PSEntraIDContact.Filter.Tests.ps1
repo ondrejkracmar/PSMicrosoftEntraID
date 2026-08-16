@@ -12,7 +12,7 @@ Describe 'Get-PSEntraIDContact filter escaping' -Tag 'Unit' {
 
     BeforeAll {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { $Fallback }
+        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { if ($PSBoundParameters.ContainsKey('Fallback')) { $Fallback } else { $null } }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         # The begin block feeds these into New-TimeSpan, which rejects $null.
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }

@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
     Import-Module "$PSScriptRoot/../../../PSMicrosoftEntraID/PSMicrosoftEntraID.psd1" -Force
 }
@@ -23,7 +23,7 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
     Context 'SKU part numbers' {
 
         It 'completes and filters on the word being typed' {
-            $result = Get-Completion 'Get-PSEntraIDUserLicense -SkuPartNumber DEVELOPER'
+            $result = @(Get-Completion 'Get-PSEntraIDUserLicense -SkuPartNumber DEVELOPER')
             $result.Count | Should -BeGreaterThan 0
             $result.CompletionText | Should -Contain 'DEVELOPERPACK_E5'
             # Every match must start with what was typed: a registered completer's
@@ -33,7 +33,7 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
 
         It 'does not fall back to file-path completion' {
             # The old failure mode: '.\.git', '.\docs', ... instead of SKUs.
-            $result = Get-Completion 'Get-PSEntraIDUserLicense -SkuPartNumber '
+            $result = @(Get-Completion 'Get-PSEntraIDUserLicense -SkuPartNumber ')
             @($result | Where-Object { $_.CompletionText -like '.\*' }).Count | Should -Be 0
         }
 
@@ -65,7 +65,7 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
         It 'uses the bound SkuPartNumber to narrow the plan list' {
             # Exercises $fakeBoundParameter, which only arrives if the scriptblock
             # declares the completer parameters - it was undefined before.
-            $result = Get-Completion 'Enable-PSEntraIDGroupLicenseServicePlan -SkuPartNumber DEVELOPERPACK_E5 -ServicePlanName TEAMS'
+            $result = @(Get-Completion 'Enable-PSEntraIDGroupLicenseServicePlan -SkuPartNumber DEVELOPERPACK_E5 -ServicePlanName TEAMS')
             $result.CompletionText | Should -Contain 'TEAMS1'
         }
     }
@@ -73,7 +73,7 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
     Context 'Usage location' {
 
         It 'quotes a value containing spaces so the command line stays parseable' {
-            $result = Get-Completion 'Set-PSEntraIDUserUsageLocation -UsageLocationCountry Czech'
+            $result = @(Get-Completion 'Set-PSEntraIDUserUsageLocation -UsageLocationCountry Czech')
             $result.Count | Should -BeGreaterThan 0
             $result[0].CompletionText | Should -Be "'Czech Republic'"
             # The menu entry itself stays unquoted.
@@ -81,7 +81,7 @@ Describe 'Tab expansion (TEPP)' -Tag 'Unit' {
         }
 
         It 'completes the country code with the country name as tooltip' {
-            $result = Get-Completion 'Set-PSEntraIDUserUsageLocation -UsageLocationCode CZ'
+            $result = @(Get-Completion 'Set-PSEntraIDUserUsageLocation -UsageLocationCode CZ')
             $result.CompletionText | Should -Contain 'CZ'
             ($result | Where-Object CompletionText -eq 'CZ').ToolTip | Should -Be 'Czech Republic'
         }

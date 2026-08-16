@@ -1,4 +1,4 @@
-function ConvertFrom-RestDevice {
+﻿function ConvertFrom-RestDevice {
 	<#
 	.SYNOPSIS
 		Converts device objects to look nice.
@@ -17,6 +17,8 @@ function ConvertFrom-RestDevice {
 
 	.EXAMPLE
 		PS C:\> Invoke-EntraRequest -Service 'graph' -Path devices -Method Get | ConvertFrom-RestDevice
+
+		Turns the raw Graph payload into PSMicrosoftEntraID.Devices.Device objects.
 	#>
 	[CmdletBinding()]
 	param (

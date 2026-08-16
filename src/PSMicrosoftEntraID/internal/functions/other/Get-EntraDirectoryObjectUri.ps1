@@ -1,4 +1,4 @@
-function Get-EntraDirectoryObjectUri {
+﻿function Get-EntraDirectoryObjectUri {
     <#
     .SYNOPSIS
         Builds the absolute directoryObjects URI Graph expects in an '@odata.id' binding.

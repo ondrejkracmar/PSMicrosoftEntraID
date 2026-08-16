@@ -3,3 +3,6 @@ src/PSMicrosoftEntraID/internal/functions/subscription/Update-PSEntraIDSubscribe
 # Build output: vsts-build.ps1 assembles the shippable module here, including the
 # compiled psm1 and the C# library. Never committed - the pipeline rebuilds it.
 src/publish/
+
+# Pester writes its NUnit result file here when the build script runs locally.
+TestResults/

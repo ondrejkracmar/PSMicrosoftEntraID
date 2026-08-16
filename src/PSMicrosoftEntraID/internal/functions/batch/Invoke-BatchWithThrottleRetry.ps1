@@ -1,4 +1,4 @@
-function Invoke-BatchWithThrottleRetry {
+﻿function Invoke-BatchWithThrottleRetry {
     <#
     .SYNOPSIS
         Posts a Graph $batch and re-sends the sub-requests Graph throttled, until they

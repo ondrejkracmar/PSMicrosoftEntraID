@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     Import-Module "$PSScriptRoot/../../../$script:ModuleName/$script:ModuleName.psd1" -Force
@@ -12,7 +12,7 @@ Describe 'Invoke-BatchWithThrottleRetry' -Tag 'Unit' {
     # exists for bulk work.
 
     BeforeAll {
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { $Fallback }
+        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { if ($PSBoundParameters.ContainsKey('Fallback')) { $Fallback } else { $null } }
         Mock -ModuleName $script:ModuleName Start-Sleep { }   # no real waiting in tests
         Mock -ModuleName $script:ModuleName Write-PSFMessage { }
 

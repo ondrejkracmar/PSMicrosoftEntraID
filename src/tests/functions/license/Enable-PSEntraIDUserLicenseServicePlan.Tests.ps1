@@ -20,7 +20,7 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         # blows up with "No mock for command ... matched the call", which is what the
         # pipeline-input paths were hitting. Returning $Fallback mirrors what
         # Get-PSFConfigValue really does when the setting is not present.
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { $Fallback }
+        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { if ($PSBoundParameters.ContainsKey('Fallback')) { $Fallback } else { $null } }
         Mock -ModuleName $script:ModuleName Get-PSFLocalizedString { $Name }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }

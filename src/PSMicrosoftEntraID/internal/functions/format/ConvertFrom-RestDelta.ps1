@@ -1,4 +1,4 @@
-function ConvertFrom-RestDelta {
+﻿function ConvertFrom-RestDelta {
     <#
     .SYNOPSIS
         Converts a delta response into the strongly typed delta object for that resource.
@@ -39,6 +39,8 @@ function ConvertFrom-RestDelta {
 
     .EXAMPLE
         PS C:\> ConvertFrom-RestDelta -InputObject $response -TargetType ([PSMicrosoftEntraID.Users.UserDelta])
+
+        Turns one raw delta page into typed objects, each stamped with its ChangeType.
     #>
     [CmdletBinding()]
     param (
