@@ -15,7 +15,24 @@
 
 		Get collection of EntraID organization
 
-	#>
+	    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
+
+#>
     [OutputType('PSMicrosoftEntraID.Organization')]
     [CmdletBinding()]
     param (

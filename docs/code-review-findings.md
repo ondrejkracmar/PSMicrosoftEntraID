@@ -37,6 +37,52 @@ single-line grep missed it. Not a finding.
 
 ---
 
+## Known behaviour — deliberately not changed
+
+### `| Select-Object -First N` logs a warning that is not a failure
+
+```powershell
+Get-PSEntraIDUser -CompanyName 'Contoso' | Select-Object -First 3
+```
+
+```
+WARNING: [Get-PSEntraIDUser] Failed to: List users with filter 'companyName in (...)'
+         | The pipeline has been stopped
+```
+
+The data is correct and complete. `Select-Object -First` stops the pipeline once it has
+what it asked for, and the upstream command's next write throws
+`PipelineStoppedException` — normal termination, not an error. It surfaces only because
+the write happens inside an `Invoke-PSFProtectedCommand` scriptblock, which reports any
+exception as a failed action.
+
+**Why it is not fixed.** Two shapes were tested:
+
+| Shape | Result |
+|---|---|
+| `try { … } catch [PipelineStoppedException] { }` inside the scriptblock | **No effect.** A pipeline stop is a flow-control exception the engine handles above `try`/`catch`. |
+| Collect inside the scriptblock, emit after it | **Works** — no warning. |
+
+The second one is a real fix, and it costs streaming. Today objects flow to the consumer
+as they arrive; capturing the whole result first means nothing is emitted until the last
+object is in memory. On a tenant with tens of thousands of users that trades a cosmetic
+warning for latency and memory across every read cmdlet — and `Select-Object -First 3`
+would stop warning without stopping the read.
+
+So: the warning stays. If you are scripting against these cmdlets and want it gone,
+either materialise first
+
+```powershell
+$users = @(Get-PSEntraIDUser -CompanyName 'Contoso')
+$users | Select-Object -First 3
+```
+
+or filter server-side with `-Filter` instead of trimming client-side.
+
+Revisit if PSFramework ever grows a way to exempt an exception type from
+`Invoke-PSFProtectedCommand`'s failure reporting — that would give the fix without the
+streaming cost.
+
 ## Cosmetic / consistency
 
 - `-EnableException` is written two ways: `-EnableException:$EnableException` (50 call
