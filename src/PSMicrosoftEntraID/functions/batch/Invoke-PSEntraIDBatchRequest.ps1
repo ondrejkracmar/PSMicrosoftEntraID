@@ -80,27 +80,16 @@
     process {
         foreach ($payload in $InputObject) {
 
-            [hashtable] $body = @{
-                'requests' = @($payload.Requests | Select-Object -Property @{ Name = 'id'; Expression = { $PSItem.Id } } `
-                        , @{ Name = 'method'; Expression = { $PSItem.Method } } `
-                        , @{ Name = 'url'; Expression = { $PSItem.Url } } `
-                        , @{ Name = 'headers'; Expression = { $PSItem.Headers } } `
-                        , @{ Name = 'body'; Expression = { $PSItem.Body } }
-                )
-            }
-
+            # Building the body and re-sending throttled sub-requests lives in
+            # Invoke-BatchWithThrottleRetry: Graph reports a throttled SUB-request inside
+            # the batch body with the envelope still HTTP 200, so Invoke-EntraRequest's
+            # retry never sees it and the sub-request used to be dropped in silence.
             Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
                 -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
                 -ScriptBlock {
-                $batchResponseList = [System.Collections.Generic.List[psobject]]::New()
-                [psobject] $batchResponse = Invoke-EntraRequest -Service $service -Header $header -Path $path -Body $body -Method Post -ErrorAction Stop
-                $batchResponse.Responses | ForEach-Object { [void] $batchResponseList.Add($PSItem) }
                 [PSMicrosoftEntraID.Batch.BatchResponsePayload]@{
                     Requests  = $payload.Requests
-                    Responses = [PSMicrosoftEntraID.Batch.Response[]] ($batchResponseList | Select-Object -Property @{ Name = 'Id'; Expression = { $PSItem.Id } } `
-                            , @{ Name = 'Status'; Expression = { $PSItem.status } } `
-                            , @{ Name = 'Headers'; Expression = { $PSItem.headers } } `
-                            , @{ Name = 'Body'; Expression = { $PSItem.body } })
+                    Responses = Invoke-BatchWithThrottleRetry -Payload $payload -Service $service -Header $header -Path $path -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }

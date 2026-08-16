@@ -51,6 +51,8 @@
 	# nothing had been written to it.
 	'License.Sku.NotAssigned'              = "Subscription '{0}' is not assigned to '{1}'; nothing to change"
 	'License.Target.NotFound'              = "Target '{0}' could not be resolved; skipping"
+	'Batch.Throttled'                      = "Graph throttled {0} sub-request(s); waiting {1}s before retry {2} of {3}"
+	'Batch.SubRequestFailed'               = "{0} of {1} sub-request(s) failed: {2}. The batch itself succeeded - Graph returns HTTP 200 for the envelope regardless."
 	'Group.Filter'                         = "List groups with filter '{0}'"
 	'Group.List'                           = "List groups '{0}'"
 	'Group.New'                            = "Create new group '{0}'"

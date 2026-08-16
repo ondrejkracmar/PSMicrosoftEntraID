@@ -22,7 +22,8 @@ administrativeunit.
 | 6 | core | `Resolve-PSEntraIDConfirmPreference` returned `$true` when neither `-Force` nor `-Confirm` was given, and call sites bound it as `-Confirm:$true` — which **forces** a prompt rather than deferring to `ConfirmImpact`. Every cmdlet prompted unless the caller passed `-Force`. | `cc4b1c0` |
 | 7 | license | Four `continue` paths skipped in silence when the target or the SKU was not found — no message even under `-EnableException`, so a caller could not tell "done" from "did nothing". Now warn, with two new localized strings. | this change |
 | 8 | library | `Users/UserGuest .cs` had a space before the extension. Breaks globs and unquoted paths. Renamed. | this change |
-| 9 | tests | Nothing covered `-Force`, the `-Confirm` precedence, or the default no-prompt path — which is why #6 survived. Seven cases added, including one that pins the PowerShell semantics the design depends on. | this change |
+| 9 | tests | Nothing covered `-Force`, the `-Confirm` precedence, or the default no-prompt path — which is why #6 survived. Seven cases added, including one that pins the PowerShell semantics the design depends on. | `081268e` |
+| 10 | batch | A throttled **sub-request** is reported inside the batch body with the envelope still HTTP 200, so `Invoke-EntraRequest`'s retry never saw it and the sub-request was dropped — in the one feature built for bulk work. Now re-sent, honouring Graph's own `Retry-After`. Failing sub-requests of any kind are also warned about, instead of a wholly-rejected batch looking identical to a successful one. | this change |
 
 Two of these hid behind the same weakness: **the test suite was never green**, so nothing
 could gate on it. It is now 927/927.
@@ -38,27 +39,6 @@ single-line grep missed it. Not a finding.
 ---
 
 ## Open — found in the batch / license pass
-
-### A batch call reports success even when its sub-requests failed
-
-`Invoke-PSEntraIDBatchRequest` posts up to 20 sub-requests, maps each response into
-`PSMicrosoftEntraID.Batch.Response` — carrying a `Status` — and returns. **Nothing ever
-looks at that Status**, anywhere in the module (verified: no comparison against 400, 200
-or any status code exists).
-
-Graph returns HTTP 200 for the batch envelope even when individual sub-requests fail with
-403, 404 or 429. So a batch where every operation was rejected returns exactly like one
-where every operation succeeded, with no warning. The caller has to walk `.Responses`
-themselves and know to do so.
-
-Worse for 429 specifically: throttling of a *sub-request* is reported inside the batch
-body, not as an HTTP error, so the retry logic in `Invoke-EntraRequest` — which inspects
-`$_.ErrorDetails.Message` for `TooManyRequests` — never sees it. A throttled sub-request
-is silently dropped rather than retried, in the one feature that exists specifically for
-bulk work.
-
-At minimum the cmdlet should warn when any sub-response has a failing status. Retrying
-throttled sub-requests is a bigger change and a separate decision.
 
 ### 20 Graph calls omit `-ErrorAction Stop` inside a protected block
 
