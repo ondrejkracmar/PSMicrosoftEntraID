@@ -128,7 +128,7 @@
                 }
                 foreach ($userObject in $InputObject) {
                     [hashtable] $body = @{
-                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $userObject.Id
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $userObject.Id -Service $service
                     }
                     [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -158,7 +158,7 @@
                 }
                 foreach ($groupObject in $InputObjectGroup) {
                     [hashtable] $body = @{
-                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $groupObject.Id
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $groupObject.Id -Service $service
                     }
                     [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -188,7 +188,7 @@
                 }
                 foreach ($deviceObject in $InputObjectDevice) {
                     [hashtable] $body = @{
-                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $deviceObject.Id
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $deviceObject.Id -Service $service
                     }
                     [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -220,7 +220,7 @@
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $userIdentity
                     if (-not ([object]::Equals($aADUser, $null))) {
                         [hashtable] $body = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $aADUser.Id
+                            '@odata.id' = Get-EntraDirectoryObjectUri -Id $aADUser.Id -Service $service
                         }
                         [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -258,7 +258,7 @@
                     [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $groupIdentity
                     if (-not ([object]::Equals($aADGroup, $null))) {
                         [hashtable] $body = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $aADGroup.Id
+                            '@odata.id' = Get-EntraDirectoryObjectUri -Id $aADGroup.Id -Service $service
                         }
                         [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -296,7 +296,7 @@
                     # Note: Device cmdlets would need to be implemented separately
                     # For now, we'll use the device ID directly
                     [hashtable] $body = @{
-                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $deviceIdentity
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $deviceIdentity -Service $service
                     }
                     [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 

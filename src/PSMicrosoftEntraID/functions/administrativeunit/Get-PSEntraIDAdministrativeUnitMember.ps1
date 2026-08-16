@@ -101,12 +101,12 @@ function Get-PSEntraIDAdministrativeUnitMember {
                         $header['ConsistencyLevel'] = 'eventual'
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $administrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $administrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $administrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $administrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     }
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -129,12 +129,12 @@ function Get-PSEntraIDAdministrativeUnitMember {
                             $header['ConsistencyLevel'] = 'eventual'
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
-                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
-                            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                         }
                         if (Test-PSFFunctionInterrupt) { return }
                     }

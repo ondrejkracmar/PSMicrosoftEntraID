@@ -87,7 +87,7 @@
                     }
                     $deviceDetails
                 }
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
 
             if (Test-PSFFunctionInterrupt) { return }
             $output

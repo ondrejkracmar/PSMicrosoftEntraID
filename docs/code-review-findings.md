@@ -30,6 +30,7 @@ else; `organization`, `device` and `administrativeunit` turned up nothing.
 | 8 | library | `Users/UserGuest .cs` had a space before the extension. Breaks globs and unquoted paths. Renamed. | this change |
 | 9 | tests | Nothing covered `-Force`, the `-Confirm` precedence, or the default no-prompt path — which is why #6 survived. Seven cases added, including one that pins the PowerShell semantics the design depends on. | `081268e` |
 | 10 | batch | A throttled **sub-request** is reported inside the batch body with the envelope still HTTP 200, so `Invoke-EntraRequest`'s retry never saw it and the sub-request was dropped — in the one feature built for bulk work. Now re-sent, honouring Graph's own `Retry-After`. Failing sub-requests of any kind are also warned about, instead of a wholly-rejected batch looking identical to a successful one. | `f69c3fc` |
+| 13 | administrativeunit | Six `@odata.id` bindings hard-coded `https://graph.microsoft.com/v1.0`. The service URL is configurable (`Register-EntraService -ServiceUrl`), so on a sovereign cloud — US Government `graph.microsoft.us`, China `microsoftgraph.chinacloudapi.cn` — those bindings pointed at the commercial cloud. Now derived from the connected service. Filed as cosmetic at first; it is not. | this change |
 | 12 | contact | `Get-PSEntraIDContact` interpolated `-Identity` / `-Name` straight into the OData filter. Both are free strings, so an apostrophe in a name (`O'Brien`) broke the query and could be used to rewrite it. The only unescaped filter left in the module; everything else already used `ConvertTo-ODataFilterString`. | this change |
 | 11 | license | 13 Graph calls omitted `-ErrorAction Stop` inside a protected block, so a non-terminating failure passed straight through `Invoke-PSFProtectedCommand` and the path returned nothing while reporting nothing. All 13 were in `Get-PSEntraIDUserLicense` (11) and `Get-PSEntraIDUserLicenseDetail` (2) — a pattern copied within one area, not a per-site decision; the other 100 calls already had it. Suite unchanged at 945/945 after the fix, which is the evidence it was an oversight. | this change |
 
@@ -92,12 +93,15 @@ Revisit if PSFramework ever grows a way to exempt an exception type from
 `Invoke-PSFProtectedCommand`'s failure reporting — that would give the fix without the
 streaming cost.
 
-## Cosmetic / consistency
+## Consistency — done
 
-- `-EnableException` is written two ways: `-EnableException:$EnableException` (50 call
-  sites) and `-EnableException $EnableException` (79). Both bind correctly for a switch;
-  pick one.
-- `Connect-PSMicrosoftEntraID` and `Get-PSEntraIDCommandRetry` have no `[OutputType]`,
-  unlike every other exported function.
-- Six hard-coded `graph.microsoft.com` URLs in `functions/` while `internal/identifiers/`
-  exists to centralise paths.
+- `-EnableException` is written one way everywhere now: `-EnableException:$EnableException`,
+  83 sites across 35 files. The colon form binds correctly whether the target parameter is
+  `[switch]` (the module's own cmdlets) or `[bool]` (`Invoke-PSFProtectedCommand`), so it is
+  one rule with no exceptions to remember.
+- `Connect-PSMicrosoftEntraID` and `Get-PSEntraIDCommandRetry` declare `[OutputType]` like
+  every other exported function. `Connect-...` needed the *string* form —
+  `[OutputType('EntraToken')]` — because `EntraToken` is a PowerShell class the attribute
+  cannot resolve as a type literal; the bracket form silently produced no output type at
+  all.
+- The hard-coded Graph URLs are gone (finding #13).

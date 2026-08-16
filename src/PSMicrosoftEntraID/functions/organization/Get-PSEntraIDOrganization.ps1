@@ -53,7 +53,7 @@
     process {
         Invoke-PSFProtectedCommand -ActionString 'Organization.Get' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             ConvertFrom-RestOrganizationDetail -InputObject(Invoke-EntraRequest -Service $service -Path organization -Query $query -Method Get -ErrorAction Stop)
-        } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+        } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
     }
     end
