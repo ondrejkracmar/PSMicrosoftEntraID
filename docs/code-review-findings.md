@@ -3,10 +3,16 @@
 Rolling record of a review of PSMicrosoftEntraID, area by area. Fixed items stay here
 with the commit that closed them, so the same ground is not re-covered.
 
-Areas reviewed so far: **license**, **authentication + core** (see also
-`entraauth-divergence.md`), **tab expansion**, **test suite**, **build & versioning**.
-Not yet reviewed: user, group, batch, device, organization, serviceannouncement,
-administrativeunit.
+All areas reviewed: **license**, **authentication + core** (see also
+`entraauth-divergence.md`), **tab expansion**, **test suite**, **build & versioning**,
+**user**, **group**, **batch**, **contact**, **device**, **organization**,
+**serviceannouncement**, **administrativeunit**.
+
+Clean on inspection: OData filters are escaped through one helper everywhere (16 call
+sites) bar the one fixed below; identity parameters carry validation attributes
+consistently (25 uses); every write cmdlet declares `SupportsShouldProcess` with an
+explicit `ConfirmImpact`; the single-element array collapse of finding #1 appears nowhere
+else; `organization`, `device` and `administrativeunit` turned up nothing.
 
 ---
 
@@ -24,6 +30,7 @@ administrativeunit.
 | 8 | library | `Users/UserGuest .cs` had a space before the extension. Breaks globs and unquoted paths. Renamed. | this change |
 | 9 | tests | Nothing covered `-Force`, the `-Confirm` precedence, or the default no-prompt path — which is why #6 survived. Seven cases added, including one that pins the PowerShell semantics the design depends on. | `081268e` |
 | 10 | batch | A throttled **sub-request** is reported inside the batch body with the envelope still HTTP 200, so `Invoke-EntraRequest`'s retry never saw it and the sub-request was dropped — in the one feature built for bulk work. Now re-sent, honouring Graph's own `Retry-After`. Failing sub-requests of any kind are also warned about, instead of a wholly-rejected batch looking identical to a successful one. | `f69c3fc` |
+| 12 | contact | `Get-PSEntraIDContact` interpolated `-Identity` / `-Name` straight into the OData filter. Both are free strings, so an apostrophe in a name (`O'Brien`) broke the query and could be used to rewrite it. The only unescaped filter left in the module; everything else already used `ConvertTo-ODataFilterString`. | this change |
 | 11 | license | 13 Graph calls omitted `-ErrorAction Stop` inside a protected block, so a non-terminating failure passed straight through `Invoke-PSFProtectedCommand` and the path returned nothing while reporting nothing. All 13 were in `Get-PSEntraIDUserLicense` (11) and `Get-PSEntraIDUserLicenseDetail` (2) — a pattern copied within one area, not a per-site decision; the other 100 calls already had it. Suite unchanged at 945/945 after the fix, which is the evidence it was an oversight. | this change |
 
 Two of these hid behind the same weakness: **the test suite was never green**, so nothing

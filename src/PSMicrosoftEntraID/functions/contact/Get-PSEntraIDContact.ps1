@@ -90,7 +90,10 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($contact in $Identity) {
-                    $query['$filter'] = "mail eq '$contact'"
+                    # Escape: -Identity is a free string, so an apostrophe in a name
+                    # (O'Brien) breaks the filter, and worse can be used to rewrite it.
+                    # Every other filter in the module goes through this helper.
+                    $query['$filter'] = "mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $contact)
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Get' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
@@ -100,7 +103,8 @@
 
             'Name' {
                 foreach ($contact in $Name) {
-                    $query['$filter'] = "startswith(displayName,'$contact') or startswith(givenName,'$contact') or startswith(surname,'$contact')"
+                    $contactEscaped = ConvertTo-ODataFilterString -Value $contact
+                    $query['$filter'] = "startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}')" -f $contactEscaped
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
