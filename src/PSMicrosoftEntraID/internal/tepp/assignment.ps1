@@ -3,8 +3,6 @@
 Register-PSFTeppArgumentCompleter -Command Get-Alcohol -Parameter Type -Name PSMicrosoftEntraID.alcohol
 #>
 
-Register-PSFTeppArgumentCompleter -Command Get-PSEntraIDUserSubscribedSku -Parameter SkuId -Name 'subscribed.skuid'
-Register-PSFTeppArgumentCompleter -Command Get-PSEntraIDUserSubscribedSku -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
 
 Register-PSFTeppArgumentCompleter -Command Get-PSEntraIDUserLicense -Parameter SkuId -Name 'subscribed.skuid'
 Register-PSFTeppArgumentCompleter -Command Get-PSEntraIDUserLicense -Parameter SkuPartNumber -Name 'subscribed.skupartnumber'
