@@ -33,15 +33,20 @@ upgrade can be a mechanical diff instead of an archaeology exercise.
 
 ## Theirs — features we have not taken
 
-| File | What we are missing |
-|---|---|
-| `Invoke-EntraRequest.ps1` | Delta query support: `-DeltaSession`, `-MinimalDelta`, injecting `$deltaToken` into the query, the `Prefer: return=minimal` header, and harvesting `@odata.deltaLink` back into the session hashtable. |
+None outstanding.
 
-We also weakened `Invoke-EntraRequest`'s `-Token` parameter from `[EntraToken]` to
-`[object]`. That was a workaround for the test suite, which used to inject a fake
-`EntraToken` C# class via `Add-Type` in every test file; a type added that way lives in
-the AppDomain forever and collided with the module's real PowerShell class. The fake class
-is gone as of the test-isolation change, so the upstream type constraint can be restored.
+`Invoke-EntraRequest.ps1` used to be listed here: it lacked delta query support
+(`-DeltaSession`, `-MinimalDelta`, the `$deltaToken` query injection, the
+`Prefer: return=minimal` header and harvesting `@odata.deltaLink`). Since it had no local
+changes worth keeping beyond a weakened `-Token` type, the whole file was taken from
+upstream 1.8.55 verbatim. It is now identical to upstream — do not treat it as a
+divergence.
+
+That also restored `[EntraToken]` on `-Token`, which we had weakened to `[object]`. The
+reason was the test suite: every test file injected a fake `EntraToken` C# class via
+`Add-Type`, and a type added that way lives in the AppDomain for the rest of the session,
+colliding with the module's real PowerShell class. The fake class is gone as of the
+test-isolation change, so the upstream type constraint holds again.
 
 ## Structure
 
