@@ -23,7 +23,8 @@ administrativeunit.
 | 7 | license | Four `continue` paths skipped in silence when the target or the SKU was not found — no message even under `-EnableException`, so a caller could not tell "done" from "did nothing". Now warn, with two new localized strings. | this change |
 | 8 | library | `Users/UserGuest .cs` had a space before the extension. Breaks globs and unquoted paths. Renamed. | this change |
 | 9 | tests | Nothing covered `-Force`, the `-Confirm` precedence, or the default no-prompt path — which is why #6 survived. Seven cases added, including one that pins the PowerShell semantics the design depends on. | `081268e` |
-| 10 | batch | A throttled **sub-request** is reported inside the batch body with the envelope still HTTP 200, so `Invoke-EntraRequest`'s retry never saw it and the sub-request was dropped — in the one feature built for bulk work. Now re-sent, honouring Graph's own `Retry-After`. Failing sub-requests of any kind are also warned about, instead of a wholly-rejected batch looking identical to a successful one. | this change |
+| 10 | batch | A throttled **sub-request** is reported inside the batch body with the envelope still HTTP 200, so `Invoke-EntraRequest`'s retry never saw it and the sub-request was dropped — in the one feature built for bulk work. Now re-sent, honouring Graph's own `Retry-After`. Failing sub-requests of any kind are also warned about, instead of a wholly-rejected batch looking identical to a successful one. | `f69c3fc` |
+| 11 | license | 13 Graph calls omitted `-ErrorAction Stop` inside a protected block, so a non-terminating failure passed straight through `Invoke-PSFProtectedCommand` and the path returned nothing while reporting nothing. All 13 were in `Get-PSEntraIDUserLicense` (11) and `Get-PSEntraIDUserLicenseDetail` (2) — a pattern copied within one area, not a per-site decision; the other 100 calls already had it. Suite unchanged at 945/945 after the fix, which is the evidence it was an oversight. | this change |
 
 Two of these hid behind the same weakness: **the test suite was never green**, so nothing
 could gate on it. It is now 927/927.
@@ -37,16 +38,6 @@ They do — `ConfirmImpact = 'High'`, on the line after `SupportsShouldProcess`.
 single-line grep missed it. Not a finding.
 
 ---
-
-## Open — found in the batch / license pass
-
-### 20 Graph calls omit `-ErrorAction Stop` inside a protected block
-
-Of 122 `Invoke-EntraRequest` calls, 20 lack `-ErrorAction Stop`; 11 of those are in
-`Get-PSEntraIDUserLicense` alone. `Invoke-PSFProtectedCommand` only reports what
-*terminates* — a non-terminating error inside the scriptblock passes straight through it,
-so those paths return nothing and say nothing when the request fails. Same class as the
-silent `continue` in finding #7, and the same consequence: silence reads as success.
 
 ## Known behaviour — deliberately not changed
 

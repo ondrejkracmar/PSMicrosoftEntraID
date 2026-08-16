@@ -71,7 +71,7 @@
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetail.List' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $itemInputObject.Id) -Query $query -Method Get)
+                        ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
                                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $result
@@ -87,7 +87,7 @@
                     }
                     else {
                         $result = Invoke-PSFProtectedCommand -ActionString 'User.LicenseDetail.List' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $aADUser.Id) -Query $query -Method Get)
+                        ConvertFrom-RestUserLicenseDetail -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/licenseDetails' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
                                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $result
