@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Remove-PSEntraIDUser
 ---
@@ -21,14 +21,14 @@ Delete user
 
 ```
 Remove-PSEntraIDUser -InputObject <User[]> [-EnableException] [-Force] [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-Confirm]
 ```
 
 ### Identity
 
 ```
 Remove-PSEntraIDUser -Identity <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-Confirm]
 ```
 
 ## ALIASES
@@ -80,9 +80,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -173,7 +172,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -233,6 +232,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

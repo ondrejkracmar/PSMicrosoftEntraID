@@ -1,10 +1,10 @@
----
+﻿---
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 04/22/2026
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDGroupLicenseDetail
 ---
@@ -19,15 +19,20 @@ Return details for licenses that are assigned to a group.
 
 ### InputObject (Default)
 
-```powershell
-Get-PSEntraIDGroupLicenseDetail -InputObject <Group[]> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+```
+Get-PSEntraIDGroupLicenseDetail -InputObject <Group[]> [-EnableException]
 ```
 
 ### Identity
 
-```powershell
-Get-PSEntraIDGroupLicenseDetail -Identity <string[]> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
 ```
+Get-PSEntraIDGroupLicenseDetail -Identity <string[]> [-EnableException]
+```
+
+## ALIASES
+
+This cmdlet has the following aliases,
+  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
@@ -37,25 +42,17 @@ Return details for licenses that are assigned to a group.
 
 ### EXAMPLE 1
 
-```powershell
 Get-PSEntraIDGroupLicenseDetail -Identity licensing-group
-```
 
-Get Office 365 subscriptions with their service plans of specific group.
-
-### EXAMPLE 2
-
-```powershell
-Get-PSEntraIDGroup -Identity licensing-group | Get-PSEntraIDGroupLicenseDetail
-```
-
-Pipe a group object into the cmdlet and return detailed license assignments.
+Get Office 365 subscriptions with their service plans of specific group
 
 ## PARAMETERS
 
-### -AdvancedFilter
+### -EnableException
 
-Returns the full assigned-license detail including expanded service plan information instead of the simplified default projection.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly,
+but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -76,7 +73,7 @@ HelpMessage: ''
 
 ### -Identity
 
-MailNickname, Mail or Id of the group attribute populated in tenant or directory.
+MailNickname, Mail or Id of the group attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
@@ -101,7 +98,7 @@ HelpMessage: ''
 
 ### -InputObject
 
-PSMicrosoftEntraID.Groups.Group object in tenant or directory.
+PSMicrosoftEntraID.Groups.Group object in tenant/directory.
 
 ```yaml
 Type: PSMicrosoftEntraID.Groups.Group[]
@@ -120,28 +117,53 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -EnableException
+### CommonParameters
 
-This parameter disables user-friendly warnings and enables the throwing of exceptions.
-This is less user friendly, but allows catching exceptions in calling scripts.
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
-```yaml
-Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: Named
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
+## INPUTS
+
+### PSMicrosoftEntraID.Groups.Group[]
+
+{{ Fill in the Description }}
+
+### System.String[]
+
+{{ Fill in the Description }}
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.Groups.AssignedLicenseDetail
+### PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku
+
+{{ Fill in the Description }}
+
+## NOTES
+
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
+
+
+## RELATED LINKS
+
+{{ Fill in the related links here }}
+

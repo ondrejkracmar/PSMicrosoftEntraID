@@ -1,10 +1,10 @@
----
+﻿---
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 04/21/2026
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDGroupLicense
 ---
@@ -19,99 +19,40 @@ Get assigned licenses of a group with service plan status details.
 
 ### Identity (Default)
 
-```powershell
-Get-PSEntraIDGroupLicense -Identity <string[]> [-EnableException] [<CommonParameters>]
+```
+Get-PSEntraIDGroupLicense -Identity <string[]> [-EnableException]
 ```
 
 ### InputObject
 
-```powershell
-Get-PSEntraIDGroupLicense -InputObject <Group[]> [-EnableException] [<CommonParameters>]
 ```
+Get-PSEntraIDGroupLicense -InputObject <Group[]> [-EnableException]
+```
+
+## ALIASES
+
+This cmdlet has the following aliases,
+  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
-Returns the licenses assigned to a group and resolves each SKU into a readable overview.
-The output contains the SKU identifier, SKU part number, friendly product name and all service plans with a computed status of Enabled or Disabled.
+Get assigned licenses of a group with resolved SKU names and service plan status details.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-```powershell
 Get-PSEntraIDGroupLicense -Identity licensing-group
-```
 
-Get all licenses assigned to the group and show how many service plans are enabled and disabled for each SKU.
-
-### EXAMPLE 2
-
-```powershell
-Get-PSEntraIDGroup -Identity licensing-group | Get-PSEntraIDGroupLicense
-```
-
-Pipe a group object into the cmdlet and return license details.
-
-### EXAMPLE 3
-
-```powershell
-(Get-PSEntraIDGroupLicense -Identity licensing-group).ServicePlans
-```
-
-Inspect service plan details for the assigned licenses, including friendly names and Enabled or Disabled status.
+Get assigned group licenses with enabled and disabled service plans.
 
 ## PARAMETERS
-
-### -Identity
-
-MailNickname, Mail or Id of the group attribute populated in tenant or directory.
-
-```yaml
-Type: System.String[]
-DefaultValue: ''
-SupportsWildcards: false
-Aliases:
-- Id
-- GroupId
-- TeamId
-- MailNickName
-ParameterSets:
-- Name: Identity
-  Position: Named
-  IsRequired: true
-  ValueFromPipeline: true
-  ValueFromPipelineByPropertyName: true
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -InputObject
-
-PSMicrosoftEntraID.Groups.Group object in tenant or directory.
-
-```yaml
-Type: PSMicrosoftEntraID.Groups.Group[]
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: InputObject
-  Position: Named
-  IsRequired: true
-  ValueFromPipeline: true
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
 
 ### -EnableException
 
 This parameter disables user-friendly warnings and enables the throwing of exceptions.
-This is less user friendly, but allows catching exceptions in calling scripts.
+This is less user friendly,
+but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -130,16 +71,99 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Identity
+
+MailNickname, Mail or Id of the group attribute populated in tenant/directory.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- Id
+- GroupId
+- TeamId
+- MailNickName
+ParameterSets:
+- Name: Identity
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -InputObject
+
+PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
+```yaml
+Type: PSMicrosoftEntraID.Groups.Group[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: InputObject
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### PSMicrosoftEntraID.Groups.Group[]
+
+{{ Fill in the Description }}
+
+### System.String[]
+
+{{ Fill in the Description }}
+
 ## OUTPUTS
 
 ### PSMicrosoftEntraID.Groups.AssignedLicenseDetail
 
-One object per assigned SKU on the group.
-
-### PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail
-
-Nested objects available in the ServicePlans property.
+{{ Fill in the Description }}
 
 ## NOTES
 
-The cmdlet resolves readable SKU and service plan names using subscribed license metadata and the built-in license identifier catalog.
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
+
+
+## RELATED LINKS
+
+{{ Fill in the related links here }}
+

@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDUserGuest
 ---
@@ -20,31 +20,31 @@ Retrieves properties of users in Entra ID (Azure AD), but only Guest accounts.
 ### Identity (Default)
 
 ```
-Get-PSEntraIDUserGuest -Identity <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserGuest -Identity <string[]> [-EnableException]
 ```
 
 ### Name
 
 ```
-Get-PSEntraIDUserGuest -Name <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserGuest -Name <string[]> [-EnableException]
 ```
 
 ### CompanyName
 
 ```
-Get-PSEntraIDUserGuest -CompanyName <string[]> [-Disabled] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserGuest -CompanyName <string[]> [-Disabled] [-EnableException]
 ```
 
 ### All
 
 ```
-Get-PSEntraIDUserGuest -All [-Disabled] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserGuest -All [-Disabled] [-EnableException]
 ```
 
 ### Filter
 
 ```
-Get-PSEntraIDUserGuest -Filter <string> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserGuest -Filter <string> [-AdvancedFilter] [-EnableException]
 ```
 
 ## ALIASES
@@ -63,11 +63,13 @@ and always returns only Guest accounts.
 ### EXAMPLE 1
 
 Get-PSEntraIDUserGuest -Identity user1@contoso.com
+
 Returns details for user1@contoso.com, only if it is a Guest account.
 
 ### EXAMPLE 2
 
 Get-PSEntraIDUserGuest -All
+
 Returns all Guest accounts in the tenant.
 
 ## PARAMETERS
@@ -271,8 +273,25 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 
-Author: Your Name
-Last Updated: 2025-03-06
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
 
 
 ## RELATED LINKS

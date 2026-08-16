@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Enable-PSEntraIDUserLicense
 ---
@@ -13,36 +13,36 @@ title: Enable-PSEntraIDUserLicense
 
 ## SYNOPSIS
 
-Enable serivce plan of users's sku subscription.
+Enable user license of users's sku subscription.
 
 ## SYNTAX
 
 ### InputObjectSkuPartNumber (Default)
 
 ```
-Enable-PSEntraIDUserLicense -InputObject <User[]> -SkuPartNumber <string> [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Enable-PSEntraIDUserLicense -InputObject <User[]> -SkuPartNumber <string[]> [-EnableException]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### InputObjectSkuId
 
 ```
-Enable-PSEntraIDUserLicense -InputObject <User[]> -SkuId <string> [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Enable-PSEntraIDUserLicense -InputObject <User[]> -SkuId <string[]> [-EnableException] [-Force]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentitySkuPartNumber
 
 ```
-Enable-PSEntraIDUserLicense -Identity <string[]> -SkuPartNumber <string> [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Enable-PSEntraIDUserLicense -Identity <string[]> -SkuPartNumber <string[]> [-EnableException]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentitySkuId
 
 ```
-Enable-PSEntraIDUserLicense -Identity <string[]> -SkuId <string> [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Enable-PSEntraIDUserLicense -Identity <string[]> -SkuId <string[]> [-EnableException] [-Force]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -52,15 +52,15 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Enable serivce plan of users's sku subscription.
+Enable user license of users's sku subscription.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
+Enable-PSEntraIDUserLicense -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK
 
-Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
+Enable license ENTERPRISEPACK for user username@contoso.com
 
 ## PARAMETERS
 
@@ -92,9 +92,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -197,7 +196,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -222,7 +221,7 @@ HelpMessage: ''
 Office 365 product GUID is identified using a GUID of subscribedSku.
 
 ```yaml
-Type: System.String
+Type: System.String[]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -249,7 +248,7 @@ HelpMessage: ''
 Friendly name Office 365 product of subscribedSku.
 
 ```yaml
-Type: System.String
+Type: System.String[]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -311,6 +310,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

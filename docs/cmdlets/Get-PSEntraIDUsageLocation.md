@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDUsageLocation
 ---
@@ -20,7 +20,7 @@ Get User Usage Location hashtable.
 ### __AllParameterSets
 
 ```
-Get-PSEntraIDUsageLocation [<CommonParameters>]
+Get-PSEntraIDUsageLocation
 ```
 
 ## ALIASES
@@ -30,13 +30,13 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Get User Ysage Location hashtable.
+Get User Usage Location hashtable.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Get-UserUsageLocation
+Get-PSEntraIDUsageLocation
 
 Get list of usage locations
 

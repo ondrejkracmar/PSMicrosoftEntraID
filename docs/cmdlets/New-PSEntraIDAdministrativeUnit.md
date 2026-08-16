@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDAdministrativeUnit
 ---
@@ -22,7 +22,7 @@ Create new administrative unit in Microsoft Entra ID (Azure AD).
 ```
 New-PSEntraIDAdministrativeUnit [-DisplayName] <string> [[-Description] <string>]
  [[-Visibility] <string>] [[-IsMemberManagementRestricted] <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -122,7 +122,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -277,6 +277,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit
+
+{{ Fill in the Description }}
+
+### PSMicrosoftEntraID.Batch.Request
 
 {{ Fill in the Description }}
 

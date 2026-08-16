@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDGroup
 ---
@@ -13,7 +13,7 @@ title: New-PSEntraIDGroup
 
 ## SYNOPSIS
 
-Create new  Microsoft EntraID (Azure AD).
+Create new group Microsoft EntraID (Azure AD).
 
 ## SYNTAX
 
@@ -23,9 +23,8 @@ Create new  Microsoft EntraID (Azure AD).
 New-PSEntraIDGroup -Displayname <string> -MailNickname <string> [-Description <string>]
  [-MailEnabled <bool>] [-IsAssignableToRole <bool>] [-SecurityEnabled <bool>]
  [-Classification <string>] [-GroupTypes <string[]>] [-Visibility <string>] [-Owners <string[]>]
- [-Members <string[]>] [-MembersmembershipRule <string>] [-MembershipRuleProcessingState <string>]
+ [-Members <string[]>] [-MembershipRule <string>] [-MembershipRuleProcessingState <string>]
  [-ResourceBehaviorOptions <string[]>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -35,15 +34,15 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Create new  Microsoft EntraID (Azure AD).
+Create new group Microsoft EntraID (Azure AD).
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-PSEntraIDUser -DisplayName 'New group' -Description 'Description of new froup'
+New-PSEntraIDGroup -DisplayName 'New group' -Description 'Description of new group'
 
-Create new  Microsoft EntraID (Azure AD) group
+Create new Microsoft EntraID (Azure AD) group
 
 ## PARAMETERS
 
@@ -138,9 +137,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -273,10 +271,31 @@ HelpMessage: ''
 
 ### -Members
 
-List of mwmwbrs of new group.
+List of members of new group.
 
 ```yaml
 Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateGroup
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -MembershipRule
+
+The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
+
+```yaml
+Type: System.String
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -296,27 +315,6 @@ HelpMessage: ''
 
 Indicates whether the dynamic membership processing is on or paused.
 Possible values are On or Paused.
-
-```yaml
-Type: System.String
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: CreateGroup
-  Position: Named
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -MembersmembershipRule
-
-The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
 
 ```yaml
 Type: System.String
@@ -358,7 +356,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -487,6 +485,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

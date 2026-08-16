@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Set-PSEntraIDAdministrativeUnit
 ---
@@ -22,7 +22,7 @@ Updates the specified properties of an administrative unit.
 ```
 Set-PSEntraIDAdministrativeUnit -InputObject <AdministrativeUnit[]> [-DisplayName <string>]
  [-Description <string>] [-Visibility <string>] [-IsMemberManagementRestricted <bool>]
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### Identity
@@ -30,7 +30,7 @@ Set-PSEntraIDAdministrativeUnit -InputObject <AdministrativeUnit[]> [-DisplayNam
 ```
 Set-PSEntraIDAdministrativeUnit -Identity <string[]> [-DisplayName <string>] [-Description <string>]
  [-Visibility <string>] [-IsMemberManagementRestricted <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -136,7 +136,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -339,6 +339,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

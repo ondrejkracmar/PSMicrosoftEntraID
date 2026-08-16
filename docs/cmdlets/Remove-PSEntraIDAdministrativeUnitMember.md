@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Remove-PSEntraIDAdministrativeUnitMember
 ---
@@ -21,42 +21,42 @@ Remove a member from an administrative unit.
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -InputObjectUser <User[]>
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityInputObjectDevice
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -InputObjectDevice <Device[]>
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityInputObjectGroup
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -InputObjectGroup <Group[]>
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityDevice
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -Device <string[]> [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityGroup
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -Group <string[]> [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityUser
 
 ```
 Remove-PSEntraIDAdministrativeUnitMember -Identity <string> -User <string[]> [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -140,7 +140,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -262,7 +262,7 @@ HelpMessage: ''
 
 ### -InputObjectDevice
 
-{{ Fill InputObjectDevice Description }}
+Device object(s) to remove from the administrative unit.
 
 ```yaml
 Type: System.Object[]
@@ -283,7 +283,7 @@ HelpMessage: ''
 
 ### -InputObjectGroup
 
-{{ Fill InputObjectGroup Description }}
+Group object(s) to remove from the administrative unit.
 
 ```yaml
 Type: PSMicrosoftEntraID.Groups.Group[]
@@ -304,7 +304,7 @@ HelpMessage: ''
 
 ### -InputObjectUser
 
-{{ Fill InputObjectUser Description }}
+User object(s) to remove from the administrative unit.
 
 ```yaml
 Type: PSMicrosoftEntraID.Users.User[]
@@ -410,6 +410,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

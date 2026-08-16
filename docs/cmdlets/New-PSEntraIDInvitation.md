@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDInvitation
 ---
@@ -13,24 +13,17 @@ title: New-PSEntraIDInvitation
 
 ## SYNOPSIS
 
-Get the properties of the specified user.
+Create a new invitation of the specified user.
 
 ## SYNTAX
 
-### UserEmailAddres (Default)
-
-```
-New-PSEntraIDInvitation [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
-```
-
-### UserEmailAddress
+### UserEmailAddress (Default)
 
 ```
 New-PSEntraIDInvitation -InvitedUserEmailAddress <string> -InvitedUserDisplayName <string>
- -InviteRedirectUrl <string> [-SendInvitationMessage <bool>] [-InviteMessage <string>]
+ -InviteRedirectUrl <string> [-SendInvitationMessage] [-InviteMessage <string>]
  [-MessageLanguage <string>] [-CCRecipient <psobject[]>] [-EnableException] [-Force] [-PassThru]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -40,7 +33,7 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Get the properties of the specified user.
+Create a new invitation of the specified user.
 
 ## EXAMPLES
 
@@ -101,9 +94,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -149,7 +141,7 @@ HelpMessage: ''
 
 ### -InvitedUserDisplayName
 
-DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
+DisplayName, GivenName, Surname of the user attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String
@@ -244,7 +236,7 @@ HelpMessage: ''
 
 ### -MessageLanguage
 
-Langueage of invite message.
+Language of invite message.
 
 ```yaml
 Type: System.String
@@ -266,7 +258,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -288,10 +280,10 @@ HelpMessage: ''
 
 ### -SendInvitationMessage
 
-Switch if senf invitation message
+Switch if send invitation message
 
 ```yaml
-Type: System.Boolean
+Type: System.Management.Automation.SwitchParameter
 DefaultValue: False
 SupportsWildcards: false
 Aliases: []
@@ -342,7 +334,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 {{ Fill in the Description }}
 
-### System.Boolean
+### System.Management.Automation.SwitchParameter
 
 {{ Fill in the Description }}
 
@@ -353,6 +345,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### PSMicrosoftEntraID.Users.Invitations.Invitation
+
+{{ Fill in the Description }}
+
+### PSMicrosoftEntraID.Batch.Request
 
 {{ Fill in the Description }}
 

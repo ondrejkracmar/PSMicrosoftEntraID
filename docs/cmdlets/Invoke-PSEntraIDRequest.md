@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: Invoke-PSEntraIDRequest
 ---
@@ -22,8 +22,8 @@ Executes a web request against an Entra-based service.
 ```
 Invoke-PSEntraIDRequest [-Path] <string> [[-Body] <Object>] [[-Query] <hashtable>]
  [[-Method] <string>] [[-RequiredScopes] <string[]>] [[-Header] <hashtable>] [[-Service] <string>]
- [[-SerializationDepth] <int>] [[-Token] <EntraToken>] [-NoPaging] [-Raw] [-EnableException]
- [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-SerializationDepth] <int>] [[-Token] <Object>] [-NoPaging] [-Raw] [-EnableException] [-Force]
+ [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -341,7 +341,7 @@ A token object created and maintained by this module.
 If specified, overrides the -Service parameter.
 
 ```yaml
-Type: EntraToken
+Type: System.Object
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []

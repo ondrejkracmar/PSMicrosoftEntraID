@@ -2,9 +2,9 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: en-US
+Locale: cs-CZ
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDUser
 ---
@@ -26,9 +26,9 @@ New-PSEntraIDUser -DisplayName <string> -UserPrincipalName <string> -MailNicknam
  [-Mail <string>] [-AccountEnabled <bool>] [-UsageLocation <string>] [-JobTitle <string>]
  [-Department <string>] [-CompanyName <string>] [-OfficeLocation <string>] [-City <string>]
  [-PostalCode <string>] [-Country <string>] [-State <string>] [-MobilePhone <string>]
- [-BusinessPhones <string[]>] [-PreferredLanguage <string>] [-EmployeeId <string>]
- [-EmployeeType <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-BusinessPhones <string[]>] [-ProxyAddresses <string[]>] [-FaxNumber <string>]
+ [-EmployeeId <string>] [-EmployeeType <string>] [-OtherMails <string[]>]
+ [-PreferredLanguage <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -47,9 +47,13 @@ job details, and password using Microsoft Graph API.
 
 Import-Csv users.csv | New-PSEntraIDUser
 
+Creates one user per row from users.csv by piping objects whose property names match the parameter names.
+
 ### EXAMPLE 2
 
 New-PSEntraIDUser -DisplayName "John Doe" -UserPrincipalName "john.doe@contoso.com" -MailNickname "jdoe" -Password (Read-Host -AsSecureString "Enter password")
+
+Creates a new user account with the supplied display name, UPN, mail nickname and password.
 
 ## PARAMETERS
 
@@ -140,7 +144,11 @@ HelpMessage: ''
 
 ### -Confirm
 
-Prompts for confirmation.
+The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+The command then prompts you to acknowledge each action before it continues.
+When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -268,7 +276,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-Enables throwing of terminating errors.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -287,9 +296,34 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -FaxNumber
+
+Fax number associated with the user.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Force
 
-{{ Fill Force Description }}
+The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+The command then prompts you to acknowledge each action before it continues.
+When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+A confirmation prompt is displayed for each object before the Shell modifies the object.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -394,7 +428,7 @@ HelpMessage: ''
 
 ### -Mail
 
-{{ Fill Mail Description }}
+Primary email address of the user.
 
 ```yaml
 Type: System.String
@@ -476,9 +510,31 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -OtherMails
+
+List of other email addresses for the user.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -PassThru
 
-Outputs the created user object.
+When specified, the cmdlet will not execute the action but will instead
+return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -546,6 +602,27 @@ en-US, cs-CZ).
 
 ```yaml
 Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ProxyAddresses
+
+Array of proxy email addresses for the user.
+
+```yaml
+Type: System.String[]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -649,7 +726,7 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Simulates the command.
+Enables the function to simulate what it will do instead of actually executing.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -695,6 +772,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 
