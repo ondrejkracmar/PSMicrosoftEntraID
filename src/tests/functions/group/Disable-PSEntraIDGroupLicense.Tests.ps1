@@ -1,10 +1,6 @@
 ﻿BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
-    Import-Module "$PSScriptRoot/../../../PSMicrosoftEntraID/PSMicrosoftEntraID.psd1" -Force
-    if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
-        Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
-    }
-}
+    Import-Module "$PSScriptRoot/../../../PSMicrosoftEntraID/PSMicrosoftEntraID.psd1" -Force}
 
 Describe 'Disable-PSEntraIDGroupLicense' -Tag 'Unit' {
     BeforeAll {

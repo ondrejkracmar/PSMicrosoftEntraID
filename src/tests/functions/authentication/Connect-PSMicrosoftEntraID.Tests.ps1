@@ -1,11 +1,6 @@
 ﻿BeforeAll {
     $moduleName = 'PSMicrosoftEntraID'
 
-    # Create dummy EntraToken class to prevent type loading errors in tests
-    if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
-        Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
-    }
-
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
 
     InModuleScope $moduleName {

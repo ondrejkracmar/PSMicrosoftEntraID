@@ -2,11 +2,7 @@
     $moduleName = 'PSMicrosoftEntraID'
     $commandName = 'Get-PSEntraIDSubscribedLicense'
 
-    Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
-    if (-not ([System.Management.Automation.PSTypeName]'EntraToken').Type) {
-        Add-Type -Language CSharp -TypeDefinition 'public class EntraToken { public string AccessToken; public string RefreshToken; public string ClientID; public string TenantID; public System.DateTime ValidAfter; public System.DateTime ValidUntil; }'
-    }
-}
+    Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force}
 
 Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
     BeforeAll {
