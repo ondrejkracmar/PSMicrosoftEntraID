@@ -113,7 +113,7 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -143,7 +143,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -173,7 +173,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -203,7 +203,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -235,7 +235,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
@@ -273,7 +273,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
@@ -311,7 +311,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }

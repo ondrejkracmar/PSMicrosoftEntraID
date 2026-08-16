@@ -103,7 +103,7 @@
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
 
         [PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense)
         switch -Regex ($PSCmdlet.ParameterSetName) {
@@ -159,7 +159,7 @@
                         $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
                         Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $groupTarget -ScriptBlock {
                             [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException $EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -190,7 +190,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'LicenseServicePlan.Enable' -ActionStringValues $servicePlanTarget, $skuTarget -Target $group -ScriptBlock {
                                 [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException $EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }

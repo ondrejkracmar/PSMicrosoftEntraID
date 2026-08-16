@@ -76,7 +76,7 @@
         [System.Collections.Generic.List[object]] $differenceMemberList = [System.Collections.Generic.List[object]]::new()
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -122,7 +122,7 @@
                             [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
                                 [void] (Add-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException $EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                         'Update' {
@@ -131,7 +131,7 @@
                             [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
                                 [void] (Remove-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException $EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                         Default {}

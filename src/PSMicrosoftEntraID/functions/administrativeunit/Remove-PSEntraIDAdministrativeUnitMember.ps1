@@ -117,7 +117,7 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        [bool] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -143,7 +143,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -169,7 +169,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -195,7 +195,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                        } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -223,7 +223,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
@@ -258,7 +258,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
@@ -292,7 +292,7 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Delete' -ActionStringValues $aADDevice.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException:$EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
