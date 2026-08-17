@@ -67,13 +67,13 @@ Describe 'Invoke-PSEntraIDRequest' -Tag 'Unit' {
 
     Context 'Execute request' {
         It 'Should call Invoke-EntraRequest with provided path' {
-            Invoke-PSEntraIDRequest -Path 'users' -Force -Confirm:$false
+            Invoke-PSEntraIDRequest -Path 'users' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1
         }
 
         It 'Should use the default service from config' {
-            Invoke-PSEntraIDRequest -Path 'users' -Force -Confirm:$false
+            Invoke-PSEntraIDRequest -Path 'users' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Service -eq 'PSMicrosoftEntraID.Graph'
@@ -81,7 +81,7 @@ Describe 'Invoke-PSEntraIDRequest' -Tag 'Unit' {
         }
 
         It 'Should pass through parameters via ConvertTo-PSFHashtable' {
-            Invoke-PSEntraIDRequest -Path 'users' -Force -Confirm:$false
+            Invoke-PSEntraIDRequest -Path 'users' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName ConvertTo-PSFHashtable -Times 1
         }
@@ -89,7 +89,7 @@ Describe 'Invoke-PSEntraIDRequest' -Tag 'Unit' {
 
     Context 'Connection handling' {
         It 'Should assert Entra connection' {
-            Invoke-PSEntraIDRequest -Path 'users' -Force -Confirm:$false
+            Invoke-PSEntraIDRequest -Path 'users' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }

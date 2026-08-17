@@ -74,7 +74,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Patch' -and
@@ -90,7 +90,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'DE' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'DE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Header.'Content-Type' -eq 'application/json'
@@ -106,7 +106,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCountry 'Czech Republic' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCountry 'Czech Republic' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.usageLocation -eq 'CZ'
@@ -116,7 +116,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
 
     Context 'Set usage location by Identity' {
         It 'Should resolve user and call PATCH with code' {
-            Set-PSEntraIDUserUsageLocation -Identity 'user@contoso.com' -UsageLocationCode 'GB' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -Identity 'user@contoso.com' -UsageLocationCode 'GB' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
@@ -125,7 +125,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
         }
 
         It 'Should resolve user and call PATCH with country name' {
-            Set-PSEntraIDUserUsageLocation -Identity 'user@contoso.com' -UsageLocationCountry 'Germany' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -Identity 'user@contoso.com' -UsageLocationCountry 'Germany' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.usageLocation -eq 'DE'
@@ -135,7 +135,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
         It 'Should handle user not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            Set-PSEntraIDUserUsageLocation -Identity 'notfound@contoso.com' -UsageLocationCode 'US' -EnableException -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -Identity 'notfound@contoso.com' -UsageLocationCode 'US' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -184,7 +184,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -196,7 +196,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force -Confirm:$false
+            Set-PSEntraIDUserUsageLocation -InputObject $userObj -UsageLocationCode 'CZ' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUsageLocation -Times 1 -Exactly
         }
@@ -231,7 +231,7 @@ Describe 'Set-PSEntraIDUserUsageLocation' -Tag 'Unit' {
                     UserPrincipalName = 'user@contoso.com'
                 }
 
-                $userObj | Set-PSEntraIDUserUsageLocation -UsageLocationCode 'CZ' -Force -Confirm:$false
+                $userObj | Set-PSEntraIDUserUsageLocation -UsageLocationCode 'CZ' -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }

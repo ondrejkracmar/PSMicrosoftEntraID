@@ -230,7 +230,7 @@ Describe 'Remove-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
                     Id          = 'au-pipeline-1234'
                     DisplayName = 'Pipeline AU'
                 }
-                $pipelineObj | Remove-PSEntraIDAdministrativeUnit -Force -Confirm:$false
+                $pipelineObj | Remove-PSEntraIDAdministrativeUnit -Force
             }
             Should -Invoke -CommandName Invoke-PSFProtectedCommand -ModuleName $script:ModuleName -Times 1
         }

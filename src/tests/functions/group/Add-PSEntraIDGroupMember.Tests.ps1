@@ -122,7 +122,7 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
                     UserPrincipalName = 'user1@test.com'
                     Mail              = 'user1@test.com'
                 }
-                { Add-PSEntraIDGroupMember -Identity 'group-id' -InputObject $user -Force -Confirm:$false } | Should -Not -Throw
+                { Add-PSEntraIDGroupMember -Identity 'group-id' -InputObject $user -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
         }
@@ -165,7 +165,7 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
                         Mail              = 'user2@test.com'
                     }
                 )
-                { Add-PSEntraIDGroupMember -Identity 'group-id' -InputObject $users -Force -Confirm:$false } | Should -Not -Throw
+                { Add-PSEntraIDGroupMember -Identity 'group-id' -InputObject $users -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
         }
@@ -233,7 +233,7 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
 
         It 'Should call Assert-EntraConnection during execution' {
             InModuleScope $script:ModuleName {
-                Add-PSEntraIDGroupMember -Identity 'group-id' -User 'user@domain.com' -Force -Confirm:$false
+                Add-PSEntraIDGroupMember -Identity 'group-id' -User 'user@domain.com' -Force
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Assert-EntraConnection -Times 1
         }
@@ -267,7 +267,7 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
                     UserPrincipalName = 'user1@test.com'
                     Mail              = 'user1@test.com'
                 }
-                { $user | Add-PSEntraIDGroupMember -Identity 'group-id' -Force -Confirm:$false } | Should -Not -Throw
+                { $user | Add-PSEntraIDGroupMember -Identity 'group-id' -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
         }

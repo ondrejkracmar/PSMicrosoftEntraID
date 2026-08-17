@@ -310,7 +310,7 @@ Describe 'Set-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
                     Id          = 'au-pipeline-1234'
                     DisplayName = 'Pipeline AU'
                 }
-                $pipelineObj | Set-PSEntraIDAdministrativeUnit -DisplayName 'Updated' -Force -Confirm:$false
+                $pipelineObj | Set-PSEntraIDAdministrativeUnit -DisplayName 'Updated' -Force
             }
             Should -Invoke -CommandName Invoke-PSFProtectedCommand -ModuleName $script:ModuleName -Times 1
         }

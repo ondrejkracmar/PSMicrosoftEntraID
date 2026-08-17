@@ -251,7 +251,7 @@ Describe 'New-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
                     PSTypeName  = 'PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit'
                     DisplayName = 'Pipeline AU'
                 }
-                $pipelineObj | New-PSEntraIDAdministrativeUnit -Force -Confirm:$false
+                $pipelineObj | New-PSEntraIDAdministrativeUnit -Force
             }
             Should -Invoke -CommandName Invoke-PSFProtectedCommand -ModuleName $script:ModuleName -Times 1
         }

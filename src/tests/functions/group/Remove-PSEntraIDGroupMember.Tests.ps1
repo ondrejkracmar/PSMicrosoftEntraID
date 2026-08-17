@@ -61,7 +61,7 @@ Describe 'Remove-PSEntraIDGroupMember' -Tag 'Unit' {
 
     Context 'Remove member by User string' {
         It 'Should resolve group and user, then call DELETE with members/$ref path' {
-            Remove-PSEntraIDGroupMember -Identity 'testgroup' -User 'user@contoso.com' -Force -Confirm:$false
+            Remove-PSEntraIDGroupMember -Identity 'testgroup' -User 'user@contoso.com' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDGroup -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1
@@ -73,7 +73,7 @@ Describe 'Remove-PSEntraIDGroupMember' -Tag 'Unit' {
         It 'Should handle user not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            Remove-PSEntraIDGroupMember -Identity 'testgroup' -User 'notfound@contoso.com' -EnableException -Force -Confirm:$false
+            Remove-PSEntraIDGroupMember -Identity 'testgroup' -User 'notfound@contoso.com' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -87,7 +87,7 @@ Describe 'Remove-PSEntraIDGroupMember' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Remove-PSEntraIDGroupMember -Identity 'testgroup' -InputObject $userObj -Force -Confirm:$false
+            Remove-PSEntraIDGroupMember -Identity 'testgroup' -InputObject $userObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Delete' -and
@@ -133,7 +133,7 @@ Describe 'Remove-PSEntraIDGroupMember' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Remove-PSEntraIDGroupMember -Identity 'testgroup' -InputObject $userObj -Force -Confirm:$false
+            Remove-PSEntraIDGroupMember -Identity 'testgroup' -InputObject $userObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -161,7 +161,7 @@ Describe 'Remove-PSEntraIDGroupMember' -Tag 'Unit' {
                     UserPrincipalName = 'user@contoso.com'
                     Mail              = 'user@contoso.com'
                 }
-                { $userObj | Remove-PSEntraIDGroupMember -Identity 'testgroup' -Force -Confirm:$false } | Should -Not -Throw
+                { $userObj | Remove-PSEntraIDGroupMember -Identity 'testgroup' -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1
         }

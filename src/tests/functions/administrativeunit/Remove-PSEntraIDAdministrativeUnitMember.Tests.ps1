@@ -213,7 +213,7 @@ Describe 'Remove-PSEntraIDAdministrativeUnitMember' -Tag 'Unit' {
                     Id          = 'user-pipeline-1234'
                     DisplayName = 'Pipeline User'
                 }
-                $pipelineUser | Remove-PSEntraIDAdministrativeUnitMember -Identity 'Test AU' -Force -Confirm:$false
+                $pipelineUser | Remove-PSEntraIDAdministrativeUnitMember -Identity 'Test AU' -Force
             }
             Should -Invoke -CommandName Invoke-PSFProtectedCommand -ModuleName $script:ModuleName -Times 1
         }

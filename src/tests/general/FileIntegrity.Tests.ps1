@@ -1,6 +1,27 @@
 ﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $moduleRoot = (Resolve-Path (Join-Path $global:testroot '..' 'PSMicrosoftEntraID')).Path
 
+# The syntax check below needs the compiled library loaded, and it needs it HERE.
+#
+# internal/classes/*.ps1 define PowerShell classes whose members are typed with library
+# types - [PSMicrosoftEntraID.FederationProvider] and friends. PowerShell resolves types
+# in a class definition at PARSE time, so without the assembly those files report
+# "Unable to find type" and the syntax test fails for a reason that has nothing to do
+# with their syntax. At runtime this never happens: RequiredAssemblies loads the DLL
+# before the root module is parsed.
+#
+# It cannot go in BeforeAll. Parser::ParseFile runs in the Context block below, during
+# Pester's DISCOVERY pass, which is over before any BeforeAll executes.
+#
+# Until now this passed only because pester.ps1 imports the module before running
+# anything - an implicit dependency on run order, which is the same weakness that once
+# had 208 tests failing as a suite while every file passed alone. Stating the
+# precondition here means the test passes because the source is sound, rather than
+# because of the order it happened to run in.
+if (-not ('PSMicrosoftEntraID.FederationProvider' -as [type])) {
+	Add-Type -Path (Join-Path $moduleRoot 'bin' 'PSMicrosoftEntraID.dll') -ErrorAction Stop
+}
+
 . (Join-Path $global:testroot 'general' 'FileIntegrity.Exceptions.ps1')
 
 Describe "Verifying integrity of module files" {

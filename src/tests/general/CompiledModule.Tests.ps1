@@ -22,6 +22,15 @@ Describe "Verifying the module survives compilation" {
     BeforeAll {
         $script:moduleRoot = (Resolve-Path (Join-Path $global:testroot '..' 'PSMicrosoftEntraID')).Path
 
+        # The concatenation includes internal/classes/*.ps1, whose class members are typed
+        # with library types. PowerShell resolves those at PARSE time, so without the
+        # assembly loaded the parse fails on a missing type rather than on real syntax -
+        # and this test would then report the module as broken when it is not. Stated
+        # here rather than inherited from whatever imported the module first.
+        if (-not ('PSMicrosoftEntraID.FederationProvider' -as [type])) {
+            Add-Type -Path (Join-Path $script:moduleRoot 'bin' 'PSMicrosoftEntraID.dll') -ErrorAction Stop
+        }
+
         # Same source of truth the build uses: these scripts EMIT the file paths, they do
         # not load anything themselves.
         $script:preImportPaths = @(& (Join-Path $script:moduleRoot 'internal' 'scripts' 'preimport.ps1')) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }

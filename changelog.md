@@ -124,6 +124,19 @@
   The catalog is derived from a live Microsoft download, so upstream publishing a new SKU
   used to fail every build in every branch on a commit that changed nothing. The message
   now names that case instead of only the stale-catalog one.
+- **Fix:** `-Force` was documented as doing the opposite of what it does. 24 of the 30
+  cmdlets that have the parameter carried the `-Confirm` description under it, telling
+  readers that `-Force` makes the command prompt them.
+- **Fix:** The file-integrity syntax check passed only because something had imported the
+  module first. The class files are typed with library types, which PowerShell resolves at
+  parse time, so the check fails on its own with "Unable to find type". Both tests that
+  parse now load the library themselves instead of inheriting it from run order.
+- **Upd:** `-Force` and `-Confirm` are now documented as the pair they are, from both
+  sides, on all 31 cmdlets that have them: `-Force` suppresses the prompt, an explicitly
+  bound `-Confirm` wins over it whatever its value, and with neither the decision belongs
+  to `ConfirmImpact` and `$ConfirmPreference`. The two are alternatives, not a pair to be
+  passed together - the redundant `-Force -Confirm:$false` is gone from the scenario
+  scripts (51 sites) and the test suite (96 sites across 20 files).
 - **Upd:** `README.md`, the `about_PSMicrosoftEntraID` help topic and the authentication
   guides corrected. The examples used parameter names that do not exist
   (`-MemberIdentity`, `-OwnerIdentity`, `-MaxRetries`, `Get-PSEntraIDUserLicense -Identity`

@@ -371,13 +371,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should enable service plan using Identity, SkuPartNumber, and ServicePlanName' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -392,13 +392,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should enable service plan using Identity, SkuPartNumber, and ServicePlanId' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -413,13 +413,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should enable service plan using Identity, SkuId, and ServicePlanName' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -441,7 +441,7 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             }
 
             InModuleScope $script:ModuleName -Parameters @{ inputObj = $inputObj; skuId = $script:TestSkuId; planName = $script:TestServicePlanName1 } {
-                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId $skuId -ServicePlanName $planName -Force -Confirm:$false
+                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId $skuId -ServicePlanName $planName -Force
             }
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
@@ -456,7 +456,7 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             }
 
             InModuleScope $script:ModuleName -Parameters @{ inputObj = $inputObj; skuId = $script:TestSkuId; planName = $script:TestServicePlanName1 } {
-                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId $skuId -ServicePlanName $planName -Force -Confirm:$false
+                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId $skuId -ServicePlanName $planName -Force
             }
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
@@ -479,7 +479,7 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             }
 
             InModuleScope $script:ModuleName -Parameters @{ inputObj = $inputObj; skuPartNumber = $script:TestSkuPartNumber; planId = $script:TestServicePlanId1 } {
-                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber $skuPartNumber -ServicePlanId $planId -Force -Confirm:$false
+                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber $skuPartNumber -ServicePlanId $planId -Force
             }
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
@@ -494,7 +494,7 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             }
 
             InModuleScope $script:ModuleName -Parameters @{ inputObj = $inputObj; skuPartNumber = $script:TestSkuPartNumber; planId = $script:TestServicePlanId1 } {
-                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber $skuPartNumber -ServicePlanId $planId -Force -Confirm:$false
+                Enable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber $skuPartNumber -ServicePlanId $planId -Force
             }
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly

@@ -29,8 +29,14 @@
         The Force switch suppresses the confirmation prompt before the Shell modifies the object.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to stop processing before any changes are made
-        and prompt you to acknowledge each action before it continues.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER PassThru
         When specified, the cmdlet will not execute the action but will instead

@@ -134,7 +134,7 @@ Describe 'Add-PSEntraIDGroupOwner Tests' -Tag 'Unit' {
                     UserPrincipalName = 'user1@test.com'
                     Mail              = 'user1@test.com'
                 }
-                { Add-PSEntraIDGroupOwner -Identity 'group-id' -InputObject $user -Force -Confirm:$false } | Should -Not -Throw
+                { Add-PSEntraIDGroupOwner -Identity 'group-id' -InputObject $user -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
         }
@@ -202,7 +202,7 @@ Describe 'Add-PSEntraIDGroupOwner Tests' -Tag 'Unit' {
 
         It 'Should call Assert-EntraConnection' {
             InModuleScope $script:ModuleName {
-                Add-PSEntraIDGroupOwner -Identity 'group-id' -User 'user@domain.com' -Force -Confirm:$false
+                Add-PSEntraIDGroupOwner -Identity 'group-id' -User 'user@domain.com' -Force
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Assert-EntraConnection -Times 1
         }
@@ -236,7 +236,7 @@ Describe 'Add-PSEntraIDGroupOwner Tests' -Tag 'Unit' {
                     UserPrincipalName = 'user1@test.com'
                     Mail              = 'user1@test.com'
                 }
-                { $user | Add-PSEntraIDGroupOwner -Identity 'group-id' -Force -Confirm:$false } | Should -Not -Throw
+                { $user | Add-PSEntraIDGroupOwner -Identity 'group-id' -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName PSMicrosoftEntraID Invoke-PSFProtectedCommand -Times 1
         }

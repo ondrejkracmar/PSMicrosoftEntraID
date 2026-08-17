@@ -341,7 +341,7 @@ Describe 'Add-PSEntraIDAdministrativeUnitMember' -Tag 'Unit' {
                     DisplayName       = 'Pipeline User'
                     UserPrincipalName = 'pipeline@contoso.com'
                 }
-                $pipelineUser | Add-PSEntraIDAdministrativeUnitMember -Identity 'Test AU' -Force -Confirm:$false
+                $pipelineUser | Add-PSEntraIDAdministrativeUnitMember -Identity 'Test AU' -Force
             }
             Should -Invoke -CommandName Invoke-PSFProtectedCommand -ModuleName $script:ModuleName -Times 1
         }

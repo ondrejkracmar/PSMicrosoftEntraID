@@ -60,7 +60,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Remove-PSEntraIDGroup -InputObject $groupObj -Force -Confirm:$false
+            Remove-PSEntraIDGroup -InputObject $groupObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Delete' -and $Path -eq 'groups/00000000-0000-0000-0000-000000000010'
@@ -70,7 +70,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
 
     Context 'Delete group by Identity' {
         It 'Should resolve group and call DELETE' {
-            Remove-PSEntraIDGroup -Identity 'testgroup' -Force -Confirm:$false
+            Remove-PSEntraIDGroup -Identity 'testgroup' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDGroup -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
@@ -81,7 +81,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
         It 'Should handle group not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDGroup { $null }
 
-            Remove-PSEntraIDGroup -Identity 'notfound' -EnableException -Force -Confirm:$false
+            Remove-PSEntraIDGroup -Identity 'notfound' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -89,7 +89,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
         It 'Should not call API when group not found without EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDGroup { $null }
 
-            { Remove-PSEntraIDGroup -Identity 'notfound' -Force -Confirm:$false } | Should -Not -Throw
+            { Remove-PSEntraIDGroup -Identity 'notfound' -Force } | Should -Not -Throw
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly
         }
@@ -138,7 +138,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Remove-PSEntraIDGroup -InputObject $groupObj -Force -Confirm:$false
+            Remove-PSEntraIDGroup -InputObject $groupObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -170,7 +170,7 @@ Describe 'Remove-PSEntraIDGroup' -Tag 'Unit' {
                     Id           = '00000000-0000-0000-0000-000000000010'
                     DisplayName  = 'TestGroup'
                 }
-                { $groupObj | Remove-PSEntraIDGroup -Force -Confirm:$false } | Should -Not -Throw
+                { $groupObj | Remove-PSEntraIDGroup -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1
         }

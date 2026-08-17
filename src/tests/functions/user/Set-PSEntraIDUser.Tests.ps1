@@ -70,7 +70,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUser -InputObject $userObj -JobTitle 'Manager' -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -JobTitle 'Manager' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Patch' -and $Path -eq 'users/00000000-0000-0000-0000-000000000001'
@@ -84,7 +84,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUser -InputObject $userObj -JobTitle 'Manager' -Department 'IT' -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -JobTitle 'Manager' -Department 'IT' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.jobTitle -eq 'Manager' -and $Body.department -eq 'IT'
@@ -98,7 +98,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUser -InputObject $userObj -City 'Prague' -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -City 'Prague' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Header.'Content-Type' -eq 'application/json'
@@ -108,7 +108,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
 
     Context 'Update user by Identity' {
         It 'Should resolve user and call PATCH' {
-            Set-PSEntraIDUser -Identity 'user@contoso.com' -Department 'HR' -Force -Confirm:$false
+            Set-PSEntraIDUser -Identity 'user@contoso.com' -Department 'HR' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
@@ -119,7 +119,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
         It 'Should handle user not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            Set-PSEntraIDUser -Identity 'notfound@contoso.com' -Department 'HR' -EnableException -Force -Confirm:$false
+            Set-PSEntraIDUser -Identity 'notfound@contoso.com' -Department 'HR' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -127,7 +127,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
         It 'Should not call API when user not found without EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            Set-PSEntraIDUser -Identity 'notfound@contoso.com' -Department 'HR' -Force -Confirm:$false
+            Set-PSEntraIDUser -Identity 'notfound@contoso.com' -Department 'HR' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly
         }
@@ -142,7 +142,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
             }
             $securePass = ConvertTo-SecureString 'TestP@ss123!' -AsPlainText -Force
 
-            Set-PSEntraIDUser -InputObject $userObj -Password $securePass -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -Password $securePass -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.passwordProfile -ne $null -and $Body.passwordProfile.password -eq 'TestP@ss123!'
@@ -157,7 +157,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
             }
             $securePass = ConvertTo-SecureString 'TestP@ss123!' -AsPlainText -Force
 
-            Set-PSEntraIDUser -InputObject $userObj -Password $securePass -ForceChangePasswordNextSignIn $true -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -Password $securePass -ForceChangePasswordNextSignIn $true -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.passwordProfile.forceChangePasswordNextSignIn -eq $true
@@ -173,7 +173,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUser -InputObject $userObj -DisplayName 'New Name' -City 'Berlin' -Country 'DE' -UsageLocation 'DE' -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -DisplayName 'New Name' -City 'Berlin' -Country 'DE' -UsageLocation 'DE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.displayName -eq 'New Name' -and
@@ -220,7 +220,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Set-PSEntraIDUser -InputObject $userObj -Department 'Sales' -Force -Confirm:$false
+            Set-PSEntraIDUser -InputObject $userObj -Department 'Sales' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -255,7 +255,7 @@ Describe 'Set-PSEntraIDUser' -Tag 'Unit' {
                     UserPrincipalName = 'user@contoso.com'
                 }
 
-                $userObj | Set-PSEntraIDUser -JobTitle 'Manager' -Force -Confirm:$false
+                $userObj | Set-PSEntraIDUser -JobTitle 'Manager' -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }

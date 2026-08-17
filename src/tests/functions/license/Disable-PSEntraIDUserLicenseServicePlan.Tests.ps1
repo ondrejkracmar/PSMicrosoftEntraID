@@ -306,13 +306,13 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should disable service plan using Identity with SkuPartNumber and ServicePlanName' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -326,13 +326,13 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should disable service plan using Identity with SkuPartNumber and ServicePlanId' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -346,13 +346,13 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should disable service plan using Identity with SkuId and ServicePlanName' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should resolve user via Get-PSEntraIDUser' {
-            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -Identity 'testuser@domain.com' -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1 -Exactly
         }
@@ -373,7 +373,7 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
                     [PSCustomObject]@{ SkuId = 'c7df2760-2c81-4ef7-b578-5b5392b571df'; DisabledPlans = @() }
                 )
             }
-            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
@@ -387,7 +387,7 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
                     [PSCustomObject]@{ SkuId = 'c7df2760-2c81-4ef7-b578-5b5392b571df'; DisabledPlans = @() }
                 )
             }
-            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -ServicePlanName 'EXCHANGE_S_ENTERPRISE' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
         }
@@ -408,7 +408,7 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
                     [PSCustomObject]@{ SkuId = 'c7df2760-2c81-4ef7-b578-5b5392b571df'; DisabledPlans = @() }
                 )
             }
-            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
@@ -422,7 +422,7 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
                     [PSCustomObject]@{ SkuId = 'c7df2760-2c81-4ef7-b578-5b5392b571df'; DisabledPlans = @() }
                 )
             }
-            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $inputObj -SkuPartNumber 'ENTERPRISEPACK' -ServicePlanId 'a23b959c-7ce8-4e57-9140-b90eb88a9e97' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
         }

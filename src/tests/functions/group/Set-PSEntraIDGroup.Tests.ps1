@@ -72,7 +72,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Updated Group' -Force -Confirm:$false
+            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Updated Group' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Patch' -and $Path -eq 'groups/00000000-0000-0000-0000-000000000010'
@@ -86,7 +86,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'New Name' -Description 'New Description' -Force -Confirm:$false
+            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'New Name' -Description 'New Description' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.displayName -eq 'New Name' -and $Body.description -eq 'New Description'
@@ -100,7 +100,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Test' -Force -Confirm:$false
+            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Test' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Header.'Content-Type' -eq 'application/json'
@@ -110,7 +110,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
 
     Context 'Update group by Identity' {
         It 'Should resolve group and call PATCH' {
-            Set-PSEntraIDGroup -Identity 'testgroup' -Displayname 'Updated' -Force -Confirm:$false
+            Set-PSEntraIDGroup -Identity 'testgroup' -Displayname 'Updated' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDGroup -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
@@ -121,7 +121,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
         It 'Should handle group not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDGroup { $null }
 
-            Set-PSEntraIDGroup -Identity 'notfound' -Displayname 'Test' -EnableException -Force -Confirm:$false
+            Set-PSEntraIDGroup -Identity 'notfound' -Displayname 'Test' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -135,7 +135,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Set-PSEntraIDGroup -InputObject $groupObj -Visibility 'Private' -Force -Confirm:$false
+            Set-PSEntraIDGroup -InputObject $groupObj -Visibility 'Private' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.visibility -eq 'Private'
@@ -179,7 +179,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                 DisplayName  = 'TestGroup'
             }
 
-            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Test' -Force -Confirm:$false
+            Set-PSEntraIDGroup -InputObject $groupObj -Displayname 'Test' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -188,7 +188,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
     Context 'AllowExternalSenders parameter set' {
         It 'Should call Invoke-PSFProtectedCommand with AllowExternalSenders' {
             InModuleScope $script:ModuleName {
-                Set-PSEntraIDGroup -Identity 'test-group-id' -AllowExternalSenders $true -Force -Confirm:$false
+                Set-PSEntraIDGroup -Identity 'test-group-id' -AllowExternalSenders $true -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }
@@ -198,7 +198,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
     Context 'AutoSubscribeNewMembers parameter set' {
         It 'Should call Invoke-PSFProtectedCommand with AutoSubscribeNewMembers' {
             InModuleScope $script:ModuleName {
-                Set-PSEntraIDGroup -Identity 'test-group-id' -AutoSubscribeNewMembers $true -Force -Confirm:$false
+                Set-PSEntraIDGroup -Identity 'test-group-id' -AutoSubscribeNewMembers $true -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }
@@ -208,7 +208,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
     Context 'HideFromAddressLists parameter set' {
         It 'Should call Invoke-PSFProtectedCommand with HideFromAddressLists' {
             InModuleScope $script:ModuleName {
-                Set-PSEntraIDGroup -Identity 'test-group-id' -HideFromAddressLists $true -Force -Confirm:$false
+                Set-PSEntraIDGroup -Identity 'test-group-id' -HideFromAddressLists $true -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }
@@ -218,7 +218,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
     Context 'HideFromOutlookClients parameter set' {
         It 'Should call Invoke-PSFProtectedCommand with HideFromOutlookClients' {
             InModuleScope $script:ModuleName {
-                Set-PSEntraIDGroup -Identity 'test-group-id' -HideFromOutlookClients $true -Force -Confirm:$false
+                Set-PSEntraIDGroup -Identity 'test-group-id' -HideFromOutlookClients $true -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }
@@ -228,7 +228,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
     Context 'UpdateDynamicGroup parameter set' {
         It 'Should call Invoke-PSFProtectedCommand with MembershipRule' {
             InModuleScope $script:ModuleName {
-                Set-PSEntraIDGroup -Identity 'test-group-id' -MembershipRule '(user.department -eq "Sales")' -MembershipRuleProcessingState 'On' -Force -Confirm:$false
+                Set-PSEntraIDGroup -Identity 'test-group-id' -MembershipRule '(user.department -eq "Sales")' -MembershipRuleProcessingState 'On' -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }
@@ -258,7 +258,7 @@ Describe 'Set-PSEntraIDGroup' -Tag 'Unit' {
                     DisplayName = 'TestGroup'
                 }
 
-                $groupObj | Set-PSEntraIDGroup -DisplayName 'NewName' -Force -Confirm:$false
+                $groupObj | Set-PSEntraIDGroup -DisplayName 'NewName' -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }

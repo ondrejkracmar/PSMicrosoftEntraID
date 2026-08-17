@@ -184,7 +184,7 @@ Describe 'New-PSEntraIDGroup Tests' -Tag 'Unit' {
         }
 
         It 'Should create a dynamic group with MembershipRule and MembershipRuleProcessingState' {
-            New-PSEntraIDGroup -DisplayName 'DynGroup' -MailNickname 'dyngroup' -MailEnabled $false -SecurityEnabled $true -GroupTypes 'DynamicMembership' -MembershipRule '(user.department -eq "Sales")' -MembershipRuleProcessingState 'On' -Force -Confirm:$false
+            New-PSEntraIDGroup -DisplayName 'DynGroup' -MailNickname 'dyngroup' -MailEnabled $false -SecurityEnabled $true -GroupTypes 'DynamicMembership' -MembershipRule '(user.department -eq "Sales")' -MembershipRuleProcessingState 'On' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1
         }
@@ -208,7 +208,7 @@ Describe 'New-PSEntraIDGroup Tests' -Tag 'Unit' {
         }
 
         It 'Should pass ResourceBehaviorOptions when specified' {
-            New-PSEntraIDGroup -DisplayName 'RBOGroup' -MailNickname 'rbogroup' -MailEnabled $false -SecurityEnabled $true -ResourceBehaviorOptions 'AllowOnlyMembersToPost' -Force -Confirm:$false
+            New-PSEntraIDGroup -DisplayName 'RBOGroup' -MailNickname 'rbogroup' -MailEnabled $false -SecurityEnabled $true -ResourceBehaviorOptions 'AllowOnlyMembersToPost' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1
         }
@@ -232,7 +232,7 @@ Describe 'New-PSEntraIDGroup Tests' -Tag 'Unit' {
         }
 
         It 'Should call Assert-EntraConnection during execution' {
-            New-PSEntraIDGroup -DisplayName 'ConnTest' -MailNickname 'conntest' -MailEnabled $false -SecurityEnabled $true -Force -Confirm:$false
+            New-PSEntraIDGroup -DisplayName 'ConnTest' -MailNickname 'conntest' -MailEnabled $false -SecurityEnabled $true -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1
         }

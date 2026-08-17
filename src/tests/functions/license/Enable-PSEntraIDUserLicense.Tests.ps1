@@ -352,7 +352,7 @@ Describe 'Enable-PSEntraIDUserLicense' -Tag 'Unit' {
                     AssignedLicenses  = @()
                 }
 
-                $testUser | Enable-PSEntraIDUserLicense -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -Force -Confirm:$false
+                $testUser | Enable-PSEntraIDUserLicense -SkuId 'c7df2760-2c81-4ef7-b578-5b5392b571df' -Force
 
                 Should -Invoke -CommandName Invoke-PSFProtectedCommand -Times 1
             }

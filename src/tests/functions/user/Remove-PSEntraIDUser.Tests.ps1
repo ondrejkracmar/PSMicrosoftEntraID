@@ -62,7 +62,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Remove-PSEntraIDUser -InputObject $userObj -Force -Confirm:$false
+            Remove-PSEntraIDUser -InputObject $userObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Method -eq 'Delete' -and $Path -eq 'users/00000000-0000-0000-0000-000000000001'
@@ -72,7 +72,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
 
     Context 'Delete user by Identity' {
         It 'Should resolve user and call DELETE' {
-            Remove-PSEntraIDUser -Identity 'user@contoso.com' -Force -Confirm:$false
+            Remove-PSEntraIDUser -Identity 'user@contoso.com' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUser -Times 1
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
@@ -83,7 +83,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
         It 'Should handle user not found with EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            Remove-PSEntraIDUser -Identity 'notfound@contoso.com' -EnableException -Force -Confirm:$false
+            Remove-PSEntraIDUser -Identity 'notfound@contoso.com' -EnableException -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-TerminatingException -Times 1
         }
@@ -91,7 +91,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
         It 'Should not throw when user not found without EnableException' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $null }
 
-            { Remove-PSEntraIDUser -Identity 'notfound@contoso.com' -Force -Confirm:$false } | Should -Not -Throw
+            { Remove-PSEntraIDUser -Identity 'notfound@contoso.com' -Force } | Should -Not -Throw
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly
         }
@@ -140,7 +140,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
                 UserPrincipalName = 'user@contoso.com'
             }
 
-            Remove-PSEntraIDUser -InputObject $userObj -Force -Confirm:$false
+            Remove-PSEntraIDUser -InputObject $userObj -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
@@ -173,7 +173,7 @@ Describe 'Remove-PSEntraIDUser' -Tag 'Unit' {
                     UserPrincipalName = 'user@contoso.com'
                     Mail              = 'user@contoso.com'
                 }
-                { $userObj | Remove-PSEntraIDUser -Force -Confirm:$false } | Should -Not -Throw
+                { $userObj | Remove-PSEntraIDUser -Force } | Should -Not -Throw
             }
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1
         }

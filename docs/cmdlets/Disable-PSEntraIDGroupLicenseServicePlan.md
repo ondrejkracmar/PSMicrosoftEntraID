@@ -94,8 +94,15 @@ Disable the EXCHANGE_S_ENTERPRISE service plan of the ENTERPRISEPACK SKU on grou
 
 ### -Confirm
 
-The Confirm switch instructs the command to stop processing before any changes are made
-and prompt you to acknowledge each action before it continues.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
