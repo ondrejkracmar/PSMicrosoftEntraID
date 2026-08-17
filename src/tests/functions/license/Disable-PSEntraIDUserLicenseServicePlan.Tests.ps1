@@ -86,6 +86,80 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
     }
 
+    Context 'Wire format' {
+        # Every other test here asserts on $Body as a PowerShell OBJECT:
+        #
+        #   $Body.addLicenses[0].disabledPlans -contains $planId
+        #
+        # -contains is true for a scalar as well as for an array, so an assertion like
+        # that passes whether disabledPlans is ["x"] or "x". Graph answers the second
+        # question, not the first:
+        #
+        #   Request_BadRequest: An unexpected 'PrimitiveValue' node was found when
+        #   reading from the JSON reader. A 'StartArray' node was expected.
+        #
+        # A live tenant produced exactly that, repeatedly, for a single service plan -
+        # while the same call with every plan of the SKU succeeded. These tests look at
+        # the JSON, serialised the way Invoke-EntraRequest serialises it, so the shape
+        # that actually leaves the machine is pinned rather than inferred.
+        BeforeAll {
+            Mock -ModuleName $script:ModuleName Get-PSEntraIDUserLicenseDetail { $script:MockLicenseDetail }
+            Mock -ModuleName $script:ModuleName Get-PSEntraIDSubscribedSku { $script:MockSubscribedSku }
+            Mock -ModuleName $script:ModuleName Get-PSEntraIDUser { $script:TestUser }
+
+            # The body is serialised inside -ParameterFilter, which runs in the same
+            # scope as the mock. Handing it out through a $script: variable does not
+            # work: the mock body and the test body are different scopes, and the read
+            # comes back $null - which reads exactly like "no request was made".
+            $script:BodyJson = { $Body | ConvertTo-Json -Compress -Depth 99 }
+        }
+
+        It 'sends disabledPlans as an array for ONE plan by id' {
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Force
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                ($Body | ConvertTo-Json -Compress -Depth 99) -match '"disabledPlans":\['
+            } -Because 'Graph rejects a scalar with "a StartArray node was expected"'
+        }
+
+        It 'sends disabledPlans as an array for ONE plan by name' {
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuPartNumber $script:TestSkuPartNumber -ServicePlanName $script:TestServicePlanName1 -Force
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                ($Body | ConvertTo-Json -Compress -Depth 99) -match '"disabledPlans":\['
+            }
+        }
+
+        It 'sends addLicenses and removeLicenses as arrays' {
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Force
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $json = $Body | ConvertTo-Json -Compress -Depth 99
+                ($json -match '"addLicenses":\[\{') -and ($json -match '"removeLicenses":\[')
+            }
+        }
+
+        It 'writes the JSON it produced to the console, so a failure names the shape' {
+            # A file, not a variable: it is the one channel that crosses the mock
+            # boundary reliably.
+            $capturePath = Join-Path ([System.IO.Path]::GetTempPath()) 'psentraid-wire-format.json'
+            if (Test-Path -LiteralPath $capturePath) { Remove-Item -LiteralPath $capturePath -Force }
+
+            Mock -ModuleName $script:ModuleName Invoke-EntraRequest {
+                $Body | ConvertTo-Json -Compress -Depth 99 |
+                    Set-Content -LiteralPath (Join-Path ([System.IO.Path]::GetTempPath()) 'psentraid-wire-format.json')
+            }
+
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Force
+
+            Test-Path -LiteralPath $capturePath | Should -BeTrue -Because 'the cmdlet has to make a request at all'
+            $json = Get-Content -LiteralPath $capturePath -Raw
+            Write-Host "      JSON sent: $json" -ForegroundColor DarkGray
+            Remove-Item -LiteralPath $capturePath -Force -ErrorAction SilentlyContinue
+            $json | Should -Match '"disabledPlans":\['
+        }
+    }
+
     Context 'Parameter Validation' {
         It 'Should have mandatory InputObject parameter' {
             $param = (Get-Command Disable-PSEntraIDUserLicenseServicePlan).Parameters['InputObject']
@@ -130,10 +204,15 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
         }
 
-        It 'Should call Get-PSEntraIDUserLicenseDetail' {
+        It 'reads existing state from AssignedLicenses, never licenseDetails' {
             Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 1 -Exactly
+            # licenseDetails' provisioningStatus trails the assignment by seconds to
+            # minutes, so a plan disabled a moment ago read as enabled and the next call
+            # silently re-enabled it - verified against a live tenant. The merge source
+            # is assignedLicenses.disabledPlans, which this cmdlet's own write sets and
+            # which is visible immediately. This asserts the laggy read is GONE.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 0 -Exactly
         }
 
         It 'Should call API with correct body structure' {
@@ -155,28 +234,47 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should preserve existing disabled plans' {
-            $licenseWithDisabled = [PSCustomObject]@{
-                PSTypeName = 'PSMicrosoftEntraID.Users.LicenseManagement.LicenseDetail'
-                SkuId = $script:TestSkuId
-                ServicePlans = @(
+            # The already-disabled plan is expressed where the cmdlet now reads it:
+            # assignedLicenses.disabledPlans. This is the ADD-not-replace regression a
+            # live tenant caught - two disables in a row kept only the second, because
+            # the first was read from provisioningStatus, which had not caught up yet.
+            $userWithDisabled = [PSCustomObject]@{
+                PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                Id                = $script:TestUser.Id
+                UserPrincipalName = $script:TestUser.UserPrincipalName
+                AssignedLicenses  = @(
                     [PSCustomObject]@{
-                        ServicePlanId = $script:TestServicePlanId1
-                        ProvisioningStatus = 'Disabled'
-                    }
-                    [PSCustomObject]@{
-                        ServicePlanId = $script:TestServicePlanId2
-                        ProvisioningStatus = 'Success'
+                        SkuId         = $script:TestSkuId
+                        DisabledPlans = @($script:TestServicePlanId1)
                     }
                 )
             }
-            Mock -ModuleName $script:ModuleName Get-PSEntraIDUserLicenseDetail { $licenseWithDisabled }
 
-            Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId2 -Confirm:$false
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $userWithDisabled -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId2 -Confirm:$false
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.addLicenses[0].disabledPlans -contains $script:TestServicePlanId1 -and
                 $Body.addLicenses[0].disabledPlans -contains $script:TestServicePlanId2
             }
+        }
+
+        It 'warns and sends nothing when the user does not hold the SKU' {
+            Mock -ModuleName $script:ModuleName Write-PSFMessage { }
+            $userWithoutSku = [PSCustomObject]@{
+                PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                Id                = $script:TestUser.Id
+                UserPrincipalName = $script:TestUser.UserPrincipalName
+                AssignedLicenses  = @()
+            }
+
+            Disable-PSEntraIDUserLicenseServicePlan -InputObject $userWithoutSku -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
+
+            # Silence here reads as success and it is not - same convention as the
+            # group cmdlets and finding #7.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Write-PSFMessage -ParameterFilter {
+                $String -eq 'License.Sku.NotAssigned'
+            }
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly
         }
     }
 
@@ -226,7 +324,9 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         It 'Should process pipeline input with InputObject' {
             @($script:TestUser, $script:TestUser) | Disable-PSEntraIDUserLicenseServicePlan -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 2 -Exactly
+            # One request per piped user; state comes off each object's own
+            # AssignedLicenses, so no extra reads happen at all.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 2 -Exactly
         }
 
         It 'Should process multiple identities via Identity parameter' {
@@ -289,12 +389,19 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             Mock -ModuleName $script:ModuleName Get-PSEntraIDSubscribedSku { $script:MockSubscribedSku }
         }
 
-        It 'Should not call API when user has no license details' {
+        It 'still disables when licenseDetails has not caught up yet' {
+            # The live-tenant regression, pinned. licenseDetails trails the assignment,
+            # so a user whose SKU was assigned a moment ago has an assignedLicenses
+            # entry and NO licence detail. The old code read its state from the detail
+            # and treated this exact situation as "nothing to do". Holding the SKU is
+            # what matters, and the user does.
             Mock -ModuleName $script:ModuleName Get-PSEntraIDUserLicenseDetail { $null }
 
             Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Body.addLicenses[0].disabledPlans -contains $script:TestServicePlanId1
+            } -Times 1 -Exactly
         }
     }
 

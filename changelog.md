@@ -127,6 +127,18 @@
 - **Fix:** `-Force` was documented as doing the opposite of what it does. 24 of the 30
   cmdlets that have the parameter carried the `-Confirm` description under it, telling
   readers that `-Force` makes the command prompt them.
+- **Fix:** Four defects in `Enable-`/`Disable-PSEntraIDUserLicenseServicePlan`, found by
+  running the licence scenario against a live tenant and chasing every failure to root:
+  the merge state ("which plans are already disabled") was read from `licenseDetails`'
+  `provisioningStatus`, which trails the assignment - so a plan disabled a moment ago was
+  silently re-enabled by the next call, and in `Enable` a freshly assigned SKU read as
+  absent and had every plan but the requested ones disabled; pipeline input never worked,
+  because SKU/plan resolution switched on `ParameterSetName` in `begin`, where it is not
+  yet resolved for piped input; on pipeline input a user with nothing to disable inherited
+  the previous user's list; and an empty plan list serialized as `[null]`. State now comes
+  from `assignedLicenses.disabledPlans` - the field the write itself sets, the one the
+  group cmdlets always used - resolution branches on `$PSBoundParameters`, and both
+  cmdlets warn instead of staying silent when the target does not hold the SKU.
 - **Fix:** The file-integrity syntax check passed only because something had imported the
   module first. The class files are typed with library types, which PowerShell resolves at
   parse time, so the check fails on its own with "Unable to find type". Both tests that

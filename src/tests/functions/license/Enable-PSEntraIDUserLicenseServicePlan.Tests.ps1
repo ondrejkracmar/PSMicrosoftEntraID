@@ -52,7 +52,12 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             AssignedLicenses = @(
                 [PSCustomObject]@{
                     SkuId = $script:TestSkuId
-                    DisabledPlans = @($script:TestServicePlanId1)
+                    # Plans 1 and 3 disabled - the state the cmdlet reads its merge from.
+                    # This is assignedLicenses.disabledPlans, the field the cmdlet's own
+                    # write sets; the licenseDetails mock below exists only to prove it
+                    # is NOT consulted any more (its provisioningStatus lags the
+                    # assignment, which silently re-enabled plans on a live tenant).
+                    DisabledPlans = @($script:TestServicePlanId1, $script:TestServicePlanId3)
                 }
             )
         }
@@ -166,10 +171,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
         }
 
-        It 'Should call Get-PSEntraIDUserLicenseDetail' {
+        It 'reads existing state from AssignedLicenses, never licenseDetails' {
             Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 1 -Exactly
+            # See the matching assertion in the Disable tests: provisioningStatus lags
+            # the assignment, and reading it here re-enabled plans and mistook a
+            # freshly-assigned SKU for an absent one.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 0 -Exactly
         }
 
         It 'Should call API with correct body structure' {
@@ -254,7 +262,9 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         It 'Should process pipeline input with InputObject' {
             @($script:TestUser, $script:TestUser) | Enable-PSEntraIDUserLicenseServicePlan -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDUserLicenseDetail -Times 2 -Exactly
+            # One request per piped user; state comes off each object's own
+            # AssignedLicenses, so no extra reads happen at all.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 2 -Exactly
         }
 
         It 'Should process multiple identities via Identity parameter' {
@@ -266,23 +276,43 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
 
     Context 'Enable service plan when user does not have the license' {
         BeforeAll {
-            Mock -ModuleName $script:ModuleName Get-PSEntraIDUserLicenseDetail { $null }
             Mock -ModuleName $script:ModuleName Get-PSEntraIDSubscribedSku { $script:MockSubscribedSku }
             Mock -ModuleName $script:ModuleName Get-PSEntraIDSubscribedLicense { $script:MockSubscribedLicense }
+
+            # "Does not hold the SKU" is a fact about AssignedLicenses now, not about
+            # licenseDetails coming back empty - a freshly-assigned SKU has no detail
+            # yet either, and treating that as "absent" disabled every plan but the
+            # requested one on a live tenant.
+            $script:UserWithoutSku = [PSCustomObject]@{
+                PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                Id                = $script:TestUser.Id
+                UserPrincipalName = $script:TestUser.UserPrincipalName
+                AssignedLicenses  = @()
+            }
         }
 
         It 'Should call Get-PSEntraIDSubscribedLicense when user has no license' {
-            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:UserWithoutSku -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedLicense -Times 1 -Exactly
         }
 
-        It 'Should get all service plans from subscribed license' {
-            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
+        It 'assigns the SKU with everything but the requested plan disabled' {
+            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:UserWithoutSku -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
-                $Body.addLicenses[0].disabledPlans.Count -ge 0
+                $Body.addLicenses[0].disabledPlans -notcontains $script:TestServicePlanId1 -and
+                $Body.addLicenses[0].disabledPlans -contains $script:TestServicePlanId2 -and
+                $Body.addLicenses[0].disabledPlans -contains $script:TestServicePlanId3
             }
+        }
+
+        It 'does NOT treat a held SKU as absent' {
+            # TestUser holds the SKU, so the fresh-assignment branch and its
+            # Get-PSEntraIDSubscribedLicense read must both stay untouched.
+            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedLicense -Times 0 -Exactly
         }
     }
 
@@ -342,19 +372,15 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         }
 
         It 'Should handle empty disabled plans list' {
-            $licenseNoDisabled = [PSCustomObject]@{
-                PSTypeName = 'PSMicrosoftEntraID.Users.LicenseManagement.LicenseDetail'
-                SkuId = $script:TestSkuId
-                ServicePlans = @(
-                    [PSCustomObject]@{
-                        ServicePlanId = $script:TestServicePlanId1
-                        ProvisioningStatus = 'Success'
-                    }
-                )
+            # "Nothing disabled" is a fact about the user's AssignedLicenses now.
+            $userNothingDisabled = [PSCustomObject]@{
+                PSTypeName        = 'PSMicrosoftEntraID.Users.User'
+                Id                = $script:TestUser.Id
+                UserPrincipalName = $script:TestUser.UserPrincipalName
+                AssignedLicenses  = @([PSCustomObject]@{ SkuId = $script:TestSkuId; DisabledPlans = @() })
             }
-            Mock -ModuleName $script:ModuleName Get-PSEntraIDUserLicenseDetail { $licenseNoDisabled }
 
-            Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
+            Enable-PSEntraIDUserLicenseServicePlan -InputObject $userNothingDisabled -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
                 $Body.addLicenses[0].disabledPlans.Count -eq 0

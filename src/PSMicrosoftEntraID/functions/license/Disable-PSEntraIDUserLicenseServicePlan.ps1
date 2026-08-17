@@ -114,26 +114,41 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wSkuId\w' {
-                [string] $bodySkuId = $SkuId
-                [string] $skuTarget = $SkuId
-            }
-            '\wSkuPartNumber\w' {
-                [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = Get-PSEntraIDSubscribedSku | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber } | Select-Object -First 1
-                [string] $bodySkuId = $matchedSku.SkuId
-                [string] $skuTarget = $SkuPartNumber
-            }
-            '\wPlanId' {
-                [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [string[]] $bodyServicePlanId = $ServicePlanId
-            }
-            '\wPlanName' {
-                [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                    Select-Object -ExpandProperty ServicePlans |
-                    Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId
-            }
+        # Branched on $PSBoundParameters, NOT on $PSCmdlet.ParameterSetName.
+        #
+        # With pipeline input the parameter set is not resolved until the first object
+        # arrives in process - InputObject and Identity both bind from the pipeline, so
+        # in begin the ambiguity is still open and ParameterSetName names neither. The
+        # switch that used to live here matched nothing, $bodySkuId stayed empty, every
+        # piped user failed the SKU match, and the cmdlet reported 'not assigned' for a
+        # licence the user held. Piped input never worked, and the test that covered it
+        # only counted an intermediate call, so nothing noticed.
+        #
+        # SkuId/SkuPartNumber/ServicePlanId/ServicePlanName are never pipeline-bound, so
+        # $PSBoundParameters answers in begin what ParameterSetName cannot.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string] $bodySkuId = $SkuId
+            [string] $skuTarget = $SkuId
+        }
+        else {
+            # Materialised, NOT piped into Select-Object -First 1: that stops the
+            # pipeline, the protected read inside reports a failed action, and
+            # $matchedSku comes back empty. The same hazard is documented in this
+            # module's own help.
+            [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = @(Get-PSEntraIDSubscribedSku)
+            [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = @($subscribedSkus | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber })[0]
+            [string] $bodySkuId = $matchedSku.SkuId
+            [string] $skuTarget = $SkuPartNumber
+        }
+        if ($PSBoundParameters.ContainsKey('ServicePlanId')) {
+            [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+            [string[]] $bodyServicePlanId = $ServicePlanId
+        }
+        else {
+            [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+            [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
+                Select-Object -ExpandProperty ServicePlans |
+                Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId
         }
     }
     process {
@@ -141,22 +156,30 @@
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
                     [System.Collections.Generic.List[object]] $bodyDisabledServicePlanList = [System.Collections.Generic.List[object]]::new()
-                    [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $itemInputObject |
-                    Get-PSEntraIDUserLicenseDetail |
-                    Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                    Select-Object -ExpandProperty ServicePlans
-                    if (-not([object]::Equals($userLicenseDetail, $null))) {
-                        [string[]] $existingDisabledServicePlanList = ($userLicenseDetail |
-                            Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
-                        if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
-                            [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
-                            Where-Object { $PSItem -notin $existingDisabledServicePlanList }
-                            $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
-                            $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
-                        }
-                        else {
-                            [string[]] $bodyDisabledServicePlanList = @($bodyServicePlanId)
-                        }
+
+                    # Existing disabled plans come from assignedLicenses.disabledPlans -
+                    # the field this very cmdlet writes - NOT from licenseDetails'
+                    # provisioningStatus. The two answer different questions:
+                    # disabledPlans is the assignment and is visible the moment it is
+                    # written; provisioningStatus is what has been PROVISIONED and trails
+                    # the write by seconds to minutes. Reading the laggy one meant a plan
+                    # disabled a moment ago was not seen as disabled, so the next call
+                    # rebuilt the list without it and silently RE-ENABLED it - verified
+                    # against a live tenant, where two disables in a row kept only the
+                    # second. The group cmdlets have always read disabledPlans, which is
+                    # why they never had this defect.
+                    $assignedLicense = @($itemInputObject.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId })[0]
+                    if (-not ([object]::Equals($assignedLicense, $null))) {
+                        [string[]] $existingDisabledServicePlanList = @($assignedLicense.DisabledPlans | ForEach-Object { [string]$_ })
+                        [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
+                        Where-Object { $PSItem -notin $existingDisabledServicePlanList }
+                        $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                        $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                    }
+                    else {
+                        # Not an error: the SKU simply is not on this user. Say so, though -
+                        # silence here reads as success and it is not.
+                        Write-PSFMessage -Level Warning -String 'License.Sku.NotAssigned' -StringValues $skuTarget, $(if ($itemInputObject.UserPrincipalName) { $itemInputObject.UserPrincipalName } else { $itemInputObject.Id })
                     }
 
                     [hashtable] $body = @{
@@ -194,22 +217,19 @@
                         }
                     }
                     else {
-                        [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $userLicenseDetail = $aADUser |
-                    Get-PSEntraIDUserLicenseDetail |
-                    Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                    Select-Object -ExpandProperty ServicePlans
-                    if (-not([object]::Equals($userLicenseDetail, $null))) {
-                        [string[]] $existingDisabledServicePlanList = ($userLicenseDetail |
-                            Where-Object -Property ProvisioningStatus -Value 'Disabled' -EQ).ServicePlanId
-                        if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
-                            [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
-                            Where-Object { $PSItem -notin $existingDisabledServicePlanList }
-                            $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
-                            $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
-                        }
-                        else {
-                            [string[]] $bodyDisabledServicePlanList = @($bodyServicePlanId)
-                        }
+                    # assignedLicenses.disabledPlans, not provisioningStatus - see the
+                    # InputObject branch for why. $aADUser was just read, so the field is
+                    # as fresh as Graph will give.
+                    $assignedLicense = @($aADUser.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId })[0]
+                    if (-not ([object]::Equals($assignedLicense, $null))) {
+                        [string[]] $existingDisabledServicePlanList = @($assignedLicense.DisabledPlans | ForEach-Object { [string]$_ })
+                        [string[]] $bodyNewDisabledServicePlanList = $bodyServicePlanId |
+                        Where-Object { $PSItem -notin $existingDisabledServicePlanList }
+                        $existingDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                        $bodyNewDisabledServicePlanList | ForEach-Object { [void] $bodyDisabledServicePlanList.Add($PSItem) }
+                    }
+                    else {
+                        Write-PSFMessage -Level Warning -String 'License.Sku.NotAssigned' -StringValues $skuTarget, $user
                     }
 
                     [hashtable] $body = @{
