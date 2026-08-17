@@ -139,6 +139,12 @@
   from `assignedLicenses.disabledPlans` - the field the write itself sets, the one the
   group cmdlets always used - resolution branches on `$PSBoundParameters`, and both
   cmdlets warn instead of staying silent when the target does not hold the SKU.
+- **Fix:** The same `begin`-block parameter-set switch existed in all six remaining
+  licence cmdlets (`Enable-`/`Disable-` × `UserLicense`/`GroupLicense`/
+  `GroupLicenseServicePlan`), so pipeline input carried the same latent defect across the
+  whole family. All now branch on `$PSBoundParameters`; the rule is written down in
+  `docs/internal/conventions.md` together with the other invariants this week's defects
+  established.
 - **Fix:** The file-integrity syntax check passed only because something had imported the
   module first. The class files are typed with library types, which PowerShell resolves at
   parse time, so the check fails on its own with "Unable to find type". Both tests that

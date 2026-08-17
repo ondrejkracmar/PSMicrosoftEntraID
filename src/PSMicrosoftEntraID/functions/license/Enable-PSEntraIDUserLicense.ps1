@@ -89,45 +89,37 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wSkuId' {
-                [string[]] $bodySkuId = $SkuId
-                [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [System.Collections.Generic.List[object]] $addLicensesList = [System.Collections.Generic.List[object]]::new()
-                foreach ($skuIdItem in $bodySkuId) {
-                    [void] $addLicensesList.Add(@{
-                        disabledPlans = @()
-                        skuId         = $skuIdItem
-                    })
-                }
-                [hashtable] $body = @{
-                    addLicenses    = $addLicensesList.ToArray()
-                    removeLicenses = @()
-                }
-            }
-            '\wSkuPartNumber' {
-                [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
-                [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = Get-PSEntraIDSubscribedSku
-                foreach ($skuPart in $SkuPartNumber) {
-                    [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = $subscribedSkus | Where-Object { $_.SkuPartNumber -eq $skuPart } | Select-Object -First 1
-                    if ($matchedSku) {
-                        $bodySkuIdList.Add($matchedSku.SkuId)
-                    }
-                }
-                [string[]] $bodySkuId = $bodySkuIdList.ToArray()
-                [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [System.Collections.Generic.List[object]] $addLicensesList = [System.Collections.Generic.List[object]]::new()
-                foreach ($skuIdItem in $bodySkuId) {
-                    [void] $addLicensesList.Add(@{
-                        disabledPlans = @()
-                        skuId         = $skuIdItem
-                    })
-                }
-                [hashtable] $body = @{
-                    addLicenses    = $addLicensesList.ToArray()
-                    removeLicenses = @()
+        # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
+        # set is not resolved until the first object arrives in process, so a switch on
+        # it here matches nothing and $bodySkuId stays empty for every piped target.
+        # SkuId/SkuPartNumber are never pipeline-bound, so this is decidable in begin.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string[]] $bodySkuId = $SkuId
+            [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+        }
+        else {
+            [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
+            [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = Get-PSEntraIDSubscribedSku
+            foreach ($skuPart in $SkuPartNumber) {
+                [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = @($subscribedSkus | Where-Object { $_.SkuPartNumber -eq $skuPart })[0]
+                if ($matchedSku) {
+                    $bodySkuIdList.Add($matchedSku.SkuId)
                 }
             }
+            [string[]] $bodySkuId = $bodySkuIdList.ToArray()
+            [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+        }
+        # The body is identical either way; it only depends on the resolved ids.
+        [System.Collections.Generic.List[object]] $addLicensesList = [System.Collections.Generic.List[object]]::new()
+        foreach ($skuIdItem in $bodySkuId) {
+            [void] $addLicensesList.Add(@{
+                disabledPlans = @()
+                skuId         = $skuIdItem
+            })
+        }
+        [hashtable] $body = @{
+            addLicenses    = $addLicensesList.ToArray()
+            removeLicenses = @()
         }
     }
     process {

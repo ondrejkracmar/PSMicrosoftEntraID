@@ -82,32 +82,34 @@
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
 
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wSkuId' {
-                [string[]] $bodySkuId = $SkuId
-                [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            }
-            '\wSkuPartNumber' {
-                [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
-                [object[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense -EnableException:$EnableException)
-                foreach ($skuPart in $SkuPartNumber) {
-                    [object] $matchedSku = $subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $skuPart } | Select-Object -First 1
-                    if ($matchedSku) {
-                        $bodySkuIdList.Add($matchedSku.SkuId)
+        # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
+        # set is not resolved until the first object arrives in process, so a switch on
+        # it here matches nothing and $bodySkuId stays empty for every piped target.
+        # SkuId/SkuPartNumber are never pipeline-bound, so this is decidable in begin.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string[]] $bodySkuId = $SkuId
+            [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+        }
+        else {
+            [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
+            [object[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense -EnableException:$EnableException)
+            foreach ($skuPart in $SkuPartNumber) {
+                [object] $matchedSku = @($subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $skuPart })[0]
+                if ($matchedSku) {
+                    $bodySkuIdList.Add($matchedSku.SkuId)
+                }
+                else {
+                    [string] $message = (Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.SkuPartNumber.NotFound) -f $skuPart
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message $message
                     }
                     else {
-                        [string] $message = (Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.SkuPartNumber.NotFound) -f $skuPart
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message $message
-                        }
-                        else {
-                            Write-PSFMessage -Level Warning -Message $message
-                        }
+                        Write-PSFMessage -Level Warning -Message $message
                     }
                 }
-                [string[]] $bodySkuId = $bodySkuIdList.ToArray()
-                [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
             }
+            [string[]] $bodySkuId = $bodySkuIdList.ToArray()
+            [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
         }
     }
 

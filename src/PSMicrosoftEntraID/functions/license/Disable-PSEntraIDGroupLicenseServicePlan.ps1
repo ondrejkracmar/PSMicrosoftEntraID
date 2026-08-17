@@ -109,28 +109,28 @@
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
 
         [PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense)
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wSkuId\w' {
-                [string] $bodySkuId = $SkuId
-                [string] $skuTarget = $SkuId
-            }
-            '\wSkuPartNumber\w' {
-                [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $matchedSku = $subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber } | Select-Object -First 1
-                [string] $bodySkuId = $matchedSku.SkuId
-                [string] $skuTarget = $SkuPartNumber
-            }
+        # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
+        # set is not resolved until the first object arrives in process, so a switch on
+        # it here matches nothing and $bodySkuId stays empty for every piped target.
+        # None of these four parameters is pipeline-bound, so this is decidable in begin.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string] $bodySkuId = $SkuId
+            [string] $skuTarget = $SkuId
+        }
+        else {
+            [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $matchedSku = @($subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber })[0]
+            [string] $bodySkuId = $matchedSku.SkuId
+            [string] $skuTarget = $SkuPartNumber
         }
 
-        [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $targetSubscribedLicense = $subscribedLicenses | Where-Object { $_.SkuId -eq $bodySkuId } | Select-Object -First 1
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wPlanId' {
-                [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [string[]] $bodyServicePlanId = $ServicePlanId
-            }
-            '\wPlanName' {
-                [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-                [string[]] $bodyServicePlanId = @($targetSubscribedLicense.ServicePlans | Where-Object { $ServicePlanName -contains $PSItem.ServicePlanName } | ForEach-Object { $_.ServicePlanId })
-            }
+        [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $targetSubscribedLicense = @($subscribedLicenses | Where-Object { $_.SkuId -eq $bodySkuId })[0]
+        if ($PSBoundParameters.ContainsKey('ServicePlanId')) {
+            [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+            [string[]] $bodyServicePlanId = $ServicePlanId
+        }
+        else {
+            [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+            [string[]] $bodyServicePlanId = @($targetSubscribedLicense.ServicePlans | Where-Object { $ServicePlanName -contains $PSItem.ServicePlanName } | ForEach-Object { $_.ServicePlanId })
         }
     }
 
