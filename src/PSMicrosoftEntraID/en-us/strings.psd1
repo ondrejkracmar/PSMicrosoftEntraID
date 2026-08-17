@@ -8,7 +8,7 @@
 
 	'Organization.Get'                     = 'Get organization detail'
 
-	"MessageCenter.Get"                    = "Get Microsoft 365 Message Center Announcements'"
+	"MessageCenter.Get"                    = "Get Microsoft 365 Message Center Announcements"
 	"MessageCenter.Get.Validation"         = "Parameter validation failed: {0} cannot be later than {1}"
 
 	'Request.Invoke'                       = 'Invoke request command with the following url {0}'
@@ -39,6 +39,9 @@
 	'User.List'                            = "List users '{0}'"
 	'User.Name'                            = "List users by name '{0}'"
 	'User.Invitation'                      = "Invite user '{0}'"
+	'User.Identity.Filter'                 = "List users by identity with filter '{0}'"
+	'User.Identity.SignInType.Unsupported' = "Microsoft Graph does not support filtering identities on a signInType of userPrincipalName. Use -Identity to look the account up by its user principal name instead."
+	'User.Identity.Issuer.Alone'           = "Microsoft Graph matches an issuer on its own only for {1}. For issuer '{0}' supply -IssuerAssignedId as well, or the request returns nothing rather than failing."
 	'User.LicenseDetail.List'              = "List license detail of user '{0}'"
 
 	'Group.Get'                            = "Get group '{0}'"
@@ -89,7 +92,7 @@
 	'AdministrativeUnitMember.Add'         = "Add member '{0}' to administrative unit"
 	'AdministrativeUnitMember.Delete'      = "Remove member '{0}' from administrative unit"
 
-	'Contact.Get'                          = "Get xontact '{0}'"
+	'Contact.Get'                          = "Get contact '{0}'"
 	'Contact.Filter'                       = "List contacts with filter '{0}'"
 	'Contact.List'                         = "List contacts '{0}'"
 	'Contact.Name'                         = "List contacts by name '{0}'"
