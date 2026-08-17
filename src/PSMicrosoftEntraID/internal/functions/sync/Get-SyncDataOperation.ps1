@@ -162,12 +162,17 @@
                         $referenceObject = ($ReferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
                         $compareProperties = Compare-Hashtable $referenceObject $differenceObject
 
+                        # Compare-Hashtable emits NOTHING when the two sides are identical,
+                        # and identical is the ordinary case here - every member that is
+                        # already in both groups lands in this branch. Reaching straight
+                        # for .GetType() on that result turned "nothing to do" into
+                        # "You cannot call a method on a null-valued expression", so the
+                        # branch could only survive as long as it was unreachable.
                         [System.Collections.ArrayList]$comparePropertyList = [System.Collections.ArrayList]::new()
-                        if ((($compareProperties.GetType()).BaseType).Name -eq 'Array') {
-                            $comparePropertyList.AddRange($compareProperties) | Out-Null
-                        }
-                        if ((($compareProperties.GetType()).BaseType).Name -eq 'Object') {
-                            $comparePropertyList.Add($compareProperties) | Out-Null
+                        foreach ($compareProperty in @($compareProperties)) {
+                            if ($null -ne $compareProperty) {
+                                [void]$comparePropertyList.Add($compareProperty)
+                            }
                         }
 
                         $propertyHash = @{}

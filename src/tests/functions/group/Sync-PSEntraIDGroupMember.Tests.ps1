@@ -21,22 +21,13 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
 
     Context 'Deciding what to change' {
 
-        # SKIPPED - the cmdlet is unfinished, and this is the shape of the gap.
-        #
-        # It flattens both member lists to plain Id strings (Select-Object -ExpandProperty
-        # Id) and hands them to Get-SyncDataOperation with -MatchProperty Id. On a string
-        # there is no .Id, so every entry compares as $null against every other, all of
-        # them come back with SideIndicator '==' and the helper emits Update operations.
-        # The Create and Delete branches are therefore unreachable: the sync never adds
-        # and never removes anybody.
-        #
-        # The Delete branch would not work even if reached - it reads
-        # $syncOperation.Fields.Id, but Get-SyncDataOperation sets Fields = @{} for a
-        # Delete and puts the id in IdentityValue.
-        #
-        # Kept rather than deleted: this is the specification the cmdlet has to satisfy
-        # once it is finished. Remove the -Skip then.
-        It 'adds the reference users the target group is missing and removes the rest' -Skip {
+        # This was skipped while the cmdlet could not satisfy it. Both causes are fixed:
+        # the member lists keep their Id PROPERTY instead of being expanded to bare
+        # strings (a string has no .Id, so Compare-Object -Property Id matched everything
+        # against everything and only ever produced '=='), and the Delete branch reads
+        # IdentityValue rather than Fields.Id, which Get-SyncDataOperation leaves empty
+        # for a delete by construction.
+        It 'adds the reference users the target group is missing and removes the rest' {
             InModuleScope PSMicrosoftEntraID {
                 $targetGroup = [PSMicrosoftEntraID.Groups.Group]::new()
                 $targetGroup.Id = 'group-1'
@@ -94,22 +85,7 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
 
     Context 'SyncView' {
 
-        # SKIPPED - the cmdlet is unfinished, and this is the shape of the gap.
-        #
-        # It flattens both member lists to plain Id strings (Select-Object -ExpandProperty
-        # Id) and hands them to Get-SyncDataOperation with -MatchProperty Id. On a string
-        # there is no .Id, so every entry compares as $null against every other, all of
-        # them come back with SideIndicator '==' and the helper emits Update operations.
-        # The Create and Delete branches are therefore unreachable: the sync never adds
-        # and never removes anybody.
-        #
-        # The Delete branch would not work even if reached - it reads
-        # $syncOperation.Fields.Id, but Get-SyncDataOperation sets Fields = @{} for a
-        # Delete and puts the id in IdentityValue.
-        #
-        # Kept rather than deleted: this is the specification the cmdlet has to satisfy
-        # once it is finished. Remove the -Skip then.
-        It 'reports the operations without touching the group' -Skip {
+        It 'reports the operations without touching the group' {
             InModuleScope PSMicrosoftEntraID {
                 $targetGroup = [PSMicrosoftEntraID.Groups.Group]::new()
                 $targetGroup.Id = 'group-1'

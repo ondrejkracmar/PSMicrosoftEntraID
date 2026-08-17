@@ -46,7 +46,6 @@
 
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSMicrosoftEntraID.Sync')]
     [CmdletBinding(DefaultParameterSetName = 'UserIdentity', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
@@ -86,7 +85,12 @@
             return
         }
 
-        $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -ExpandProperty Id
+        # -Property Id, NOT -ExpandProperty Id. Both lists go to Get-SyncDataOperation,
+        # which runs Compare-Object -Property Id over them - and a bare [string] has no
+        # .Id, so expanding here made every entry compare $null against $null. Everything
+        # matched, everything came back '==', and the Create and Delete branches below
+        # were unreachable: the sync could neither add a member nor remove one.
+        $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
         switch ($PSCmdlet.ParameterSetName) {
             'UserIdentity' {
                 foreach ($itemUser in $ReferenceUserIdentity) {
@@ -97,14 +101,13 @@
                         }
                     }
                     else {
-                        $addUser = $aADUser | Select-Object -ExpandProperty Id
-                        [void]$referenceMemberList.Add($addUser)
+                        [void]$referenceMemberList.Add(($aADUser | Select-Object -Property Id))
                     }
                 }
             }
             'GroupIdentity' {
                 [PSMicrosoftEntraID.Groups.Group] $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
-                $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -ExpandProperty Id
+                $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
             }
         }
         $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
@@ -119,18 +122,25 @@
                 foreach ($syncOperation in $syncOperationList) {
                     switch ($syncOperation.Crud) {
                         'Create' {
-                            [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                            # The id is already resolved - it came from Get-PSEntraIDUser
+                            # in the UserIdentity set, or off the reference group's own
+                            # members. Looking it up again cost a round trip per member
+                            # and answered a question nobody asked.
+                            $memberId = $syncOperation.Fields.Id
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
-                                [void] (Add-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
+                                [void] (Add-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $memberId)
                             } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                         'Update' {
                         }
                         'Delete' {
-                            [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
+                            # IdentityValue, not Fields.Id: Get-SyncDataOperation sets
+                            # Fields = @{} for a delete and carries the id in
+                            # IdentityValue, so reading Fields.Id here was always null.
+                            $memberId = $syncOperation.IdentityValue
                             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
-                                [void] (Remove-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $member.Id)
+                                [void] (Remove-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $memberId)
                             } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
