@@ -228,11 +228,39 @@
 			$parameters.Uri = $result.'@odata.nextLink'
 
 			if ($DeltaSession -and $result.'@odata.deltaLink') {
-				$deltaToken = (($result.'@odata.deltaLink' -split '\?')[1] -split '=')[-1]
-				if (-not $DeltaSession[$originalUri]) {
-					$DeltaSession[$originalUri] = @{}
+				# Parse the query properly instead of splitting the whole link on '=' and
+				# taking the last piece. That shortcut breaks on both shapes Graph
+				# actually returns: a token carrying base64 '=' padding truncates to an
+				# empty string, and a link where $deltatoken is not the final parameter
+				# yields the value of whatever came last. Both fail silently - an empty
+				# token makes every run a full read, a wrong one is sent back to Graph as
+				# if it were real.
+				$deltaToken = $null
+				$queryPart = ([string]$result.'@odata.deltaLink' -split '\?', 2)[1]
+				if ($queryPart) {
+					foreach ($pair in ($queryPart -split '&')) {
+						# Split on the FIRST '=' only: the name is ours to match, the
+						# value is opaque and may contain more of them.
+						$keyValue = $pair -split '=', 2
+						if ($keyValue.Count -eq 2 -and $keyValue[0] -in '$deltatoken', '%24deltatoken') {
+							$deltaToken = $keyValue[1]
+							break
+						}
+					}
 				}
-				$DeltaSession[$originalUri]['Token'] = $deltaToken
+
+				if ($deltaToken) {
+					if (-not $DeltaSession[$originalUri]) {
+						$DeltaSession[$originalUri] = @{}
+					}
+					$DeltaSession[$originalUri]['Token'] = $deltaToken
+				}
+				else {
+					# Keep whatever token we already had rather than replacing it with
+					# nothing: losing it costs a full re-read, and an empty one guarantees
+					# that re-read happens on every run from here on.
+					Write-Warning "Delta link returned without a usable token, keeping the previous one: $($result.'@odata.deltaLink')"
+				}
 			}
 		}
 		while ($parameters.Uri -and -not $NoPaging)
