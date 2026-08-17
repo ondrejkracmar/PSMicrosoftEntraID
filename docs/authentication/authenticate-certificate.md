@@ -13,7 +13,7 @@ That said, for this demo we will use a self-signed certificate, as that is quite
 To generate a certificate, all we need is a PowerShell console:
 
 ```powershell
-$cert = New-SelfSignedCertificate -Subject 'CN=EntraAuth demo certificate' -CertStoreLocation 'Cert:\CurrentUser\My'
+$cert = New-SelfSignedCertificate -Subject 'CN=PSMicrosoftEntraID demo certificate' -CertStoreLocation 'Cert:\CurrentUser\My'
 ```
 
 To store the certificate in the computer certificate store, rather than the user certificate store, replace `'Cert:\CurrentUser\My'` with `'Cert:\LocalMachine\My'` and execute this in an elevated ("Run as administrator") console.
@@ -51,7 +51,7 @@ And that's it, we are now ready to authenticate:
 > This example assumes that you have granted the "Group.Read.All" Graph API permission to the application.
 > The example on configuring API Permissions in this guide uses Delegated permissions instead, _which do not apply to Application Authentication flows!_
 
-Using the EntraAuth PowerShell module, we can now connect using our Application, authenticating with our certificate.
+Using the PSMicrosoftEntraID module, we can now connect using our Application, authenticating with our certificate.
 
 ```powershell
 $clientID = '63a71861-498b-46ae-0000-6b5c142010e1'
@@ -64,7 +64,7 @@ Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate 
 Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificateThumbprint 690667761F6E285B2A6AEFF098B886263433FB54
 
 # Connect via Certificate Subject, cert selected from cert store
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificateName 'CN=EntraAuth demo certificate'
+Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificateName 'CN=PSMicrosoftEntraID demo certificate'
 ```
 
 Once connected, we are now ready to use the connection to query all groups in our tenant:

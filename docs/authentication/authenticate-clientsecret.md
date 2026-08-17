@@ -32,7 +32,7 @@ That's it, we are now ready to roll.
 > This example assumes that you have granted the "Group.Read.All" Graph API permission to the application.
 > The example on configuring API Permissions in this guide uses Delegated permissions instead, _which do not apply to Application Authentication flows!_
 
-Using the EntraAuth PowerShell module, we can now connect using our Application, authenticating with our client secret.
+Using the PSMicrosoftEntraID module, we can now connect using our Application, authenticating with our client secret.
 This example assumes the secret value is in our clipboard.
 
 ```powershell

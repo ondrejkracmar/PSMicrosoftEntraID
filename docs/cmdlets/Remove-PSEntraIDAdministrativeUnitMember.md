@@ -2,7 +2,7 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: cs-CZ
+Locale: en-US
 Module Name: PSMicrosoftEntraID
 ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01

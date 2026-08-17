@@ -2,7 +2,7 @@
 document type: cmdlet
 external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
-Locale: cs-CZ
+Locale: en-US
 Module Name: PSMicrosoftEntraID
 ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
@@ -47,6 +47,13 @@ Get-PSEntraIDUserGuest -All [-Disabled] [-EnableException]
 Get-PSEntraIDUserGuest -Filter <string> [-AdvancedFilter] [-EnableException]
 ```
 
+### Identities
+
+```
+Get-PSEntraIDUserGuest -Issuer <string> [-IssuerAssignedId <string>] [-SignInType <string>]
+ [-EnableException]
+```
+
 ## ALIASES
 
 This cmdlet has the following aliases,
@@ -71,6 +78,30 @@ Returns details for user1@contoso.com, only if it is a Guest account.
 Get-PSEntraIDUserGuest -All
 
 Returns all Guest accounts in the tenant.
+
+### EXAMPLE 3
+
+Get-PSEntraIDUserGuest -Issuer 'contoso.com' -IssuerAssignedId 'j.smith@contoso.com'
+
+Returns the guest that signs in as j.smith@contoso.com at the Contoso tenant,
+whatever their user principal name in this tenant happens to be.
+
+### EXAMPLE 4
+
+Get-PSEntraIDUserGuest -Issuer 'google.com'
+
+Returns every guest signing in with a Google identity.
+One of the four issuers
+Graph will match without an issuerAssignedId.
+
+### EXAMPLE 5
+
+Get-PSEntraIDUserGuest -All | Group-Object HomeIssuer -NoElement | Sort-Object Count -Descending
+
+Which external organizations the tenant's guests actually come from.
+HomeIssuer
+is read off the identities collection, so it is the issuer the guest signs in
+with rather than a guess from the #EXT# user principal name.
 
 ## PARAMETERS
 
@@ -231,6 +262,58 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Issuer
+
+Matches guests whose identities collection carries this issuer - the home
+organization's domain for a B2B guest ("contoso.com"), or the provider for a
+social one ("google.com", "facebook.com"), or "mail" for an email one-time
+passcode guest.
+
+Graph matches an issuer on its own only for google.com, facebook.com, mail and
+phone.
+For any other issuer supply -IssuerAssignedId as well; without it the
+request comes back empty rather than failing, and the cmdlet warns to say so.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Identities
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -IssuerAssignedId
+
+The identifier the issuer assigned to the guest, normally their sign-in name at
+the home organization.
+Combined with -Issuer.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Identities
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Name
 
 DisplayName, GivenName, or SurName of the user in the tenant.
@@ -244,6 +327,32 @@ ParameterSets:
 - Name: Name
   Position: Named
   IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -SignInType
+
+Narrows the identity match to one sign-in type, such as federated, userName or
+emailAddress.
+userPrincipalName is rejected: Graph documents it as unsupported
+for filtering, and returns an empty set instead of an error.
+Use -Identity to
+look an account up by its UPN.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Identities
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
