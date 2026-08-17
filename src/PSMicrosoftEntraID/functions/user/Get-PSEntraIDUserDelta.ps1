@@ -63,31 +63,21 @@
     )
 
     begin {
-        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = 'users/delta'
     }
 
     process {
-        $requestParameters = @{
-            Service     = $service
-            Path        = $path
-            Method      = 'Get'
-            ErrorAction = 'Stop'
-        }
-        # Only pass the delta parameters when asked for, so an omitted session reads
-        # everything instead of tracking a token nobody wants.
-        if ($PSBoundParameters.ContainsKey('DeltaSession')) { $requestParameters['DeltaSession'] = $DeltaSession }
-        if ($MinimalDelta.IsPresent) { $requestParameters['MinimalDelta'] = $true }
+        # Everything this cmdlet does beyond naming its endpoint and its type lives in
+        # Invoke-EntraDeltaRequest, shared with the other four delta cmdlets.
+        #
+        # DeltaSession is splatted rather than passed straight through: "omitted" and
+        # "null" mean different things here - omitted reads everything without tracking
+        # a token - and only parameter binding can tell the two apart.
+        $deltaParameters = @{}
+        if ($PSBoundParameters.ContainsKey('DeltaSession')) { $deltaParameters['DeltaSession'] = $DeltaSession }
 
-        $result = Invoke-PSFProtectedCommand -ActionString 'Delta.Get' -ActionStringValues $path `
-            -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            ConvertFrom-RestDelta -InputObject (Invoke-EntraRequest @requestParameters) -TargetType ([PSMicrosoftEntraID.Users.UserDelta])
-        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-        if (Test-PSFFunctionInterrupt) { return }
-        $result
+        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Users.UserDelta]) @deltaParameters `
+            -MinimalDelta:$MinimalDelta -EnableException:$EnableException
     }
 
     end {}
