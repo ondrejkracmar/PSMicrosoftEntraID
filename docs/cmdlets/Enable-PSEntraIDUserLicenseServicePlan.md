@@ -479,6 +479,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 
+Graph's assignLicense REPLACES the disabledPlans list on every call - there is no
+server-side merge and no ETag.
+This cmdlet reads the user's current disabled
+plans and removes the requested ones from that list.
+With -Identity that read
+happens inside the call, and a read seconds after a previous write can hit a
+directory replica the write has not reached yet - in which case the merge starts
+from stale state and the earlier change is lost.
+Name every plan in one call, or
+pass -InputObject with a user object whose AssignedLicenses reflect the state you
+mean to merge into; either pattern is deterministic.
+
+
 ## RELATED LINKS
 
 {{ Fill in the related links here }}
