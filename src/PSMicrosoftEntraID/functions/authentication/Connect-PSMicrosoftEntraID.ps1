@@ -213,8 +213,7 @@
 
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "", Justification = 'The connection parameters are consumed via $PSBoundParameters splatting onto the vendored Connect-EntraService, which the analyzer cannot see through.')]
 	# -PassThru returns the token; without it the function emits nothing.
 	[OutputType('EntraToken')]
 	[CmdletBinding(DefaultParameterSetName = 'Browser')]

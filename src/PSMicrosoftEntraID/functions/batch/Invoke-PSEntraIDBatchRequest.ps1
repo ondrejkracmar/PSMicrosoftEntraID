@@ -52,7 +52,6 @@
         correlate the original requests with the responses returned by Graph.
 
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [OutputType([PSMicrosoftEntraID.Batch.BatchResponsePayload])]
     [CmdletBinding(
         SupportsShouldProcess = $true, # enables -WhatIf and -Confirm

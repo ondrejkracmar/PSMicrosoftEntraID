@@ -41,7 +41,7 @@
 
 		Will return: "displayName eq 'John Doe' and organization in ('Contoso', 'Fabrikam')"
 	#>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Justification = 'Returns a filter-builder object. The New verb names what it produces; nothing local or remote is changed, so there is nothing to confirm.')]
 	#%UNCOMMENT%[OutputType([FilterBuilder])]
 	[CmdletBinding()]
 	param (

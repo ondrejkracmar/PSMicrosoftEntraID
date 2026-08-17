@@ -38,8 +38,8 @@
             Get sync operation
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'The rule fires on the nested New-Result factory, which builds a result object and changes nothing. The outer function is a Get that computes a diff in memory.')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'Compare-Hashtable and New-Result are function-local helpers called positionally within the same screenful of code; naming their two arguments adds noise, not safety.')]
     [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true, PositionalBinding = $false, HelpUri = 'http://www.microsoft.com/', ConfirmImpact = 'Medium')]
     [Alias()]
     [OutputType([String])]

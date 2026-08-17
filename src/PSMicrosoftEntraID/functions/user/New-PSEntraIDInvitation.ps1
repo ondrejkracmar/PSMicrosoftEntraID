@@ -64,7 +64,6 @@
 
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [OutputType('PSMicrosoftEntraID.Users.Invitations.Invitation', [PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'UserEmailAddress')]
     param (
