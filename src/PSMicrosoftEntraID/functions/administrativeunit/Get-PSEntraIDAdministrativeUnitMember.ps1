@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDAdministrativeUnitMember {
+﻿function Get-PSEntraIDAdministrativeUnitMember {
     <#
     .SYNOPSIS
         Get members of an administrative unit.

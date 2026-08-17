@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDGroupMember {
+﻿function Get-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Get an owner or member to the team, and to the unified group which backs the team.

@@ -168,6 +168,19 @@
 							<TableColumnItem>
 								<PropertyName>DisplayName</PropertyName>
 							</TableColumnItem>
+							<!--
+								The two guest-specific columns come before the address
+								block on purpose. This table is fourteen columns wide, so
+								anything past roughly the ninth is cut off on a normal
+								console - and for a guest, where they sign in from and
+								whether they accepted are the two things worth seeing.
+							-->
+							<TableColumnItem>
+								<PropertyName>HomeIssuer</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>InvitationStatus</PropertyName>
+							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>CompanyName</PropertyName>
 							</TableColumnItem>
@@ -179,12 +192,6 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>UsageLocation</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
-								<PropertyName>InvitationStatus</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
-								<PropertyName>HomeIssuer</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

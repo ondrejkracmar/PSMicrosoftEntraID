@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDGroupAdditionalProperty {
+﻿function Get-PSEntraIDGroupAdditionalProperty {
     <#
     .SYNOPSIS
         Get the properties and relationships of a group or the team, and to the unified group which backs the team.
