@@ -16,12 +16,21 @@
 		<!-- žádný RID = žádné runtimes -->
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
-	</ItemGroup>
+	<!--
+		One version for every build host. This used to be 7.2.24 on Windows and 7.2.12
+		elsewhere, selected by an OS condition - which meant the DLL that ships (built on
+		the Linux agent) was compiled against a different SDK than the one developers
+		build against, and nobody chose that. The package is platform-independent; the
+		split read as an old workaround that outlived its reason.
 
-	<ItemGroup Condition="'$(OS)' != 'Windows_NT'">
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.12" />
+		The 7.2 line is out of support and is where the three transitive advisories
+		reported by the build come from. Nothing from these packages is shipped -
+		CopyLocalLockFileAssemblies is false and runtimes/ and ref/ are deleted below -
+		so this is a build-hygiene item, not an exploitable one. Moving forward changes
+		the minimum host version, which is a decision of its own.
+	-->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
 	</ItemGroup>
 
 	<Target Name="RemoveUnwantedOutputs" AfterTargets="Build">
