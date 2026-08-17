@@ -40,6 +40,19 @@
 
     .PARAMETER RetryWait
         Fallback wait when Graph sends no Retry-After. Doubles per pass.
+
+    .EXAMPLE
+        PS C:\> Invoke-BatchWithThrottleRetry -Payload $payload -Service 'PSMicrosoftEntraID.Graph' -Header @{ 'Content-Type' = 'application/json' } -Path '$batch'
+
+        Posts the batch once. With no retry budget a throttled sub-request comes back
+        with its 429 rather than being re-sent - the behaviour callers had before.
+
+    .EXAMPLE
+        PS C:\> Invoke-BatchWithThrottleRetry -Payload $payload -Service 'PSMicrosoftEntraID.Graph' -Header $header -Path '$batch' -RetryCount 5 -RetryWait (New-TimeSpan -Seconds 10)
+
+        Makes up to five extra passes over whichever sub-requests Graph throttled,
+        waiting as long as Graph's own Retry-After asks and falling back to ten seconds
+        (doubling each pass) when it sends none.
     #>
     [CmdletBinding()]
     [OutputType([PSMicrosoftEntraID.Batch.Response[]])]

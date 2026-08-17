@@ -47,7 +47,6 @@
 
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'IdentityInputObject')]
     param([Parameter(Mandatory = $True, ParameterSetName = 'IdentityInputObject')]

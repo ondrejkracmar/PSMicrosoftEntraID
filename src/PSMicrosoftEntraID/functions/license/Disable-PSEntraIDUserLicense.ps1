@@ -48,7 +48,6 @@
 		Disable license (subscription) ENTERPRISEPACK of user username@contoso.com
 
 	#>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumber')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]

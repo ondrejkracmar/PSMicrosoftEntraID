@@ -41,7 +41,6 @@
 
         Remove license ENTERPRISEPACK from group group1.
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumber')]
     param (

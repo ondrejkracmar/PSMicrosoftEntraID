@@ -47,7 +47,6 @@
 
         Disable the EXCHANGE_S_ENTERPRISE service plan of the ENTERPRISEPACK SKU on group group1.
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
     param (

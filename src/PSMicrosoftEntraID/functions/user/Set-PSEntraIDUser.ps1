@@ -126,7 +126,6 @@
 
     Pipes IT department users into Set-PSEntraIDUser to update their UsageLocation and Department in bulk.
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectUpdateUser')]
     param (

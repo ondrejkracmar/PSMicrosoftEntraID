@@ -71,7 +71,6 @@
         Remove a user from administrative unit "HR AU" using pipeline
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'IdentityInputObjectUser')]
     param(

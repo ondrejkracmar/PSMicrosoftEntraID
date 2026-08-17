@@ -213,7 +213,6 @@
 
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 	# -PassThru returns the token; without it the function emits nothing.

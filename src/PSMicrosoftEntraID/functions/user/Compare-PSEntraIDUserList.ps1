@@ -19,7 +19,6 @@
 
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([System.Collections.ArrayList])]
     [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
     param(

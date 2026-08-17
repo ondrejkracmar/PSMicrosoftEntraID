@@ -98,7 +98,6 @@
         - Use `Set-PSEntraIDGroup` to retrieve read-only properties such as `isSubscribedByMail` and `unseenCount`.
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectUpdateGroupCommon')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]

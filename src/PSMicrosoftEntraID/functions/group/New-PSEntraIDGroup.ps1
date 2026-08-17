@@ -77,7 +77,6 @@
 
 		Create new Microsoft EntraID (Azure AD) group
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'CreateGroup')]

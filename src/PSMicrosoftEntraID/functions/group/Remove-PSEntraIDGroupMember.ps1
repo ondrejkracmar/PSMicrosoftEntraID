@@ -45,7 +45,6 @@
 
             Remove member user1, user2 from Microsoft EntraID group with name group1
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'IdentityInputObject')]
     param([Parameter(Mandatory = $True, ParameterSetName = 'IdentityUser')]

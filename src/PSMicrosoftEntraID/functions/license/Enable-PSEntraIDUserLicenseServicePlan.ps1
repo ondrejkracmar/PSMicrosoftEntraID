@@ -54,7 +54,6 @@
 		Enable service plan Office Pro Plus, Exchange Online of subscription ENTERPRISEPACK for user username@contoso.com
 
 	#>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType([PSMicrosoftEntraID.Batch.Request])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectSkuPartNumberPlanName')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
