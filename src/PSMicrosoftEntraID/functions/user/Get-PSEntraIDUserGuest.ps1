@@ -30,6 +30,26 @@
     .PARAMETER All
         Returns all users in the tenant, but only those with "userType eq 'Guest'".
 
+    .PARAMETER Issuer
+        Matches guests whose identities collection carries this issuer - the home
+        organization's domain for a B2B guest ("contoso.com"), or the provider for a
+        social one ("google.com", "facebook.com"), or "mail" for an email one-time
+        passcode guest.
+
+        Graph matches an issuer on its own only for google.com, facebook.com, mail and
+        phone. For any other issuer supply -IssuerAssignedId as well; without it the
+        request comes back empty rather than failing, and the cmdlet warns to say so.
+
+    .PARAMETER IssuerAssignedId
+        The identifier the issuer assigned to the guest, normally their sign-in name at
+        the home organization. Combined with -Issuer.
+
+    .PARAMETER SignInType
+        Narrows the identity match to one sign-in type, such as federated, userName or
+        emailAddress. userPrincipalName is rejected: Graph documents it as unsupported
+        for filtering, and returns an empty set instead of an error. Use -Identity to
+        look an account up by its UPN.
+
     .PARAMETER EnableException
         Enables exception throwing instead of friendly warnings.
 
@@ -42,6 +62,25 @@
         PS C:\> Get-PSEntraIDUserGuest -All
 
         Returns all Guest accounts in the tenant.
+
+    .EXAMPLE
+        PS C:\> Get-PSEntraIDUserGuest -Issuer 'contoso.com' -IssuerAssignedId 'j.smith@contoso.com'
+
+        Returns the guest that signs in as j.smith@contoso.com at the Contoso tenant,
+        whatever their user principal name in this tenant happens to be.
+
+    .EXAMPLE
+        PS C:\> Get-PSEntraIDUserGuest -Issuer 'google.com'
+
+        Returns every guest signing in with a Google identity. One of the four issuers
+        Graph will match without an issuerAssignedId.
+
+    .EXAMPLE
+        PS C:\> Get-PSEntraIDUserGuest -All | Group-Object HomeIssuer -NoElement | Sort-Object Count -Descending
+
+        Which external organizations the tenant's guests actually come from. HomeIssuer
+        is read off the identities collection, so it is the issuer the guest signs in
+        with rather than a guess from the #EXT# user principal name.
 
         .NOTES
         Piping into Select-Object -First N logs a warning that is not a failure:
@@ -91,6 +130,18 @@
 
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [switch] $All,
+
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identities')]
+        [ValidateNotNullOrEmpty()]
+        [string] $Issuer,
+
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identities')]
+        [ValidateNotNullOrEmpty()]
+        [string] $IssuerAssignedId,
+
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identities')]
+        [ValidateNotNullOrEmpty()]
+        [string] $SignInType,
 
         [Parameter()]
         [switch] $EnableException
@@ -185,6 +236,23 @@
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
+            }
+            'Identities' {
+                $identityFilter = New-EntraIdentityFilter -Cmdlet $PSCmdlet -Issuer $Issuer -IssuerAssignedId $IssuerAssignedId -SignInType $SignInType
+                $completeFilter = Add-GuestFilter $identityFilter
+                $query['$Filter'] = $completeFilter
+
+                # A lambda over a collection is an advanced query in Graph's terms, so the
+                # eventual consistency header is not optional here the way -AdvancedFilter
+                # is on the Filter set. Without it Graph rejects the request outright.
+                [hashtable] $header = @{ 'ConsistencyLevel' = 'eventual' }
+
+                Invoke-PSFProtectedCommand -ActionString 'User.Identity.Filter' -ActionStringValues $identityFilter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    ConvertFrom-RestUserGuest -InputObject (
+                        Invoke-EntraRequest -Service $service -Path 'users' -Query $query -Method Get -Header $header -ErrorAction Stop
+                    )
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                if (Test-PSFFunctionInterrupt) { return }
             }
             'All' {
                 if ($All.IsPresent) {

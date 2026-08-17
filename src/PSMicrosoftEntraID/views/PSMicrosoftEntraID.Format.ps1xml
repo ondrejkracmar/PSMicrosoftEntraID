@@ -137,6 +137,9 @@
 					<TableColumnHeader>
 						<Width>8</Width>
 					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
 					<TableRowEntry>
@@ -179,6 +182,9 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>InvitationStatus</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>HomeIssuer</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

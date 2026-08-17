@@ -142,6 +142,47 @@ Describe 'Get-PSEntraIDUserGuest' -Tag 'Unit' {
         }
     }
 
+    Context 'Get guest users by identity issuer' {
+        BeforeAll {
+            Mock -ModuleName $script:ModuleName New-EntraIdentityFilter { "identities/any(i:i/issuer eq 'contoso.com')" }
+        }
+
+        It 'Should build the filter through New-EntraIdentityFilter' {
+            Get-PSEntraIDUserGuest -Issuer 'contoso.com' -IssuerAssignedId 'j.smith@contoso.com'
+            Should -Invoke -ModuleName $script:ModuleName -CommandName New-EntraIdentityFilter -Times 1 -Exactly -ParameterFilter {
+                $Issuer -eq 'contoso.com' -and $IssuerAssignedId -eq 'j.smith@contoso.com'
+            }
+        }
+
+        It 'Should still constrain the result to guests' {
+            Get-PSEntraIDUserGuest -Issuer 'contoso.com' -IssuerAssignedId 'j.smith@contoso.com'
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Add-GuestFilter -ParameterFilter {
+                $CurrentFilter -like '*identities/any*'
+            }
+        }
+
+        # A lambda over a collection is an advanced query: without the header Graph
+        # rejects the request, so this one is not a caller's choice the way
+        # -AdvancedFilter is on the Filter set.
+        It 'Should always send the eventual consistency header' {
+            Get-PSEntraIDUserGuest -Issuer 'google.com'
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Header.ConsistencyLevel -eq 'eventual'
+            }
+        }
+
+        It 'Should pass SignInType through when given' {
+            Get-PSEntraIDUserGuest -Issuer 'contoso.com' -IssuerAssignedId 'j@contoso.com' -SignInType 'federated'
+            Should -Invoke -ModuleName $script:ModuleName -CommandName New-EntraIdentityFilter -ParameterFilter {
+                $SignInType -eq 'federated'
+            }
+        }
+
+        It 'Should not accept the identity parameters alongside another parameter set' {
+            { Get-PSEntraIDUserGuest -All -Issuer 'contoso.com' } | Should -Throw
+        }
+    }
+
     Context 'Error handling' {
         It 'Should call Assert-EntraConnection' {
             Get-PSEntraIDUserGuest -Identity 'guest@contoso.com'

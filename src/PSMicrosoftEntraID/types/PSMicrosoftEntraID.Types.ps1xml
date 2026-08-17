@@ -143,6 +143,7 @@
             <Name>FaxNumber</Name>
             <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
+            <Name>Identities</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -191,9 +192,12 @@
             <Name>FaxNumber</Name>
             <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
+            <Name>Identities</Name>
             <Name>ExternalUserState</Name>
             <Name>ExternalUserStateChangeDateTime</Name>
             <Name>InvitationStatus</Name>
+            <Name>HomeIssuer</Name>
+            <Name>SignInTypes</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace PSMicrosoftEntraID.Users
@@ -35,6 +36,46 @@ namespace PSMicrosoftEntraID.Users
                 return ExternalUserState?.Equals("Accepted", StringComparison.OrdinalIgnoreCase) == true
                     ? "Accepted"
                     : "Pending";
+            }
+        }
+
+        /// <summary>
+        /// The issuer the guest actually signs in with - the home organization's domain
+        /// for a B2B guest, or the social provider for a social one. Taken from the first
+        /// identity of sign-in type <c>federated</c>, which is where Entra records the
+        /// external issuer; the remaining identities describe the local account and name
+        /// this tenant instead. Null when the account carries no federated identity, and
+        /// when <c>identities</c> was not selected.
+        /// </summary>
+        public string HomeIssuer
+        {
+            get
+            {
+                if (Identities == null) { return null; }
+
+                return Identities
+                    .Where(identity => identity != null)
+                    .Where(identity => "federated".Equals(identity.SignInType, StringComparison.OrdinalIgnoreCase))
+                    .Select(identity => identity.Issuer)
+                    .FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// The distinct sign-in types recorded on the account, in the order Graph returned
+        /// them. Empty when <c>identities</c> was not selected.
+        /// </summary>
+        public string[] SignInTypes
+        {
+            get
+            {
+                if (Identities == null) { return new string[0]; }
+
+                return Identities
+                    .Where(identity => identity != null && !string.IsNullOrEmpty(identity.SignInType))
+                    .Select(identity => identity.SignInType)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
             }
         }
 

@@ -166,6 +166,14 @@ namespace PSMicrosoftEntraID.Users
         public string[] OtherMails { get; set; }
 
         /// <summary>
+        /// The identities that can be used to sign in to this account. Returned only on
+        /// $select. For a guest this is where the home organization or the social identity
+        /// provider shows up; for a cloud-only member it is the tenant's own domain.
+        /// </summary>
+        [DataMember(Name = "identities")]
+        public ObjectIdentity[] Identities { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
         public User() { }
