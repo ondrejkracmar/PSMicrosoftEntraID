@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDLicenseIdentifier
 ---
@@ -20,7 +20,7 @@ Get the list of product names and service plan identifiers for licensing.
 ### __AllParameterSets
 
 ```
-Get-PSEntraIDLicenseIdentifier [-EnableException] [<CommonParameters>]
+Get-PSEntraIDLicenseIdentifier [-EnableException]
 ```
 
 ## ALIASES
@@ -44,7 +44,7 @@ Get the list of product names and service plan identifiers for licensing
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 

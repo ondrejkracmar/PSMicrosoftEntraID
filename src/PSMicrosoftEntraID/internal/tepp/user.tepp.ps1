@@ -1,2 +1,0 @@
-﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-PSEntraIDUsageLocation).Values }
-Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-PSEntraIDUsageLocation).Keys }

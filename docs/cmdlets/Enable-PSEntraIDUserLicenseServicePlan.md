@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Enable-PSEntraIDUserLicenseServicePlan
 ---
@@ -13,7 +13,7 @@ title: Enable-PSEntraIDUserLicenseServicePlan
 
 ## SYNOPSIS
 
-Enable serivce plan of users's sku subscription.
+Enable service plan of user's sku subscription.
 
 ## SYNTAX
 
@@ -22,7 +22,6 @@ Enable serivce plan of users's sku subscription.
 ```
 Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuPartNumber <string>
  -ServicePlanName <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### InputObjectSkuPartNumberPlanId
@@ -30,7 +29,6 @@ Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuPartNumber <str
 ```
 Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuPartNumber <string>
  -ServicePlanId <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### InputObjectSkuIdServicePlanName
@@ -38,7 +36,6 @@ Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuPartNumber <str
 ```
 Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuId <string>
  -ServicePlanName <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### InputObjectSkuIdServicePlanId
@@ -46,7 +43,6 @@ Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuId <string>
 ```
 Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuId <string>
  -ServicePlanId <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### IdentitySkuPartNumberPlanName
@@ -54,7 +50,6 @@ Enable-PSEntraIDUserLicenseServicePlan -InputObject <User[]> -SkuId <string>
 ```
 Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuPartNumber <string>
  -ServicePlanName <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### IdentitySkuPartNumberPlanId
@@ -62,7 +57,6 @@ Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuPartNumber <stri
 ```
 Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuPartNumber <string>
  -ServicePlanId <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### IdentitySkuIdServicePlanName
@@ -70,7 +64,6 @@ Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuPartNumber <stri
 ```
 Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuId <string>
  -ServicePlanName <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ### IdentitySkuIdServicePlanId
@@ -78,7 +71,6 @@ Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuId <string>
 ```
 Enable-PSEntraIDUserLicenseServicePlan -Identity <string[]> -SkuId <string>
  -ServicePlanId <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -88,7 +80,7 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Enable serivce plan of users's sku subscription.
+Enable service plan of user's sku subscription.
 
 ## EXAMPLES
 
@@ -96,17 +88,21 @@ Enable serivce plan of users's sku subscription.
 
 Enable-PSEntraIDUserLicenseServicePlan -Identity username@contoso.com -SkuPartNumber ENTERPRISEPACK -ServicePlanName @('OFFICESUBSCRIPTION','EXCHANGE_S_ENTERPRISE')
 
-Enable service plan Office Pro Plus, Exchnage Online  of subcription ENTERPRISEPACK for user username@contoso.com
+Enable service plan Office Pro Plus, Exchange Online of subscription ENTERPRISEPACK for user username@contoso.com
 
 ## PARAMETERS
 
 ### -Confirm
 
-The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -128,9 +124,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -151,11 +146,15 @@ HelpMessage: ''
 
 ### -Force
 
-The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Suppresses the confirmation prompt, for unattended use.
+
+An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+prompts even with -Force present.
+The two are therefore alternatives rather
+than a pair - passing both says nothing the second one does not already say.
+
+Without either, whether the command prompts is left to its ConfirmImpact and
+the session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -257,7 +256,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -318,7 +317,7 @@ HelpMessage: ''
 
 ### -ServicePlanName
 
-Friendly servcie plan name of subscribedSku.
+Friendly service plan name of subscribedSku.
 
 ```yaml
 Type: System.String[]
@@ -474,7 +473,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
+
 ## NOTES
+
+Graph's assignLicense REPLACES the disabledPlans list on every call - there is no
+server-side merge and no ETag.
+This cmdlet reads the user's current disabled
+plans and removes the requested ones from that list.
+With -Identity that read
+happens inside the call, and a read seconds after a previous write can hit a
+directory replica the write has not reached yet - in which case the merge starts
+from stale state and the earlier change is lost.
+Name every plan in one call, or
+pass -InputObject with a user object whose AssignedLicenses reflect the state you
+mean to merge into; either pattern is deterministic.
+
 
 ## RELATED LINKS
 

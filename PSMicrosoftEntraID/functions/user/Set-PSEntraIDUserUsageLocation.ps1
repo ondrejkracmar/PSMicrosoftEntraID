@@ -1,0 +1,152 @@
+﻿function Set-PSEntraIDUserUsageLocation {
+    <#
+    .SYNOPSIS
+        Set usage location property of the specified user.
+
+    .DESCRIPTION
+        Set usage location property of the specified user.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Users.User object in tenant/directory.
+
+    .PARAMETER Identity
+        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
+
+    .PARAMETER UsageLocationCode
+        Azure Active Directory UsageLocation Code.
+
+    .PARAMETER UsageLocationCountry
+        The name of the country corresponding to its usagelocation.
+
+    .PARAMETER EnableException
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Force
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
+
+    .PARAMETER Confirm
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
+
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
+    .EXAMPLE
+        PS C:\>Set-PSEntraIDUserUsageLocation -Identity user1@contoso.com -UsageLocationCode GB
+
+		Set usage location for Azure AD user user1@contoso.com
+
+
+#>
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
+        DefaultParameterSetName = 'InputObjectUsageLocationCode')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCode')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUsageLocationCountry')]
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCode')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
+        [Alias("Id", "UserPrincipalName", "Mail")]
+        [ValidateUserIdentity()]
+        [string[]] $Identity,
+        [Parameter(Mandatory = $True, ParameterSetName = 'InputObjectUsageLocationCode')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUsageLocationCode')]
+        [ValidateNotNullOrEmpty()]
+        [string] $UsageLocationCode,
+        [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectUsageLocationCountry')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUsageLocationCountry')]
+        [ValidateNotNullOrEmpty()]
+        [string] $UsageLocationCountry,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
+    )
+
+    begin {
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [hashtable] $usageLocationHashtable = Get-PSEntraIDUsageLocation
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{
+            'Content-Type' = 'application/json'
+        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+    }
+
+    process {
+        switch -Regex  ($PSCmdlet.ParameterSetName) {
+            '\wUsageLocationCode' {
+                [string] $usageLocationTarget = $usageLocationCode
+                [hashtable] $body = @{
+                    usageLocation = $usageLocationCode
+                }
+            }
+            '\wUsageLocationCountry' {
+                [string] $usageLocationTarget = ($usageLocationHashtable)[$UsageLocationCountry]
+                [hashtable] $body = @{
+                    usageLocation = ($usageLocationHashtable)[$UsageLocationCountry]
+                }
+            }
+        }
+        switch -Regex  ($PSCmdlet.ParameterSetName) {
+            'InputObject\w' {
+                foreach ($itemInputObject in $InputObject) {
+                    [string] $path = ("users/{0}" -f $itemInputObject.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usageLocationTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'Identity\w' {
+                foreach ($user in $Identity) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                    }
+                    else {
+                        [string] $path = ("users/{0}" -f $aADUser.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'User.UsageLocation' -ActionStringValues $usageLocationTarget -Target $user -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                    }
+                }
+            }
+        }
+    }
+    end {}
+}

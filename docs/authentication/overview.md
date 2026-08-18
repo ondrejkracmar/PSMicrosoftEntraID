@@ -14,7 +14,9 @@ Fundamentally, to connect to an API, you need to perform three steps:
 ## Assumptions
 
 This guide assumes you want to use PowerShell to connect to an API via Entra Authentication.
-The code examples assume further that you are using the Module [EntraAuth](https://github.com/FriedrichWeinmann/EntraAuth) for this purpose.
+The code examples use `Connect-PSMicrosoftEntraID` from this module.
+
+The authentication layer is adapted from [EntraAuth](https://github.com/FriedrichWeinmann/EntraAuth) by Friedrich Weinmann, which is where this guide comes from as well. You do not need to install EntraAuth - the parts this module uses ship with it, and the connect cmdlet is named `Connect-PSMicrosoftEntraID` rather than `Connect-EntraService`.
 
 The concepts and guidance also applies to other coding languages - whether you want to connect via PowerShell, Python, Java or C#, the different authentication options and the setup on the Entra side remain the same.
 Obviously, the code examples will not translate as well.

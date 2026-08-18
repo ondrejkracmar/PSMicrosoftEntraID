@@ -1,0 +1,253 @@
+﻿function Set-PSEntraIDGroup {
+    <#
+    .SYNOPSIS
+        Updates the specified properties of a Microsoft 365 Group.
+
+    .DESCRIPTION
+        The `Set-PSEntraIDGroup` cmdlet allows you to modify specific properties of a Microsoft 365 Group.
+        Some properties can be updated together, while others require separate calls. Additionally, certain
+        properties are read-only and can only be retrieved, not modified.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
+    .PARAMETER Identity
+        DisplayName, MailNickname, Mail or Id of the group attribute populated in tenant/directory.
+
+    .PARAMETER DisplayName
+        Specifies the display name of the group. This can be updated in conjunction with other group settings.
+
+    .PARAMETER Description
+        Specifies the description of the group. This can be updated with other properties.
+
+    .PARAMETER MailNickname
+        Sets the mail alias (nickname) of the group. This can be updated along with other modifiable properties.
+
+    .PARAMETER Visibility
+        Defines the visibility of the group. Accepted values are `Public` and `Private`. This parameter can be updated in conjunction with other properties.
+
+    .PARAMETER AllowExternalSenders
+        Specifies whether external users can send messages to the group.
+        Note: This parameter must be set in a separate call and cannot be combined with other properties in a single `PATCH` request.
+
+    .PARAMETER AutoSubscribeNewMembers
+        Indicates whether new members are automatically subscribed to receive email notifications.
+        Note: This parameter must be updated in a separate call from other properties.
+
+    .PARAMETER HideFromAddressLists
+        Hides the group from global address lists.
+        Note: This parameter must be updated in a separate call from other properties.
+
+    .PARAMETER HideFromOutlookClients
+        Hides the group from Outlook clients.
+        Note: This parameter must be updated in a separate call from other properties.
+
+    .PARAMETER SecurityEnabled
+        Sets whether the group is security-enabled. This is often used with dynamic groups and can be updated along with other modifiable properties.
+
+    .PARAMETER GroupTypes
+        Specifies the type of the group. For Microsoft 365 groups, use `Unified`. This can be combined with other parameters in the same update request.
+
+    .PARAMETER MembershipRule
+        Defines the membership rule for a dynamic group. This parameter is specific to dynamic groups and should be used with `MembershipRuleProcessingState`.
+
+    .PARAMETER MembershipRuleProcessingState
+        Sets the processing state of the membership rule. Accepted values are `On`, `Paused`, and `Off`. This should be used with `MembershipRule` and is specific to dynamic groups.
+
+    .PARAMETER EnableException
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Force
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
+
+    .PARAMETER Confirm
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
+
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
+    .EXAMPLE
+        Set-PSEntraIDGroup -Identity "mailnickname1" -DisplayName "New Group Name" -Description "Updated group description" -Visibility "Private"
+
+        Updates the display name, description and visibility of the specified group.
+
+    .EXAMPLE
+        Set-PSEntraIDGroup -Identity "mailnickname@domain.com" -AllowExternalSenders $true
+
+        Allows external senders to send mail to the specified group.
+
+    .EXAMPLE
+        Set-PSEntraIDGroup -Identity "mailnickname1" -MembershipRule "(user.department -eq 'Sales')" -MembershipRuleProcessingState "On"
+
+        Configures the dynamic membership rule for the group and enables rule processing.
+
+    .NOTES
+        - Properties like `AllowExternalSenders`, `AutoSubscribeNewMembers`, `HideFromAddressLists`, and `HideFromOutlookClients` must each be set in separate requests.
+        - Use `Set-PSEntraIDGroup` to retrieve read-only properties such as `isSubscribedByMail` and `unseenCount`.
+
+#>
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObjectUpdateGroupCommon')]
+    param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectAllowExternalSenders')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectAutoSubscribeNewMembers')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectHideFromAddressLists')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectHideFromOutlookClients')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateDynamicGroup')]
+        [PSMicrosoftEntraID.Groups.Group[]] $InputObject,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAllowExternalSenders')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAutoSubscribeNewMembers')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromAddressLists')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromOutlookClients')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
+        [Alias("Id", "GroupId", "TeamId")]
+        [ValidateGroupIdentity()]
+        [string[]] $Identity,
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [ValidateNotNullOrEmpty()]
+        [string] $Displayname,
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [string] $Description,
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [string] $MailNickname,
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [ValidateSet('Unified', 'DynamicMembership')]
+        [string[]] $GroupTypes,
+        [Parameter(ParameterSetName = 'InputObjectUpdateGroupCommon')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateGroupCommon')]
+        [ValidateSet('Public', 'Private', 'HiddenMembership')]
+        [string] $Visibility,
+        [Parameter(ParameterSetName = 'InputObjectAllowExternalSenders')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAllowExternalSenders')]
+        [System.Nullable[bool]]$AllowExternalSenders,
+        [Parameter(ParameterSetName = 'InputObjectAutoSubscribeNewMembers')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityAutoSubscribeNewMembers')]
+        [System.Nullable[bool]]$AutoSubscribeNewMembers,
+        [Parameter(ParameterSetName = 'InputObjectHideFromAddressLists')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromAddressLists')]
+        [System.Nullable[bool]]$HideFromAddressLists,
+        [Parameter(ParameterSetName = 'InputObjectHideFromOutlookClients')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityHideFromOutlookClients')]
+        [System.Nullable[bool]]$HideFromOutlookClients,
+        [Parameter(ParameterSetName = 'InputObjectUpdateDynamicGroup')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
+        [string] $MembershipRule,
+        [Parameter(ParameterSetName = 'InputObjectUpdateDynamicGroup')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateDynamicGroup')]
+        [ValidateSet('On', 'Paused', 'Off')]
+        [string] $MembershipRuleProcessingState,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
+        [Parameter()]
+        [switch]$PassThru
+    )
+
+    begin {
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{
+            'Content-Type' = 'application/json'
+        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+    }
+
+    process {
+        [hashtable] $body = @{}
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            '\wUpdateGroupCommon' {
+                foreach ($param in $PSBoundParameters.Keys) {
+                    switch ($param) {
+                        'Displayname' { $body['displayName'] = $Displayname }
+                        'Description' { $body['description'] = $Description }
+                        'MailNickname' { $body['mailNickName'] = $MailNickname }
+                        'GroupTypes' { $body['groupTypes'] = @($GroupTypes) }
+                        'Visibility' { $body['visibility'] = $Visibility }
+                    }
+                }
+            }
+            '\wAllowExternalSenders' {
+                $body['allowExternalSenders'] = $AllowExternalSenders
+            }
+            '\wAutoSubscribeNewMembers' {
+                $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
+            }
+            '\wHideFromAddressLists' {
+                $body['hideFromAddressLists'] = $HideFromAddressLists
+            }
+            '\wHideFromOutlookClients' {
+                $body['hideFromOutlookClients'] = $HideFromOutlookClients
+            }
+            '\wUpdateDynamicGroup' {
+                $body['membershipRule'] = $MembershipRule
+                $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+            }
+        }
+
+        switch -Regex  ($PSCmdlet.ParameterSetName) {
+            'InputObject\w' {
+                foreach ($itemInputObject in $InputObject) {
+                    [string] $path = ("groups/{0}" -f $itemInputObject.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'Identity\w' {
+                foreach ($group in $Identity) {
+                    [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group
+                    if ([object]::Equals($aADGroup, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Set.Failed) -f $group)
+                        }
+                    }
+                    else {
+                        [string] $path = ("groups/{0}" -f $aADGroup.Id)
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    end {}
+}

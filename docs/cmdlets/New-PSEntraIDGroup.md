@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDGroup
 ---
@@ -13,7 +13,7 @@ title: New-PSEntraIDGroup
 
 ## SYNOPSIS
 
-Create new  Microsoft EntraID (Azure AD).
+Create new group Microsoft EntraID (Azure AD).
 
 ## SYNTAX
 
@@ -23,9 +23,8 @@ Create new  Microsoft EntraID (Azure AD).
 New-PSEntraIDGroup -Displayname <string> -MailNickname <string> [-Description <string>]
  [-MailEnabled <bool>] [-IsAssignableToRole <bool>] [-SecurityEnabled <bool>]
  [-Classification <string>] [-GroupTypes <string[]>] [-Visibility <string>] [-Owners <string[]>]
- [-Members <string[]>] [-MembersmembershipRule <string>] [-MembershipRuleProcessingState <string>]
+ [-Members <string[]>] [-MembershipRule <string>] [-MembershipRuleProcessingState <string>]
  [-ResourceBehaviorOptions <string[]>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -35,15 +34,15 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Create new  Microsoft EntraID (Azure AD).
+Create new group Microsoft EntraID (Azure AD).
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-PSEntraIDUser -DisplayName 'New group' -Description 'Description of new froup'
+New-PSEntraIDGroup -DisplayName 'New group' -Description 'Description of new group'
 
-Create new  Microsoft EntraID (Azure AD) group
+Create new Microsoft EntraID (Azure AD) group
 
 ## PARAMETERS
 
@@ -70,11 +69,15 @@ HelpMessage: ''
 
 ### -Confirm
 
-The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -138,9 +141,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -161,11 +163,15 @@ HelpMessage: ''
 
 ### -Force
 
-The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Suppresses the confirmation prompt, for unattended use.
+
+An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+prompts even with -Force present.
+The two are therefore alternatives rather
+than a pair - passing both says nothing the second one does not already say.
+
+Without either, whether the command prompts is left to its ConfirmImpact and
+the session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -273,10 +279,31 @@ HelpMessage: ''
 
 ### -Members
 
-List of mwmwbrs of new group.
+List of members of new group.
 
 ```yaml
 Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateGroup
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -MembershipRule
+
+The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
+
+```yaml
+Type: System.String
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -296,27 +323,6 @@ HelpMessage: ''
 
 Indicates whether the dynamic membership processing is on or paused.
 Possible values are On or Paused.
-
-```yaml
-Type: System.String
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: CreateGroup
-  Position: Named
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -MembersmembershipRule
-
-The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
 
 ```yaml
 Type: System.String
@@ -358,7 +364,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -487,6 +493,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

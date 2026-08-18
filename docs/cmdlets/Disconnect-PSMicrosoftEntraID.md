@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Disconnect-PSMicrosoftEntraID
 ---
@@ -20,7 +20,7 @@ Disconnect from an Microsoft EntraID Service.
 ### __AllParameterSets
 
 ```
-Disconnect-PSMicrosoftEntraID [[-Service] <string>] [<CommonParameters>]
+Disconnect-PSMicrosoftEntraID [[-Service] <string>]
 ```
 
 ## ALIASES
@@ -37,6 +37,8 @@ Disconnect from an Microsoft EntraID Service.
 ### EXAMPLE 1
 
 Disconnect-PSMicrosoftEntraID
+
+Disconnects the current session from the default Microsoft EntraID service.
 
 ## PARAMETERS
 
@@ -72,6 +74,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ## OUTPUTS
+
+### System.Void
+
+{{ Fill in the Description }}
 
 ## NOTES
 

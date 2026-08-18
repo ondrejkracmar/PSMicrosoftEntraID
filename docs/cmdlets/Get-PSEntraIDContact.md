@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDContact
 ---
@@ -20,31 +20,31 @@ Get the properties of the specified organizational contact.
 ### Identity (Default)
 
 ```
-Get-PSEntraIDContact -Identity <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDContact -Identity <string[]> [-EnableException]
 ```
 
 ### Name
 
 ```
-Get-PSEntraIDContact -Name <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDContact -Name <string[]> [-EnableException]
 ```
 
 ### CompanyName
 
 ```
-Get-PSEntraIDContact -CompanyName <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDContact -CompanyName <string[]> [-EnableException]
 ```
 
 ### Filter
 
 ```
-Get-PSEntraIDContact -Filter <string> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDContact -Filter <string> [-EnableException]
 ```
 
 ### All
 
 ```
-Get-PSEntraIDContact -All [-EnableException] [<CommonParameters>]
+Get-PSEntraIDContact -All [-EnableException]
 ```
 
 ## ALIASES
@@ -55,13 +55,15 @@ This cmdlet has the following aliases,
 ## DESCRIPTION
 
 Get the properties of the specified contact from Microsoft Entra ID (Microsoft Graph orgContact entity).
-Requires delegated Graph permission: OrgContact.Read.Al
+Requires delegated Graph permission: OrgContact.Read.Alll
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
 Get-PSEntraIDContact -Identity "contact1@contoso.com"
+
+Returns the contact whose mail or id matches "contact1@contoso.com".
 
 ## PARAMETERS
 
@@ -209,6 +211,27 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## NOTES
+
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
+
 
 ## RELATED LINKS
 

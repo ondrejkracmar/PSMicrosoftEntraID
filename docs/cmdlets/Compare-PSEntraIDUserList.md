@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Compare-PSEntraIDUserList
 ---
@@ -21,7 +21,6 @@ Compare two list user of user.
 
 ```
 Compare-PSEntraIDUserList -ReferenceIdentity <string[]> -DifferenceIdentity <string[]>
- [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -39,7 +38,7 @@ Compare two list user of user.
 
 Compare-PSEntraIDUserList -ReferenceIdentity $UserList1 -DifferenceIdentity $UserList2
 
-Remove memebr to Azure AD group group1
+Remove member to Azure AD group group1
 
 ## PARAMETERS
 

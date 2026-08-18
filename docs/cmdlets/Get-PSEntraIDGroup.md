@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDGroup
 ---
@@ -20,25 +20,25 @@ Get the properties of the specified group.
 ### Identity (Default)
 
 ```
-Get-PSEntraIDGroup -Identity <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -Identity <string[]> [-EnableException]
 ```
 
 ### DisplayName
 
 ```
-Get-PSEntraIDGroup -DisplayName <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -DisplayName <string[]> [-EnableException]
 ```
 
 ### Filter
 
 ```
-Get-PSEntraIDGroup -Filter <string> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -Filter <string> [-AdvancedFilter] [-EnableException]
 ```
 
 ### All
 
 ```
-Get-PSEntraIDGroup -All [-EnableException] [<CommonParameters>]
+Get-PSEntraIDGroup -All [-EnableException]
 ```
 
 ## ALIASES
@@ -104,7 +104,7 @@ HelpMessage: ''
 
 ### -DisplayName
 
-DIsplayName of the group attribute populated in tenant/directory.
+DisplayName of the group attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
@@ -125,7 +125,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -169,7 +169,7 @@ HelpMessage: ''
 
 ### -Identity
 
-MailnicName, Mail or Id of the group attribute populated in tenant/directory.
+Mailnicname, Mail or Id of the group attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
@@ -212,6 +212,27 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## NOTES
+
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
+
 
 ## RELATED LINKS
 

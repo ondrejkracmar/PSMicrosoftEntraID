@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Invoke-PSEntraIDRequest
 ---
@@ -22,8 +22,8 @@ Executes a web request against an Entra-based service.
 ```
 Invoke-PSEntraIDRequest [-Path] <string> [[-Body] <Object>] [[-Query] <hashtable>]
  [[-Method] <string>] [[-RequiredScopes] <string[]>] [[-Header] <hashtable>] [[-Service] <string>]
- [[-SerializationDepth] <int>] [[-Token] <EntraToken>] [-NoPaging] [-Raw] [-EnableException]
- [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-SerializationDepth] <int>] [[-Token] <Object>] [-NoPaging] [-Raw] [-EnableException] [-Force]
+ [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -69,10 +69,15 @@ HelpMessage: ''
 
 ### -Confirm
 
-The Confirm switch instructs the command to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-This functionality is useful when you apply changes to many objects
-and want precise control over the operation of the Shell.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -341,7 +346,7 @@ A token object created and maintained by this module.
 If specified, overrides the -Service parameter.
 
 ```yaml
-Type: EntraToken
+Type: System.Object
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []

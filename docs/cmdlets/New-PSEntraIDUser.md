@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDUser
 ---
@@ -26,9 +26,9 @@ New-PSEntraIDUser -DisplayName <string> -UserPrincipalName <string> -MailNicknam
  [-Mail <string>] [-AccountEnabled <bool>] [-UsageLocation <string>] [-JobTitle <string>]
  [-Department <string>] [-CompanyName <string>] [-OfficeLocation <string>] [-City <string>]
  [-PostalCode <string>] [-Country <string>] [-State <string>] [-MobilePhone <string>]
- [-BusinessPhones <string[]>] [-PreferredLanguage <string>] [-EmployeeId <string>]
- [-EmployeeType <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-BusinessPhones <string[]>] [-ProxyAddresses <string[]>] [-FaxNumber <string>]
+ [-EmployeeId <string>] [-EmployeeType <string>] [-OtherMails <string[]>]
+ [-PreferredLanguage <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -47,9 +47,13 @@ job details, and password using Microsoft Graph API.
 
 Import-Csv users.csv | New-PSEntraIDUser
 
+Creates one user per row from users.csv by piping objects whose property names match the parameter names.
+
 ### EXAMPLE 2
 
 New-PSEntraIDUser -DisplayName "John Doe" -UserPrincipalName "john.doe@contoso.com" -MailNickname "jdoe" -Password (Read-Host -AsSecureString "Enter password")
+
+Creates a new user account with the supplied display name, UPN, mail nickname and password.
 
 ## PARAMETERS
 
@@ -140,7 +144,15 @@ HelpMessage: ''
 
 ### -Confirm
 
-Prompts for confirmation.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -268,7 +280,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-Enables throwing of terminating errors.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -287,9 +300,38 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -FaxNumber
+
+Fax number associated with the user.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Force
 
-{{ Fill Force Description }}
+Suppresses the confirmation prompt, for unattended use.
+
+An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+prompts even with -Force present.
+The two are therefore alternatives rather
+than a pair - passing both says nothing the second one does not already say.
+
+Without either, whether the command prompts is left to its ConfirmImpact and
+the session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -394,7 +436,7 @@ HelpMessage: ''
 
 ### -Mail
 
-{{ Fill Mail Description }}
+Primary email address of the user.
 
 ```yaml
 Type: System.String
@@ -476,9 +518,31 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -OtherMails
+
+List of other email addresses for the user.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -PassThru
 
-Outputs the created user object.
+When specified, the cmdlet will not execute the action but will instead
+return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -546,6 +610,27 @@ en-US, cs-CZ).
 
 ```yaml
 Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CreateUser
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ProxyAddresses
+
+Array of proxy email addresses for the user.
+
+```yaml
+Type: System.String[]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
@@ -649,7 +734,7 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Simulates the command.
+Enables the function to simulate what it will do instead of actually executing.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -695,6 +780,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

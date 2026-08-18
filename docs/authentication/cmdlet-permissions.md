@@ -14,6 +14,8 @@ This document provides a comprehensive list of Microsoft Graph API permissions r
 - [Administrative Unit Management](#administrative-unit-management)
 - [Contact Management](#contact-management)
 - [License Management](#license-management)
+- [Device Management](#device-management)
+- [Delta Queries](#delta-queries)
 - [Utility and Core Functions](#utility-and-core-functions)
 - [Permission Consent Requirements](#permission-consent-requirements)
 
@@ -294,6 +296,100 @@ This document provides a comprehensive list of Microsoft Graph API permissions r
 - **Delegated**: `User.ReadWrite.All` or `Directory.ReadWrite.All`
 - **Application**: `User.ReadWrite.All` or `Directory.ReadWrite.All`
 - **Admin Consent Required**: Yes
+
+### Get-PSEntraIDGroupLicense
+**Microsoft Graph API**: `GET /groups`
+- **Delegated**: `Group.Read.All` or `Directory.Read.All`
+- **Application**: `Group.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Get-PSEntraIDGroupLicenseDetail
+**Microsoft Graph API**: `GET /groups/{id}`
+- **Delegated**: `Group.Read.All` or `Directory.Read.All`
+- **Application**: `Group.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Enable-PSEntraIDGroupLicense
+**Microsoft Graph API**: `POST /groups/{id}/assignLicense`
+- **Delegated**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Application**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Admin Consent Required**: Yes
+- **Notes**: Group-based licensing assigns to every member of the group. The permission is on the group, not on the users it licences.
+
+### Disable-PSEntraIDGroupLicense
+**Microsoft Graph API**: `POST /groups/{id}/assignLicense`
+- **Delegated**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Application**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Admin Consent Required**: Yes
+
+### Enable-PSEntraIDGroupLicenseServicePlan
+**Microsoft Graph API**: `POST /groups/{id}/assignLicense`
+- **Delegated**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Application**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Admin Consent Required**: Yes
+
+### Disable-PSEntraIDGroupLicenseServicePlan
+**Microsoft Graph API**: `POST /groups/{id}/assignLicense`
+- **Delegated**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Application**: `Group.ReadWrite.All` or `Directory.ReadWrite.All`
+- **Admin Consent Required**: Yes
+
+---
+
+## Device Management
+
+### Get-PSEntraIDDevice
+**Microsoft Graph API**: `GET /devices/{id}`
+- **Delegated**: `Device.Read.All` or `Directory.Read.All`
+- **Application**: `Device.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+---
+
+## Delta Queries
+
+Delta cmdlets read the same objects as their non-delta counterparts and need the same
+permissions. Nothing extra is required to use a delta endpoint - but note that a delta
+read returns objects the caller could not otherwise see the removal of, so the permission
+is what limits the scope, not the endpoint.
+
+### Get-PSEntraIDUserDelta
+**Microsoft Graph API**: `GET /users/delta`
+- **Delegated**: `User.Read.All` or `Directory.Read.All`
+- **Application**: `User.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Get-PSEntraIDGroupDelta
+**Microsoft Graph API**: `GET /groups/delta`
+- **Delegated**: `Group.Read.All` or `Directory.Read.All`
+- **Application**: `Group.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Get-PSEntraIDDeviceDelta
+**Microsoft Graph API**: `GET /devices/delta`
+- **Delegated**: `Device.Read.All` or `Directory.Read.All`
+- **Application**: `Device.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Get-PSEntraIDContactDelta
+**Microsoft Graph API**: `GET /contacts/delta`
+- **Delegated**: `OrgContact.Read.All` or `Directory.Read.All`
+- **Application**: `OrgContact.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Get-PSEntraIDAdministrativeUnitDelta
+**Microsoft Graph API**: `GET /directory/administrativeUnits/delta`
+- **Delegated**: `AdministrativeUnit.Read.All` or `Directory.Read.All`
+- **Application**: `AdministrativeUnit.Read.All` or `Directory.Read.All`
+- **Admin Consent Required**: Yes
+
+### Export-PSEntraIDDeltaSession / Import-PSEntraIDDeltaSession
+**Microsoft Graph API**: None (local file operations)
+- **Delegated**: None
+- **Application**: None
+- **Notes**: These write and read the delta token to and from disk. The token is a
+  continuation cursor, not a credential - but it does describe which resource was being
+  tracked, so treat the file as you would any other operational artefact.
 
 ---
 

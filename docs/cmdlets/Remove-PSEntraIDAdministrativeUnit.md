@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Remove-PSEntraIDAdministrativeUnit
 ---
@@ -21,14 +21,14 @@ Delete administrative unit
 
 ```
 Remove-PSEntraIDAdministrativeUnit -InputObject <AdministrativeUnit[]> [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### Identity
 
 ```
 Remove-PSEntraIDAdministrativeUnit -Identity <string[]> [-EnableException] [-Force] [-PassThru]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -60,11 +60,15 @@ Delete administrative unit by piping from Get cmdlet
 
 ### -Confirm
 
-The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -86,7 +90,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -109,11 +113,15 @@ HelpMessage: ''
 
 ### -Force
 
-The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Suppresses the confirmation prompt, for unattended use.
+
+An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+prompts even with -Force present.
+The two are therefore alternatives rather
+than a pair - passing both says nothing the second one does not already say.
+
+Without either, whether the command prompts is left to its ConfirmImpact and
+the session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -238,6 +246,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## OUTPUTS
+
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
 
 ## NOTES
 

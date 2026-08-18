@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Connect-PSMicrosoftEntraID
 ---
@@ -23,7 +23,7 @@ Establish a connection to an Entra Service.
 Connect-PSMicrosoftEntraID -ClientID <string> [-TenantID <string>] [-Scopes <string[]>] [-Browser]
  [-BrowserMode <string>] [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>]
  [-UseRefreshToken] [-MakeDefault] [-PassThru] [-Environment <Environment>]
- [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-AuthenticationUrl <string>]
 ```
 
 ### Federated
@@ -32,7 +32,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> [-TenantID <string>] [-Scopes <str
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> [-FallBackAzAccount] [-Federated]
  [-FederationProvider <string>] [-Assertion <string>] [-Service <string[]>] [-ServiceUrl <string>]
  [-Resource <string>] [-MakeDefault] [-PassThru] [-Environment <Environment>]
- [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-AuthenticationUrl <string>]
 ```
 
 ### KeyVault
@@ -41,7 +41,6 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> [-FallBackAzAcc
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -VaultName <string>
  -SecretName <string[]> [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>]
  [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <string>]
- [<CommonParameters>]
 ```
 
 ### UsernamePassword
@@ -49,7 +48,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -VaultName <str
 ```
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -Credential <pscredential>
  [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>] [-MakeDefault] [-PassThru]
- [-Environment <Environment>] [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <string>]
 ```
 
 ### AppSecret
@@ -57,7 +56,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -Credential <ps
 ```
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -ClientSecret <securestring>
  [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>] [-MakeDefault] [-PassThru]
- [-Environment <Environment>] [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <string>]
 ```
 
 ### AppCertificate
@@ -67,7 +66,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> [-Certificate <
  [-CertificateThumbprint <string>] [-CertificateName <string>] [-CertificatePath <string>]
  [-CertificatePassword <securestring>] [-Service <string[]>] [-ServiceUrl <string>]
  [-Resource <string>] [-MakeDefault] [-PassThru] [-Environment <Environment>]
- [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-AuthenticationUrl <string>]
 ```
 
 ### Refresh
@@ -76,7 +75,6 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> [-Certificate <
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -RefreshToken <string>
  [-Scopes <string[]>] [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>]
  [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <string>]
- [<CommonParameters>]
 ```
 
 ### DeviceCode
@@ -84,7 +82,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -RefreshToken <
 ```
 Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -DeviceCode [-Scopes <string[]>]
  [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>] [-UseRefreshToken] [-MakeDefault]
- [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <string>]
 ```
 
 ### RefreshObject
@@ -92,7 +90,7 @@ Connect-PSMicrosoftEntraID -ClientID <string> -TenantID <string> -DeviceCode [-S
 ```
 Connect-PSMicrosoftEntraID -RefreshTokenObject <EntraToken> [-Scopes <string[]>]
  [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>] [-MakeDefault] [-PassThru]
- [-Environment <Environment>] [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-Environment <Environment>] [-AuthenticationUrl <string>]
 ```
 
 ### Identity
@@ -101,7 +99,6 @@ Connect-PSMicrosoftEntraID -RefreshTokenObject <EntraToken> [-Scopes <string[]>]
 Connect-PSMicrosoftEntraID -Identity [-IdentityID <string>] [-IdentityType <string>]
  [-FallBackAzAccount] [-Service <string[]>] [-ServiceUrl <string>] [-Resource <string>]
  [-MakeDefault] [-PassThru] [-Environment <Environment>] [-AuthenticationUrl <string>]
- [<CommonParameters>]
 ```
 
 ### AzAccount
@@ -109,7 +106,7 @@ Connect-PSMicrosoftEntraID -Identity [-IdentityID <string>] [-IdentityType <stri
 ```
 Connect-PSMicrosoftEntraID -AsAzAccount [-ShowDialog <string>] [-Service <string[]>]
  [-ServiceUrl <string>] [-Resource <string>] [-MakeDefault] [-PassThru] [-Environment <Environment>]
- [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-AuthenticationUrl <string>]
 ```
 
 ### AzToken
@@ -117,7 +114,7 @@ Connect-PSMicrosoftEntraID -AsAzAccount [-ShowDialog <string>] [-Service <string
 ```
 Connect-PSMicrosoftEntraID [-AzToken <psobject>] [-Service <string[]>] [-ServiceUrl <string>]
  [-Resource <string>] [-MakeDefault] [-PassThru] [-Environment <Environment>]
- [-AuthenticationUrl <string>] [<CommonParameters>]
+ [-AuthenticationUrl <string>]
 ```
 
 ## ALIASES
@@ -240,7 +237,10 @@ HelpMessage: ''
 
 ### -AzToken
 
-{{ Fill AzToken Description }}
+Reuse an existing token object obtained from an Az.Accounts session (e.g.
+via Get-AzAccessToken)
+to authenticate.
+Bypasses the regular interactive authentication flow.
 
 ```yaml
 Type: System.Management.Automation.PSObject
@@ -1101,6 +1101,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ## OUTPUTS
+
+### EntraToken
+
+{{ Fill in the Description }}
 
 ## NOTES
 

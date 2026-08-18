@@ -1,0 +1,119 @@
+﻿TOPIC
+    about_PSMicrosoftEntraID
+
+SHORT DESCRIPTION
+    Administers Microsoft Entra ID over Microsoft Graph, returning typed objects
+    rather than raw JSON.
+
+LONG DESCRIPTION
+    PSMicrosoftEntraID covers users and guests, groups and their membership,
+    administrative units, contacts, devices, organization and Message Center
+    data, and licence assignment down to individual service plans.
+
+    Every cmdlet returns a real .NET type from the module's compiled library,
+    so properties are discoverable, tab completion works on results, and a
+    change in the Graph response surfaces as a conversion problem instead of a
+    $null several functions later.
+
+    Every cmdlet that changes the directory declares SupportsShouldProcess with
+    an explicit ConfirmImpact, so -WhatIf and -Confirm behave as expected. Pass
+    -Force to skip the prompt in unattended scripts.
+
+    Requires PowerShell 7.2 or later. Windows PowerShell 5.1 cannot load the
+    module: it ships a net8.0 library.
+
+CONNECTING
+    Nothing works until you connect. Connect-PSMicrosoftEntraID supports
+    interactive browser sign-in, device code, client secret, certificate,
+    managed identity, an existing Azure session, refresh tokens and workload
+    identity federation.
+
+        Connect-PSMicrosoftEntraID -ClientID <guid> -TenantID <guid> -Browser
+
+    Secrets are taken as SecureString, so they need not appear as literals in a
+    script or in session history.
+
+    Sovereign clouds are addressable: service URLs are configurable and no
+    Graph endpoint is hard-coded.
+
+READING LARGE TENANTS
+    Read cmdlets stream their results, so a pipeline starts producing before
+    the last page has arrived. Prefer a server-side -Filter over trimming the
+    output client-side.
+
+    The Get-PSEntraID*Delta cmdlets read only what changed since the previous
+    call. The first call returns everything and stores a token in a delta
+    session; later calls return only changes, including removals, which a full
+    read cannot report at all.
+
+        $session = @{}
+        Get-PSEntraIDUserDelta -DeltaSession $session
+
+    Export-PSEntraIDDeltaSession and Import-PSEntraIDDeltaSession persist that
+    session between runs of a scheduled task.
+
+BULK OPERATIONS
+    Cmdlets that write accept -PassThru, which returns a description of the
+    call instead of making it. Collect those, pack them with
+    New-PSEntraIDBatchRequest and send them with Invoke-PSEntraIDBatchRequest.
+
+    Graph throttles both whole requests and individual sub-requests inside a
+    batch. The module retries both, honouring Graph's own Retry-After header;
+    sub-requests that fail for any other reason are reported with their status
+    rather than being dropped.
+
+CONFIGURATION
+    Settings are PSFramework configuration items under the PSMicrosoftEntraID
+    module. To see them:
+
+        Get-PSFConfig -Module PSMicrosoftEntraID
+
+    The most useful are the retry behaviour, which also has its own cmdlets:
+
+        Set-PSEntraIDCommandRetry -RetryCount 5 -RetryWaitInSeconds 2
+
+    and the property sets each read cmdlet asks Graph for, under
+    Settings.GraphApiQuery.Select.*.
+
+ERRORS
+    By default a failed call writes a warning and the pipeline continues, which
+    suits interactive use. Pass -EnableException to have failures throw instead,
+    which is what a script wants:
+
+        try {
+            Get-PSEntraIDUser -Identity 'nobody@contoso.com' -EnableException
+        }
+        catch { Write-Error $_.Exception.Message }
+
+TROUBLESHOOTING NOTE
+    Piping a read cmdlet into Select-Object -First N logs a warning that is not
+    a failure:
+
+        WARNING: [Get-PSEntraIDUser] Failed to: List users ...
+                 | The pipeline has been stopped
+
+    The results are correct and complete. Select-Object -First stops the
+    pipeline once it has what it asked for, and the upstream command's next
+    write throws PipelineStoppedException - normal termination, reported as an
+    error only because the write happens inside a protected block. Materialise
+    the results first if the warning is in the way:
+
+        $users = @(Get-PSEntraIDUser -All)
+        $users | Select-Object -First 3
+
+SEE ALSO
+    Connect-PSMicrosoftEntraID
+    Get-PSEntraIDUser
+    Get-PSEntraIDUserGuest
+    Get-PSEntraIDUserDelta
+    Invoke-PSEntraIDBatchRequest
+    https://github.com/ondrejkracmar/PSMicrosoftEntraID
+    https://learn.microsoft.com/en-us/graph/api/overview
+
+KEYWORDS
+    - Entra
+    - EntraID
+    - AzureAD
+    - MicrosoftGraph
+    - Microsoft365
+    - Licensing

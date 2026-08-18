@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDUserLicense
 ---
@@ -20,65 +20,61 @@ Get users who are assigned licenses
 ### CompanyName (Default)
 
 ```
-Get-PSEntraIDUserLicense -CompanyName <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -CompanyName <string[]> [-EnableException]
 ```
 
 ### ServicePlanNameCompanyName
 
 ```
 Get-PSEntraIDUserLicense -CompanyName <string[]> -ServicePlanName <string[]> [-EnableException]
- [<CommonParameters>]
 ```
 
 ### ServicePlanIdCompanyName
 
 ```
 Get-PSEntraIDUserLicense -CompanyName <string[]> -ServicePlanId <string[]> [-EnableException]
- [<CommonParameters>]
 ```
 
 ### SkuPartNumberCompanyName
 
 ```
 Get-PSEntraIDUserLicense -CompanyName <string[]> -SkuPartNumber <string[]> [-EnableException]
- [<CommonParameters>]
 ```
 
 ### SkuIdCompanyName
 
 ```
 Get-PSEntraIDUserLicense -CompanyName <string[]> -SkuId <string[]> [-EnableException]
- [<CommonParameters>]
 ```
 
 ### SkuId
 
 ```
-Get-PSEntraIDUserLicense -SkuId <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -SkuId <string[]> [-EnableException]
 ```
 
 ### SkuPartNumber
 
 ```
-Get-PSEntraIDUserLicense -SkuPartNumber <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -SkuPartNumber <string[]> [-EnableException]
 ```
 
 ### ServicePlanId
 
 ```
-Get-PSEntraIDUserLicense -ServicePlanId <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -ServicePlanId <string[]> [-EnableException]
 ```
 
 ### ServicePlanName
 
 ```
-Get-PSEntraIDUserLicense -ServicePlanName <string[]> [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -ServicePlanName <string[]> [-EnableException]
 ```
 
 ### Filter
 
 ```
-Get-PSEntraIDUserLicense -Filter <string> [-AdvancedFilter] [-EnableException] [<CommonParameters>]
+Get-PSEntraIDUserLicense -Filter <string> [-AdvancedFilter] [-EnableException]
 ```
 
 ## ALIASES
@@ -94,9 +90,9 @@ Get users who are assigned licenses with disabled and enabled service plans
 
 ### EXAMPLE 1
 
-Get-PSEntraIDUserLicense -Identity username@contoso.com
+Get-PSEntraIDUserLicense -SkuPartNumber ENTERPRISEPACK
 
-Get licenses of user username@contoso.com with service plans
+Get users with license ENTERPRISEPACK and their service plans
 
 ## PARAMETERS
 
@@ -169,7 +165,7 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
 This is less user friendly,
 but allows catching exceptions in calling scripts.
 
@@ -339,6 +335,27 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 {{ Fill in the Description }}
 
 ## NOTES
+
+Piping into Select-Object -First N logs a warning that is not a failure:
+
+    WARNING: [<cmdlet>] Failed to: ...
+| The pipeline has been stopped
+
+The results are correct and complete.
+Select-Object stops the pipeline once it
+has what it asked for, and the next write throws PipelineStoppedException -
+normal termination, reported as an error only because the write happens inside a
+protected block.
+Materialise first if the warning is in the way:
+
+    $items = @(<cmdlet> ...)
+    $items | Select-Object -First 3
+
+or filter server-side with -Filter instead of trimming client-side.
+Not silenced
+on purpose: the only fix that works is to collect the whole result before
+emitting any of it, which would cost streaming on every read.
+
 
 ## RELATED LINKS
 

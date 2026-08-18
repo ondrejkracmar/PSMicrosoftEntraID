@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Set-PSEntraIDCommandRetry
 ---
@@ -20,7 +20,7 @@ Sets default retry parameters for PSF protected commands.
 ### __AllParameterSets
 
 ```
-Set-PSEntraIDCommandRetry [[-RetryCount] <int>] [[-RetryWaitInSeconds] <int>] [<CommonParameters>]
+Set-PSEntraIDCommandRetry [[-RetryCount] <int>] [[-RetryWaitInSeconds] <int>]
 ```
 
 ## ALIASES
@@ -38,6 +38,8 @@ Ensures values are between 0 and 10.
 ### EXAMPLE 1
 
 Set-PSEntraIDCommandRetry -RetryCount 3 -RetryWaitInSeconds 5
+
+Configures the module to retry failing commands up to 3 times with 5 seconds between attempts.
 
 ## PARAMETERS
 
@@ -95,6 +97,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ## OUTPUTS
+
+### System.Void
+
+{{ Fill in the Description }}
 
 ## NOTES
 

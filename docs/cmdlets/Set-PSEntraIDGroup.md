@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08/18/2026
 PlatyPS schema version: 2024-05-01
 title: Set-PSEntraIDGroup
 ---
@@ -22,77 +22,79 @@ Updates the specified properties of a Microsoft 365 Group.
 ```
 Set-PSEntraIDGroup -InputObject <Group[]> [-Displayname <string>] [-Description <string>]
  [-MailNickname <string>] [-GroupTypes <string[]>] [-Visibility <string>] [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
-### InputObjectUpdtaeDynamicGroup
+### InputObjectUpdateDynamicGroup
 
 ```
-Set-PSEntraIDGroup -InputObject <Group[]> [-EnableException] [-Force] [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Set-PSEntraIDGroup -InputObject <Group[]> [-MembershipRule <string>]
+ [-MembershipRuleProcessingState <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf]
+ [-Confirm]
 ```
 
 ### InputObjectHideFromOutlookClients
 
 ```
 Set-PSEntraIDGroup -InputObject <Group[]> [-HideFromOutlookClients <bool>] [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### InputObjectHideFromAddressLists
 
 ```
 Set-PSEntraIDGroup -InputObject <Group[]> [-HideFromAddressLists <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### InputObjectAutoSubscribeNewMembers
 
 ```
 Set-PSEntraIDGroup -InputObject <Group[]> [-AutoSubscribeNewMembers <bool>] [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### InputObjectAllowExternalSenders
 
 ```
 Set-PSEntraIDGroup -InputObject <Group[]> [-AllowExternalSenders <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
-### IdentityUpdtaeDynamicGroup
+### IdentityUpdateDynamicGroup
 
 ```
-Set-PSEntraIDGroup -Identity <string[]> [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Set-PSEntraIDGroup -Identity <string[]> [-MembershipRule <string>]
+ [-MembershipRuleProcessingState <string>] [-EnableException] [-Force] [-PassThru] [-WhatIf]
+ [-Confirm]
 ```
 
 ### IdentityHideFromOutlookClients
 
 ```
 Set-PSEntraIDGroup -Identity <string[]> [-HideFromOutlookClients <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityHideFromAddressLists
 
 ```
 Set-PSEntraIDGroup -Identity <string[]> [-HideFromAddressLists <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityAutoSubscribeNewMembers
 
 ```
 Set-PSEntraIDGroup -Identity <string[]> [-AutoSubscribeNewMembers <bool>] [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityAllowExternalSenders
 
 ```
 Set-PSEntraIDGroup -Identity <string[]> [-AllowExternalSenders <bool>] [-EnableException] [-Force]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ### IdentityUpdateGroupCommon
@@ -100,21 +102,7 @@ Set-PSEntraIDGroup -Identity <string[]> [-AllowExternalSenders <bool>] [-EnableE
 ```
 Set-PSEntraIDGroup -Identity <string[]> [-Displayname <string>] [-Description <string>]
  [-MailNickname <string>] [-GroupTypes <string[]>] [-Visibility <string>] [-EnableException]
- [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### IdentityUpdateDynamicGroup
-
-```
-Set-PSEntraIDGroup [-MembershipRule <string>] [-MembershipRuleProcessingState <string>]
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### InputObjectUpdateDynamicGroup
-
-```
-Set-PSEntraIDGroup [-MembershipRule <string>] [-MembershipRuleProcessingState <string>]
- [-EnableException] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -124,7 +112,7 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-The `Set-PSntraIDGroup` cmdlet allows you to modify specific properties of a Microsoft 365 Group.
+The `Set-PSEntraIDGroup` cmdlet allows you to modify specific properties of a Microsoft 365 Group.
 Some properties can be updated together, while others require separate calls.
 Additionally, certain
 properties are read-only and can only be retrieved, not modified.
@@ -133,15 +121,21 @@ properties are read-only and can only be retrieved, not modified.
 
 ### EXAMPLE 1
 
-Set-PSntraIDGroup -GroupId "mailnickname1" -DisplayName "New Group Name" -Description "Updated group description" -Visibility "Private"
+Set-PSEntraIDGroup -Identity "mailnickname1" -DisplayName "New Group Name" -Description "Updated group description" -Visibility "Private"
+
+Updates the display name, description and visibility of the specified group.
 
 ### EXAMPLE 2
 
-Set-PSntraIDGroup -GroupId "mailnickname@domain.com" -AllowExternalSenders $true
+Set-PSEntraIDGroup -Identity "mailnickname@domain.com" -AllowExternalSenders $true
+
+Allows external senders to send mail to the specified group.
 
 ### EXAMPLE 3
 
-Set-PSntraIDGroup -GroupId "mailnickname1" -MembershipRule "(user.department -eq 'Sales')" -MembershipRuleProcessingState "On"
+Set-PSEntraIDGroup -Identity "mailnickname1" -MembershipRule "(user.department -eq 'Sales')" -MembershipRuleProcessingState "On"
+
+Configures the dynamic membership rule for the group and enables rule processing.
 
 ## PARAMETERS
 
@@ -203,11 +197,15 @@ HelpMessage: ''
 
 ### -Confirm
 
-The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Prompts for confirmation before the command makes a change.
+-Confirm:$false
+suppresses that prompt.
+
+Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+Left unbound, the decision belongs to this command's ConfirmImpact and the
+session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -285,9 +283,8 @@ HelpMessage: ''
 
 ### -EnableException
 
-This parameters disables user-friendly warnings and enables the throwing of exceptions.
-This is less user frien
-dly, but allows catching exceptions in calling scripts.
+This parameter disables user-friendly warnings and enables the throwing of exceptions.
+This is less user friendly, but allows catching exceptions in calling scripts.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -308,11 +305,15 @@ HelpMessage: ''
 
 ### -Force
 
-The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-The command then prompts you to acknowledge each action before it continues.
-When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-A confirmation prompt is displayed for each object before the Shell modifies the object.
+Suppresses the confirmation prompt, for unattended use.
+
+An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+prompts even with -Force present.
+The two are therefore alternatives rather
+than a pair - passing both says nothing the second one does not already say.
+
+Without either, whether the command prompts is left to its ConfirmImpact and
+the session ConfirmPreference, which is the PowerShell default behaviour.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -418,7 +419,7 @@ HelpMessage: ''
 
 ### -Identity
 
-UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
+DisplayName, MailNickname, Mail or Id of the group attribute populated in tenant/directory.
 
 ```yaml
 Type: System.String[]
@@ -429,7 +430,7 @@ Aliases:
 - GroupId
 - TeamId
 ParameterSets:
-- Name: IdentityUpdtaeDynamicGroup
+- Name: IdentityUpdateDynamicGroup
   Position: Named
   IsRequired: true
   ValueFromPipeline: false
@@ -472,7 +473,7 @@ HelpMessage: ''
 
 ### -InputObject
 
-PSMicrosoftEntraID.Users.User object in tenant/directory.
+PSMicrosoftEntraID.Groups.Group object in tenant/directory.
 
 ```yaml
 Type: PSMicrosoftEntraID.Groups.Group[]
@@ -480,7 +481,7 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: InputObjectUpdtaeDynamicGroup
+- Name: InputObjectUpdateDynamicGroup
   Position: Named
   IsRequired: true
   ValueFromPipeline: true
@@ -608,7 +609,7 @@ HelpMessage: ''
 
 ### -PassThru
 
-When specified, the cmdlet will not execute the disable license action but will instead
+When specified, the cmdlet will not execute the action but will instead
 return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 ```yaml
@@ -706,10 +707,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### PSMicrosoftEntraID.Batch.Request
+
+{{ Fill in the Description }}
+
 ## NOTES
 
 - Properties like `AllowExternalSenders`, `AutoSubscribeNewMembers`, `HideFromAddressLists`, and `HideFromOutlookClients` must each be set in separate requests.
-- Use `Set-PSntraIDGroup` to retrieve read-only properties such as `isSubscribedByMail` and `unseenCount`.
+- Use `Set-PSEntraIDGroup` to retrieve read-only properties such as `isSubscribedByMail` and `unseenCount`.
 
 
 ## RELATED LINKS
