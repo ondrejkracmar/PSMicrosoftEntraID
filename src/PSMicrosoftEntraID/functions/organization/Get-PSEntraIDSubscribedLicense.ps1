@@ -1,0 +1,64 @@
+﻿function Get-PSEntraIDSubscribedLicense {
+    <#
+	.SYNOPSIS
+		Register the list of commercial subscriptions that an organization has acquired.
+
+	.DESCRIPTION
+		Register the list of commercial subscriptions that an organization has acquired.
+
+    .PARAMETER EnableException
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
+
+	.EXAMPLE
+		PS C:\> Get-PSEntraIDSubscribedLicense
+
+		Register the list of commercial subscriptions
+
+	    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
+
+#>
+    [OutputType('PSMicrosoftEntraID.License.SubscriptionSkuLicense')]
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [switch] $EnableException
+    )
+    begin {
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [hashtable] $query = @{
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.SubscribedSku).Value -join ',')
+        }
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+    }
+    process {
+        $result = Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.List' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+            [object[]] $subscribedLicenses = @(ConvertFrom-RestSubscribedSku -InputObject (Invoke-EntraRequest -Service $service -Path subscribedSkus -Query $query -Method Get -ErrorAction Stop))
+            if ($subscribedLicenses.Count -eq 0) {
+                return $subscribedLicenses
+            }
+            Update-PSEntraIDSubscribedLicenseDisplayName -InputObject $subscribedLicenses
+        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+        if (Test-PSFFunctionInterrupt) { return }
+        $result
+    }
+    end
+    {}
+}

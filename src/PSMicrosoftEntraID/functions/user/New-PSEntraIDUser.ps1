@@ -74,7 +74,7 @@
     Array of proxy email addresses for the user.
 .PARAMETER FaxNumber
     Fax number associated with the user.
-    
+
 .PARAMETER OtherMails
     List of other email addresses for the user.
 
@@ -88,24 +88,47 @@
     Employee type (e.g. full-time, contractor).
 
 .PARAMETER EnableException
-    Enables throwing of terminating errors.
-
-.PARAMETER PassThru
-    Outputs the created user object.
-
-.PARAMETER Confirm
-    Prompts for confirmation.
+    This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
 .PARAMETER WhatIf
-    Simulates the command.
+    Enables the function to simulate what it will do instead of actually executing.
+
+.PARAMETER Force
+    Suppresses the confirmation prompt, for unattended use.
+
+    An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+    prompts even with -Force present. The two are therefore alternatives rather
+    than a pair - passing both says nothing the second one does not already say.
+
+    Without either, whether the command prompts is left to its ConfirmImpact and
+    the session ConfirmPreference, which is the PowerShell default behaviour.
+
+.PARAMETER Confirm
+    Prompts for confirmation before the command makes a change. -Confirm:$false
+    suppresses that prompt.
+
+    Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+    prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+    Left unbound, the decision belongs to this command's ConfirmImpact and the
+    session ConfirmPreference, which is the PowerShell default behaviour.
+
+.PARAMETER PassThru
+    When specified, the cmdlet will not execute the action but will instead
+    return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 .EXAMPLE
     Import-Csv users.csv | New-PSEntraIDUser
 
+    Creates one user per row from users.csv by piping objects whose property names match the parameter names.
+
 .EXAMPLE
     New-PSEntraIDUser -DisplayName "John Doe" -UserPrincipalName "john.doe@contoso.com" -MailNickname "jdoe" -Password (Read-Host -AsSecureString "Enter password")
+
+    Creates a new user account with the supplied display name, UPN, mail nickname and password.
 #>
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'CreateUser')]
     param (
         [Parameter(ParameterSetName = 'CreateUser', Mandatory = $true, ValueFromPipelineByPropertyName = $true)] [string] $DisplayName,
@@ -132,8 +155,13 @@
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $ProxyAddresses,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $FaxNumber,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeId,
+        [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $EmployeeType,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string[]] $OtherMails,
         [Parameter(ParameterSetName = 'CreateUser', ValueFromPipelineByPropertyName = $true)] [string] $PreferredLanguage,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
         [Parameter()] [switch] $PassThru
     )
 
@@ -143,12 +171,7 @@
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -188,8 +211,6 @@
                 if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
                 if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
                 if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
-                if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
-                if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
                 if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
                 if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
                 if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
@@ -209,7 +230,7 @@
         else {
             Invoke-PSFProtectedCommand -ActionString 'User.New' -ActionStringValues $UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path 'users' -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

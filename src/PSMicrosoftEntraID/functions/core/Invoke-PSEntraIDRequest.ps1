@@ -63,10 +63,14 @@
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        This functionality is useful when you apply changes to many objects
-        and want precise control over the operation of the Shell.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .EXAMPLE
         PS C:\> Invoke-PSEntraIDRequest -Path 'alerts' -RequiredScopes 'Alert.Read'
@@ -108,7 +112,7 @@
         [int]
         $SerializationDepth = 99,
         [Parameter()]
-        [EntraToken]
+        [object]
         $Token,
         [Parameter()]
         [switch]
@@ -129,18 +133,13 @@
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
 
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'Request.Invoke' -ActionStringValues $Path -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             Invoke-EntraRequest @param -Service $service -ErrorAction Stop
-        } -EnableException $EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
     }
 

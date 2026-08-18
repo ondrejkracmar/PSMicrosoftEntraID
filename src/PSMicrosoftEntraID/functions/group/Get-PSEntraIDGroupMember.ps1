@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDGroupMember {
+﻿function Get-PSEntraIDGroupMember {
     <#
     .SYNOPSIS
         Get an owner or member to the team, and to the unified group which backs the team.
@@ -23,7 +22,7 @@ function Get-PSEntraIDGroupMember {
         Switch advanced filter for filtering groups in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
@@ -36,8 +35,26 @@ function Get-PSEntraIDGroupMember {
 
 		Get owners of group1@contoso.com
 
+    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
+
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]
     param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
         [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
@@ -75,7 +92,14 @@ function Get-PSEntraIDGroupMember {
     }
 
     process {
+        if (Test-PSFParameterBinding -ParameterName 'Filter') {
+            $query['$Filter'] = $Filter
+            if ($AdvancedFilter.IsPresent) {
+                $header['ConsistencyLevel'] = 'eventual'
+            }
+        }
         switch ($PSCmdlet.ParameterSetName) {
+            
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.List' -ActionStringValues $itemInputObject.MailnickName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -85,15 +109,9 @@ function Get-PSEntraIDGroupMember {
                         else {
                             [string] $path = ('groups/{0}/members' -f $itemInputObject.Id)
                         }
-                        if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                            $query['$Filter'] = $Filter
-                            if ($AdvancedFilter.IsPresent) {
-                                $header['ConsistencyLevel'] = 'eventual'
-                            }
-                        }
                         ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         if (Test-PSFFunctionInterrupt) { return }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -108,12 +126,6 @@ function Get-PSEntraIDGroupMember {
                             else {
                                 [string] $path = ('groups/{0}/members' -f $group.Id)
                             }
-                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
-                                $query['$Filter'] = $Filter
-                                if ($AdvancedFilter.IsPresent) {
-                                    $header['ConsistencyLevel'] = 'eventual'
-                                }
-                            }
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                             if (Test-PSFFunctionInterrupt) { return }
                         }
@@ -122,7 +134,7 @@ function Get-PSEntraIDGroupMember {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

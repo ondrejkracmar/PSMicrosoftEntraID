@@ -10,14 +10,23 @@ branches:
     increment: Patch
     regex: ^master$|^main$
     
+  # The two regexes below must between them match EVERY branch name that can open a pull
+  # request. A branch matching neither leaves the pull-request configuration below with no
+  # source branch to inherit from, and GitVersion then emits "Infinity" for the distance
+  # fields — which the pipeline's ConvertFrom-Json rejects with
+  #   Conversion from JSON failed with error: Error parsing Infinity value.
+  # a message that says nothing about branch naming. A branch called fix/... did exactly that.
+  #
+  # The prefixes here mirror the commit types the pipeline's Conventional Commits check
+  # accepts, so a branch named after the work it does is always covered.
   hotfix:
     label: alpha
     increment: Patch
-    regex: ^hotfix(es)?[/-]|^patch?[/-]
+    regex: ^(hotfix(es)?|fix|bugfix|patch|chore|ci|build|docs|refactor|revert|style|test|perf)[/-]
   feature:
     label: alpha
     increment: Minor
-    regex: ^features?[/-]
+    regex: ^(features?|feat)[/-]
   pull-request:
     label: preview
     increment: Inherit

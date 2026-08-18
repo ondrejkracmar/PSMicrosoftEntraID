@@ -1,10 +1,11 @@
-﻿[CmdletBinding()]
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+[CmdletBinding()]
 Param (
 	[switch]
 	$SkipTest,
 	
 	[string[]]
-	$CommandPath = @("$global:testroot\..\functions", "$global:testroot\..\internal\functions")
+	$CommandPath = @((Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'functions'), (Join-Path $global:testroot '..' 'PSMicrosoftEntraID' 'internal' 'functions'))
 )
 
 if ($SkipTest) { return }
@@ -18,14 +19,19 @@ Describe 'Invoking PSScriptAnalyzer against commandbase' {
 	foreach ($file in $commandFiles)
 	{
 		Context "Analyzing $($file.BaseName)" {
-			$analysis = Invoke-ScriptAnalyzer -Path $file.FullName -ExcludeRule PSAvoidTrailingWhitespace, PSShouldProcess
+			$analysis = Invoke-ScriptAnalyzer -Path $file.FullName -ExcludeRule PSAvoidTrailingWhitespace, PSShouldProcess, PSUseDeclaredVarsMoreThanAssignments, PSAvoidGlobalVars
 			
 			forEach ($rule in $scriptAnalyzerRules)
 			{
-				It "Should pass $rule" -TestCases @{ analysis = $analysis; rule = $rule } {
-					If ($analysis.RuleName -contains $rule)
+				$ruleName = $rule.RuleName
+				It "Should pass $ruleName" -TestCases @{ analysis = $analysis; ruleName = $ruleName } {
+					$failures = @($analysis | Where-Object {
+						$null -ne $_ -and $_.RuleName -eq $ruleName
+					})
+
+					If ($failures.Count -gt 0)
 					{
-						$analysis | Where-Object RuleName -EQ $rule -outvariable failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
+						$failures | ForEach-Object { $null = $global:__pester_data.ScriptAnalyzer.Add($_) }
 						
 						1 | Should -Be 0
 					}

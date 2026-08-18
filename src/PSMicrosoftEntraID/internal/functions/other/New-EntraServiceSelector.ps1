@@ -55,7 +55,7 @@
 		
 		Creates a new ServiceSelector object and stores it in $script:_serviceSelector
 	#>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Justification = 'Returns a service-selector object. The New verb names what it produces; nothing local or remote is changed, so there is nothing to confirm.')]
 	#%UNCOMMENT%[OutputType([ServiceSelector])]
 	[CmdletBinding()]
 	param (

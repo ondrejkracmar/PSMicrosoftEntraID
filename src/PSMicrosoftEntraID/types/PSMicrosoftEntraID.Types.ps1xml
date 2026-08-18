@@ -12,7 +12,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
-            <Name>ServicePLans</Name>
+            <Name>ServicePlans</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -20,13 +20,68 @@
               DefaultDisplayProperty
             </Name>
             <Value>
-              Name
+              SkuPartNumber
             </Value>
           </NoteProperty>
         </Members>
       </MemberSet>
     </Members>
     </Type>
+    <Type>
+    <Name>PSMicrosoftEntraID.Groups.LicenseManagement.SubscriptionSku</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>SkuId</Name>
+            <Name>SkuPartNumber</Name>
+            <Name>ServicePlans</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              SkuFriendlyName
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+    </Type>
+    <Type>
+    <Name>PSMicrosoftEntraID.Groups.LicenseManagement.ServicePlan</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>ServicePlanId</Name>
+            <Name>ServicePlanName</Name>
+            <Name>ServicePlanFriendlyName</Name>
+            <Name>AppliesTo</Name>
+            <Name>ProvisioningStatus</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              ServicePlanFriendlyName
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
     <Type>
     <Name>PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan</Name>
     <Members>
@@ -88,6 +143,7 @@
             <Name>FaxNumber</Name>
             <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
+            <Name>Identities</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -136,9 +192,12 @@
             <Name>FaxNumber</Name>
             <Name>OtherMails</Name>
             <Name>AssignedLicenses</Name>
+            <Name>Identities</Name>
             <Name>ExternalUserState</Name>
             <Name>ExternalUserStateChangeDateTime</Name>
             <Name>InvitationStatus</Name>
+            <Name>HomeIssuer</Name>
+            <Name>SignInTypes</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -171,7 +230,7 @@
             <Name>Visibility</Name>
             <Name>DisplayName</Name>
             <Name>Description</Name>
-            <Name>GropupTypes</Name>
+            <Name>GroupTypes</Name>
             <Name>CreationOptions</Name>
             <Name>DeletedDateTime</Name>
             <Name>ExpirationDateTime</Name>
@@ -180,9 +239,9 @@
             <Name>MembershipRuleProcessingState</Name>
             <Name>RenewedDateTime</Name>
             <Name>SecurityEnabled</Name>
-            <Name>HideFromAddressLists</Name>
-            <Name>HideFromOutlookClients</Name>
-            <Name>AutoSubscribeNewMembers</Name>
+              <Name>SecurityIdentifier</Name>
+              <Name>AssignedLabels</Name>
+              <Name>AssignedLicenses</Name>
           </ReferencedProperties>
         </PropertySet>
           <NoteProperty>
@@ -191,6 +250,86 @@
             </Name>
             <Value>
               Name
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
+  <Type>
+    <Name>PSMicrosoftEntraID.Groups.AssignedLicense</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>SkuId</Name>
+            <Name>DisabledPlans</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              SkuId
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
+  <Type>
+    <Name>PSMicrosoftEntraID.Groups.AssignedLicenseDetail</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>GroupDisplayName</Name>
+            <Name>SkuPartNumber</Name>
+            <Name>SkuFriendlyName</Name>
+            <Name>EnabledPlanCount</Name>
+            <Name>DisabledPlanCount</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              SkuPartNumber
+            </Value>
+          </NoteProperty>
+        </Members>
+      </MemberSet>
+    </Members>
+  </Type>
+  <Type>
+    <Name>PSMicrosoftEntraID.Groups.AssignedLicenseServicePlanDetail</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>ServicePlanName</Name>
+            <Name>ServicePlanFriendlyName</Name>
+            <Name>Status</Name>
+            <Name>ProvisioningStatus</Name>
+          </ReferencedProperties>
+        </PropertySet>
+          <NoteProperty>
+            <Name>
+              DefaultDisplayProperty
+            </Name>
+            <Value>
+              ServicePlanName
             </Value>
           </NoteProperty>
         </Members>
@@ -344,6 +483,7 @@
           <ReferencedProperties>
             <Name>ServicePlanId</Name>
             <Name>ServicePlanName</Name>
+            <Name>ServicePlanFriendlyName</Name>
             <Name>ProvisioningStatus</Name>
             <Name>AppliesTo</Name>
           </ReferencedProperties>
@@ -372,6 +512,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
+            <Name>SkuFriendlyName</Name>
             <Name>AppliesTo</Name>
             <Name>ConsumedUnits</Name>
             <Name>PrepaidUnits</Name>
@@ -407,6 +548,7 @@
             <Name>Id</Name>
             <Name>SkuId</Name>
             <Name>SkuPartNumber</Name>
+            <Name>SkuFriendlyName</Name>
             <Name>SubscriptionIds</Name>
             <Name>PrepaidUnits</Name>
             <Name>ServicePlans</Name>

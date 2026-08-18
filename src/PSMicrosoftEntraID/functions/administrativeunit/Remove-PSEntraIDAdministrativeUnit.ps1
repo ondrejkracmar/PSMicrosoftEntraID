@@ -15,25 +15,31 @@
         DisplayName or Id of the administrative unit attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Force
-        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER PassThru
         When specified, the cmdlet will not execute the delete action but will instead
@@ -55,9 +61,8 @@
 
 	#>
 
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
         [PSTypeName('PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit')]
         [object[]] $InputObject,
@@ -81,12 +86,7 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -105,7 +105,7 @@
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
-                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
@@ -113,7 +113,12 @@
             'Identity' {
                 foreach ($administrativeUnit in $Identity) {
                     [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
-                    if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
+                    if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Remove.Failed) -f $administrativeUnit)
+                        }
+                    }
+                    else {
                         [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
 
                         if ($PassThru.IsPresent) {
@@ -126,13 +131,8 @@
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Remove' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Remove.Failed) -f $administrativeUnit)
                         }
                     }
                 }

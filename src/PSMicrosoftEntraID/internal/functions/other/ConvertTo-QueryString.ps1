@@ -41,7 +41,20 @@
 
 
 		$elements = foreach ($pair in $query.GetEnumerator()) {
-			'{0}={1}' -f $pair.Name, ($pair.Value -join ",")
+			# The VALUE is percent-encoded; nothing here did that before, and two of the
+			# characters this module actually sends are URL metacharacters:
+			#
+			#   '#'  starts the URI fragment, so a $Filter naming any guest - every guest
+			#        UPN contains '#EXT#' - was silently truncated mid-literal and Graph
+			#        answered "unterminated string literal". Found by the live guest
+			#        scenario, which could not read the one guest it was pointed at.
+			#   '+'  decodes to a SPACE in a query string, so a base64 delta token
+			#        containing '+' would come back to Graph corrupted.
+			#
+			# Keys are left as-is on purpose: they are this module's own literals
+			# ('$select', '$Filter', ...) and encoding '$' would only obscure the URL in
+			# every log for no correctness gain.
+			'{0}={1}' -f $pair.Name, [uri]::EscapeDataString(($pair.Value -join ","))
 		}
 		'?{0}' -f ($elements -join '&')
 	}

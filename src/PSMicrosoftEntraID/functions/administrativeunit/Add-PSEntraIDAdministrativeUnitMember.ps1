@@ -9,6 +9,12 @@
     .PARAMETER InputObject
         PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit object in tenant/directory.
 
+    .PARAMETER InputObjectGroup
+        PSMicrosoftEntraID.Groups.Group object(s) to add as member(s) of the administrative unit.
+
+    .PARAMETER InputObjectDevice
+        Device object(s) to add as member(s) of the administrative unit.
+
     .PARAMETER Identity
         DisplayName or Id of the administrative unit.
 
@@ -22,25 +28,31 @@
         DisplayName or Id of the device attribute populated in tenant/directory.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Force
-        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER PassThru
         When specified, the cmdlet will not execute the add member action but will instead
@@ -62,9 +74,8 @@
         Add a user to administrative unit "HR AU" using pipeline
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityUser')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'IdentityUser')]
     param(
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentityUser')]
         [Parameter(Mandatory = $True, ParameterSetName = 'IdentityGroup')]
@@ -107,22 +118,114 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
         switch -Regex ($PSCmdlet.ParameterSetName) {
-            'IdentityInputObject$' {
+            'IdentityInputObject' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($userObject in $InputObject) {
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($userObject in $InputObject) {
+                    [hashtable] $body = @{
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $userObject.Id -Service $service
+                    }
+                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
+
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'POST'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Body    = $body
+                            Headers = $header
+                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'IdentityInputObjectGroup' {
+                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($groupObject in $InputObjectGroup) {
+                    [hashtable] $body = @{
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $groupObject.Id -Service $service
+                    }
+                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
+
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'POST'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Body    = $body
+                            Headers = $header
+                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'IdentityInputObjectDevice' {
+                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($deviceObject in $InputObjectDevice) {
+                    [hashtable] $body = @{
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $deviceObject.Id -Service $service
+                    }
+                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
+
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'POST'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Body    = $body
+                            Headers = $header
+                        }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
+                }
+            }
+            'IdentityUser' {
+                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($userIdentity in $User) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $userIdentity
+                    if (-not ([object]::Equals($aADUser, $null))) {
                         [hashtable] $body = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $userObject.Id
+                            '@odata.id' = Get-EntraDirectoryObjectUri -Id $aADUser.Id -Service $service
                         }
                         [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -135,25 +238,32 @@
                             }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $userObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userIdentity)
+                        }
                     }
                 }
             }
-            'IdentityInputObjectGroup$' {
+            'IdentityGroup' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($groupObject in $InputObjectGroup) {
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    }
+                    return
+                }
+                foreach ($groupIdentity in $Group) {
+                    [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $groupIdentity
+                    if (-not ([object]::Equals($aADGroup, $null))) {
                         [hashtable] $body = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $groupObject.Id
+                            '@odata.id' = Get-EntraDirectoryObjectUri -Id $aADGroup.Id -Service $service
                         }
                         [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
@@ -166,146 +276,48 @@
                             }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $groupObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $groupIdentity)
+                        }
                     }
                 }
             }
-            'IdentityInputObjectDevice$' {
+            'IdentityDevice' {
                 [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    foreach ($deviceObject in $InputObjectDevice) {
-                        [hashtable] $body = @{
-                            '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $deviceObject.Id
-                        }
-                        [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
-
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{
-                                Method  = 'POST'
-                                Url     = ('/{0}' -f $pathWithRef)
-                                Body    = $body
-                                Headers = $header
-                            }
-                        }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
-                        }
-                    }
-                }
-                else {
+                if ([object]::Equals($aADAdministrativeUnit, $null)) {
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    return
                 }
-            }
-            'Identity\w+' {
-                [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $Identity
-                if (-not ([object]::Equals($aADAdministrativeUnit, $null))) {
-                    switch -Regex ($PSCmdlet.ParameterSetName) {
-                        '\wUser$' {
-                            foreach ($userIdentity in $User) {
-                                [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $userIdentity
-                                if (-not ([object]::Equals($aADUser, $null))) {
-                                    [hashtable] $body = @{
-                                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $aADUser.Id
-                                    }
-                                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
+                foreach ($deviceIdentity in $Device) {
+                    # Note: Device cmdlets would need to be implemented separately
+                    # For now, we'll use the device ID directly
+                    [hashtable] $body = @{
+                        '@odata.id' = Get-EntraDirectoryObjectUri -Id $deviceIdentity -Service $service
+                    }
+                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
 
-                                    if ($PassThru.IsPresent) {
-                                        [PSMicrosoftEntraID.Batch.Request]@{
-                                            Method  = 'POST'
-                                            Url     = ('/{0}' -f $pathWithRef)
-                                            Body    = $body
-                                            Headers = $header
-                                        }
-                                    }
-                                    else {
-                                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADUser.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                        if (Test-PSFFunctionInterrupt) { return }
-                                    }
-                                }
-                                else {
-                                    if ($EnableException.IsPresent) {
-                                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userIdentity)
-                                    }
-                                }
-                            }
-                        }
-                        '\wGroup$' {
-                            foreach ($groupIdentity in $Group) {
-                                [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $groupIdentity
-                                if (-not ([object]::Equals($aADGroup, $null))) {
-                                    [hashtable] $body = @{
-                                        '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $aADGroup.Id
-                                    }
-                                    [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
-
-                                    if ($PassThru.IsPresent) {
-                                        [PSMicrosoftEntraID.Batch.Request]@{
-                                            Method  = 'POST'
-                                            Url     = ('/{0}' -f $pathWithRef)
-                                            Body    = $body
-                                            Headers = $header
-                                        }
-                                    }
-                                    else {
-                                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $aADGroup.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                                        } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                        if (Test-PSFFunctionInterrupt) { return }
-                                    }
-                                }
-                                else {
-                                    if ($EnableException.IsPresent) {
-                                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $groupIdentity)
-                                    }
-                                }
-                            }
-                        }
-                        '\wDevice$' {
-                            foreach ($deviceIdentity in $Device) {
-                                # Note: Device cmdlets would need to be implemented separately
-                                # For now, we'll use the device ID directly
-                                [hashtable] $body = @{
-                                    '@odata.id' = "https://graph.microsoft.com/v1.0/directoryObjects/{0}" -f $deviceIdentity
-                                }
-                                [string] $pathWithRef = ("{0}/{1}/members/`$ref" -f $path, $aADAdministrativeUnit.Id)
-
-                                if ($PassThru.IsPresent) {
-                                    [PSMicrosoftEntraID.Batch.Request]@{
-                                        Method  = 'POST'
-                                        Url     = ('/{0}' -f $pathWithRef)
-                                        Body    = $body
-                                        Headers = $header
-                                    }
-                                }
-                                else {
-                                    Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                        [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
-                                    } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                    if (Test-PSFFunctionInterrupt) { return }
-                                }
-                            }
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request]@{
+                            Method  = 'POST'
+                            Url     = ('/{0}' -f $pathWithRef)
+                            Body    = $body
+                            Headers = $header
                         }
                     }
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.Add' -ActionStringValues $deviceIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $pathWithRef -Header $header -Body $body -Method Post -ErrorAction Stop)
+                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }

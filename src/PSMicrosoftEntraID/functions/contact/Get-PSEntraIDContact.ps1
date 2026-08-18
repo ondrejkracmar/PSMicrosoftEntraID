@@ -5,7 +5,7 @@
 
 .DESCRIPTION
     Get the properties of the specified contact from Microsoft Entra ID (Microsoft Graph orgContact entity).
-    Requires delegated Graph permission: OrgContact.Read.Al
+    Requires delegated Graph permission: OrgContact.Read.Alll
 
 .PARAMETER Identity
     Mail or Id of the contact.
@@ -27,8 +27,28 @@
 
 .EXAMPLE
     Get-PSEntraIDContact -Identity "contact1@contoso.com"
+
+    Returns the contact whose mail or id matches "contact1@contoso.com".
+    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
+
 #>
     [OutputType('PSMicrosoftEntraID.Contacts.Contact')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'Identity')]
@@ -70,7 +90,10 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($contact in $Identity) {
-                    $query['$filter'] = "mail eq '$contact'"
+                    # Escape: -Identity is a free string, so an apostrophe in a name
+                    # (O'Brien) breaks the filter, and worse can be used to rewrite it.
+                    # Every other filter in the module goes through this helper.
+                    $query['$filter'] = "mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $contact)
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Get' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
@@ -80,7 +103,8 @@
 
             'Name' {
                 foreach ($contact in $Name) {
-                    $query['$filter'] = "startswith(displayName,'$contact') or startswith(givenName,'$contact') or startswith(surname,'$contact')"
+                    $contactEscaped = ConvertTo-ODataFilterString -Value $contact
+                    $query['$filter'] = "startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}')" -f $contactEscaped
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
@@ -89,7 +113,7 @@
             }
 
             'CompanyName' {
-                $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'$_'" } -join ',')
+                $filterString = "companyName in ({0})" -f ($CompanyName | ForEach-Object { "'{0}'" -f (ConvertTo-ODataFilterString -Value $_) } | Join-String -Separator ',')
                 $query['$filter'] = $filterString
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)

@@ -115,6 +115,10 @@
 		This authentication flow requires the 'Az.Accounts' module to be present, loaded and connected.
 		Use 'Connect-AzAccount' to connect first.
 
+	.PARAMETER AzToken
+		Reuse an existing token object obtained from an Az.Accounts session (e.g. via Get-AzAccessToken)
+		to authenticate. Bypasses the regular interactive authentication flow.
+
 	.PARAMETER ShowDialog
 		Whether to show an interactive dialog when connecting using the existing Az.Accounts session.
 		Defaults to: "auto"
@@ -209,9 +213,9 @@
 
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidDefaultValueForMandatoryParameter", "")]
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "", Justification = 'The connection parameters are consumed via $PSBoundParameters splatting onto the vendored Connect-EntraService, which the analyzer cannot see through.')]
+	# -PassThru returns the token; without it the function emits nothing.
+	[OutputType('EntraToken')]
 	[CmdletBinding(DefaultParameterSetName = 'Browser')]
 	param (
 		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]

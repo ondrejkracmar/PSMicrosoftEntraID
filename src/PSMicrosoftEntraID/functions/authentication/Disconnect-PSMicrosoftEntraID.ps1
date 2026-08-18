@@ -13,8 +13,9 @@
 	.EXAMPLE
 		PS C:\> Disconnect-PSMicrosoftEntraID
 
-
+		Disconnects the current session from the default Microsoft EntraID service.
 	#>
+	[OutputType([void])]
 	[CmdletBinding()]
 	param (
 		[Parameter()]
@@ -34,6 +35,8 @@
 			Clear-PSFResultCache
 			Write-Verbose  ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Disconnect) -f $Service)
 		}
-		$script:_EntraTokens[$Service] = $null
+		if ($script:_EntraTokens.ContainsKey($Service)) {
+			[void] $script:_EntraTokens.Remove($Service)
+		}
 	}
 }

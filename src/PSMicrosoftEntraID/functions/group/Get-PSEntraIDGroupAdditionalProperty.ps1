@@ -1,5 +1,4 @@
-﻿using namespace PSMicrosoftEntraID.Users
-function Get-PSEntraIDGroupAdditionalProperty {
+﻿function Get-PSEntraIDGroupAdditionalProperty {
     <#
     .SYNOPSIS
         Get the properties and relationships of a group or the team, and to the unified group which backs the team.
@@ -14,13 +13,30 @@ function Get-PSEntraIDGroupAdditionalProperty {
         MailNickName or Id of group or team.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSEntraIDGroupProperty -Identity group1@contoso.com
+        PS C:\> Get-PSEntraIDGroupAdditionalProperty -Identity group1@contoso.com
 
-		Get theadditional properties and relationships of a group group1@contoso.com
+		Get the additional properties and relationships of a group group1@contoso.com
+
+    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
 
 #>
     [OutputType('PSMicrosoftEntraID.Groups.GroupAdditionalProperty')]
@@ -55,7 +71,7 @@ function Get-PSEntraIDGroupAdditionalProperty {
                     Invoke-PSFProtectedCommand -ActionString 'Group.AdditionalProperty' -ActionStringValues $itemInputObject.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [string] $path = ('groups/{0}' -f $itemInputObject.Id)
                         ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -63,16 +79,16 @@ function Get-PSEntraIDGroupAdditionalProperty {
                 foreach ($itemIdentity in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'Group.AdditionalProperty' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $itemIdentity
-                        if (-not([object]::Equals($group, $null))) {
-                            [string] $path = ('groups/{0}' -f $group.Id)
-                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
-                        }
-                        else {
+                        if ([object]::Equals($group, $null)) {
                             if ($EnableException.IsPresent) {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        else {
+                            [string] $path = ('groups/{0}' -f $group.Id)
+                            ConvertFrom-RestGroupAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                        }
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

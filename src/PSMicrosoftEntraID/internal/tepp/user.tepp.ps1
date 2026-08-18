@@ -1,2 +1,14 @@
-﻿Register-PSFTeppScriptblock -Name 'user.usagelocationcode' -ScriptBlock { (Get-PSEntraIDUsageLocation).Values }
-Register-PSFTeppScriptblock -Name 'user.usagelocationcountry' -ScriptBlock { (Get-PSEntraIDUsageLocation).Keys }
+﻿Register-PSFTeppScriptblock -Mode Full -Name 'user.usagelocationcode' -ScriptBlock {
+	param ($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+
+	foreach ($country in (Get-PSEntraIDUsageLocation).Keys) {
+		New-PSEntraIDTeppCompletionItem -Text (Get-PSEntraIDUsageLocation)[$country] -ToolTip $country
+	}
+}
+Register-PSFTeppScriptblock -Mode Full -Name 'user.usagelocationcountry' -ScriptBlock {
+	param ($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+
+	foreach ($country in (Get-PSEntraIDUsageLocation).Keys) {
+		New-PSEntraIDTeppCompletionItem -Text $country -ToolTip (Get-PSEntraIDUsageLocation)[$country]
+	}
+}

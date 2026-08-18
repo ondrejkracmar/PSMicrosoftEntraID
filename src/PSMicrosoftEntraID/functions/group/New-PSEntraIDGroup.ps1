@@ -1,10 +1,10 @@
 ﻿function New-PSEntraIDGroup {
     <#
     .SYNOPSIS
-        Create new  Microsoft EntraID (Azure AD).
+        Create new group Microsoft EntraID (Azure AD).
 
     .DESCRIPTION
-        Create new  Microsoft EntraID (Azure AD).
+        Create new group Microsoft EntraID (Azure AD).
 
     .PARAMETER Displayname
         The display name for the group.
@@ -37,9 +37,9 @@
         List of owners of new group.
 
     .PARAMETER Members
-        List of mwmwbrs of new group.
+        List of members of new group.
 
-    .PARAMETER MembersmembershipRule
+    .PARAMETER MembershipRule
         The rule that determines members for this group if the group is a dynamic group (groupTypes contains DynamicMembership).
 
     .PARAMETER MembershipRuleProcessingState
@@ -49,38 +49,42 @@
     	Specifies the group behaviors that can be set for a Microsoft 365 group during creation.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Force
-        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
-        PS C:\> New-PSEntraIDUser -DisplayName 'New group' -Description 'Description of new froup'
+        PS C:\> New-PSEntraIDGroup -DisplayName 'New group' -Description 'Description of new group'
 
-		Create new  Microsoft EntraID (Azure AD) group
+		Create new Microsoft EntraID (Azure AD) group
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium',
         DefaultParameterSetName = 'CreateGroup')]
     param(
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -111,12 +115,12 @@
         [ValidateUserIdentity()]
         [string[]] $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [string] $MembersmembershipRule,
+        [string] $MembershipRule,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('On', 'Paused')]
         [string] $MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
+        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]] $ResourceBehaviorOptions,
         [Parameter()]
         [switch] $EnableException,
@@ -135,12 +139,7 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
@@ -170,34 +169,37 @@
                 }
 
                 if ($PSBoundParameters.ContainsKey('Owners')) {
-                    $userIdUriPathList = [System.Collections.ArrayList]::new()
+                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
                     foreach ($owner in $Owners) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
-                        if (-not([object]::Equals($aADUser, $null))) {
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $owner)
+                            }
+                        }
+                        else {
                             [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             $body['owners@odata.bind'] = [array]$userIdUriPathList
                         }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
-                        }
                     }
+                }
+                if ($PSBoundParameters.ContainsKey('Members')) {
+                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
                     foreach ($member in $Members) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
-                        if (-not([object]::Equals($aADUser, $null))) {
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $member)
+                            }
+                        }
+                        else {
                             [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
                             $body['members@odata.bind'] = [array]$userIdUriPathList
                         }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
-                        }
                     }
                 }
-                if ($PSBoundParameters.ContainsKey('MembersmembershipRule')) {
-                    $body['membershipRule'] = $MembersmembershipRule
+                if ($PSBoundParameters.ContainsKey('MembershipRule')) {
+                    $body['membershipRule'] = $MembershipRule
                     $body['membershipRuleProcessingState'] = 'On'
                     $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
                 }
@@ -215,7 +217,7 @@
         else {
             Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

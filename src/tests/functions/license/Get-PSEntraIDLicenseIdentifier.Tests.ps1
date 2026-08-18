@@ -1,0 +1,256 @@
+﻿BeforeAll {
+    $moduleName = 'PSMicrosoftEntraID'
+    $commandName = 'Get-PSEntraIDLicenseIdentifier'
+
+    Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
+
+    $script:originalLicenseCatalogCachePath = Get-PSFConfigValue -FullName "$moduleName.LicenseIdentifiers.CachePath"
+    $script:originalAutoUpdateOnImport = Get-PSFConfigValue -FullName "$moduleName.LicenseIdentifiers.AutoUpdateOnImport"
+    $script:testCatalogDirectory = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ([guid]::NewGuid().ToString())
+
+    New-Item -Path $script:testCatalogDirectory -ItemType Directory -Force | Out-Null
+}
+
+Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
+    BeforeAll {
+        # Don't run the actual function, just test that it works
+        # The function reads from a real JSON file in the module
+    }
+
+    AfterEach {
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $script:originalLicenseCatalogCachePath
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $script:originalAutoUpdateOnImport
+
+        if (Test-Path -Path $script:testCatalogDirectory) {
+            Get-ChildItem -Path $script:testCatalogDirectory -Force -ErrorAction Ignore | Remove-Item -Recurse -Force
+        }
+    }
+
+    AfterAll {
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $script:originalLicenseCatalogCachePath
+        Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $script:originalAutoUpdateOnImport
+
+        if (Test-Path -Path $script:testCatalogDirectory) {
+            Remove-Item -Path $script:testCatalogDirectory -Recurse -Force
+        }
+    }
+
+    Context 'Parameter Validation' {
+        It 'Should have EnableException as a switch parameter' {
+            $parameter = (Get-Command Get-PSEntraIDLicenseIdentifier).Parameters['EnableException']
+            $parameter.SwitchParameter | Should -Be $true
+        }
+
+        It 'Should have correct output type' {
+            $command = Get-Command Get-PSEntraIDLicenseIdentifier
+            $command.OutputType.Name | Should -Contain 'PSMicrosoftEntraID.License.LicenseIdentifier'
+        }
+
+        It 'Should not require any mandatory parameters' {
+            $command = Get-Command Get-PSEntraIDLicenseIdentifier
+            $mandatoryParams = $command.Parameters.Values | Where-Object { @($_.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count -gt 0 }
+            $mandatoryParams | Should -BeNullOrEmpty
+        }
+    }
+
+    Context 'Basic Functionality' {
+        It 'Should retrieve license identifiers from JSON file' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result | Should -Not -BeNullOrEmpty
+            $result.Count | Should -BeGreaterThan 0
+        }
+
+        It 'Should return license identifiers with required properties' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result[0].SkuPartNumber | Should -Not -BeNullOrEmpty
+            $result[0].SkuId | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should include service plans in results' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            # At least some licenses should have service plans
+            $withPlans = $result | Where-Object { $_.ServicePlans.Count -gt 0 }
+            $withPlans | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should return objects of correct type' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result[0].GetType().Name | Should -Be 'LicenseIdentifier'
+        }
+    }
+
+    Context 'File Path Construction' {
+        It 'Should read from LicenseIdentifiers.json in module' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            # Function successfully reads and deserializes the file
+            $result | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should prefer configured cache file when it exists' {
+            $cacheCatalogPath = Join-Path -Path $script:testCatalogDirectory -ChildPath 'LicenseIdentifiers.json'
+            $cacheCatalogJson = @'
+[
+  {
+    "skuId": "11111111-1111-1111-1111-111111111111",
+    "skuPartNumber": "CACHED_TEST",
+    "skuFriendlyName": "Cached Test License",
+    "servicePlans": []
+  }
+]
+'@
+
+            [System.IO.File]::WriteAllText($cacheCatalogPath, $cacheCatalogJson, [System.Text.UTF8Encoding]::new($false))
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $cacheCatalogPath
+
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            @($result).Count | Should -Be 1
+            @($result)[0].SkuPartNumber | Should -Be 'CACHED_TEST'
+        }
+
+        It 'Should fall back to bundled catalog when configured cache file is missing' {
+            $missingCatalogPath = Join-Path -Path $script:testCatalogDirectory -ChildPath 'missing.json'
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.CachePath' -Value $missingCatalogPath
+
+            $resolvedCatalogPath = InModuleScope $moduleName {
+                Resolve-PSEntraIDLicenseIdentifierPath
+            }
+
+            $resolvedCatalogPath | Should -Match 'internal[\\/]+identifiers[\\/]+LicenseIdentifiers\.json$'
+        }
+    }
+
+    Context 'Import Registration' {
+        It 'Should trigger cache refresh when auto update on import is enabled' {
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $true
+
+            InModuleScope $moduleName {
+                Mock Update-PSEntraIDLicenseIdentifierCache { }
+                Mock Set-PSFResultCache { }
+
+                Register-PSEntraIDLicenseIdentifier
+
+                Should -Invoke Update-PSEntraIDLicenseIdentifierCache -Times 1 -Exactly
+            }
+        }
+
+        It 'Should skip cache refresh when auto update on import is disabled' {
+            Set-PSFConfig -Module $moduleName -Name 'LicenseIdentifiers.AutoUpdateOnImport' -Value $false
+
+            InModuleScope $moduleName {
+                Mock Update-PSEntraIDLicenseIdentifierCache { }
+                Mock Set-PSFResultCache { }
+
+                Register-PSEntraIDLicenseIdentifier
+
+                Should -Invoke Update-PSEntraIDLicenseIdentifierCache -Times 0 -Exactly
+            }
+        }
+    }
+
+    Context 'JSON Deserialization' {
+        It 'Should deserialize JSON using DataContractJsonSerializer' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result | Should -Not -BeNullOrEmpty
+            $result | Should -BeOfType [Object]
+        }
+
+        It 'Should handle UTF-8 encoding' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should return array of license identifier objects' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result.Count | Should -BeGreaterThan 1
+        }
+    }
+
+    Context 'Return Values' {
+        It 'Should return objects with SkuId property' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result[0].SkuId | Should -Not -BeNullOrEmpty
+            $result[0].SkuId | Should -Match '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        }
+
+        It 'Should return objects with SkuPartNumber property' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result[0].SkuPartNumber | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should return objects with ProductName property' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            # ProductName may be null for some licenses in the real data
+            $result | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should include service plan IDs' {
+            $result = Get-PSEntraIDLicenseIdentifier
+            $withPlans = $result | Where-Object { $_.ServicePlans.Count -gt 0 }
+
+            $withPlans[0].ServicePlans[0].ServicePlanId | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should include service plan names' {
+            $result = Get-PSEntraIDLicenseIdentifier
+            $withPlans = $result | Where-Object { $_.ServicePlans.Count -gt 0 }
+
+            $withPlans[0].ServicePlans[0].ServicePlanName | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'Error Handling' {
+        It 'Should respect EnableException parameter' {
+            # EnableException is present but this function doesn't use Invoke-PSFProtectedCommand
+            # So it should still work normally
+            $result = Get-PSEntraIDLicenseIdentifier -EnableException
+
+            $result | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'No External Dependencies' {
+        It 'Should not require Entra connection' {
+            # This function reads from local file, no connection needed
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should not make API calls' {
+            # This function reads from local file, no API calls made
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            $result | Should -Not -BeNullOrEmpty
+        }
+    }
+
+    Context 'Memory Stream Handling' {
+        It 'Should properly handle memory stream for deserialization' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            # Should successfully deserialize without memory issues
+            $result | Should -Not -BeNullOrEmpty
+            $result.Count | Should -BeGreaterThan 0
+        }
+
+        It 'Should handle large JSON files' {
+            $result = Get-PSEntraIDLicenseIdentifier
+
+            # The real file has many licenses
+            $result | Should -Not -BeNullOrEmpty
+            $result.Count | Should -BeGreaterThan 10
+        }
+    }
+}

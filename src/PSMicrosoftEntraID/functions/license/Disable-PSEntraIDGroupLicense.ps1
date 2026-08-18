@@ -1,0 +1,190 @@
+﻿function Disable-PSEntraIDGroupLicense {
+    <#
+    .SYNOPSIS
+        Disable a license on a group.
+
+    .DESCRIPTION
+        Remove a subscribed SKU license from a Microsoft 365 group.
+
+    .PARAMETER InputObject
+        PSMicrosoftEntraID.Groups.Group object in tenant/directory.
+
+    .PARAMETER Identity
+        MailNickName or Id of the group.
+
+    .PARAMETER SkuId
+        Office 365 product GUID of the subscribedSku to remove.
+
+    .PARAMETER SkuPartNumber
+        Friendly name of the subscribedSku product to remove.
+
+    .PARAMETER EnableException
+        This parameter disables user-friendly warnings and enables the throwing of exceptions.
+        This is less user friendly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Force
+        The Force switch suppresses the confirmation prompt before the Shell modifies the object.
+
+    .PARAMETER Confirm
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
+
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
+    .EXAMPLE
+        PS C:\> Disable-PSEntraIDGroupLicense -Identity group1 -SkuPartNumber ENTERPRISEPACK
+
+        Remove license ENTERPRISEPACK from group group1.
+    #>
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
+        [PSMicrosoftEntraID.Groups.Group[]] $InputObject,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuId')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+        [Alias('Id', 'GroupId', 'TeamId', 'MailNickName')]
+        [ValidateGroupIdentity()]
+        [string[]] $Identity,
+        [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuId')]
+        [ValidateGuid()]
+        [string[]] $SkuId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumber')]
+        [ValidateNotNullOrEmpty()]
+        [string[]] $SkuPartNumber,
+        [Parameter()]
+        [switch] $EnableException,
+        [Parameter()]
+        [switch] $Force,
+        [Parameter()]
+        [switch] $PassThru
+    )
+
+    begin {
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+
+        # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
+        # set is not resolved until the first object arrives in process, so a switch on
+        # it here matches nothing and $bodySkuId stays empty for every piped target.
+        # SkuId/SkuPartNumber are never pipeline-bound, so this is decidable in begin.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string[]] $bodySkuId = $SkuId
+            [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+        }
+        else {
+            [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
+            [object[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense -EnableException:$EnableException)
+            foreach ($skuPart in $SkuPartNumber) {
+                [object] $matchedSku = @($subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $skuPart })[0]
+                if ($matchedSku) {
+                    $bodySkuIdList.Add($matchedSku.SkuId)
+                }
+                else {
+                    [string] $message = (Get-PSFLocalizedString -Module $script:ModuleName -Name SubscribedSku.SkuPartNumber.NotFound) -f $skuPart
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message $message
+                    }
+                    else {
+                        Write-PSFMessage -Level Warning -Message $message
+                    }
+                }
+            }
+            [string[]] $bodySkuId = $bodySkuIdList.ToArray()
+            [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
+        }
+    }
+
+    process {
+        [hashtable] $body = @{
+            addLicenses    = @()
+            removeLicenses = $bodySkuId
+        }
+        switch -Regex ($PSCmdlet.ParameterSetName) {
+            'InputObject\w' {
+                foreach ($itemInputObject in $InputObject) {
+                    $groupObject = $itemInputObject
+                    if ((-not $itemInputObject.PSObject.Properties['AssignedLicenses'] -or [object]::Equals($itemInputObject.AssignedLicenses, $null)) -and -not [string]::IsNullOrWhiteSpace($itemInputObject.Id)) {
+                        $groupObject = Get-PSEntraIDGroup -Identity $itemInputObject.Id -EnableException:$EnableException
+                    }
+                    if ([object]::Equals($groupObject, $null) -or [object]::Equals($groupObject.AssignedLicenses, $null) -or $groupObject.AssignedLicenses.Count -eq 0) {
+                        continue
+                    }
+                    [string[]] $groupSkuIds = @($groupObject.AssignedLicenses | ForEach-Object { [string]$PSItem.SkuId })
+                    [bool] $hasLicenseToRemove = $false
+                    foreach ($skuToRemove in $bodySkuId) {
+                        if ($groupSkuIds -contains $skuToRemove) {
+                            $hasLicenseToRemove = $true
+                            break
+                        }
+                    }
+                    if ($hasLicenseToRemove) {
+                        [string] $path = ('groups/{0}/{1}' -f $groupObject.Id, 'assignLicense')
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        }
+                        else {
+                            $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
+                            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $groupTarget -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                }
+            }
+            'Identity\w' {
+                foreach ($group in $Identity) {
+                    [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group
+                    if ([object]::Equals($aADGroup, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $group)
+                        }
+                    }
+                    else {
+                        if (-not ([object]::Equals($aADGroup.AssignedLicenses, $null)) -and $aADGroup.AssignedLicenses.Count -gt 0) {
+                            [string[]] $groupSkuIds = @($aADGroup.AssignedLicenses | ForEach-Object { [string]$PSItem.SkuId })
+                            [bool] $hasLicenseToRemove = $false
+                            foreach ($skuToRemove in $bodySkuId) {
+                                if ($groupSkuIds -contains $skuToRemove) {
+                                    $hasLicenseToRemove = $true
+                                    break
+                                }
+                            }
+                            if ($hasLicenseToRemove) {
+                                [string] $path = ('groups/{0}/{1}' -f $aADGroup.Id, 'assignLicense')
+                                if ($PassThru.IsPresent) {
+                                    [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                                }
+                                else {
+                                    Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $group -ScriptBlock {
+                                        [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                    } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                    if (Test-PSFFunctionInterrupt) { return }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

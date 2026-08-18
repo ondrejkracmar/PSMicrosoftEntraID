@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 10/06/2025
+ms.date: 08.17.2026
 PlatyPS schema version: 2024-05-01
 title: New-PSEntraIDBatchRequest
 ---
@@ -20,7 +20,7 @@ title: New-PSEntraIDBatchRequest
 ### __AllParameterSets
 
 ```
-New-PSEntraIDBatchRequest -InputObject <Request[]> [-WhatIf] [-Confirm] [<CommonParameters>]
+New-PSEntraIDBatchRequest -InputObject <Request[]> [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -36,7 +36,7 @@ This cmdlet has the following aliases,
 
 ### Example 1
 
-{{ Add example description here }}
+
 
 ## PARAMETERS
 
@@ -114,10 +114,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### PSMicrosoftEntraID.Batch.Request
-
-{{ Fill in the Description }}
-
 ### PSMicrosoftEntraID.Batch.Request[]
 
 {{ Fill in the Description }}
@@ -132,7 +128,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 {{ Fill in the Notes }}
 
+
 ## RELATED LINKS
 
-{{ Fill in the related links here }}
-
+- [Online Version]()
+- [Online Version]()
+- [Online Version]()
+- [Online Version]()
+- [Online Version]()
+- [Online Version]()

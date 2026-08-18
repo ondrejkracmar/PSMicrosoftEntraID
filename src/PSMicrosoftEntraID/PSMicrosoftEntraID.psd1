@@ -18,17 +18,31 @@
 	Copyright          = 'Copyright (c) 2024 i-system'
 
 	# Description of the functionality provided by this module
-	Description        = 'Powershell module represents an Microsoft EntraID object'
+	Description        = 'Administer Microsoft Entra ID from PowerShell over Microsoft Graph: users and guests, groups and their members, administrative units, contacts, devices, organization and Message Center, licence assignment down to individual service plans, batched requests, and incremental (delta) reads with resumable sessions. Returns typed objects rather than raw JSON.'
 
 	# Minimum version of the PowerShell engine required by this module
 	PowerShellVersion  = '7.2'
 
-	# Modules that must be imported into the global environment prior to importing
-	# this module
-	RequiredModules    = @('PSFramework')
+	# The compiled library targets net8.0, so Desktop cannot load it. Saying so here is
+	# what lets the gallery show the compatibility badge and stops Windows PowerShell
+	# users installing something that can never import.
+	CompatiblePSEditions = @('Core')
 
-	# Assemblies that must be loaded prior to importing this module
-	RequiredAssemblies = @('bin\PSMicrosoftEntraID.dll')
+	# Modules that must be imported into the global environment prior to importing
+	# this module.
+	#
+	# The version floor is the lowest PSFramework the test suite has actually been run
+	# against. Without a floor, any PSFramework at all satisfies the manifest - including
+	# versions predating features in use (Invoke-PSFProtectedCommand's retry parameters,
+	# Register-PSFTeppScriptblock -Mode Full), which fail at runtime with a message that
+	# does not name the cause. Lower it when someone verifies a lower version.
+	RequiredModules    = @(
+		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.14.450' }
+	)
+
+	# Assemblies that must be loaded prior to importing this module.
+	# Forward slash: it resolves on Windows too, a backslash does not resolve on Linux.
+	RequiredAssemblies = @('bin/PSMicrosoftEntraID.dll')
 
 	# Type files (.ps1xml) to be loayded when importing this module
 	TypesToProcess     = @('types\PSMicrosoftEntraID.Types.ps1xml')
@@ -41,10 +55,18 @@
 
 	# Functions to export from this module
 	FunctionsToExport  = @(
+		'Get-PSEntraIDUserDelta'
+		'Get-PSEntraIDGroupDelta'
+		'Get-PSEntraIDDeviceDelta'
+		'Get-PSEntraIDContactDelta'
+		'Get-PSEntraIDAdministrativeUnitDelta'
+		'Export-PSEntraIDDeltaSession'
+		'Import-PSEntraIDDeltaSession'
 		'Connect-PSMicrosoftEntraID'
 		'Disconnect-PSMicrosoftEntraID'
 		'Get-PSEntraIDOrganization'
 		'Get-PSEntraIDMessageCenter'
+		'Get-PSEntraIDDevice'
 		'Disable-PSEntraIDUserLicense'
 		'Enable-PSEntraIDUserLicense'
 		'Disable-PSEntraIDUserLicenseServicePlan'
@@ -68,9 +90,15 @@
 		'Get-PSEntraIDLicenseIdentifier'
 		'Get-PSEntraIDSubscribedLicense'
 		'Get-PSEntraIDGroup'
+		'Get-PSEntraIDGroupLicense'
+		'Get-PSEntraIDGroupLicenseDetail'
 		'Get-PSEntraIDGroupAdditionalProperty'
 		'New-PSEntraIDGroup'
 		'Remove-PSEntraIDGroup'
+		'Enable-PSEntraIDGroupLicense'
+		'Disable-PSEntraIDGroupLicense'
+		'Enable-PSEntraIDGroupLicenseServicePlan'
+		'Disable-PSEntraIDGroupLicenseServicePlan'
 		'Get-PSEntraIDGroupMember'
 		'Add-PSEntraIDGroupMember'
 		'Remove-PSEntraIDGroupMember'
@@ -94,10 +122,10 @@
 	)
 
 	# Variables to export from this module
-	VariablesToExport  = ''
+	VariablesToExport  = @()
 
 	# Aliases to export from this module
-	AliasesToExport    = ''
+	AliasesToExport    = @()
 
 	# List of all modules packaged with this module
 	ModuleList         = @()
@@ -111,21 +139,42 @@
 		#Support for PowerShellGet galleries.
 		PSData = @{
 
-			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory', 'MicrosoftEntra', 'MicrosoftEntraID')
-			ExternalModuleDependencies = @('PSFramework')
+			# Tags applied to this module. These help with module discovery in online
+			# galleries. PSEdition_Core and the three OS tags are the ones the gallery
+			# reads to drive its compatibility filters - without them the module is
+			# absent from every filtered search, whatever CompatiblePSEditions says.
+			Tags         = @(
+				'Rest', 'Graph', 'MicrosoftGraph'
+				'Azure', 'AzureActiveDirectory', 'MicrosoftEntra', 'MicrosoftEntraID'
+				'Microsoft365', 'Licensing', 'Delta'
+				'PSEdition_Core', 'Windows', 'Linux', 'MacOS'
+			)
 
+			# ExternalModuleDependencies deliberately absent. It means "this dependency
+			# does not come from a gallery - do not install it", and PSFramework is the
+			# only RequiredModule and does come from the gallery. Listing it there made
+			# Install-Module skip PSFramework, so a first-time install produced a module
+			# that could not import.
+
+			# Both of these are rendered on the gallery listing page, so they have to
+			# resolve for a stranger. They used to point at the Azure DevOps repository,
+			# which is private - the development remote, not the published one. The
+			# public face is the GitHub repository the Publish stage writes to.
+			#
 			# A URL to the license for this module.
-			# LicenseUri = ''
+			LicenseUri   = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID/blob/main/LICENSE'
 
 			# A URL to the main website for this project.
-			# ProjectUri = ''
+			ProjectUri   = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID'
 
-			# A URL to an icon representing this module.
-			# IconUri = ''
+			# Served from the public GitHub mirror: vsts-publishToGitHub.ps1 copies docs/
+			# wholesale (minus docs/internal/), so docs/icon.png rides along on every
+			# release with no extra pipeline step. The URL must resolve for a stranger,
+			# which rules out the private DevOps repository.
+			IconUri      = 'https://raw.githubusercontent.com/ondrejkracmar/PSMicrosoftEntraID/main/docs/icon.png'
 
 			# ReleaseNotes of this module
-			# ReleaseNotes = ''
+			ReleaseNotes = 'See changelog.md in the project repository.'
 
 		} # End of PSData hashtable
 

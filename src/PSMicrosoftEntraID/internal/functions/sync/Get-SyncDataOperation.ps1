@@ -26,12 +26,11 @@
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
 
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .EXAMPLE
             PS C:\> Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
@@ -39,8 +38,8 @@
             Get sync operation
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'The rule fires on the nested New-Result factory, which builds a result object and changes nothing. The outer function is a Get that computes a diff in memory.')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'Compare-Hashtable and New-Result are function-local helpers called positionally within the same screenful of code; naming their two arguments adds noise, not safety.')]
     [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true, PositionalBinding = $false, HelpUri = 'http://www.microsoft.com/', ConfirmImpact = 'Medium')]
     [Alias()]
     [OutputType([String])]
@@ -162,12 +161,17 @@
                         $referenceObject = ($ReferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
                         $compareProperties = Compare-Hashtable $referenceObject $differenceObject
 
+                        # Compare-Hashtable emits NOTHING when the two sides are identical,
+                        # and identical is the ordinary case here - every member that is
+                        # already in both groups lands in this branch. Reaching straight
+                        # for .GetType() on that result turned "nothing to do" into
+                        # "You cannot call a method on a null-valued expression", so the
+                        # branch could only survive as long as it was unreachable.
                         [System.Collections.ArrayList]$comparePropertyList = [System.Collections.ArrayList]::new()
-                        if ((($compareProperties.GetType()).BaseType).Name -eq 'Array') {
-                            $comparePropertyList.AddRange($compareProperties) | Out-Null
-                        }
-                        if ((($compareProperties.GetType()).BaseType).Name -eq 'Object') {
-                            $comparePropertyList.Add($compareProperties) | Out-Null
+                        foreach ($compareProperty in @($compareProperties)) {
+                            if ($null -ne $compareProperty) {
+                                [void]$comparePropertyList.Add($compareProperty)
+                            }
                         }
 
                         $propertyHash = @{}

@@ -30,7 +30,7 @@ Once enabled and saved, we are good to go.
 
 ## Authentication & Executing Queries
 
-Using the EntraAuth PowerShell module, we can now connect using our Application, authenticating in our Browser window:
+Using the PSMicrosoftEntraID module, we can now connect using our Application, authenticating in our Browser window:
 
 ```powershell
 $clientID = '63a71861-498b-46ae-0000-6b5c142010e1'

@@ -16,6 +16,10 @@
         RetryWaitInSeconds = 5
     }
 #>
+    [OutputType([hashtable])]
+    [CmdletBinding()]
+    param ()
+
     $retryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
     $retryWait = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName)
 

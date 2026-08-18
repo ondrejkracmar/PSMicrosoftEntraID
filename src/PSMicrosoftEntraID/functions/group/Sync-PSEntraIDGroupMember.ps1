@@ -19,36 +19,41 @@
         List user identities via query expression
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Force
-        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .EXAMPLE
             PS C:\> Sync-PSEntraIDGroupMember -Identity group1 -User user1,user2
 
-            Sync memebrs between group1 and group2
+            Sync members between group1 and group2
 
 
 #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSMicrosoftEntraID.Sync')]
-    [CmdletBinding(DefaultParameterSetName = 'UserIdentity')]
+    [CmdletBinding(DefaultParameterSetName = 'UserIdentity', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'GroupIdentity')]
         [ValidateGroupIdentity()]
@@ -72,67 +77,80 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [System.Collections.ArrayList]$referenceMemberList = [System.Collections.ArrayList]::New()
-        [System.Collections.ArrayList] $differenceMemberList = [System.Collections.ArrayList]::New()
+        [System.Collections.Generic.List[object]] $referenceMemberList = [System.Collections.Generic.List[object]]::new()
+        [System.Collections.Generic.List[object]] $differenceMemberList = [System.Collections.Generic.List[object]]::new()
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
-        }
-        else {
-            [bool] $cmdLetConfirm = $true
-        }
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
 
     process {
 
         [PSMicrosoftEntraID.Groups.Group] $differenceEntraIDGroup = Get-PSEntraIDGroup -Identity $DifferenceIdentity
-        if (-not([object]::Equals($differenceEntraIDGroup, $null))) {
-            [string[]] $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
-            switch ($PSCmdlet.ParameterSetName) {
-                'UserIdentity' {
-                    foreach ($itemUser in  $ReferenceUserIdentity) {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
-                        if (-not ([object]::Equals($aADUser, $null))) {
-                            $addUser = $aADUser | Select-Object -Property Id
-                            [void]$referenceMemberList.Add($addUser)
+        if ([object]::Equals($differenceEntraIDGroup, $null)) {
+            return
+        }
+
+        # -Property Id, NOT -ExpandProperty Id. Both lists go to Get-SyncDataOperation,
+        # which runs Compare-Object -Property Id over them - and a bare [string] has no
+        # .Id, so expanding here made every entry compare $null against $null. Everything
+        # matched, everything came back '==', and the Create and Delete branches below
+        # were unreachable: the sync could neither add a member nor remove one.
+        $differenceMemberList = Get-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id | Select-Object -Property Id
+        switch ($PSCmdlet.ParameterSetName) {
+            'UserIdentity' {
+                foreach ($itemUser in $ReferenceUserIdentity) {
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemUser
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
                     }
-                }
-                'GroupIdentity' {
-                    [PSMicrosoftEntraID.Groups.Group] $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
-                    [string[]] $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
+                    else {
+                        [void]$referenceMemberList.Add(($aADUser | Select-Object -Property Id))
+                    }
                 }
             }
-            $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
+            'GroupIdentity' {
+                [PSMicrosoftEntraID.Groups.Group] $referenceEntraIDGroup = Get-PSEntraIDGroup -Identity $ReferenceIdentity
+                $referenceMemberList = Get-PSEntraIDGroupMember -Identity $referenceEntraIDGroup.Id | Select-Object -Property Id
+            }
+        }
+        $syncOperationList = Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
 
-            if ($SyncView.IsPresent) {
-                if (-not ([object]::Equals($syncOperationList, $null))) {
-                    $syncOperationList
-                }
+        if ($SyncView.IsPresent) {
+            if (-not ([object]::Equals($syncOperationList, $null))) {
+                $syncOperationList
             }
-            else {
-                if (-not ([object]::Equals($syncOperationList, $null))) {
-                    foreach ($syncOperation in $syncOperationList) {
-                        switch ($syncOperation.Crud) {
-                            'Create' {
-                                [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                    [void] (Add-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                if (Test-PSFFunctionInterrupt) { return }
-                            }
-                            'Update' {
-                            }
-                            'Delete' {
-                                [PSMicrosoftEntraID.Users.User] $member = Get-PSEntraIDUser -Identity $syncOperation.Fields.Id
-                                Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $referenceAADGroup.MailNickName -ScriptBlock {
-                                    [void] (Remove-PSEntraIDGroupMember -Identity $referenceAADGroup.Id -User $member.Id)
-                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                                if (Test-PSFFunctionInterrupt) { return }
-                            }
-                            Default {}
+        }
+        else {
+            if (-not ([object]::Equals($syncOperationList, $null))) {
+                foreach ($syncOperation in $syncOperationList) {
+                    switch ($syncOperation.Crud) {
+                        'Create' {
+                            # The id is already resolved - it came from Get-PSEntraIDUser
+                            # in the UserIdentity set, or off the reference group's own
+                            # members. Looking it up again cost a round trip per member
+                            # and answered a question nobody asked.
+                            $memberId = $syncOperation.Fields.Id
+                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
+                                [void] (Add-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $memberId)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
+                        'Update' {
+                        }
+                        'Delete' {
+                            # IdentityValue, not Fields.Id: Get-SyncDataOperation sets
+                            # Fields = @{} for a delete and carries the id in
+                            # IdentityValue, so reading Fields.Id here was always null.
+                            $memberId = $syncOperation.IdentityValue
+                            Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync' -Target $differenceEntraIDGroup.MailNickName -ScriptBlock {
+                                [void] (Remove-PSEntraIDGroupMember -Identity $differenceEntraIDGroup.Id -User $memberId)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                        Default {}
                     }
                 }
             }

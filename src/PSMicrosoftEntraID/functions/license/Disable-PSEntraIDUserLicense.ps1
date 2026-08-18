@@ -19,28 +19,33 @@
         Friendly name Office 365 product of subscribedSku.
 
     .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
+        This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly, but allows catching exceptions in calling scripts.
 
     .PARAMETER WhatIf
         Enables the function to simulate what it will do instead of actually executing.
 
     .PARAMETER Force
-        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Suppresses the confirmation prompt, for unattended use.
+
+        An explicitly bound -Confirm wins over it, whatever its value: -Confirm:$true
+        prompts even with -Force present. The two are therefore alternatives rather
+        than a pair - passing both says nothing the second one does not already say.
+
+        Without either, whether the command prompts is left to its ConfirmImpact and
+        the session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
+        Left unbound, the decision belongs to this command's ConfirmImpact and the
+        session ConfirmPreference, which is the PowerShell default behaviour.
 
     .PARAMETER PassThru
-        When specified, the cmdlet will not execute the disable license action but will instead
+        When specified, the cmdlet will not execute the action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
 	.EXAMPLE
@@ -49,9 +54,8 @@
 		Disable license (subscription) ENTERPRISEPACK of user username@contoso.com
 
 	#>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectSkuPartNumber')]
+    [OutputType([PSMicrosoftEntraID.Batch.Request])]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'InputObjectSkuPartNumber')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuId')]
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectSkuPartNumber')]
         [PSMicrosoftEntraID.Users.User[]]$InputObject,
@@ -83,31 +87,26 @@
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
-        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
-            [bool] $cmdLetConfirm = $false
+        [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
+        # set is not resolved until the first object arrives in process, so a switch on
+        # it here matches nothing and $bodySkuId stays empty for every piped target.
+        # SkuId/SkuPartNumber are never pipeline-bound, so this is decidable in begin.
+        if ($PSBoundParameters.ContainsKey('SkuId')) {
+            [string[]] $bodySkuId = $SkuId
+            [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
         }
         else {
-            [bool] $cmdLetConfirm = $true
-        }
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wSkuId' {
-                [string[]] $bodySkuId = $SkuId
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $skuTarget = ($bodySkuId | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $skuTarget = ($bodySkuId | ForEach-Object { "'{0}'" -f $_ }) -join ','
+            [System.Collections.Generic.List[string]] $bodySkuIdList = [System.Collections.Generic.List[string]]::new()
+            [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = Get-PSEntraIDSubscribedSku
+            foreach ($skuPart in $SkuPartNumber) {
+                [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = @($subscribedSkus | Where-Object { $_.SkuPartNumber -eq $skuPart })[0]
+                if ($matchedSku) {
+                    $bodySkuIdList.Add($matchedSku.SkuId)
                 }
             }
-            '\wSkuPartNumber' {
-                [string[]] $bodySkuId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuPartNumber -In -Value $SkuPartNumber).SkuId
-                if (Test-PSFPowerShell -PSMinVersion 7.0) {
-                    [string] $skuTarget = ($SkuPartNumber | Join-String -SingleQuote -Separator ',')
-                }
-                else {
-                    [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ }) -join ','
-                }
-            }
+            [string[]] $bodySkuId = $bodySkuIdList.ToArray()
+            [string] $skuTarget = ($SkuPartNumber | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
         }
     }
     process {
@@ -118,19 +117,26 @@
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
-                    [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $servivePlanStatus = $itemInputObject |
-                    Get-PSEntraIDUserLicenseDetail |
-                    Select-Object -ExpandProperty ServicePLans
-                    if (-not ([object]::Equals($servivePlanStatus, $null))) {
-                        [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
-                        if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    if (-not ([object]::Equals($itemInputObject.AssignedLicenses, $null)) -and $itemInputObject.AssignedLicenses.Count -gt 0) {
+                        [string[]] $userSkuIds = $itemInputObject.AssignedLicenses.SkuId
+                        [bool] $hasLicenseToRemove = $false
+                        foreach ($skuToRemove in $bodySkuId) {
+                            if ($userSkuIds -contains $skuToRemove) {
+                                $hasLicenseToRemove = $true
+                                break
+                            }
                         }
-                        else {
-                            Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                            } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                            if (Test-PSFFunctionInterrupt) { return }
+                        if ($hasLicenseToRemove) {
+                            [string] $path = ("users/{0}/{1}" -f $itemInputObject.Id, 'assignLicense')
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $itemInputObject.UserPrincipalName -ScriptBlock {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
                         }
                     }
                 }
@@ -138,27 +144,34 @@
             'Identity\w' {
                 foreach ($user in  $Identity) {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if (-not ([object]::Equals($aADUser, $null))) {
-                        [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
-                        [PSMicrosoftEntraID.Users.LicenseManagement.ServicePlan[]] $servivePlanStatus = $aADUser |
-                        Get-PSEntraIDUserLicenseDetail |
-                        Select-Object -ExpandProperty ServicePLans
-                        if (-not ([object]::Equals($servivePlanStatus, $null))) {
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                    }
+                    else {
+                        if (-not ([object]::Equals($aADUser.AssignedLicenses, $null)) -and $aADUser.AssignedLicenses.Count -gt 0) {
+                        [string[]] $userSkuIds = $aADUser.AssignedLicenses.SkuId
+                        [bool] $hasLicenseToRemove = $false
+                        foreach ($skuToRemove in $bodySkuId) {
+                            if ($userSkuIds -contains $skuToRemove) {
+                                $hasLicenseToRemove = $true
+                                break
+                            }
+                        }
+                        if ($hasLicenseToRemove) {
+                            [string] $path = ("users/{0}/{1}" -f $aADUser.Id, 'assignLicense')
                             if ($PassThru.IsPresent) {
                                 [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                             }
                             else {
                                 Invoke-PSFProtectedCommand -ActionString 'License.Disable' -ActionStringValues $skuTarget -Target $user -ScriptBlock {
                                     [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-                                } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                                 if (Test-PSFFunctionInterrupt) { return }
                             }
                         }
                     }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
-                        }
                     }
                 }
             }

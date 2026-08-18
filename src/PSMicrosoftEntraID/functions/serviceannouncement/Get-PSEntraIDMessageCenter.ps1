@@ -29,12 +29,34 @@
 .EXAMPLE
     Get-PSEntraIDMessageCenter -Service "Microsoft Teams" -Category feature -PublishedAfter (Get-Date).AddDays(-7)
 
+    Returns Microsoft Teams feature announcements published in the last 7 days.
+
 .EXAMPLE
     Get-PSEntraIDMessageCenter -Service All -Severity high
 
+    Returns all high severity Message Center announcements across all services.
+
 .OUTPUTS
     PSMicrosoftEntraID.MessageCenter.Message[]
+    .NOTES
+        Piping into Select-Object -First N logs a warning that is not a failure:
+
+            WARNING: [<cmdlet>] Failed to: ... | The pipeline has been stopped
+
+        The results are correct and complete. Select-Object stops the pipeline once it
+        has what it asked for, and the next write throws PipelineStoppedException -
+        normal termination, reported as an error only because the write happens inside a
+        protected block. Materialise first if the warning is in the way:
+
+            $items = @(<cmdlet> ...)
+            $items | Select-Object -First 3
+
+        or filter server-side with -Filter instead of trimming client-side. Not silenced
+        on purpose: the only fix that works is to collect the whole result before
+        emitting any of it, which would cost streaming on every read.
+
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Parameters consumed inside Where-Object script blocks or reserved as part of the public parameter surface.')]
     [CmdletBinding()]
     [OutputType('PSMicrosoftEntraID.MessageCenter.Message[]')]
     param (
@@ -153,7 +175,7 @@
                 if ($PublishedAfter -or $PublishedBefore) {
                     $messageList = $messageList | Where-Object {
                         try {
-                            $published = [datetime]::Parse($_.PublishedDateTime)
+                            $published = [datetime]::Parse($_.StartDateTime)
                             (
                             (-not $PublishedAfter -or $published -ge $PublishedAfter) -and
                             (-not $PublishedBefore -or $published -le $PublishedBefore)
@@ -164,7 +186,7 @@
                         }
                     }
                 }
-                return $messageList#>
+                return $messageList
 
             } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
             if (Test-PSFFunctionInterrupt) { return }

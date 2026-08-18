@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
+using PSMicrosoftEntraID.Groups.LicenseManagement;
 
 namespace PSMicrosoftEntraID.Groups
 {
@@ -78,8 +74,8 @@ namespace PSMicrosoftEntraID.Groups
         /// <summary>
         /// Gets or sets the types of the group.
         /// </summary>
-        [DataMember(Name = "gropupTypes")]
-        public string[] GropupTypes { get; set; }
+        [DataMember(Name = "groupTypes")]
+        public string[] GroupTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the creation options for the group.
@@ -134,5 +130,18 @@ namespace PSMicrosoftEntraID.Groups
         /// </summary>
         [DataMember(Name = "securityIdentifier")]
         public string SecurityIdentifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group.
+        /// </summary>
+        [DataMember(Name = "assignedLabels")]
+        public AssignedLabel[] AssignedLabels { get; set; }
+
+        /// <summary>
+        /// Gets or sets the licenses that are assigned to the group.
+        /// Returned only on $select. Supports $filter (eq). Read-only.
+        /// </summary>
+        [DataMember(Name = "assignedLicenses")]
+        public AssignedLicense[] AssignedLicenses { get; set; }
     }
 }
