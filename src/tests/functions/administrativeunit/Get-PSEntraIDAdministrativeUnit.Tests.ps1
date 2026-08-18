@@ -94,15 +94,55 @@ Describe 'Get-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
         }
 
         It 'Should handle multiple identities' {
-            Get-PSEntraIDAdministrativeUnit -Identity @('id1', 'id2')
+            # GUIDs on purpose: a non-GUID identity legitimately costs an extra
+            # resolution request, which is covered in its own context below.
+            Get-PSEntraIDAdministrativeUnit -Identity @('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222')
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 2 -Exactly
         }
 
         It 'Should process pipeline input' {
-            @('id1', 'id2') | Get-PSEntraIDAdministrativeUnit
+            @('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222') | Get-PSEntraIDAdministrativeUnit
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 2 -Exactly
+        }
+    }
+
+    Context 'Identity resolves a display name' {
+        # -Identity documents "DisplayName or Id", but only an id may travel in the URL
+        # path - Graph answers 400 'Invalid object identifier' for a name, always. Found
+        # by the live scenario: the unit was created, then unreadable for 90 seconds of
+        # deterministic 400s. Every other administrative-unit cmdlet resolves through
+        # this one, so a name-blind Get made the whole family GUID-only.
+
+        It 'a display name goes through an exact filter first, then the resolved id path' {
+            Get-PSEntraIDAdministrativeUnit -Identity 'Marketing AU'
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Path -eq 'directory/administrativeUnits' -and $Query.'$filter' -eq "displayName eq 'Marketing AU'"
+            }
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Path -eq 'directory/administrativeUnits/12345678-1234-1234-1234-123456789012'
+            }
+        }
+
+        It 'a GUID never pays for the resolution request' {
+            Get-PSEntraIDAdministrativeUnit -Identity '12345678-1234-1234-1234-123456789012'
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 1 -Exactly
+        }
+
+        It 'an unresolved name falls back to the escaped raw identity in the path' {
+            Mock -ModuleName $script:ModuleName Invoke-EntraRequest {
+                if ($Query -and $Query.ContainsKey('$filter')) { return $null }
+                [PSCustomObject]@{ value = @($script:MockAU) }
+            }
+
+            Get-PSEntraIDAdministrativeUnit -Identity 'No Such AU'
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Path -eq 'directory/administrativeUnits/No%20Such%20AU'
+            }
         }
     }
 
@@ -168,19 +208,19 @@ Describe 'Get-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
 
     Context 'Error handling' {
         It 'Should call Assert-EntraConnection' {
-            Get-PSEntraIDAdministrativeUnit -Identity 'test-id'
+            Get-PSEntraIDAdministrativeUnit -Identity '12345678-1234-1234-1234-123456789012'
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
 
         It 'Should use Invoke-PSFProtectedCommand for retries' {
-            Get-PSEntraIDAdministrativeUnit -Identity 'test-id'
+            Get-PSEntraIDAdministrativeUnit -Identity '12345678-1234-1234-1234-123456789012'
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
         It 'Should convert response using ConvertFrom-RestAdministrativeUnit' {
-            Get-PSEntraIDAdministrativeUnit -Identity 'test-id'
+            Get-PSEntraIDAdministrativeUnit -Identity '12345678-1234-1234-1234-123456789012'
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName ConvertFrom-RestAdministrativeUnit -Times 1 -Exactly
         }

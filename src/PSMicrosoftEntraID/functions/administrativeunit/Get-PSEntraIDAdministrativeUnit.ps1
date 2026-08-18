@@ -98,7 +98,33 @@
             'Identity' {
                 foreach ($administrativeUnit in $Identity) {
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Get' -ActionStringValues $administrativeUnit -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}' -f $path, $administrativeUnit) -Query $query -Method Get -ErrorAction Stop)
+                        # -Identity promises "DisplayName or Id", but only an id may go
+                        # into the URL path - Graph answers 400 'Invalid object
+                        # identifier' for anything else, deterministically. A name is
+                        # resolved to its id first, the way Get-PSEntraIDUser resolves a
+                        # mail address. Every other administrative-unit cmdlet resolves
+                        # its -Identity through this one, so before this fix the whole
+                        # family only ever worked with GUIDs.
+                        if ($administrativeUnit -as [guid]) {
+                            [string] $administrativeUnitId = $administrativeUnit
+                        }
+                        else {
+                            [hashtable] $nameQuery = @{
+                                '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+                                '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.AdministrativeUnit).Value -join ',')
+                                '$filter' = ("displayName eq '{0}'" -f (ConvertTo-ODataFilterString -Value $administrativeUnit))
+                            }
+                            [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit[]] $unitByName = ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $nameQuery -Method Get -ErrorAction Stop)
+                            if (-not([object]::Equals($unitByName, $null))) {
+                                [string] $administrativeUnitId = $unitByName[0].Id
+                            }
+                            else {
+                                [string] $administrativeUnitId = $administrativeUnit
+                            }
+                        }
+                        # Escaped because the fallback above can put caller input into
+                        # the URL path - see the same rule in Get-PSEntraIDUser.
+                        ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}' -f $path, [uri]::EscapeDataString($administrativeUnitId)) -Query $query -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
