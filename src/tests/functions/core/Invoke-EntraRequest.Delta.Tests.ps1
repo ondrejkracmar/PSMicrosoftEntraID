@@ -113,6 +113,41 @@ Describe 'Invoke-EntraRequest delta handling' -Tag 'Unit' {
         }
     }
 
+    Context 'Percent-encoded tokens' {
+
+        It 'stores the token decoded and sends it back encoded exactly once' {
+            InModuleScope PSMicrosoftEntraID {
+                Mock Assert-EntraConnection { }
+                Mock Resolve-RequestUri { 'https://graph.microsoft.com/v1.0/users/delta' }
+                $script:seenUri = $null
+                Mock Invoke-RestMethod {
+                    $script:seenUri = $Uri
+                    [pscustomobject]@{
+                        value              = @()
+                        # The token in a deltaLink is a substring of a URL, so it can
+                        # arrive percent-encoded. '+' is the dangerous case: left raw
+                        # in a query string it decodes to a SPACE on Graph's side.
+                        '@odata.deltaLink' = 'https://graph.microsoft.com/v1.0/users/delta?$deltatoken=A%2Bb%3D%3D'
+                    }
+                }
+
+                $session = @{}
+                $null = Invoke-EntraRequest -Service Graph -Path 'users/delta' -DeltaSession $session
+
+                # Stored DECODED: from here on it is our canonical value, not a URL slice.
+                $session['https://graph.microsoft.com/v1.0/users/delta'].Token | Should -Be 'A+b=='
+
+                $null = Invoke-EntraRequest -Service Graph -Path 'users/delta' -DeltaSession $session
+
+                # Re-encoded exactly once on the way out. '%252B' here would mean the
+                # stored value was still encoded and got encoded again - a corrupted
+                # token Graph rejects, or worse, accepts as a different window.
+                $script:seenUri | Should -BeLike '*$deltaToken=A%2Bb%3D%3D*'
+                $script:seenUri | Should -Not -BeLike '*%252B*'
+            }
+        }
+    }
+
     Context 'Paging' {
 
         It 'follows nextLink and keeps the token from the final page' {

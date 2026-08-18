@@ -183,8 +183,12 @@
                             $userId = $userMail[0].Id
                         }
 
+                        # Escaped because a guest's UPN always contains '#EXT#', and an
+                        # unescaped '#' starts the URI fragment - the path is silently
+                        # truncated and Graph answers for a user that does not exist.
+                        # See the same fix in Get-PSEntraIDUser.
                         $fullUser = ConvertFrom-RestUserGuest -InputObject (
-                            Invoke-EntraRequest -Service $service -Path ("users/{0}" -f $userId) -Query $query -Method Get -ErrorAction Stop
+                            Invoke-EntraRequest -Service $service -Path ("users/{0}" -f [uri]::EscapeDataString($userId)) -Query $query -Method Get -ErrorAction Stop
                         )
 
                         if ($fullUser.UserType -eq 'Guest') {

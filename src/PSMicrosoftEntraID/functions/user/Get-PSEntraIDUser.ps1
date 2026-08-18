@@ -115,7 +115,12 @@
                         else {
                             [string] $userId = $user
                         }
-                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}' -f $userId) -Query $query -Method Get  -ErrorAction Stop)
+                        # The identity is escaped because it lands in the URL PATH, and a
+                        # guest's userPrincipalName always contains '#EXT#'. Unescaped,
+                        # '#' starts the URI fragment and everything after it is silently
+                        # dropped - Graph then sees a truncated path and answers 400/404.
+                        # Reading any guest by UPN failed on exactly this.
+                        ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}' -f [uri]::EscapeDataString($userId)) -Query $query -Method Get  -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }

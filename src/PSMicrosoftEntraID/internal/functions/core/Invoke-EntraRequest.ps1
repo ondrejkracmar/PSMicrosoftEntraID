@@ -243,7 +243,13 @@
 						# value is opaque and may contain more of them.
 						$keyValue = $pair -split '=', 2
 						if ($keyValue.Count -eq 2 -and $keyValue[0] -in '$deltatoken', '%24deltatoken') {
-							$deltaToken = $keyValue[1]
+							# DECODED before storing. This substring is cut out of a URL,
+							# so whatever percent-encoding the link carried is still in
+							# it - and ConvertTo-QueryString now encodes every value on
+							# the way out. Storing the raw substring would double-encode
+							# on the next request ('%2B' -> '%252B') and hand Graph a
+							# corrupted token. Decode here, encode exactly once there.
+							$deltaToken = [uri]::UnescapeDataString($keyValue[1])
 							break
 						}
 					}
