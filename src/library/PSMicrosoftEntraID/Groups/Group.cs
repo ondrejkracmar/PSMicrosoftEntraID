@@ -74,8 +74,8 @@ namespace PSMicrosoftEntraID.Groups
         /// <summary>
         /// Gets or sets the types of the group.
         /// </summary>
-        [DataMember(Name = "gropupTypes")]
-        public string[] GropupTypes { get; set; }
+        [DataMember(Name = "groupTypes")]
+        public string[] GroupTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the creation options for the group.

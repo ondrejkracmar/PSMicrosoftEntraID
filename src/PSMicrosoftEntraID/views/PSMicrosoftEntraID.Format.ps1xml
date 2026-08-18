@@ -256,7 +256,7 @@
 								<PropertyName>DisplayName</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>GropupTypes</PropertyName>
+								<PropertyName>GroupTypes</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>SecurityEnabled</PropertyName>
