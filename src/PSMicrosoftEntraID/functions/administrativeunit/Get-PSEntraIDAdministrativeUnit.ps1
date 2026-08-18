@@ -115,7 +115,10 @@
                                 '$filter' = ("displayName eq '{0}'" -f (ConvertTo-ODataFilterString -Value $administrativeUnit))
                             }
                             [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit[]] $unitByName = ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $nameQuery -Method Get -ErrorAction Stop)
-                            if (-not([object]::Equals($unitByName, $null))) {
+                            # Null AND empty: an empty result binds as a zero-length
+                            # array, which is not null - indexing it under StrictMode
+                            # throws instead of falling back.
+                            if (-not([object]::Equals($unitByName, $null)) -and $unitByName.Length -gt 0) {
                                 [string] $administrativeUnitId = $unitByName[0].Id
                             }
                             else {

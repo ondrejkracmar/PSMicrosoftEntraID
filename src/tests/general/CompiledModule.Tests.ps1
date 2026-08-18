@@ -55,13 +55,18 @@ Describe "Verifying the module survives compilation" {
     }
 
     It "concatenates into something that parses" {
+        # Read via the provider-resolved path, not the emitted string. The emitted paths
+        # carry literal backslashes; PowerShell's Test-Path normalises them on Linux and
+        # macOS, System.IO does not - so the guard said the file exists and ReadAllText
+        # then threw FileNotFoundException for 'src/PSMicrosoftEntraID\bin\assembly.ps1'
+        # on the Linux build agent.
         $sources = @(
             foreach ($path in $script:preImportPaths) {
-                if (Test-Path -LiteralPath $path -PathType Leaf) { [System.IO.File]::ReadAllText($path) }
+                if (Test-Path -LiteralPath $path -PathType Leaf) { [System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $path).ProviderPath) }
             }
             foreach ($file in $script:functionFiles) { [System.IO.File]::ReadAllText($file.FullName) }
             foreach ($path in $script:postImportPaths) {
-                if (Test-Path -LiteralPath $path -PathType Leaf) { [System.IO.File]::ReadAllText($path) }
+                if (Test-Path -LiteralPath $path -PathType Leaf) { [System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $path).ProviderPath) }
             }
         )
 

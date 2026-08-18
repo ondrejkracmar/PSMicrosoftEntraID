@@ -133,8 +133,13 @@ Describe 'Get-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
         }
 
         It 'an unresolved name falls back to the escaped raw identity in the path' {
+            # An EMPTY value array, not $null: null flowed into the outer
+            # ConvertFrom-RestAdministrativeUnit mock's '$InputObject.value', which
+            # explodes when another test file has left StrictMode on - the Linux CI
+            # leg runs the files in a different order and caught exactly that. The
+            # empty shape is also what Graph actually answers for a no-match filter.
             Mock -ModuleName $script:ModuleName Invoke-EntraRequest {
-                if ($Query -and $Query.ContainsKey('$filter')) { return $null }
+                if ($Query -and $Query.ContainsKey('$filter')) { return [PSCustomObject]@{ value = @() } }
                 [PSCustomObject]@{ value = @($script:MockAU) }
             }
 
