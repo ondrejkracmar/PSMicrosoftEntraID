@@ -167,11 +167,11 @@
 			# A URL to the main website for this project.
 			ProjectUri   = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID'
 
-			# IconUri is deliberately absent: it needs a hosted image, and there is no
-			# icon in the repository yet. Once one is committed - say docs/icon.png -
-			# this becomes
-			#   IconUri = 'https://raw.githubusercontent.com/ondrejkracmar/PSMicrosoftEntraID/main/docs/icon.png'
-			# and vsts-publishToGitHub.ps1 has to carry that file into the curated tree.
+			# Served from the public GitHub mirror: vsts-publishToGitHub.ps1 copies docs/
+			# wholesale (minus docs/internal/), so docs/icon.png rides along on every
+			# release with no extra pipeline step. The URL must resolve for a stranger,
+			# which rules out the private DevOps repository.
+			IconUri      = 'https://raw.githubusercontent.com/ondrejkracmar/PSMicrosoftEntraID/main/docs/icon.png'
 
 			# ReleaseNotes of this module
 			ReleaseNotes = 'See changelog.md in the project repository.'
