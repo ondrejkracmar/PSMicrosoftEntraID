@@ -64,6 +64,15 @@
 
     begin {
         [string] $path = 'users/delta'
+        # The same select list Get-PSEntraIDUser uses, and it is load-bearing twice
+        # over: without one, Graph returns only the DEFAULT user properties (no
+        # assignedLicenses, companyName, identities, usageLocation, employeeId), and
+        # on a delta query $select also decides WHICH property changes are tracked -
+        # an assignedLicenses-only change produced no delta event at all until the
+        # property was selected. Measured live, 2026-08-19.
+        [hashtable] $query = @{
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
+        }
     }
 
     process {
@@ -77,7 +86,7 @@
         if ($PSBoundParameters.ContainsKey('DeltaSession')) { $deltaParameters['DeltaSession'] = $DeltaSession }
 
         Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Users.UserDelta]) @deltaParameters `
-            -MinimalDelta:$MinimalDelta -EnableException:$EnableException
+            -Query $query -MinimalDelta:$MinimalDelta -EnableException:$EnableException
     }
 
     end {}

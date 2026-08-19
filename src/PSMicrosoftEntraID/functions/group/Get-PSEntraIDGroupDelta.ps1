@@ -64,6 +64,14 @@
 
     begin {
         [string] $path = 'groups/delta'
+        # The Get-PSEntraIDGroup select list PLUS 'members'. Without a $select Graph
+        # returns only the default group properties and tracks only their changes;
+        # 'members' is appended explicitly because that is what makes membership
+        # changes arrive as members@delta - dropping it would silently regress the
+        # one capability this endpoint is mostly used for.
+        [hashtable] $query = @{
+            '$select' = (@((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Group).Value) + 'members' -join ',')
+        }
     }
 
     process {
@@ -76,7 +84,7 @@
         $deltaParameters = @{}
         if ($PSBoundParameters.ContainsKey('DeltaSession')) { $deltaParameters['DeltaSession'] = $DeltaSession }
 
-        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Groups.GroupDelta]) @deltaParameters `
+        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Groups.GroupDelta]) @deltaParameters -Query $query `
             -MinimalDelta:$MinimalDelta -EnableException:$EnableException
     }
 

@@ -58,6 +58,31 @@ Describe 'Get-PSEntraID*Delta' -Tag 'Unit' {
         }
     }
 
+    It 'selects the full property list, and members where membership travels' {
+        InModuleScope PSMicrosoftEntraID {
+            $script:seenQuery = $null
+            Mock Invoke-EntraRequest { $script:seenQuery = $Query; [pscustomobject]@{ value = @() } }
+
+            # Unselected, Graph returns only the DEFAULT property set - no
+            # assignedLicenses, companyName or identities - and a delta query also
+            # tracks only the selected properties' changes: an assignedLicenses-only
+            # change produced no delta event at all until the property was selected.
+            # Measured live 2026-08-19; this is what broke the licence inventory
+            # delta sync.
+            Get-PSEntraIDUserDelta -DeltaSession @{}
+            $script:seenQuery.'$select' | Should -Match 'assignedLicenses'
+            $script:seenQuery.'$select' | Should -Match 'companyName'
+            $script:seenQuery.'$select' | Should -Match 'identities'
+
+            # Groups additionally select 'members' - that is what carries membership
+            # changes as members@delta; dropping it would regress the endpoint's
+            # main use.
+            Get-PSEntraIDGroupDelta -DeltaSession @{}
+            $script:seenQuery.'$select' | Should -Match 'members'
+            $script:seenQuery.'$select' | Should -Match 'displayName'
+        }
+    }
+
     It 'passes the delta session through so the token round-trips' {
         InModuleScope PSMicrosoftEntraID {
             $script:seenSession = $null
