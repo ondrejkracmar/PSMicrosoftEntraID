@@ -503,11 +503,6 @@
         "servicePlanFriendlyName": "Microsoft Defender for Cloud Apps Discovery"
       },
       {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
-      {
         "servicePlanId": "c87f142c-d1e9-4363-8630-aaea9c4d9ae5",
         "servicePlanName": "BPOS_S_TODO_2",
         "servicePlanFriendlyName": "To-Do (Plan 2)"
@@ -4221,6 +4216,11 @@
         "servicePlanId": "dd3801e2-4aa1-4b16-a44b-243e55497584",
         "servicePlanName": "CPC_S_4C_16GB_128GB",
         "servicePlanFriendlyName": "Windows 365 Shared Use 4 vCPU 16 GB 128 GB"
+      },
+      {
+        "servicePlanId": "a22efeae-e37a-47ac-9a61-1572d74202e5",
+        "servicePlanName": "WINDOWS_10_ESU_TENANT",
+        "servicePlanFriendlyName": "Windows 10 ESU Tenant"
       }
     ]
   },
@@ -9256,6 +9256,11 @@
     "skuFriendlyName": "Microsoft Workplace Analytics",
     "servicePlans": [
       {
+        "servicePlanId": "ccaebebf-3634-4975-a0ad-3eccb697f393",
+        "servicePlanName": "SKILLS_IN_VIVA",
+        "servicePlanFriendlyName": "Skills in Viva"
+      },
+      {
         "servicePlanId": "f477b0f0-3bb1-4890-940c-40fcee6ce05f",
         "servicePlanName": "WORKPLACE_ANALYTICS",
         "servicePlanFriendlyName": "Microsoft Workplace Analytics"
@@ -12018,11 +12023,6 @@
     "skuFriendlyName": "Office 365 G3 GCC",
     "servicePlans": [
       {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
-      {
         "servicePlanId": "c87f142c-d1e9-4363-8630-aaea9c4d9ae5",
         "servicePlanName": "BPOS_S_TODO_2",
         "servicePlanFriendlyName": "To-Do (Plan 2)"
@@ -13292,43 +13292,6 @@
     ]
   },
   {
-    "skuId": "6432c818-bcef-43b6-9290-aec052964950",
-    "skuPartNumber": "M365_TEAMS_PREMIUM",
-    "skuFriendlyName": "Microsoft Teams Premium",
-    "servicePlans": [
-      {
-        "servicePlanId": "711413d0-b36e-4cd4-93db-0a50a4ab7ea3",
-        "servicePlanName": "MCO_VIRTUAL_APPT",
-        "servicePlanFriendlyName": "Microsoft Teams Premium Virtual Appointments"
-      },
-      {
-        "servicePlanId": "ab2d4fb5-f80a-4bf1-a11d-7f1da254041b",
-        "servicePlanName": "QUEUES_APP",
-        "servicePlanFriendlyName": "Queues app for Microsoft Teams"
-      },
-      {
-        "servicePlanId": "cc8c0802-a325-43df-8cba-995d0c6cb373",
-        "servicePlanName": "TEAMSPRO_CUST",
-        "servicePlanFriendlyName": "Microsoft Teams Premium Personalized"
-      },
-      {
-        "servicePlanId": "0504111f-feb8-4a3c-992a-70280f9a2869",
-        "servicePlanName": "TEAMSPRO_MGMT",
-        "servicePlanFriendlyName": "Microsoft Teams Premium Intelligent"
-      },
-      {
-        "servicePlanId": "f8b44f54-18bb-46a3-9658-44ab58712968",
-        "servicePlanName": "TEAMSPRO_PROTECTION",
-        "servicePlanFriendlyName": "Microsoft Teams Premium Secure"
-      },
-      {
-        "servicePlanId": "9104f592-f2a7-4f77-904c-ca5a5715883f",
-        "servicePlanName": "TEAMSPRO_VIRTUALAPPT",
-        "servicePlanFriendlyName": "Microsoft Teams Premium Virtual Appointment"
-      }
-    ]
-  },
-  {
     "skuId": "6470687e-a428-4b7a-bef2-8a291ad947c9",
     "skuPartNumber": "WINDOWS_STORE",
     "skuFriendlyName": "Windows Store for Business",
@@ -14566,11 +14529,6 @@
     "skuPartNumber": "ENTERPRISEPACK",
     "skuFriendlyName": "Office 365 E3",
     "servicePlans": [
-      {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
       {
         "servicePlanId": "c87f142c-d1e9-4363-8630-aaea9c4d9ae5",
         "servicePlanName": "BPOS_S_TODO_2",
@@ -19677,11 +19635,6 @@
     "skuFriendlyName": "Microsoft 365 E5 Suite features",
     "servicePlans": [
       {
-        "servicePlanId": "3afa0b92-83ef-41c1-8d64-586ab882a951",
-        "servicePlanName": "3_PARTY_APP_PATCH",
-        "servicePlanFriendlyName": "Intune Enterprise Application Management"
-      },
-      {
         "servicePlanId": "0d0c0d31-fae7-41f2-b909-eaf4d7f26dba",
         "servicePlanName": "Bing_Chat_Enterprise",
         "servicePlanFriendlyName": "Commercial data protection for Microsoft Copilot"
@@ -19690,11 +19643,6 @@
         "servicePlanId": "a1ace008-72f3-4ea0-8dac-33b3a23a2472",
         "servicePlanName": "CLIPCHAMP",
         "servicePlanFriendlyName": "Microsoft Clipchamp"
-      },
-      {
-        "servicePlanId": "795aec3a-93a2-45be-92c4-47b9a76340ca",
-        "servicePlanName": "CLOUD_PKI",
-        "servicePlanFriendlyName": "Microsoft Cloud PKI"
       },
       {
         "servicePlanId": "d9fa6af4-e046-4c89-9226-729a0786685d",
@@ -23164,11 +23112,6 @@
     "skuFriendlyName": "Office 365 E3_USGOV_GCCHIGH",
     "servicePlans": [
       {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
-      {
         "servicePlanId": "efb87545-963c-4e0d-99df-69c6916d9eb0",
         "servicePlanName": "EXCHANGE_S_ENTERPRISE",
         "servicePlanFriendlyName": "Exchange Online (Plan 2)"
@@ -23709,11 +23652,6 @@
     "skuPartNumber": "ENTERPRISEPACK_USGOV_DOD",
     "skuFriendlyName": "Office 365 E3_USGOV_DOD",
     "servicePlans": [
-      {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
       {
         "servicePlanId": "efb87545-963c-4e0d-99df-69c6916d9eb0",
         "servicePlanName": "EXCHANGE_S_ENTERPRISE",
@@ -26587,11 +26525,6 @@
         "servicePlanFriendlyName": "Microsoft Search"
       },
       {
-        "servicePlanId": "29c62f1c-8ffc-4304-9cb9-398a6aa1852b",
-        "servicePlanName": "MICROSOFT_TEAMS_EVENTS",
-        "servicePlanFriendlyName": "Microsoft Teams Events"
-      },
-      {
         "servicePlanId": "5136a095-5cf0-4aff-bec3-e84448b38ea5",
         "servicePlanName": "MIP_S_CLP1",
         "servicePlanFriendlyName": "Information Protection for Office 365 - Standard"
@@ -26839,11 +26772,6 @@
         "servicePlanId": "932ad362-64a8-4783-9106-97849a1a30b9",
         "servicePlanName": "ADALLOM_S_DISCOVERY",
         "servicePlanFriendlyName": "Cloud App Security Discovery"
-      },
-      {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
       },
       {
         "servicePlanId": "efb87545-963c-4e0d-99df-69c6916d9eb0",
@@ -28421,6 +28349,11 @@
         "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
         "servicePlanName": "EXCHANGE_S_FOUNDATION",
         "servicePlanFriendlyName": "Exchange Foundation"
+      },
+      {
+        "servicePlanId": "6dc0e3c6-2e4e-463c-90a4-9989d8543841",
+        "servicePlanName": "Windows_10_ESU_Commercial",
+        "servicePlanFriendlyName": "Windows 10 ESU Commercial"
       }
     ]
   },
@@ -28545,18 +28478,6 @@
     ]
   },
   {
-    "skuId": "d4009785-b899-4cab-97b6-d06a7c799507",
-    "skuPartNumber": "MCOSMS2",
-    "skuFriendlyName": "Skype for Business PSTN Domestic and International Calling",
-    "servicePlans": [
-      {
-        "servicePlanId": "d4009785-b899-4cab-97b6-d06a7c799507",
-        "servicePlanName": "MCOSMS2",
-        "servicePlanFriendlyName": "DOMESTIC AND INTERNATIONAL CALLING PLAN"
-      }
-    ]
-  },
-  {
     "skuId": "d42c793f-6c78-4f43-92ca-e8f6a02b035f",
     "skuPartNumber": "MCOSTANDARD",
     "skuFriendlyName": "Skype for Business Online (Plan 2)",
@@ -28633,11 +28554,6 @@
         "servicePlanId": "41781fb2-bc02-4b7c-bd55-b576c07bb09d",
         "servicePlanName": "AAD_PREMIUM",
         "servicePlanFriendlyName": "Microsoft Entra ID P1"
-      },
-      {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
       },
       {
         "servicePlanId": "efb87545-963c-4e0d-99df-69c6916d9eb0",
@@ -31191,11 +31107,6 @@
         "servicePlanFriendlyName": "Microsoft Defender for Cloud Apps Discovery"
       },
       {
-        "servicePlanId": "f20fedf3-f3c3-43c3-8267-2bfdd51c0939",
-        "servicePlanName": "ATP_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft Defender for Office 365 (Plan 1)"
-      },
-      {
         "servicePlanId": "c87f142c-d1e9-4363-8630-aaea9c4d9ae5",
         "servicePlanName": "BPOS_S_TODO_2",
         "servicePlanFriendlyName": "To-Do (Plan 2)"
@@ -33661,11 +33572,6 @@
         "servicePlanId": "0feaeb32-d00e-4d66-bd5a-43b5b83db82c",
         "servicePlanName": "MCOSTANDARD",
         "servicePlanFriendlyName": "Skype for Business Online (Plan 2)"
-      },
-      {
-        "servicePlanId": "c6675fa4-68fe-415f-aec1-a44520f0c3a3",
-        "servicePlanName": "MDOLITE_ENTERPRISE",
-        "servicePlanFriendlyName": "Microsoft 365 built-in email and collaboration security"
       },
       {
         "servicePlanId": "3efbd4ed-8958-4824-8389-1321f8730af8",
