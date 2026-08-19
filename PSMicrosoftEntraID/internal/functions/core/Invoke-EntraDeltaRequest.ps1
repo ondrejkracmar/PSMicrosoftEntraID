@@ -30,6 +30,15 @@
     .PARAMETER TargetType
         The delta type to produce, for example [PSMicrosoftEntraID.Users.UserDelta].
 
+    .PARAMETER Query
+        Query parameters for the delta read - above all '$select'. This is not
+        cosmetic: without one, Graph returns only the resource's DEFAULT property set
+        (users lose assignedLicenses, companyName, identities, usageLocation among
+        others), and on a delta query $select also scopes WHICH property changes are
+        tracked at all - an assignedLicenses-only change produced no delta event for
+        minutes on end until it was selected. Each public cmdlet passes the same
+        configured select list its Get counterpart uses.
+
     .PARAMETER DeltaSession
         Hashtable holding the delta token. Pass it only when the caller bound it.
 
@@ -67,6 +76,9 @@
         [type] $TargetType,
 
         [Parameter()]
+        [hashtable] $Query,
+
+        [Parameter()]
         [AllowNull()]
         [hashtable] $DeltaSession,
 
@@ -88,6 +100,7 @@
         Method      = 'Get'
         ErrorAction = 'Stop'
     }
+    if ($Query -and $Query.Count -gt 0) { $requestParameters['Query'] = $Query }
     # Only pass the delta parameters when asked for, so an omitted session reads
     # everything instead of tracking a token nobody wants.
     if ($PSBoundParameters.ContainsKey('DeltaSession')) { $requestParameters['DeltaSession'] = $DeltaSession }

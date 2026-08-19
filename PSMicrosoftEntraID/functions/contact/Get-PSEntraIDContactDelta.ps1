@@ -64,6 +64,11 @@
 
     begin {
         [string] $path = 'contacts/delta'
+        # The Get-PSEntraIDContact select list - an unselected delta returns only the
+        # default properties and tracks only their changes.
+        [hashtable] $query = @{
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Contact).Value -join ',')
+        }
     }
 
     process {
@@ -76,7 +81,7 @@
         $deltaParameters = @{}
         if ($PSBoundParameters.ContainsKey('DeltaSession')) { $deltaParameters['DeltaSession'] = $DeltaSession }
 
-        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Contacts.ContactDelta]) @deltaParameters `
+        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.Contacts.ContactDelta]) @deltaParameters -Query $query `
             -MinimalDelta:$MinimalDelta -EnableException:$EnableException
     }
 

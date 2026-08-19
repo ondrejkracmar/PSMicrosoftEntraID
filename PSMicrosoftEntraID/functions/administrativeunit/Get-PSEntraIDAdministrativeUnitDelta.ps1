@@ -64,6 +64,13 @@
 
     begin {
         [string] $path = 'directory/administrativeUnits/delta'
+        # The Get-PSEntraIDAdministrativeUnit select list PLUS 'members', for the same
+        # reasons as the group delta: an unselected delta returns only default
+        # properties and tracks only their changes, and 'members' is what carries
+        # membership changes as members@delta.
+        [hashtable] $query = @{
+            '$select' = (@((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.AdministrativeUnit).Value) + 'members' -join ',')
+        }
     }
 
     process {
@@ -76,7 +83,7 @@
         $deltaParameters = @{}
         if ($PSBoundParameters.ContainsKey('DeltaSession')) { $deltaParameters['DeltaSession'] = $DeltaSession }
 
-        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnitDelta]) @deltaParameters `
+        Invoke-EntraDeltaRequest -Cmdlet $PSCmdlet -Path $path -TargetType ([PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnitDelta]) @deltaParameters -Query $query `
             -MinimalDelta:$MinimalDelta -EnableException:$EnableException
     }
 
