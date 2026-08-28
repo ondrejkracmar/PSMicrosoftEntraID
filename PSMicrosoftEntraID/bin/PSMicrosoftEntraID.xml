@@ -515,6 +515,14 @@
             What happened to the object since the previous delta call.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnitDelta.MembersDelta">
+            <summary>
+            Membership changes since the previous delta call - who was added to or
+            removed from the administrative unit. Same shape as the group member delta;
+            without this property the converter had nowhere to put members@delta and the
+            selected 'members' data was silently dropped.
+            </summary>
+        </member>
         <member name="M:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnitDelta.ToString">
             <summary>
             Prefixes the object's description with the change, so a removed object is not
@@ -786,6 +794,13 @@
         <member name="P:PSMicrosoftEntraID.Groups.Group.SecurityIdentifier">
             <summary>
             Gets or sets the security identifier (SID) for the group.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Groups.Group.ResourceProvisioningOptions">
+            <summary>
+            Gets or sets the resource provisioning options of the group. Contains "Team"
+            when a Microsoft Teams team is provisioned on top of the group - the reliable
+            way to tell a team from a plain Microsoft 365 group.
             </summary>
         </member>
         <member name="P:PSMicrosoftEntraID.Groups.Group.AssignedLabels">

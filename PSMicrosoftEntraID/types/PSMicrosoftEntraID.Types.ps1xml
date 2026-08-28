@@ -240,6 +240,7 @@
             <Name>RenewedDateTime</Name>
             <Name>SecurityEnabled</Name>
               <Name>SecurityIdentifier</Name>
+              <Name>ResourceProvisioningOptions</Name>
               <Name>AssignedLabels</Name>
               <Name>AssignedLicenses</Name>
           </ReferencedProperties>
