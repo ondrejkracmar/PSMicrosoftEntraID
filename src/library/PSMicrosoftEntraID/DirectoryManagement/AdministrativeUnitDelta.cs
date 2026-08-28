@@ -32,6 +32,15 @@ namespace PSMicrosoftEntraID.DirectoryManagement
         public DeltaChangeType ChangeType { get; set; }
 
         /// <summary>
+        /// Membership changes since the previous delta call - who was added to or
+        /// removed from the administrative unit. Same shape as the group member delta;
+        /// without this property the converter had nowhere to put members@delta and the
+        /// selected 'members' data was silently dropped.
+        /// </summary>
+        [DataMember(Name = "members@delta")]
+        public PSMicrosoftEntraID.Groups.GroupMemberDelta[] MembersDelta { get; set; }
+
+        /// <summary>
         /// Prefixes the object's description with the change, so a removed object is not
         /// mistaken for a live one in console output.
         /// </summary>
