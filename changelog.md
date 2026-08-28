@@ -1,5 +1,15 @@
 ﻿# Changelog
 
+## 1.3.3 - Unreleased
+
+### Fixed
+- **GET sub-requests inside `$batch` always failed with 400.** The batch serializer
+  projected `headers` and `body` unconditionally, and the Request class defaults both
+  to an empty hashtable - so every GET sub-request went out with `"body": {}`, which
+  Graph's JSON batching rejects. `headers`/`body` are now omitted when empty; write
+  sub-requests (which always populate both) serialize exactly as before. Found by the
+  group-inventory owner reads, where every owner set silently came back empty.
+
 ## 1.3.2 (2026-08-28)
 
 ### Group model

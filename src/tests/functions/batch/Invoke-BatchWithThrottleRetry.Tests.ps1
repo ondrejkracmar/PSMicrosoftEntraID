@@ -125,6 +125,35 @@ Describe 'Invoke-BatchWithThrottleRetry' -Tag 'Unit' {
         }
     }
 
+    It 'omits body and headers on sub-requests that carry none - a GET with "body": {} comes back 400' {
+        InModuleScope PSMicrosoftEntraID {
+            $script:sentRequests = $null
+            Mock Invoke-EntraRequest {
+                $script:sentRequests = @($Body.requests)
+                [pscustomobject]@{ Responses = @(
+                        [pscustomobject]@{ id = '1'; status = 200; headers = $null; body = [pscustomobject]@{ value = @() } }
+                        [pscustomobject]@{ id = '2'; status = 200; headers = $null; body = [pscustomobject]@{ value = @() } }) }
+            }
+
+            $requests = @(
+                [PSMicrosoftEntraID.Batch.Request]@{ Id = '1'; Method = 'GET'; Url = '/groups/g1/owners' }
+                [PSMicrosoftEntraID.Batch.Request]@{ Id = '2'; Method = 'POST'; Url = '/groups/g2/members/$ref'
+                    Headers = @{ 'Content-Type' = 'application/json' }; Body = @{ '@odata.id' = 'x' } }
+            )
+            $payload = [PSMicrosoftEntraID.Batch.BatchRequestPayload]@{ Requests = $requests }
+            $null = Invoke-BatchWithThrottleRetry -Payload $payload -Service 'PSMicrosoftEntraID.Graph' -Header @{} -Path '$batch' -RetryCount 0 -RetryWait (New-TimeSpan -Seconds 0)
+
+            $get = $script:sentRequests | Where-Object id -eq '1'
+            $post = $script:sentRequests | Where-Object id -eq '2'
+            # GET: no body, no headers keys at all
+            @($get.PSObject.Properties.Name) | Should -Not -Contain 'body'
+            @($get.PSObject.Properties.Name) | Should -Not -Contain 'headers'
+            # POST keeps both
+            @($post.PSObject.Properties.Name) | Should -Contain 'body'
+            @($post.PSObject.Properties.Name) | Should -Contain 'headers'
+        }
+    }
+
     It 'RetryCount 0 keeps the old behaviour - one pass, no retry' {
         InModuleScope PSMicrosoftEntraID {
             $script:passes = 0
