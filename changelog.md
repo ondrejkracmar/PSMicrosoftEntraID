@@ -1,6 +1,6 @@
 ﻿# Changelog
 
-## 1.3.3 - Unreleased
+## 1.3.4 (2026-08-29)
 
 ### Fixed
 - **GET sub-requests inside `$batch` always failed with 400.** The batch serializer
