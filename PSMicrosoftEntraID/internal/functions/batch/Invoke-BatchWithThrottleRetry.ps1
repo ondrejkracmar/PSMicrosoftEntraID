@@ -74,12 +74,22 @@
     $attempt = 0
 
     while ($pending.Count -gt 0) {
+        # headers/body only when they carry something: Graph's JSON batching rejects a
+        # GET sub-request that has a body - and the Request class defaults both to an
+        # empty hashtable, so the unconditional projection sent "body": {} with every
+        # GET and each such sub-request came back 400. Write sub-requests (which always
+        # populate both) serialize exactly as before.
         [hashtable] $body = @{
-            'requests' = @($pending | Select-Object -Property @{ Name = 'id'; Expression = { $PSItem.Id } } `
-                    , @{ Name = 'method'; Expression = { $PSItem.Method } } `
-                    , @{ Name = 'url'; Expression = { $PSItem.Url } } `
-                    , @{ Name = 'headers'; Expression = { $PSItem.Headers } } `
-                    , @{ Name = 'body'; Expression = { $PSItem.Body } })
+            'requests' = @(foreach ($request in $pending) {
+                    $entry = [ordered]@{
+                        'id'     = $request.Id
+                        'method' = $request.Method
+                        'url'    = $request.Url
+                    }
+                    if ($request.Headers -and $request.Headers.Count -gt 0) { $entry['headers'] = $request.Headers }
+                    if ($request.Body -and $request.Body.Count -gt 0) { $entry['body'] = $request.Body }
+                    [pscustomobject] $entry
+                })
         }
 
         $batchResponse = Invoke-EntraRequest -Service $Service -Header $Header -Path $Path -Body $body -Method Post -ErrorAction Stop
