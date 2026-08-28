@@ -1,6 +1,17 @@
 ﻿# Changelog
 
-## Unreleased
+## 1.3.2 (2026-08-28)
+
+### Group model
+
+- **New:** `ResourceProvisioningOptions` on the group model (and thus on
+  `Get-PSEntraIDGroup`/`Get-PSEntraIDGroupDelta` output) - contains `Team` when a
+  Microsoft Teams team is provisioned on top of the group, the reliable way to tell a
+  team from a plain Microsoft 365 group. Added to the default
+  `Settings.GraphApiQuery.Select.Group` list.
+- **Fixed:** `AdministrativeUnitDelta` now carries `MembersDelta`. The AU delta query
+  has always selected `members`, but the type had nowhere to put `members@delta`, so
+  the converter silently dropped the membership changes the request paid for.
 
 ### Guest identities
 

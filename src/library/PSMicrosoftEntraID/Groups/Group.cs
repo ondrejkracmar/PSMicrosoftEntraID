@@ -132,6 +132,14 @@ namespace PSMicrosoftEntraID.Groups
         public string SecurityIdentifier { get; set; }
 
         /// <summary>
+        /// Gets or sets the resource provisioning options of the group. Contains "Team"
+        /// when a Microsoft Teams team is provisioned on top of the group - the reliable
+        /// way to tell a team from a plain Microsoft 365 group.
+        /// </summary>
+        [DataMember(Name = "resourceProvisioningOptions")]
+        public string[] ResourceProvisioningOptions { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group.
         /// </summary>
         [DataMember(Name = "assignedLabels")]
