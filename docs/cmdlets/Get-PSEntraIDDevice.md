@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 08/28/2026
+ms.date: 09/02/2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDDevice
 ---
@@ -17,10 +17,22 @@ Get the properties of the specified device.
 
 ## SYNTAX
 
-### Identity (Default)
+### List (Default)
+
+```
+Get-PSEntraIDDevice [-EnableException]
+```
+
+### Identity
 
 ```
 Get-PSEntraIDDevice -Identity <string[]> [-EnableException]
+```
+
+### Filter
+
+```
+Get-PSEntraIDDevice -Filter <string> [-EnableException]
 ```
 
 ## ALIASES
@@ -40,6 +52,13 @@ Get-PSEntraIDDevice -Identity "device-id"
 
 Get properties of Microsoft Entra ID device.
 
+### EXAMPLE 2
+
+Get-PSEntraIDDevice
+
+Every device in the directory, with the properties named by
+Settings.GraphApiQuery.Select.Device (extensionAttributes included).
+
 ## PARAMETERS
 
 ### -EnableException
@@ -57,6 +76,29 @@ ParameterSets:
 - Name: (All)
   Position: Named
   IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Filter
+
+A raw OData $filter for the devices list.
+The string is passed through
+verbatim - escape caller input before building it.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Filter
+  Position: Named
+  IsRequired: true
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false

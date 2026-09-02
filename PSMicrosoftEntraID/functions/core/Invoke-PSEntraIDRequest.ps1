@@ -127,9 +127,16 @@
     )
 
     begin {
-        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        # An explicitly bound -Service wins; only the unbound default falls back to the
+        # module-wide setting. Before this, the config value overrode the parameter and
+        # the splat below carried Service a second time, so every explicit -Service call
+        # (e.g. against PSMicrosoftEntraID.Endpoint) failed on a duplicate parameter.
+        [string] $service = $Service
+        if (-not $PSBoundParameters.ContainsKey('Service')) {
+            [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        }
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Invoke-EntraRequest
+        $param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Invoke-EntraRequest -Exclude Service
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
 

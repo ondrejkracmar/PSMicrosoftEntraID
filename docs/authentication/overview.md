@@ -32,6 +32,7 @@ If you are planning to build a web application or a desktop app for end users ho
 + [API Permissions and you](api-permissions.md)
 + [Cmdlet Permissions Reference](cmdlet-permissions.md)
 + [Managing an Application & Troubleshooting logins](managing-applications.md)
++ [Microsoft Defender for Endpoint API](defender-for-endpoint.md)
 
 > Setting up Authentication
 

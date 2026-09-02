@@ -282,6 +282,175 @@
             one field a removed object is guaranteed to carry.
             </remarks>
         </member>
+        <member name="T:PSMicrosoftEntraID.DefenderEndpoint.Machine">
+            <summary>
+            Represents a machine (device) onboarded to Microsoft Defender for Endpoint,
+            as returned by the MDE API (service PSMicrosoftEntraID.Endpoint,
+            GET /machines and GET /machines/{id}).
+            </summary>
+            <remarks>
+            The MDE machine id is a hash issued by Defender and exists only there. The
+            bridge to the directory is <see cref="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.AadDeviceId"/>, which equals the
+            deviceId of the Entra ID device object (PSMicrosoftEntraID.Devices.Device.DeviceId).
+            Rarely used nested members (ipAddresses, vmMetadata) are omitted until needed -
+            DataContractJsonSerializer ignores unknown JSON members.
+            </remarks>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.Id">
+            <summary>
+            The machine identity issued by Defender for Endpoint.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.ComputerDnsName">
+            <summary>
+            The fully qualified DNS name of the machine.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.FirstSeen">
+            <summary>
+            When the machine was first seen by the Defender for Endpoint sensor.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.LastSeen">
+            <summary>
+            When the machine last reported to the Defender for Endpoint service.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.OsPlatform">
+            <summary>
+            The operating system platform, for example Windows11 or Linux.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.Version">
+            <summary>
+            The operating system version.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.OsProcessor">
+            <summary>
+            The operating system processor architecture, for example x64.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.OsBuild">
+            <summary>
+            The operating system build number.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.LastIpAddress">
+            <summary>
+            The last IP address reported on a local interface of the machine.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.LastExternalIpAddress">
+            <summary>
+            The last public IP address the machine accessed the service from.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.AgentVersion">
+            <summary>
+            The Defender for Endpoint agent version.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.HealthStatus">
+            <summary>
+            The sensor health state, for example Active or Inactive.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.DeviceValue">
+            <summary>
+            The assigned device value (Normal, Low, High).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.RbacGroupId">
+            <summary>
+            The identifier of the RBAC device group the machine belongs to.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.RbacGroupName">
+            <summary>
+            The name of the RBAC device group the machine belongs to.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.RiskScore">
+            <summary>
+            The risk score as evaluated by Defender for Endpoint
+            (None, Informational, Low, Medium, High).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.ExposureLevel">
+            <summary>
+            The exposure level of the machine (None, Low, Medium, High).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.IsAadJoined">
+            <summary>
+            Whether the machine is joined to Microsoft Entra ID.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.AadDeviceId">
+            <summary>
+            The Entra ID device identifier. Equals the deviceId of the directory
+            device object - the join key between Defender for Endpoint and Entra ID.
+            Empty for machines that are not Entra joined or registered.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.OnboardingStatus">
+            <summary>
+            The onboarding state of the machine, for example Onboarded.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.DefenderAvStatus">
+            <summary>
+            The Microsoft Defender Antivirus status, for example Updated or Disabled.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.OsArchitecture">
+            <summary>
+            The operating system architecture reported by the sensor.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.ManagedBy">
+            <summary>
+            Which authority manages the machine, for example Intune or MDE.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.ManagedByStatus">
+            <summary>
+            The management enrollment status of the managing authority.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.MergedIntoMachineId">
+            <summary>
+            The identifier of the machine this record was merged into, when the
+            record was detected as a duplicate.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.IsPotentialDuplication">
+            <summary>
+            Whether the record was detected as a potential duplicate of another one.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.IsExcluded">
+            <summary>
+            Whether the machine is excluded from views and reports.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.ExclusionReason">
+            <summary>
+            The reason the machine was excluded, when it is.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.DefenderEndpoint.Machine.MachineTags">
+            <summary>
+            The machine tags attached in Defender for Endpoint - the payload of the
+            tag to extensionAttribute synchronization.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.DefenderEndpoint.Machine.ToString">
+            <summary>
+            Returns the DNS name, falling back to the identifier.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftEntraID.Delta.DeltaChangeType">
             <summary>
             What a delta response says happened to an object since the previous call.
@@ -386,6 +555,13 @@
             When the device last signed in, as reported by the directory.
             </summary>
         </member>
+        <member name="P:PSMicrosoftEntraID.Devices.Device.ExtensionAttributes">
+            <summary>
+            The fifteen custom extension attributes of the device. The only device
+            property an app-only caller may update, and the target for dynamic
+            device group membership rules.
+            </summary>
+        </member>
         <member name="M:PSMicrosoftEntraID.Devices.Device.ToString">
             <summary>
             Returns the display name, falling back to the identifier.
@@ -423,6 +599,71 @@
             would just print the class name, so fall back to the identifier - which is the
             one field a removed object is guaranteed to carry.
             </remarks>
+        </member>
+        <member name="T:PSMicrosoftEntraID.Devices.ExtensionAttributes">
+            <summary>
+            The fifteen custom extension attributes of a directory device
+            (Graph type onPremisesExtensionAttributes, property extensionAttributes).
+            </summary>
+            <remarks>
+            Modeled as a fixed shape rather than a dictionary on purpose - every
+            ConvertFrom-Rest* converter in this module round-trips through
+            DataContractJsonSerializer, which does not handle open types. Dynamic
+            device groups can rule on these values (device.extensionAttribute1-15),
+            which is what makes them the landing spot for Defender for Endpoint
+            machine tags.
+            </remarks>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute1">
+            <summary>First custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute2">
+            <summary>Second custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute3">
+            <summary>Third custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute4">
+            <summary>Fourth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute5">
+            <summary>Fifth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute6">
+            <summary>Sixth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute7">
+            <summary>Seventh custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute8">
+            <summary>Eighth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute9">
+            <summary>Ninth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute10">
+            <summary>Tenth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute11">
+            <summary>Eleventh custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute12">
+            <summary>Twelfth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute13">
+            <summary>Thirteenth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute14">
+            <summary>Fourteenth custom extension attribute.</summary>
+        </member>
+        <member name="P:PSMicrosoftEntraID.Devices.ExtensionAttributes.ExtensionAttribute15">
+            <summary>Fifteenth custom extension attribute.</summary>
+        </member>
+        <member name="M:PSMicrosoftEntraID.Devices.ExtensionAttributes.ToString">
+            <summary>
+            Returns the populated attributes as "extensionAttributeN=value" pairs,
+            or an empty string when none are set.
+            </summary>
         </member>
         <member name="T:PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit">
             <summary>

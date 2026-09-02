@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 08/28/2026
+ms.date: 09/02/2026
 PlatyPS schema version: 2024-05-01
 title: Connect-PSMicrosoftEntraID
 ---
@@ -156,11 +156,19 @@ Prompts you to enter the certificate-file's password first.
 
 ### EXAMPLE 5
 
-Connect-PSMicrosoftEntraID -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+Connect-PSMicrosoftEntraID -Service PSMicrosoftEntraID.Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 
 Establish a connection to Defender for Endpoint using a client secret.
+The Graph default service is left untouched and no license cache is populated.
 
 ### EXAMPLE 6
+
+Connect-PSMicrosoftEntraID -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntraID.Endpoint' -ClientID $clientID -TenantID $tenantID -CertificateThumbprint $thumbprint
+
+Establish connections to both the Graph API and Defender for Endpoint in a single call.
+Graph cmdlets keep using the Graph token; Defender for Endpoint requests can specify the Endpoint service explicitly.
+
+### EXAMPLE 7
 
 Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
 
@@ -902,8 +910,17 @@ HelpMessage: ''
 
 ### -Service
 
-The service to connect to.
+The service(s) to connect to.
+Accepts multiple services to acquire all tokens in a single call,
+e.g.
+'PSMicrosoftEntraID.Graph','PSMicrosoftEntraID.Endpoint' for Graph plus Defender for Endpoint.
 Individual commands using Invoke-EntraRequest specify the service to use and thus identify the token needed.
+Each service belongs to a family identified by its registered resource (Graph, Endpoint, Security,
+Azure, AzureKeyVault) and each family has its own default-service setting (Settings.DefaultService,
+Settings.DefaultServiceEndpoint, ...).
+Connecting updates only the setting of the families being
+connected - connecting to Defender for Endpoint therefore never redirects the Graph cmdlets.
+The license cache is only populated when a Graph-family service is among the connected services.
 Defaults to: Graph
 
 ```yaml

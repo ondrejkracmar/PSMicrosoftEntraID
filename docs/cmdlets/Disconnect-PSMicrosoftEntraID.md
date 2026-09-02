@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 08/28/2026
+ms.date: 09/02/2026
 PlatyPS schema version: 2024-05-01
 title: Disconnect-PSMicrosoftEntraID
 ---
