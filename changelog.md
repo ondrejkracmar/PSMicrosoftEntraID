@@ -1,6 +1,28 @@
 ﻿# Changelog
 
-## Unreleased
+## 1.4.0 (2026-09-02)
+
+### Connect & services
+
+- **New:** `Connect-PSMicrosoftEntraID -Service` accepts multiple services in one
+  call (e.g. Graph + Defender for Endpoint) and each service family - resolved
+  through its registered resource - now keeps its own default-service setting:
+  `Settings.DefaultService` (Graph), `Settings.DefaultServiceEndpoint`,
+  `Settings.DefaultServiceSecurity`, `Settings.DefaultServiceAzure`,
+  `Settings.DefaultServiceAzureKeyVault`. Connecting to a non-Graph service no
+  longer redirects the Graph cmdlets.
+- **Fixed:** every connect with an explicit `-Service` failed - the parameter
+  was splatted into `Connect-EntraService` a second time next to the explicit
+  argument, and the array was space-joined into `Settings.DefaultService`.
+- **Fixed:** `Invoke-PSEntraIDRequest` ignored an explicitly bound `-Service`
+  (the config default overrode it) and double-bound it in the splat, failing
+  every call against a non-default service.
+- **Changed:** the subscribed-license cache is only populated when a
+  Graph-family service is among the connected services; an Endpoint-only
+  connect no longer sends `subscribedSkus` to the securitycenter URL.
+- **New:** docs page `authentication/defender-for-endpoint.md` - which API and
+  token audience to use, WindowsDefenderATP + Graph permissions, the
+  `aadDeviceId` join key and machineTags-to-extensionAttributes examples.
 
 ### Defender for Endpoint groundwork
 
