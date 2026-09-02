@@ -146,8 +146,14 @@
 		The credentials from the federated identity provider to use in an Federated Credentials authentication flow.
 
 	.PARAMETER Service
-		The service to connect to.
+		The service(s) to connect to. Accepts multiple services to acquire all tokens in a single call,
+		e.g. 'PSMicrosoftEntraID.Graph','PSMicrosoftEntraID.Endpoint' for Graph plus Defender for Endpoint.
 		Individual commands using Invoke-EntraRequest specify the service to use and thus identify the token needed.
+		Each service belongs to a family identified by its registered resource (Graph, Endpoint, Security,
+		Azure, AzureKeyVault) and each family has its own default-service setting (Settings.DefaultService,
+		Settings.DefaultServiceEndpoint, ...). Connecting updates only the setting of the families being
+		connected - connecting to Defender for Endpoint therefore never redirects the Graph cmdlets.
+		The license cache is only populated when a Graph-family service is among the connected services.
 		Defaults to: Graph
 
 	.PARAMETER ServiceUrl
@@ -204,9 +210,16 @@
 		Prompts you to enter the certificate-file's password first.
 
 	.EXAMPLE
-		PS C:\> Connect-PSMicrosoftEntraID -Service Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+		PS C:\> Connect-PSMicrosoftEntraID -Service PSMicrosoftEntraID.Endpoint -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 
 		Establish a connection to Defender for Endpoint using a client secret.
+		The Graph default service is left untouched and no license cache is populated.
+
+	.EXAMPLE
+		PS C:\> Connect-PSMicrosoftEntraID -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntraID.Endpoint' -ClientID $clientID -TenantID $tenantID -CertificateThumbprint $thumbprint
+
+		Establish connections to both the Graph API and Defender for Endpoint in a single call.
+		Graph cmdlets keep using the Graph token; Defender for Endpoint requests can specify the Endpoint service explicitly.
 
 	.EXAMPLE
 		PS C:\> Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -VaultName myVault -Secretname GraphCert
@@ -395,21 +408,35 @@
 		$AuthenticationUrl
 	)
 	begin {
-		if (-not ([object]::Equals($Service, $null))) {
-			Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $Service
-			[string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+		[string[]] $service = $Service
+		if (-not $service) { [string[]] $service = $script:_DefaultService }
+		# Each connected service updates the default-service setting of its own family, resolved
+		# through the registered resource ($script:_ServiceDefaultConfig). The first service of a
+		# family in the list wins; families not being connected keep their current default.
+		[string[]] $graphService = @()
+		[string[]] $updatedSetting = @()
+		foreach ($serviceName in $service) {
+			[string] $resource = [string] $script:_EntraEndpoints[$serviceName].Resource
+			if ($resource -eq $script:_GraphResource) { $graphService += $serviceName }
+			[string] $settingName = $script:_ServiceDefaultConfig[$resource]
+			if (-not $settingName -or ($settingName -in $updatedSetting)) { continue }
+			Set-PSFConfig -Module $script:ModuleName -Name $settingName -Value $serviceName
+			$updatedSetting += $settingName
 		}
-		$param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Connect-EntraService
+		# Service is passed explicitly below - keeping it in the splat would bind the parameter twice.
+		$param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Connect-EntraService -Exclude Service
 	}
 
 	process {
 		try {
 			Connect-EntraService @param -Service $service
-			[PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedSku = Get-PSEntraIDSubscribedLicense
-			$subscribedSku | Set-PSFResultCache
+			if ($graphService.Count -gt 0) {
+				[PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedSku = Get-PSEntraIDSubscribedLicense
+				$subscribedSku | Set-PSFResultCache
+			}
 		}
 		catch {
-			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f $service)
+			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f ($service -join ', '))
 		}
 	}
 	end { }
