@@ -339,10 +339,44 @@ This document provides a comprehensive list of Microsoft Graph API permissions r
 ## Device Management
 
 ### Get-PSEntraIDDevice
-**Microsoft Graph API**: `GET /devices/{id}`
+**Microsoft Graph API**: `GET /devices` or `GET /devices/{id}`
 - **Delegated**: `Device.Read.All` or `Directory.Read.All`
 - **Application**: `Device.Read.All` or `Directory.Read.All`
 - **Admin Consent Required**: Yes
+
+### Set-PSEntraIDDeviceExtensionAttribute
+**Microsoft Graph API**: `PATCH /devices/{id}` or `PATCH /devices(deviceId='{deviceId}')`
+- **Delegated**: `Directory.AccessAsUser.All` (plus the Intune Administrator role)
+- **Application**: `Device.ReadWrite.All`
+- **Admin Consent Required**: Yes
+- **Notes**: `extensionAttributes` is the only device property an app-only caller
+  may update, which is exactly what this cmdlet writes - `Device.ReadWrite.All`
+  is both sufficient and least privileged.
+
+---
+
+## Defender for Endpoint
+
+These cmdlets call the MDE API (service `PSMicrosoftEntraID.Endpoint`, resource
+`https://api.securitycenter.microsoft.com`), NOT Microsoft Graph. The
+permissions come from the **WindowsDefenderATP** application in the app
+registration ("APIs my organization uses"), and delegated callers additionally
+need the MDE role permission and device-group access described in
+[Microsoft Defender for Endpoint API](defender-for-endpoint.md).
+
+### Get-PSEntraIDMachine
+**MDE API**: `GET /machines` or `GET /machines/{id}`
+- **Delegated**: `Machine.Read` (plus 'View data' MDE role permission)
+- **Application**: `Machine.Read.All`
+- **Admin Consent Required**: Yes
+
+### Add-PSEntraIDMachineTag / Remove-PSEntraIDMachineTag
+**MDE API**: `POST /machines/{id}/tags`
+- **Delegated**: `Machine.ReadWrite` (plus 'Manage security setting' MDE role permission)
+- **Application**: `Machine.ReadWrite.All`
+- **Admin Consent Required**: Yes
+- **Notes**: rate limited to 100 calls/minute and 1,500 calls/hour; throttled
+  requests are retried by the request layer.
 
 ---
 

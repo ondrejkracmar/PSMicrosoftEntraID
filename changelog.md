@@ -1,6 +1,33 @@
 ﻿# Changelog
 
-## 1.4.0 (2026-09-02)
+## 1.5.0 (2026-09-02)
+
+> Supersedes the tagged-but-never-published 1.4.0: its release build failed the
+> file-integrity gate (bin/assembly.ps1 was rewritten without the UTF8 BOM in
+> the multi-target change), so the Publish stage never ran. Everything below
+> plus the whole 1.4.0 section ships here.
+
+### Defender for Endpoint cmdlets
+
+- **New:** `Get-PSEntraIDMachine` - MDE machines as typed
+  `PSMicrosoftEntraID.DefenderEndpoint.Machine` objects; by machine id, by the
+  Entra device GUID (`-DeviceId`, server-side `aadDeviceId` filter), by raw
+  `-Filter`, or all. Uses the Endpoint family default service
+  (`Settings.DefaultServiceEndpoint`). Counterpart naming: `*-PSEntraIDDevice`
+  reads the directory device, `*-PSEntraIDMachine` reads Defender for Endpoint.
+- **New:** `Add-PSEntraIDMachineTag` / `Remove-PSEntraIDMachineTag` - machine
+  tag writes (`POST /machines/{id}/tags`), pipeline from `Get-PSEntraIDMachine`,
+  `-PassThru` returns the updated machine.
+- **New:** `Set-PSEntraIDDeviceExtensionAttribute` - sets or clears one
+  `extensionAttribute1..15` on a directory device; addresses by piped device,
+  object id or device GUID (`devices(deviceId='...')`), clears with null (an
+  empty string would be stored literally), and composes into `$batch` via
+  `-PassThru`.
+- **New:** `Get-PSEntraIDDevice` lists and filters (`-Filter`) devices - it was
+  Identity-only - and sends the new `Settings.GraphApiQuery.Select.Device`
+  selection, `extensionAttributes` included.
+- **Fixed:** UTF8 BOM restored on `bin/assembly.ps1` (the 1.4.0 build breaker)
+  and stamped on all new script files.
 
 ### Connect & services
 
