@@ -22,6 +22,16 @@
     .PARAMETER Tag
         The tag value(s) to remove.
 
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Confirm
+        Prompts for confirmation before the command makes a change. -Confirm:$false
+        suppresses that prompt.
+
+        Bound explicitly it wins over -Force, whatever its value - so -Confirm:$true
+        prompts even alongside -Force, and the two are alternatives rather than a pair.
+
     .PARAMETER EnableException
         This parameter disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
