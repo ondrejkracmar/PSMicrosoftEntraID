@@ -923,5 +923,65 @@
     </MemberSet>
   </Members>
 </Type>
+  <Type>
+  <Name>PSMicrosoftEntraID.Devices.Device</Name>
+  <Members>
+    <MemberSet>
+      <Name>PSStandardMembers</Name>
+      <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>DeviceId</Name>
+            <Name>DisplayName</Name>
+            <Name>AccountEnabled</Name>
+            <Name>OperatingSystem</Name>
+            <Name>OperatingSystemVersion</Name>
+            <Name>TrustType</Name>
+            <Name>IsManaged</Name>
+            <Name>IsCompliant</Name>
+            <Name>ApproximateLastSignInDateTime</Name>
+            <Name>ExtensionAttributes</Name>
+          </ReferencedProperties>
+        </PropertySet>
+        <NoteProperty>
+          <Name>DefaultDisplayProperty</Name>
+          <Value>DisplayName</Value>
+        </NoteProperty>
+      </Members>
+    </MemberSet>
+  </Members>
+</Type>
+  <Type>
+  <Name>PSMicrosoftEntraID.DefenderEndpoint.Machine</Name>
+  <Members>
+    <MemberSet>
+      <Name>PSStandardMembers</Name>
+      <Members>
+        <PropertySet>
+          <Name>DefaultDisplayPropertySet</Name>
+          <ReferencedProperties>
+            <Name>Id</Name>
+            <Name>ComputerDnsName</Name>
+            <Name>AadDeviceId</Name>
+            <Name>OsPlatform</Name>
+            <Name>HealthStatus</Name>
+            <Name>OnboardingStatus</Name>
+            <Name>RiskScore</Name>
+            <Name>ExposureLevel</Name>
+            <Name>RbacGroupName</Name>
+            <Name>MachineTags</Name>
+            <Name>LastSeen</Name>
+          </ReferencedProperties>
+        </PropertySet>
+        <NoteProperty>
+          <Name>DefaultDisplayProperty</Name>
+          <Value>ComputerDnsName</Value>
+        </NoteProperty>
+      </Members>
+    </MemberSet>
+  </Members>
+</Type>
 
 </Types>

@@ -20,12 +20,14 @@
 	# Description of the functionality provided by this module
 	Description        = 'Administer Microsoft Entra ID from PowerShell over Microsoft Graph: users and guests, groups and their members, administrative units, contacts, devices, organization and Message Center, licence assignment down to individual service plans, batched requests, and incremental (delta) reads with resumable sessions. Returns typed objects rather than raw JSON.'
 
-	# Minimum version of the PowerShell engine required by this module
-	PowerShellVersion  = '7.2'
+	# Minimum version of the PowerShell engine required by this module.
+	# The net8.0 build of the library references System.Management.Automation 7.4,
+	# which sets the floor; PowerShell 7.6+ loads the net10.0 build instead.
+	PowerShellVersion  = '7.4'
 
-	# The compiled library targets net8.0, so Desktop cannot load it. Saying so here is
-	# what lets the gallery show the compatibility badge and stops Windows PowerShell
-	# users installing something that can never import.
+	# The compiled library targets net8.0/net10.0, so Desktop cannot load it. Saying so
+	# here is what lets the gallery show the compatibility badge and stops Windows
+	# PowerShell users installing something that can never import.
 	CompatiblePSEditions = @('Core')
 
 	# Modules that must be imported into the global environment prior to importing
@@ -40,9 +42,10 @@
 		@{ ModuleName = 'PSFramework'; ModuleVersion = '1.14.450' }
 	)
 
-	# Assemblies that must be loaded prior to importing this module.
-	# Forward slash: it resolves on Windows too, a backslash does not resolve on Linux.
-	RequiredAssemblies = @('bin/PSMicrosoftEntraID.dll')
+	# The library ships per target framework (bin/net8.0, bin/net10.0) and is loaded by
+	# bin/assembly.ps1, which picks the folder matching the running .NET runtime -
+	# a static RequiredAssemblies path cannot express that.
+	RequiredAssemblies = @()
 
 	# Type files (.ps1xml) to be loayded when importing this module
 	TypesToProcess     = @('types\PSMicrosoftEntraID.Types.ps1xml')
