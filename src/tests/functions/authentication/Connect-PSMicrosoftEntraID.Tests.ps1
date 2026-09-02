@@ -1,4 +1,4 @@
-﻿BeforeAll {
+BeforeAll {
     $moduleName = 'PSMicrosoftEntraID'
 
     Import-Module "$PSScriptRoot/../../../$moduleName/$moduleName.psd1" -Force
@@ -6,7 +6,10 @@
     InModuleScope $moduleName {
         if (-not $script:_EntraEndpoints) { $script:_EntraEndpoints = @{} }
         if (-not $script:_EntraEndpoints.ContainsKey('PSMicrosoftEntraID.Graph')) {
-            $script:_EntraEndpoints['PSMicrosoftEntraID.Graph'] = @{}
+            $script:_EntraEndpoints['PSMicrosoftEntraID.Graph'] = @{ Resource = 'https://graph.microsoft.com' }
+        }
+        if (-not $script:_EntraEndpoints.ContainsKey('PSMicrosoftEntraID.Endpoint')) {
+            $script:_EntraEndpoints['PSMicrosoftEntraID.Endpoint'] = @{ Resource = 'https://api.securitycenter.microsoft.com' }
         }
     }
 }
@@ -16,9 +19,26 @@ Describe 'Connect-PSMicrosoftEntraID' -Tag 'Unit' {
         Mock Set-PSFConfig -ModuleName PSMicrosoftEntraID { }
         Mock Get-PSFConfigValue -ModuleName PSMicrosoftEntraID { 'PSMicrosoftEntraID.Graph' }
 
+        # The behavior receives the piped $PSBoundParameters enumerated into KeyValuePair items -
+        # rebuild the hashtable from the pairs and honor -Exclude like the real command does.
         Mock ConvertTo-PSFHashtable -ModuleName PSMicrosoftEntraID {
-            param($InputObject, $ReferenceCommand)
-            return $InputObject
+            param(
+                [Parameter(ValueFromPipeline = $true)] $InputObject,
+                $ReferenceCommand,
+                [string[]] $Exclude
+            )
+            $result = @{}
+            foreach ($entry in @($InputObject)) {
+                if ($entry -is [System.Collections.IDictionary]) {
+                    foreach ($key in $entry.Keys) {
+                        if ($key -notin $Exclude) { $result[$key] = $entry[$key] }
+                    }
+                }
+                elseif ($null -ne $entry.Key -and $entry.Key -notin $Exclude) {
+                    $result[$entry.Key] = $entry.Value
+                }
+            }
+            $result
         }
 
         Mock Connect-EntraService -ModuleName PSMicrosoftEntraID { }
@@ -66,6 +86,59 @@ Describe 'Connect-PSMicrosoftEntraID' -Tag 'Unit' {
             Should -Invoke Set-PSFConfig -ModuleName PSMicrosoftEntraID -ParameterFilter {
                 $Name -eq 'Settings.DefaultService'
             } -Times 1 -Scope It
+        }
+    }
+
+    Context 'Service handling' {
+        It 'Should pass all requested services to Connect-EntraService' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Connect-EntraService -ModuleName PSMicrosoftEntraID -ParameterFilter {
+                $Service.Count -eq 2 -and
+                $Service -contains 'PSMicrosoftEntraID.Graph' -and
+                $Service -contains 'PSMicrosoftEntraID.Endpoint'
+            } -Times 1 -Scope It
+        }
+
+        It 'Should set the default service to a single Graph-based service, never the array' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Set-PSFConfig -ModuleName PSMicrosoftEntraID -ParameterFilter {
+                $Name -eq 'Settings.DefaultService' -and $Value -eq 'PSMicrosoftEntraID.Graph'
+            } -Times 1 -Scope It
+        }
+
+        It 'Should warm the license cache when a Graph service is among the connected services' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Get-PSEntraIDSubscribedLicense -ModuleName PSMicrosoftEntraID -Times 1 -Scope It
+            Should -Invoke Set-PSFResultCache -ModuleName PSMicrosoftEntraID -Times 1 -Scope It
+        }
+
+        It 'Should not rewrite the Graph default service on an Endpoint-only connect' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Set-PSFConfig -ModuleName PSMicrosoftEntraID -ParameterFilter {
+                $Name -eq 'Settings.DefaultService'
+            } -Times 0 -Scope It
+        }
+
+        It 'Should update the Endpoint family default on an Endpoint-only connect' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Set-PSFConfig -ModuleName PSMicrosoftEntraID -ParameterFilter {
+                $Name -eq 'Settings.DefaultServiceEndpoint' -and $Value -eq 'PSMicrosoftEntraID.Endpoint'
+            } -Times 1 -Scope It
+        }
+
+        It 'Should skip the license cache on an Endpoint-only connect' {
+            Connect-PSMicrosoftEntraID -ClientID 'Graph' -TenantID 'organizations' -Browser -Service 'PSMicrosoftEntraID.Endpoint'
+
+            Should -Invoke Connect-EntraService -ModuleName PSMicrosoftEntraID -ParameterFilter {
+                $Service -eq 'PSMicrosoftEntraID.Endpoint'
+            } -Times 1 -Scope It
+            Should -Invoke Get-PSEntraIDSubscribedLicense -ModuleName PSMicrosoftEntraID -Times 0 -Scope It
+            Should -Invoke Set-PSFResultCache -ModuleName PSMicrosoftEntraID -Times 0 -Scope It
         }
     }
 

@@ -21,6 +21,10 @@ Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryWaitInSeco
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryCount' -Value 0 -Initialize -Validation 'integer' -Description "Value of parameter RetryCount in the Invoke-PSFProtectedCommand."
 
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $script:_DefaultService -Initialize -Validation 'string' -Description "What service name of Microsoft EntraID."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceEndpoint' -Value 'PSMicrosoftEntraID.Endpoint' -Initialize -Validation 'string' -Description "Default service name for Microsoft Defender for Endpoint requests."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceSecurity' -Value 'PSMicrosoftEntraID.Security' -Initialize -Validation 'string' -Description "Default service name for Microsoft Defender XDR (security.microsoft.com) requests."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceAzure' -Value 'PSMicrosoftEntraID.Azure' -Initialize -Validation 'string' -Description "Default service name for Azure Management requests."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceAzureKeyVault' -Value 'PSMicrosoftEntraID.AzureKeyVault' -Initialize -Validation 'string' -Description "Default service name for Azure Key Vault requests."
 
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApiQuery.Warning' -Value $true -Validation 'bool' -Description "Whether a warning will be displayed in cmdlets."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.GraphApiQuery.Format' -Value 'json' -Initialize -Validation 'string' -Description "Specifies the media format of the items returned from Microsoft Graph Api."
