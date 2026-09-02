@@ -1,5 +1,29 @@
 ﻿# Changelog
 
+## Unreleased
+
+### Defender for Endpoint groundwork
+
+- **New:** `PSMicrosoftEntraID.DefenderEndpoint.Machine` - a typed model for machines
+  returned by the Defender for Endpoint API (service `PSMicrosoftEntraID.Endpoint`),
+  including `AadDeviceId` (the join key to the directory device) and `MachineTags`.
+- **New:** `ExtensionAttributes` on the device model - the fifteen
+  `extensionAttribute1..15` values, the only device property an app-only caller may
+  update and the target for dynamic device group rules.
+- **New:** default table views and display sets for `Devices.Device` (previously had
+  none) and `DefenderEndpoint.Machine`.
+
+### Library
+
+- **Changed:** the compiled library now multi-targets `net8.0` and `net10.0`, split
+  under `bin/net8.0` and `bin/net10.0`; `bin/assembly.ps1` picks the folder matching
+  the running .NET runtime (same layout as PSContainerSync). The package reference
+  moved from `Microsoft.PowerShell.SDK 7.2.24` to reference-only
+  `System.Management.Automation` (7.4.13 / 7.6.1), which also clears the 7.2-line
+  transitive advisories noted in the csproj.
+- **Changed:** minimum PowerShell version is now 7.4 (the floor of the net8.0
+  reference); PowerShell 7.6+ loads the net10.0 build.
+
 ## 1.3.4 (2026-08-29)
 
 ### Fixed

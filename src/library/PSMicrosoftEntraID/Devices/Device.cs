@@ -94,6 +94,14 @@ namespace PSMicrosoftEntraID.Devices
         public string ApproximateLastSignInDateTime { get; set; }
 
         /// <summary>
+        /// The fifteen custom extension attributes of the device. The only device
+        /// property an app-only caller may update, and the target for dynamic
+        /// device group membership rules.
+        /// </summary>
+        [DataMember(Name = "extensionAttributes")]
+        public ExtensionAttributes ExtensionAttributes { get; set; }
+
+        /// <summary>
         /// Returns the display name, falling back to the identifier.
         /// </summary>
         public override string ToString()

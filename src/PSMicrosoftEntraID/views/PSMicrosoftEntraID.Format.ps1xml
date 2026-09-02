@@ -805,5 +805,73 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
+		<View>
+			<Name>PSMicrosoftEntraID.Devices.Device</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Devices.Device</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize />
+				<TableHeaders>
+				<TableColumnHeader><Width>36</Width></TableColumnHeader>
+				<TableColumnHeader><Width>36</Width></TableColumnHeader>
+				<TableColumnHeader><Width>24</Width></TableColumnHeader>
+				<TableColumnHeader><Width>14</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>12</Width></TableColumnHeader>
+				<TableColumnHeader><Width>10</Width></TableColumnHeader>
+				<TableColumnHeader><Width>12</Width></TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+				<TableRowEntry>
+					<TableColumnItems>
+					<TableColumnItem><PropertyName>Id</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>DeviceId</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>DisplayName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>OperatingSystem</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>OperatingSystemVersion</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>TrustType</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>IsManaged</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>IsCompliant</PropertyName></TableColumnItem>
+					</TableColumnItems>
+				</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
+			<Name>PSMicrosoftEntraID.DefenderEndpoint.Machine</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.DefenderEndpoint.Machine</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize />
+				<TableHeaders>
+				<TableColumnHeader><Width>42</Width></TableColumnHeader>
+				<TableColumnHeader><Width>24</Width></TableColumnHeader>
+				<TableColumnHeader><Width>12</Width></TableColumnHeader>
+				<TableColumnHeader><Width>10</Width></TableColumnHeader>
+				<TableColumnHeader><Width>10</Width></TableColumnHeader>
+				<TableColumnHeader><Width>12</Width></TableColumnHeader>
+				<TableColumnHeader><Width>16</Width></TableColumnHeader>
+				<TableColumnHeader><Width>24</Width></TableColumnHeader>
+				<TableColumnHeader><Width>22</Width></TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+				<TableRowEntry>
+					<TableColumnItems>
+					<TableColumnItem><PropertyName>Id</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>ComputerDnsName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>OsPlatform</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>HealthStatus</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>RiskScore</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>ExposureLevel</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>RbacGroupName</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>MachineTags</PropertyName></TableColumnItem>
+					<TableColumnItem><PropertyName>LastSeen</PropertyName></TableColumnItem>
+					</TableColumnItems>
+				</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
 </ViewDefinitions>
 </Configuration>
