@@ -78,6 +78,13 @@
 
 	'Device.Get'                           = "Get device '{0}'"
 	'Device.Get.Failed'                    = "Get device '{0}' failed"
+	'Device.List'                          = "List devices with filter '{0}'"
+	'Device.ExtensionAttribute.Set'        = "Set {0} on '{1}'"
+
+	'Machine.Get'                          = "Get machine '{0}'"
+	'Machine.List'                         = "List machines with filter '{0}'"
+	'MachineTag.Add'                       = "Add tag '{0}' to machine '{1}'"
+	'MachineTag.Remove'                    = "Remove tag '{0}' from machine '{1}'"
 
 	'AdministrativeUnit.Get'               = "Get administrative unit '{0}'"
 	'AdministrativeUnit.Get.Failed'        = "Get administrative unit '{0}' failed"

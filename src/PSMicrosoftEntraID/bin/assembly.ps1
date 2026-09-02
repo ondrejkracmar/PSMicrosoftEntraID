@@ -1,4 +1,4 @@
-# Selects the compiled library for the running .NET runtime.
+﻿# Selects the compiled library for the running .NET runtime.
 # PowerShell 7.4/7.5 run on .NET 8/9 -> net8.0; PowerShell 7.6+ runs on .NET 10 -> net10.0.
 $script:PSMicrosoftEntraIDFramework = if ([System.Environment]::Version.Major -ge 10) { 'net10.0' } else { 'net8.0' }
 

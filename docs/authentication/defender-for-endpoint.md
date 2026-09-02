@@ -75,25 +75,29 @@ Connect-PSMicrosoftEntraID -Service 'PSMicrosoftEntraID.Graph', 'PSMicrosoftEntr
 The subscribed-license cache is only populated when a Graph-family service is among the connected
 services; an Endpoint-only connect skips it.
 
-## Calling the MDE API today
+## Calling the MDE API
 
-Until dedicated machine cmdlets exist, `Invoke-PSEntraIDRequest` reaches the MDE API directly:
+The typed cmdlets cover the machine surface - `*-PSEntraIDDevice` reads the
+directory device, `*-PSEntraIDMachine` reads Defender for Endpoint:
 
 ```powershell
-# One machine by its MDE machine id
-Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Endpoint -Path 'machines/1e5bc9d7e413ddd7902c2932e418702b84d0cc07' -Method Get
+# All machines, one by its MDE machine id, or by a filter
+Get-PSEntraIDMachine
+Get-PSEntraIDMachine -Identity '1e5bc9d7e413ddd7902c2932e418702b84d0cc07'
+Get-PSEntraIDMachine -Filter "healthStatus eq 'Active'"
 
-# All machines carrying a tag
-Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Endpoint -Path 'machines' `
-    -Query @{ '$filter' = "machineTags/any(t: t eq 'test tag 1')" } -Method Get
+# The MDE machine record(s) of a known Entra ID device (join key)
+Get-PSEntraIDMachine -DeviceId $device.DeviceId
 
-# The MDE machine of a known Entra ID device
-Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Endpoint -Path 'machines' `
-    -Query @{ '$filter' = ("aadDeviceId eq {0}" -f $device.DeviceId) } -Method Get
+# Machine tags (Machine.ReadWrite.All; 100 calls/min, 1500 calls/h)
+Get-PSEntraIDMachine -DeviceId $device.DeviceId | Add-PSEntraIDMachineTag -Tag 'test tag 1'
+Remove-PSEntraIDMachineTag -MachineId $machine.Id -Tag 'test tag 1'
+```
 
-# Add a machine tag (Machine.ReadWrite.All; 100 calls/min, 1500 calls/h)
-Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Endpoint -Path 'machines/{id}/tags' `
-    -Method Post -Body @{ Value = 'test tag 1'; Action = 'Add' }
+Anything the cmdlets do not cover yet is still reachable raw:
+
+```powershell
+Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Endpoint -Path 'alerts' -Method Get
 ```
 
 The `/machines` list supports `$filter` on `computerDnsName`, `id`, `version`, `deviceValue`,
@@ -114,9 +118,12 @@ The Graph device can be addressed by the join key directly, no directory-object-
 
 ```powershell
 # Write an MDE machine tag into extensionAttribute1 of the matching Entra ID device
-Invoke-PSEntraIDRequest -Service PSMicrosoftEntraID.Graph `
-    -Path ("devices(deviceId='{0}')" -f $machine.aadDeviceId) -Method Patch `
-    -Body @{ extensionAttributes = @{ extensionAttribute1 = $machine.machineTags[0] } }
+Set-PSEntraIDDeviceExtensionAttribute -DeviceId $machine.AadDeviceId `
+    -AttributeName extensionAttribute1 -Value $machine.MachineTags[0]
+
+# Clear it again (clears with null - a dynamic group rule never matches '')
+Set-PSEntraIDDeviceExtensionAttribute -DeviceId $machine.AadDeviceId `
+    -AttributeName extensionAttribute1 -Value ''
 ```
 
 Dynamic device groups can then rule on the attribute, e.g.
