@@ -11,7 +11,7 @@
 Describe 'Invoke-PSEntraIDRequest' -Tag 'Unit' {
 
     BeforeAll {
-        Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
+        Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true; 'PSMicrosoftEntraID.Endpoint' = $true } -Scope Script -Force
         Set-Variable -Name '_DefaultService' -Value 'PSMicrosoftEntraID.Graph' -Scope Script -Force
 
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
@@ -84,6 +84,22 @@ Describe 'Invoke-PSEntraIDRequest' -Tag 'Unit' {
             Invoke-PSEntraIDRequest -Path 'users' -Force
 
             Should -Invoke -ModuleName $script:ModuleName -CommandName ConvertTo-PSFHashtable -Times 1
+        }
+
+        It 'Should honor an explicitly bound Service instead of the config default' {
+            Invoke-PSEntraIDRequest -Path 'machines' -Service 'PSMicrosoftEntraID.Endpoint' -Force
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Service -eq 'PSMicrosoftEntraID.Endpoint'
+            }
+        }
+
+        It 'Should assert the connection of the explicitly bound Service' {
+            Invoke-PSEntraIDRequest -Path 'machines' -Service 'PSMicrosoftEntraID.Endpoint' -Force
+
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -ParameterFilter {
+                $Service -eq 'PSMicrosoftEntraID.Endpoint'
+            }
         }
     }
 
