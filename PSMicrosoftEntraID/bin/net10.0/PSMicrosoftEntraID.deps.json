@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "PSMicrosoftEntraID/1.5.0": {
+      "PSMicrosoftEntraID/1.5.1": {
         "dependencies": {
           "System.Management.Automation": "7.6.1"
         },
@@ -461,7 +461,7 @@
     }
   },
   "libraries": {
-    "PSMicrosoftEntraID/1.5.0": {
+    "PSMicrosoftEntraID/1.5.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
