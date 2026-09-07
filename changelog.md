@@ -1,5 +1,22 @@
 ﻿# Changelog
 
+## 1.5.1 (2026-09-07)
+
+### Fixed
+
+- **The administrative-unit reads asked Graph for a property the resource does not have.**
+  `Settings.GraphApiQuery.Select.AdministrativeUnit` carried `createdDateTime`, which
+  exists on user and group but NOT on `administrativeUnit`, so Graph answered every
+  `Get-PSEntraIDAdministrativeUnit` / `Get-PSEntraIDAdministrativeUnitDelta` call with
+  `Request_UnsupportedQuery` ("Invalid property: createdDateTime") and the whole read
+  failed - in production this took down the AU leg of an inventory sync, which then
+  looked like a missing `AdministrativeUnit.Read.All` consent. The property is gone and
+  `membershipType`, `membershipRule` and `membershipRuleProcessingState` (real AU
+  properties, they describe a dynamic unit) joined the list. New
+  `src/tests/general/GraphSelectProperties.Tests.ps1` asserts the SHIPPED default
+  against the resource's property set - the per-cmdlet tests mock the config away, so
+  nothing caught this.
+
 ## 1.5.0 (2026-09-02)
 
 > Supersedes the tagged-but-never-published 1.4.0: its release build failed the
