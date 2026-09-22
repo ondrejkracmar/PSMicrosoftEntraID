@@ -28,3 +28,8 @@ tools/tenant.config.json
 
 # Result sets from the scenario scripts (-JsonPath). Run output, not source.
 tools/*.result.json
+
+# Compiled output: the CI build (src/build/vsts-build-library.ps1) produces bin/<tfm>/ from
+# the .csproj, so the binaries do not belong in git. bin/assembly.ps1 is source and is kept.
+**/bin/
+**/obj/
