@@ -129,6 +129,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
+                        Write-PSFMessage -Level Warning -String 'User.Get.Failed' -StringValues $itemUser
                     }
                     else {
                         [void] $ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))

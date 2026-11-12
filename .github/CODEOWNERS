@@ -1,0 +1,14 @@
+# Code owners: GitHub requests a review from them for a pull request that touches these paths.
+# Azure DevOps ignores this file: configure "Automatically included reviewers" with the same paths
+# in the branch policy of main.
+#
+# Governed folders: an agent working in its branch has write access too, so the container
+# definition, the agent policy, the standards record and the shared build scripts are never merged
+# on the agent's say-so.
+*                 @ondrejkracmar
+/.claude/         @ondrejkracmar
+/.codexvault/     @ondrejkracmar
+/.github/         @ondrejkracmar
+/src/build/       @ondrejkracmar
+/AGENTS.md        @ondrejkracmar
+/CLAUDE.md        @ondrejkracmar
