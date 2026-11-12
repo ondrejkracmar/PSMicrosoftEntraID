@@ -1,5 +1,61 @@
 ﻿# Changelog
 
+## Unreleased
+
+### Breaking
+
+- **The user name and password sign-in (`Connect-PSMicrosoftEntraID -Credential`, ROPC) is
+  off by default.** It bypasses multi-factor authentication and Conditional Access. A connect
+  with `-Credential` now fails with a message that says how to opt in:
+  `Set-PSFConfig -FullName PSMicrosoftEntraID.Settings.Authentication.AllowPasswordFlow -Value $true`.
+  Opted in, every such connect writes a warning. Checked on renewal of the token too.
+- **`Invoke-PSEntraIDRequest` / `Invoke-EntraRequest` refuse an absolute URL on another host
+  than the connected service, or over http** (`SecurityError`, before anything is sent). Pass a
+  path relative to the service, or a URL on the service's own host.
+
+### Security
+
+- **The access token went to any host.** An absolute `-Path` and every `@odata.nextLink` were
+  sent with `Authorization: Bearer <token>`, whatever their host and scheme. Every request -
+  the first and each next link - is now checked against the `ServiceUrl` of the token it would
+  carry: https only, same host and port. Each service's token decides its own host (Graph,
+  Graph beta, Defender for Endpoint, Defender XDR, Azure, Key Vault with its vault name).
+- **Delta and skip tokens in the log.** The request layer wrote the full request URL to the
+  verbose stream and into its "Request failed" warning, and the full `@odata.deltaLink` into a
+  warning - all of it into the PSFramework log. Messages are now localized and show the URL by
+  scheme, host and path only.
+- **Browser sign-in hardened.** The state comes from the CSPRNG (it was `Get-Random`), the code
+  is bound with PKCE (S256), a request to the local port without this sign-in's state no longer
+  ends the sign-in, the browser gets a local result page instead of a redirect (to a random
+  local port, or now and then to a YouTube video), and the wait ends after
+  `Settings.Authentication.BrowserTimeoutSeconds` (300). The sign-in link is printed through
+  the host, not `Write-Host`, and not logged.
+- **The certificate sign-in no longer sends its signed client assertion as a bearer header** -
+  the body carries it, as RFC 7523 has it.
+
+### Fixed
+
+- **A federated connection renewed itself as a managed identity.** The token object was
+  overwritten right after it was built, so the first renewal (after ~1 hour) tried a managed
+  identity sign-in. The connection now stays federated.
+- **Every `-AzToken` session died after about 55 minutes.** The token was taken as valid for one
+  hour from the connect, whatever its real expiry, and the renewal passed the token string where
+  the object was expected and threw. The expiry now comes from `ExpiresOn` or the token's `exp`
+  claim; a token of `Get-AzAccessToken` is renewed through Az.Accounts (same identity enforced),
+  any other source fails with a message asking for a new connect.
+- **Managed identity did not work on an Azure VM** and left `IDENTITY_ENDPOINT` set in the
+  process. The instance metadata service is now used directly (after a 2 s probe, with
+  Microsoft's retry schedule); the environment is never written.
+- **Device code sign-in:** `slow_down` from the token endpoint was a fatal error; it now waits
+  5 s longer per RFC 8628. An expired or declined code ends with a clear message; the prompt
+  goes through `Write-PSFMessage` instead of `Write-Host`.
+- **Client secret and federated sign-in use the v2.0 token endpoint** (`<resource>/.default`),
+  as the certificate flow already did.
+- **Token claims are decoded as UTF-8** (names with diacritics read as `?`), and the token
+  object keeps the authentication URL its constructor was given (`$AuthenticationUr` typo).
+- **`Connect-PSMicrosoftEntraID` names the cause when a connect fails** instead of only
+  "Establish a connection to ... failed".
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed

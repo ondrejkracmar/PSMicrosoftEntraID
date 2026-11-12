@@ -7,6 +7,11 @@ $script:_EntraEndpoints = @{}
 # Plugins for automatic processing of Federated Authentication in the correct context
 $script:_FederationProviders = @{}
 
+# The Azure instance metadata service (managed identity on a VM) and how long its probe may wait, in seconds.
+# Variables, not literals, so the tests can point the probe at a local address.
+$script:_InstanceMetadataUrl = 'http://169.254.169.254'
+$script:_InstanceMetadataProbeSeconds = 2
+
 # The default service to connect to
 $script:_DefaultService = 'PSMicrosoftEntraID.Graph'
 
