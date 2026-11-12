@@ -8,6 +8,10 @@
         This logs into graph as a user, not as an application.
         Only cloud-only accounts can be used for this workflow.
         Consent to scopes must be granted before using them, as this command cannot show the consent prompt.
+
+        This flow (resource owner password credentials, ROPC) bypasses multi-factor authentication and Conditional
+        Access, so it is turned off unless PSMicrosoftEntraID.Settings.Authentication.AllowPasswordFlow is $true.
+        The setting is checked on every sign-in, a renewal of the token included.
 	
 	.PARAMETER Resource
 		The resource owning the api permissions / scopes requested.
@@ -57,6 +61,10 @@
         [string]
 		$AuthenticationUrl
 	)
+
+	if (-not (Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Authentication.AllowPasswordFlow')) {
+		Invoke-TerminatingException -Cmdlet $PSCmdlet -Message (Get-PSFLocalizedString -Module 'PSMicrosoftEntraID' -Name 'Identity.Password.Disabled') -Category SecurityError
+	}
 
 	$actualScopes = $Scopes | Resolve-ScopeName -Resource $Resource
     

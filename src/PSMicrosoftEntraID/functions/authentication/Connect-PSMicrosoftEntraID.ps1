@@ -81,6 +81,9 @@
 		The username / password to authenticate with.
 
 		Part of the Resource Owner Password Credential (ROPC) workflow.
+		Turned off by default: the flow bypasses multi-factor authentication and Conditional Access, and Microsoft
+		discourages it. Opt in with Set-PSFConfig -FullName PSMicrosoftEntraID.Settings.Authentication.AllowPasswordFlow -Value $true;
+		every such connect then writes a warning.
 
 	.PARAMETER VaultName
 		Name of the Azure Key Vault from which to retrieve the certificate or client secret used for the authentication.
@@ -428,6 +431,10 @@
 	}
 
 	process {
+		# One warning per connect: the password flow is allowed, but it bypasses MFA and Conditional Access.
+		if ($PSBoundParameters.ContainsKey('Credential') -and (Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Authentication.AllowPasswordFlow')) {
+			Write-PSFMessage -Level Warning -String 'Identity.Password.Warning'
+		}
 		try {
 			Connect-EntraService @param -Service $service
 			if ($graphService.Count -gt 0) {
@@ -436,7 +443,8 @@
 			}
 		}
 		catch {
-			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f ($service -join ', '))
+			# The cause is part of the message (a disabled flow, a refused sign-in, a timeout) instead of being dropped.
+			Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Connect.Failed) -f ($service -join ', '), $_.Exception.Message) -ErrorRecord $_
 		}
 	}
 	end { }

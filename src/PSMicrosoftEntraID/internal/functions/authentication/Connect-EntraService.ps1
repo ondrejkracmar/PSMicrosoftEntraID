@@ -702,8 +702,9 @@
 						$PSCmdlet.ThrowTerminatingError($_)
 					}
 
+					# Only the federated token: a managed identity token built over it made every renewal a managed
+					# identity sign-in, which fails outside Azure and is another identity inside it.
 					$token = [EntraToken]::new($serviceName, $ClientID, $TenantID, $provider, $effectiveServiceUrl, $authUrl)
-					$token = [EntraToken]::new($serviceName, $effectiveServiceUrl, $IdentityID, $IdentityType)
 					$token.SetTokenMetadata($result)
 
 					Write-Verbose "[$serviceName] Connected via Federated Credential ($($token.Scopes -join ', '))"
@@ -741,6 +742,8 @@
 					$token = [EntraToken]::new($serviceName, $result.AccessToken, $result.TenantID, $result.IdentityID, $result.Scopes, $effectiveServiceUrl, $authUrl, 'AzToken')
 					if ($serviceObject.Header.Count -gt 0) { $token.Header = $serviceObject.Header.Clone() }
 					$token.SetTokenMetadata($result)
+					# SetTokenMetadata takes the expiry of the object (or of the token's exp claim), not one hour from now.
+					$token.AzTokenRenewable = $result.Renewable
 
 					if ($doRegister) { $script:_EntraTokens[$serviceName] = $token }
 

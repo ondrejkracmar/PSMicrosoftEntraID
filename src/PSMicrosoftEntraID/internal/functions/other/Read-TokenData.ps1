@@ -25,6 +25,7 @@
 		# Pad with "=" until string length modulus 4 reaches 0
 		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
 		$bytes = [System.Convert]::FromBase64String($tokenPayload)
-		[System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
+		# UTF-8: a name claim can hold any character; ASCII turned them into '?'.
+		[System.Text.Encoding]::UTF8.GetString($bytes) | ConvertFrom-Json
 	}
 }
