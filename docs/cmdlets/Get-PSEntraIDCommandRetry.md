@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 08.17.2026
+ms.date: 11.12.2026
 PlatyPS schema version: 2024-05-01
 title: Get-PSEntraIDCommandRetry
 ---
@@ -13,7 +13,7 @@ title: Get-PSEntraIDCommandRetry
 
 ## SYNOPSIS
 
-Returns the current retry configuration values used in protected commands.
+Returns how often the module sends a failed Graph request again.
 
 ## SYNTAX
 
@@ -30,8 +30,9 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-Loads the RetryCount and RetryWaitInSeconds from PSFramework configuration
-and returns them as a hashtable.
+Returns the retry settings of the module's one retry layer as a hashtable:
+RetryCount (Settings.Request.RetryCount, repetitions of a single request) and
+BatchRetryCount (Settings.Batch.RetryCount, repetitions of a $batch sub-request).
 
 ## EXAMPLES
 
@@ -41,8 +42,8 @@ Get-PSEntraIDCommandRetry
 
 Returns:
 @{
-    RetryCount = 3
-    RetryWaitInSeconds = 5
+    RetryCount      = 5
+    BatchRetryCount = 5
 }
 
 ## PARAMETERS

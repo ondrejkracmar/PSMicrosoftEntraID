@@ -24,6 +24,9 @@ namespace PSMicrosoftEntraID.Batch
         /// <summary>Gets or sets the body as raw JSON, null when the sub-response has none.</summary>
         public string Body { get; set; }
 
+        /// <summary>Gets or sets the headers object of the sub-response as raw JSON, null when it has none.</summary>
+        public string Headers { get; set; }
+
         /// <summary>Gets or sets the @odata.nextLink of a collection page.</summary>
         public string NextLink { get; set; }
 
@@ -35,6 +38,12 @@ namespace PSMicrosoftEntraID.Batch
 
         /// <summary>Gets or sets the Graph error message of a failed sub-request.</summary>
         public string ErrorMessage { get; set; }
+
+        /// <summary>Gets or sets the Graph error code (error.code) of a failed sub-request.</summary>
+        public string ErrorCode { get; set; }
+
+        /// <summary>Gets or sets the inner Graph error code (error.innerError.code) of a failed sub-request.</summary>
+        public string InnerErrorCode { get; set; }
 
         /// <summary>
         /// Gets or sets the items of the page as typed objects, when the envelope was sent with an element type

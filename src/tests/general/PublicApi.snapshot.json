@@ -9227,6 +9227,15 @@
           "isDefault": false,
           "parameters": [
             {
+              "name": "BatchRetryCount",
+              "type": "System.Int32",
+              "mandatory": false,
+              "position": 1,
+              "valueFromPipeline": false,
+              "valueFromPipelineByPropertyName": false,
+              "aliases": []
+            },
+            {
               "name": "RetryCount",
               "type": "System.Int32",
               "mandatory": false,
@@ -9239,7 +9248,7 @@
               "name": "RetryWaitInSeconds",
               "type": "System.Int32",
               "mandatory": false,
-              "position": 1,
+              "position": 2,
               "valueFromPipeline": false,
               "valueFromPipelineByPropertyName": false,
               "aliases": []
@@ -10973,6 +10982,15 @@
           "isDefault": false,
           "parameters": [
             {
+              "name": "AllowEmptyReference",
+              "type": "System.Management.Automation.SwitchParameter",
+              "mandatory": false,
+              "position": null,
+              "valueFromPipeline": false,
+              "valueFromPipelineByPropertyName": false,
+              "aliases": []
+            },
+            {
               "name": "DifferenceIdentity",
               "type": "System.String",
               "mandatory": true,
@@ -11023,6 +11041,15 @@
           "name": "UserIdentity",
           "isDefault": true,
           "parameters": [
+            {
+              "name": "AllowEmptyReference",
+              "type": "System.Management.Automation.SwitchParameter",
+              "mandatory": false,
+              "position": null,
+              "valueFromPipeline": false,
+              "valueFromPipelineByPropertyName": false,
+              "aliases": []
+            },
             {
               "name": "DifferenceIdentity",
               "type": "System.String",

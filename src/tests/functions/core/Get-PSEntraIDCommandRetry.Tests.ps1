@@ -10,43 +10,21 @@
 
 Describe 'Get-PSEntraIDCommandRetry Tests' -Tag 'Unit' {
     Context 'Basic Functionality' {
-        It 'Should return a hashtable with RetryCount and RetryWaitInSeconds keys' {
+        It 'Should return a hashtable with RetryCount and BatchRetryCount' {
             $result = Get-PSEntraIDCommandRetry
 
-            $result | Should -Not -BeNullOrEmpty
             $result | Should -BeOfType [hashtable]
             $result.Keys | Should -Contain 'RetryCount'
-            $result.Keys | Should -Contain 'RetryWaitInSeconds'
-        }
-
-        It 'Should return numeric values' {
-            $result = Get-PSEntraIDCommandRetry
-
+            $result.Keys | Should -Contain 'BatchRetryCount'
             $result.RetryCount | Should -BeOfType [int]
-            $result.RetryWaitInSeconds | Should -BeOfType [int]
+            $result.BatchRetryCount | Should -BeOfType [int]
         }
 
-        It 'Should return non-negative values' {
+        It 'Should read Settings.Request.RetryCount and Settings.Batch.RetryCount' {
             $result = Get-PSEntraIDCommandRetry
 
-            $result.RetryCount | Should -BeGreaterOrEqual 0
-            $result.RetryWaitInSeconds | Should -BeGreaterOrEqual 0
-        }
-    }
-
-    Context 'Integration with Set-PSEntraIDCommandRetry' {
-        It 'Should return updated values after using Set-PSEntraIDCommandRetry' {
-            # Set known values
-            Set-PSEntraIDCommandRetry -RetryCount 5 -RetryWaitInSeconds 3
-
-            # Get values
-            $result = Get-PSEntraIDCommandRetry
-
-            $result.RetryCount | Should -Be 5
-            $result.RetryWaitInSeconds | Should -Be 3
-
-            # Reset to defaults
-            Set-PSEntraIDCommandRetry -RetryCount 0 -RetryWaitInSeconds 0
+            $result.RetryCount | Should -Be (Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Request.RetryCount')
+            $result.BatchRetryCount | Should -Be (Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount')
         }
     }
 }

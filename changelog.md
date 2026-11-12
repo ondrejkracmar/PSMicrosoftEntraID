@@ -12,7 +12,61 @@
 - **`Invoke-PSEntraIDRequest` / `Invoke-EntraRequest` refuse an absolute URL on another host
   than the connected service, or over http** (`SecurityError`, before anything is sent). Pass a
   path relative to the service, or a URL on the service's own host.
+- **One retry layer: the protected-command retry is gone, and so are its settings.**
+  `Settings.Command.RetryCount` and `Settings.Command.RetryWaitInSeconds` are removed; the
+  cmdlets call `Invoke-PSFProtectedCommand` without `-RetryCount`/`-RetryWait` (still for the
+  action string, `-EnableException`, `-WhatIf` and the confirm splat). Retrying lives in the
+  request layer only - `Settings.Request.RetryCount` (default **5**; before, a single retry on
+  a `TooManyRequests` message, plus the protected command's 0 by default) for a
+  request, `Settings.Batch.RetryCount` (default 5) for a batch sub-request - and repeats only
+  what the retry policy calls transient: 408, 429, 5xx except 501 and 505, no answer; a POST
+  only on 429 and 503; and, for every method, a 400 whose Graph error code (in the error body,
+  not the message text) is `Directory_ConcurrencyViolation` - the directory refused a change
+  that collided with another one, and asks to wait and retry. The old layer repeated every
+  failure of every method (a 400, a 403, a POST after a 500) when it was turned on; every
+  other 400 is no longer retried at all. Scripts that set the removed keys with `Set-PSFConfig`
+  set nothing.
+- **`Set-PSEntraIDCommandRetry` / `Get-PSEntraIDCommandRetry` set and read the request-layer
+  retry.** `-RetryCount` (now 0-20) sets `Settings.Request.RetryCount`; the new
+  `-BatchRetryCount` sets `Settings.Batch.RetryCount`. `-RetryWaitInSeconds` is accepted for
+  old scripts, ignored and warned about: the wait is the `Retry-After` of the answer (at most
+  5 minutes) or `2^attempt` seconds with jitter. A call without parameters changes nothing (it
+  used to reset both values to 0). `Get-PSEntraIDCommandRetry` returns `RetryCount` and
+  `BatchRetryCount`; the `RetryWaitInSeconds` key is gone.
+- **`Invoke-PSEntraIDBatchRequest` runs on the parallel batch engine.** Parameters and the
+  output type (`BatchResponsePayload` with `Requests` and `Responses`: `Id`, `Status`,
+  `Headers`, `Body`) are unchanged, one result per payload in input order. What changed:
+  the payloads are taken in blocks - once the buffered sub-requests fill
+  `Settings.Batch.StreamBlockSize` envelopes of 20 (new, default 20, 1-1000) the block is sent
+  (`Settings.Batch.ThrottleLimit` envelopes, default 4, in flight together) and its results are
+  written before more input is taken, the rest when the pipeline ends - so results flow while
+  input still arrives, and a `Select-Object -First` stop sends no further block; a failed
+  sub-request is now also ONE non-terminating error record (its `Request` as the target) - so
+  `-ErrorAction Stop` stops on it - and the run ends with ONE summary warning instead of a
+  warning per batch and per throttled pass (one for the whole run, across all blocks); with
+  `-EnableException` the command throws at the
+  end, after all results were written, when any sub-request failed. Every throttled or
+  unavailable sub-request is retried on its own `Retry-After` (seconds or HTTP date, capped at
+  5 minutes); the envelope is never re-posted as a whole (before, a failed envelope was
+  re-posted with all 20 sub-requests, POSTs included). A sub-request the client refuses or
+  that gets no answer comes back with a synthetic status (421, 0, 502, 503, 504) and a
+  `Body.error` of code `PSMicrosoftEntraID.BatchClient`.
+- **Removed configuration keys that nothing read:** `Settings.GraphApiQuery.Warning`,
+  `Settings.GraphApiQuery.Format`, `Settings.GraphApiQuery.Query.Level`,
+  `Settings.GraphApiQuery.Query.AdvancedQueryCapabilities.ConsistencyLevel ` (with a trailing
+  space in its name; the cmdlets set `ConsistencyLevel: eventual` themselves) and
+  `Settings.Organization.OnPremisesSyncPeriod`.
 
+### Changed
+
+- **`Invoke-EntraRequest` sends every page through the one retry policy** (`Invoke-EntraRetry`)
+  instead of a single regex-driven retry on a `TooManyRequests` message: the `Retry-After`
+  header is honoured (seconds or HTTP date, capped at 300 s, otherwise exponential backoff with
+  jitter), a failed page is repeated on its own (the pages before it are not sent or emitted
+  again), the header is rebuilt for every attempt, and the token host guard still checks every
+  request and next link before anything is sent. A request may take
+  `Settings.Request.TimeoutSeconds` (default 600, 0 = no limit). A page is sent at most
+  `RetryCount + 1` times - there is no second layer above it.
 - **Typed model properties: dates are `DateTime`, flags are `bool`, counters are nullable.**
   The output objects keep their type names and property names, but these properties change
   type (`string` -> `Nullable[DateTime]` holds UTC, Kind `Utc`):
@@ -53,13 +107,25 @@
   `AutoSubscribeNewMembers` and `IsMultipleDataLocationsForServicesEnabled` become `-eq $true`.
   `$null` now means "Graph sent null or the property was not selected" for the nullable
   booleans and counters, where it used to read as `$false` / `0`.
+- **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
+  the Claude Code hooks (analyzer, attribution, git guard) and reviewer, the Copilot
+  instructions, `.editorconfig`, `PSScriptAnalyzerSettings.psd1`, `SECURITY.md`,
+  `.github/CODEOWNERS`, the pull request template, `docs/adr/` and `docs/runbooks/`.
+  `.codexvault/packs.psd1` records the installation. Security reports now go through
+  GitHub's private vulnerability reporting.
+- **`.codexvault/public-export.psd1` declares what the public GitHub repository leaves
+  out**: the agent and standards tooling, `docs/internal/`, `docs/adr/`, `docs/runbooks/`,
+  `tools/`, the Azure DevOps pipeline and `src/build/`. Azure DevOps stays the source of
+  truth; GitHub receives the filtered source history.
+- The personal editor and container settings (`.vscode/settings.json`, `.devcontainer/`)
+  and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
+  patterns the git guard expects.
 
 ### Security
 
 - `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
   library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
   GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
-
 - **The access token went to any host.** An absolute `-Path` and every `@odata.nextLink` were
   sent with `Authorization: Bearer <token>`, whatever their host and scheme. Every request -
   the first and each next link - is now checked against the `ServiceUrl` of the token it would
@@ -91,22 +157,17 @@
   `Settings.Batch.RetryCount`, `Settings.Request.RetryCount`, `Settings.Request.TimeoutSeconds`.
   New xUnit project `src/library/PSMicrosoftEntraID.Tests` (not run by CI yet). See
   `docs/internal/batch-engine.md`.
-
-### Changed
-
-- **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
-  the Claude Code hooks (analyzer, attribution, git guard) and reviewer, the Copilot
-  instructions, `.editorconfig`, `PSScriptAnalyzerSettings.psd1`, `SECURITY.md`,
-  `.github/CODEOWNERS`, the pull request template, `docs/adr/` and `docs/runbooks/`.
-  `.codexvault/packs.psd1` records the installation. Security reports now go through
-  GitHub's private vulnerability reporting.
-- **`.codexvault/public-export.psd1` declares what the public GitHub repository leaves
-  out**: the agent and standards tooling, `docs/internal/`, `docs/adr/`, `docs/runbooks/`,
-  `tools/`, the Azure DevOps pipeline and `src/build/`. Azure DevOps stays the source of
-  truth; GitHub receives the filtered source history.
-- The personal editor and container settings (`.vscode/settings.json`, `.devcontainer/`)
-  and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
-  patterns the git guard expects.
+- **Phase B wires it in.** `Invoke-EntraRequest` and `Invoke-PSEntraIDBatchRequest` use it
+  (see Breaking and Changed); `Invoke-BatchWithThrottleRetry` is removed. A sub-response's
+  headers are kept as raw JSON (`BatchSubResponse.Headers`, the engine's page `Headers`). New
+  tests run through the real code path with only the HTTP layer faked:
+  `functions/core/RequestRetry.Tests.ps1` (Retry-After honoured and capped, no POST retry after
+  500, exactly RetryCount + 1 sends through `Invoke-PSEntraIDRequest` and a cmdlet, page-wise
+  retry, timeout, host guard) and a rewritten `functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1`
+  against the local fake `$batch` server (mixed sub-responses with only the failed ones re-sent,
+  cap, POST, one layer, error records and summary, `-EnableException`, cancellation by Ctrl+C and
+  `Select-Object -First`, the client's host refusal). `general/NoNetwork.Tests.ps1` also holds
+  `Invoke-PSEntraIDBatchRequest` calls in function tests to the local server.
 
 ### Fixed
 
@@ -131,7 +192,6 @@
   instead of `[datetime]::Parse` of the text, which converted to local time.
 - The `OrganizationDetail` and `Machine` table views render `CreatedDateTime` / `LastSeen` as
   `yyyy-MM-dd HH:mm` (UTC, culture-neutral) in their 16-character column.
-
 - **Piped records no longer inherit the previous record's properties.**
   With `ValueFromPipelineByPropertyName`, `$PSBoundParameters` keeps a key bound by an
   earlier pipeline record while the variable is reset to its default, so every cmdlet
@@ -148,7 +208,6 @@
   `Clear-PipelineBoundParameter`, rule in `docs/internal/conventions.md`), and
   `PipelineBoundParameters.Tests.ps1` asserts the serialized body of every record in a
   mixed pipeline.
-
 - **`Sync-PSEntraIDGroupMember` no longer empties a group when a read fails.**
   The member reads ran under `-Continue`: a transient 403/429/503 on the reference group
   only warned and returned nothing, and an empty reference made the sync remove EVERY
@@ -164,7 +223,6 @@
   users. `Get-SyncDataOperation` pairs the two lists through a key index instead of a
   `.Where()` scan per item (3000 vs 2500 members: about 290 s before, a few seconds now) and no
   longer returns nothing under `-WhatIf`.
-
 - **`Add-PSEntraIDGroupMember` sent garbage for two or more members and dropped
   members on a partial resolution.** The chunks for `members@odata.bind` were cast to
   `[string[]]`, which joined every chunk of up to 20 member URLs into ONE
@@ -184,7 +242,6 @@
   devices and administrative units just as silently and now warn as well. The tests
   run the real `Step-Array` (the old one mocked it away) with 1, 19, 20, 21 and 40
   members and assert the serialized body of every request.
-
 - **A misspelt service plan could assign a licence with every plan disabled.**
   `Enable-PSEntraIDUserLicenseServicePlan` and `Enable-PSEntraIDGroupLicenseServicePlan`
   resolved `-ServicePlanName` against the SKU and silently dropped what did not match;
@@ -217,7 +274,6 @@
 - **`Get-PSEntraIDGroup -Identity` did not escape its fallback path.** Without a
   mailNickName match the identity itself went into `groups/{0}` unescaped, so `#` cut
   the request short.
-
 - **Piping group records into `Add-PSEntraIDGroupOwner` never worked.** `-Identity`
   binds by property name, but the group was resolved in `begin`, where a piped
   `Identity` is still empty - so `$records | Add-PSEntraIDGroupOwner` failed on parameter
@@ -238,7 +294,6 @@
   variant reads the catalog once per call instead of once per piped user (new internal
   `Get-LicenseSkuServicePlanId`). The `Disable-*` counterparts do not build the full
   plan list - a target without the SKU is skipped with a warning - and were not affected.
-
 - **A federated connection renewed itself as a managed identity.** The token object was
   overwritten right after it was built, so the first renewal (after ~1 hour) tried a managed
   identity sign-in. The connection now stays federated.

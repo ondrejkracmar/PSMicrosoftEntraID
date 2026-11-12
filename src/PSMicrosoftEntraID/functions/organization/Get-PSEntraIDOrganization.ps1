@@ -47,13 +47,11 @@
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Organization).Value -join ',')
         }
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
     process {
         Invoke-PSFProtectedCommand -ActionString 'Organization.Get' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             ConvertFrom-RestOrganizationDetail -InputObject(Invoke-EntraRequest -Service $service -Path organization -Query $query -Method Get -ErrorAction Stop)
-        } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+        } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
     }
     end

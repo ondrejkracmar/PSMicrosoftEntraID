@@ -73,8 +73,6 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultServiceEndpoint' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
 
     process {
@@ -83,7 +81,7 @@
                 foreach ($machineIdentity in $Identity) {
                     $output = Invoke-PSFProtectedCommand -ActionString 'Machine.Get' -ActionStringValues $machineIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestMachine -InputObject (Invoke-EntraRequest -Service $service -Path ('machines/{0}' -f $machineIdentity) -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $output
                 }
@@ -95,7 +93,7 @@
                     [hashtable] $query = @{ '$filter' = ('aadDeviceId eq {0}' -f $deviceIdItem.Guid) }
                     $output = Invoke-PSFProtectedCommand -ActionString 'Machine.Get' -ActionStringValues $deviceIdItem -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestMachine -InputObject (Invoke-EntraRequest -Service $service -Path 'machines' -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $output
                 }
@@ -104,14 +102,14 @@
                 [hashtable] $query = @{ '$filter' = $Filter }
                 $output = Invoke-PSFProtectedCommand -ActionString 'Machine.List' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestMachine -InputObject (Invoke-EntraRequest -Service $service -Path 'machines' -Query $query -Method Get -ErrorAction Stop)
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 if (Test-PSFFunctionInterrupt) { return }
                 $output
             }
             'List' {
                 $output = Invoke-PSFProtectedCommand -ActionString 'Machine.List' -ActionStringValues '*' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestMachine -InputObject (Invoke-EntraRequest -Service $service -Path 'machines' -Method Get -ErrorAction Stop)
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 if (Test-PSFFunctionInterrupt) { return }
                 $output
             }

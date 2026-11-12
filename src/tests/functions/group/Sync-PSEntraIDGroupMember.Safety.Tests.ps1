@@ -17,8 +17,6 @@ Describe 'Sync-PSEntraIDGroupMember safety' -Tag 'Unit' {
     BeforeAll {
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { if ($PSBoundParameters.ContainsKey('Fallback')) { $Fallback } else { $null } }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Get-EntraService { [pscustomobject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' } }
         Mock -ModuleName $script:ModuleName Get-PSEntraIDGroup {

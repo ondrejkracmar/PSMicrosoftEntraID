@@ -14,8 +14,6 @@ Describe 'Get-PSEntraIDGroupAdditionalProperty' -Tag 'Unit' {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
 
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 100 } -ParameterFilter { $FullName -like '*PageSize' }
         Mock -ModuleName $script:ModuleName Get-PSFConfig {
             [PSCustomObject]@{ Value = @('id', 'displayName', 'assignedLicenses') }

@@ -28,8 +28,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue { 
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService { 
@@ -98,8 +96,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -132,8 +128,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -174,8 +168,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -207,8 +199,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -242,8 +232,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -282,8 +270,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {
@@ -377,8 +363,6 @@ Describe 'Add-PSEntraIDGroupMember Tests' -Tag 'Unit' {
         BeforeAll {
             Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
                 if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-                if ($FullName -like '*RetryCount') { return 0 }
-                if ($FullName -like '*RetryWaitInSeconds') { return 0 }
             }
             Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
             Mock -ModuleName PSMicrosoftEntraID Get-EntraService {

@@ -41,8 +41,6 @@ Describe 'Get-PSEntraIDGroupLicense' -Tag 'Unit' {
             param($FullName)
             switch ($FullName) {
                 'PSMicrosoftEntraID.Settings.DefaultService' { return 'PSMicrosoftEntraID.Graph' }
-                'PSMicrosoftEntraID.Settings.Command.RetryCount' { return 3 }
-                'PSMicrosoftEntraID.Settings.Command.RetryWaitInSeconds' { return 5 }
             }
         }
 

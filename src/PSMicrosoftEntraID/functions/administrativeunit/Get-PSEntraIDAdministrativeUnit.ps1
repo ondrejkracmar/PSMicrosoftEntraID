@@ -88,8 +88,6 @@
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.AdministrativeUnit).Value -join ',')
         }
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = 'directory/administrativeUnits'
     }
 
@@ -128,7 +126,7 @@
                         # Escaped because the fallback above can put caller input into
                         # the URL path - see the same rule in Get-PSEntraIDUser.
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}' -f $path, [uri]::EscapeDataString($administrativeUnitId)) -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -137,7 +135,7 @@
                     $query['$filter'] = ("startswith(displayName,'{0}')" -f (ConvertTo-ODataFilterString -Value $name))
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Get' -ActionStringValues $name -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -148,12 +146,12 @@
                     $header['ConsistencyLevel'] = 'eventual'
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -Header $header -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 }
                 if (Test-PSFFunctionInterrupt) { return }
             }
@@ -161,7 +159,7 @@
                 if ($All.IsPresent) {
                     Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestAdministrativeUnit -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

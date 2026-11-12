@@ -5,7 +5,8 @@
 
 	.DESCRIPTION
 		The single retry layer for one call. The call is repeated after a failure that repeating can help:
-		- an answer whose status Test-EntraRetryStatus calls transient (408, 429, 5xx except 501 and 505);
+		- an answer whose status Test-EntraRetryStatus calls transient (408, 429, 5xx except 501 and 505, and a 400
+		  whose Graph error code - read from the body in ErrorDetails - is Directory_ConcurrencyViolation);
 		- no answer at all (a network failure, a timeout).
 		A call that is not idempotent (-NotIdempotent: a POST) is repeated only on 429 and 503 - the service said it did
 		not carry it out; after a 500 or a lost answer it may have been done.
@@ -13,9 +14,10 @@
 		most 5 minutes; otherwise 2^attempt seconds with a jitter of 0.8 to 1.2, also at most 5 minutes, so many callers
 		throttled at once do not come back at the same moment.
 		The number of repetitions is Settings.Request.RetryCount (or -RetryCount). The last failure is thrown as it is.
-		Phase A: nothing calls this yet. Phase B moves Invoke-EntraRequest onto it and removes the second retry layer
-		(Invoke-PSFProtectedCommand -RetryCount and the throttle retry inside Invoke-EntraRequest), so a call is sent at
-		most RetryCount + 1 times.
+		Invoke-EntraRequest sends every page through this; nothing above it retries (the cmdlets call
+		Invoke-PSFProtectedCommand without -RetryCount), so a request is sent at most RetryCount + 1 times.
+		Every variable of this function starts with entraRetry: the script block runs in a scope below this one, and a
+		name it reads from its caller (a parameter $Header, say) must not be shadowed by one of these.
 
 	.PARAMETER ScriptBlock
 		The call. It throws its failure (Invoke-RestMethod -ErrorAction Stop or an exception whose Response carries the
@@ -70,14 +72,14 @@
 			[bool] $entraRetryNoAnswer = $false
 			$entraRetryException = $entraRetryFailure.Exception
 			while ($entraRetryException) {
-				$response = $null
-				if ($entraRetryException.PSObject.Properties['Response']) { $response = $entraRetryException.Response }
-				if ($response -and $response.PSObject.Properties['StatusCode']) {
-					$entraRetryStatus = [int]$response.StatusCode
-					if ($response.PSObject.Properties['Headers'] -and $response.Headers -and $response.Headers.PSObject.Properties['RetryAfter']) {
-						$header = $response.Headers.RetryAfter
-						if ($header -and $header.Delta) { $entraRetryAfter = $header.Delta.TotalSeconds }
-						elseif ($header -and $header.Date) { $entraRetryAfter = ($header.Date - [DateTimeOffset]::UtcNow).TotalSeconds }
+				$entraRetryResponse = $null
+				if ($entraRetryException.PSObject.Properties['Response']) { $entraRetryResponse = $entraRetryException.Response }
+				if ($entraRetryResponse -and $entraRetryResponse.PSObject.Properties['StatusCode']) {
+					$entraRetryStatus = [int]$entraRetryResponse.StatusCode
+					if ($entraRetryResponse.PSObject.Properties['Headers'] -and $entraRetryResponse.Headers -and $entraRetryResponse.Headers.PSObject.Properties['RetryAfter']) {
+						$entraRetryHeader = $entraRetryResponse.Headers.RetryAfter
+						if ($entraRetryHeader -and $entraRetryHeader.Delta) { $entraRetryAfter = $entraRetryHeader.Delta.TotalSeconds }
+						elseif ($entraRetryHeader -and $entraRetryHeader.Date) { $entraRetryAfter = ($entraRetryHeader.Date - [DateTimeOffset]::UtcNow).TotalSeconds }
 					}
 					break
 				}
@@ -92,7 +94,17 @@
 				$entraRetryException = $entraRetryException.InnerException
 			}
 
-			[bool] $entraRetry = if ($entraRetryStatus -ge 0) { Test-EntraRetryStatus -Status $entraRetryStatus -NotIdempotent:$NotIdempotent }
+			# The Graph error codes of the answer's body (Invoke-RestMethod puts it into ErrorDetails): a 400
+			# Directory_ConcurrencyViolation is transient. Only the codes are read, never the message text.
+			[string[]] $entraRetryCodes = @()
+			if ($entraRetryStatus -eq 400 -and $entraRetryFailure.ErrorDetails -and $entraRetryFailure.ErrorDetails.Message) {
+				try {
+					$entraRetryBody = $entraRetryFailure.ErrorDetails.Message | ConvertFrom-Json -ErrorAction Stop
+					$entraRetryCodes = @($entraRetryBody.error.code, $entraRetryBody.error.innerError.code) | Where-Object { $_ -is [string] }
+				}
+				catch { $entraRetryCodes = @() }
+			}
+			[bool] $entraRetry = if ($entraRetryStatus -ge 0) { Test-EntraRetryStatus -Status $entraRetryStatus -ErrorCode $entraRetryCodes -NotIdempotent:$NotIdempotent }
 			elseif ($entraRetryNoAnswer) { -not $NotIdempotent }
 			else { $false }
 			if (-not $entraRetry -or $entraRetryAttempt -ge $entraRetryCount) { throw }

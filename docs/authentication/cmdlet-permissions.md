@@ -451,7 +451,9 @@ is what limits the scope, not the endpoint.
 **Required Permissions**: None (configuration cmdlets)
 - **Delegated**: None
 - **Application**: None
-- **Notes**: These are configuration cmdlets that don't make API calls.
+- **Notes**: These are configuration cmdlets that don't make API calls. They set and read the
+  retry of the request layer (`Settings.Request.RetryCount`) and of batch sub-requests
+  (`Settings.Batch.RetryCount`).
 
 ---
 

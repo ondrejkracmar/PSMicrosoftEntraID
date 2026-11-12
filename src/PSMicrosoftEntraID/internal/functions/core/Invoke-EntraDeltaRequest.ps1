@@ -91,8 +91,6 @@
 
     [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
     Assert-EntraConnection -Service $service -Cmdlet $Cmdlet
-    [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-    [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
 
     $requestParameters = @{
         Service     = $service
@@ -109,7 +107,7 @@
     $result = Invoke-PSFProtectedCommand -ActionString 'Delta.Get' -ActionStringValues $Path `
         -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
         ConvertFrom-RestDelta -InputObject (Invoke-EntraRequest @requestParameters) -TargetType $TargetType
-    } -EnableException:$EnableException -PSCmdlet $Cmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+    } -EnableException:$EnableException -PSCmdlet $Cmdlet -Continue -WhatIf:$false
     if (Test-PSFFunctionInterrupt) { return }
     $result
 }

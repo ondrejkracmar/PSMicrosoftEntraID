@@ -15,7 +15,14 @@
 		  anything is sent;
 		- request URLs are logged without their query (Get-EntraLogUri), since they carry delta and skip tokens,
 		  and the messages use this module's localized strings (Write-PSFMessage -String);
-		- the delta token is parsed pair by pair and decoded (see the comments below).
+		- the delta token is parsed pair by pair and decoded (see the comments below);
+		- every page is sent through the one retry policy of the module (Invoke-EntraRetry, Settings.Request.RetryCount,
+		  default 5): 408, 429 and 5xx except 501 and 505 and no answer at all are repeated for GET, PUT, PATCH, DELETE,
+		  HEAD and OPTIONS; any other method (a POST) only on 429 and 503, where the service says it did not carry the
+		  request out. A 400 whose Graph error code is Directory_ConcurrencyViolation is repeated for every method. The wait is the Retry-After of the answer (seconds or an HTTP date, at most 5 minutes), otherwise
+		  2^attempt seconds with jitter. A failed page is repeated on its own: the pages before it are not sent or
+		  emitted again. Nothing above this function retries, so a page is sent at most RetryCount + 1 times;
+		- every request may take Settings.Request.TimeoutSeconds (default 600, 0 = no limit).
 	
 	.PARAMETER Path
 		The relative path of the endpoint to query.
@@ -205,42 +212,35 @@
 		}
 		$parameters.Uri += ConvertTo-QueryString -QueryHash $queryClone -DefaultQuery $tokenObject.Query
 
+		# The one retry layer (Invoke-EntraRetry). A method that may have changed something - a POST - is repeated only
+		# when the service said it did not carry it out (429, 503); the others set the same state again.
+		[bool] $requestNotIdempotent = $Method.ToUpperInvariant() -notin 'GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'
+		[int] $requestTimeout = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Request.TimeoutSeconds' -Fallback 600
+		if ($requestTimeout -gt 0) { $parameters.TimeoutSec = $requestTimeout }
+		# Read by the script block below under names of their own: it runs in a scope below Invoke-EntraRetry.
+		$requestToken = $tokenObject
+		$requestHeader = $Header
+		[bool] $requestMinimal = $MinimalDelta.IsPresent
+
 		do {
 			# Before the header is built: an absolute -Path or a next link on another host, or over http, never gets
-			# the token. A terminating SecurityError.
+			# the token. A terminating SecurityError. Checked once per page: a repetition goes to the same URL.
 			Assert-EntraAuthorizedUri -Uri $parameters.Uri -ServiceUrl $authorizedUrl -Cmdlet $PSCmdlet
-			$tempHeader = $tokenObject.GetHeader().Clone() # GetHeader() automatically refreshes expired tokens
-			foreach ($pair in $Header.GetEnumerator()) { $tempHeader[$pair.Key] = $pair.Value }
-			if ($MinimalDelta) { $tempHeader['Prefer'] = 'return=minimal' }
-			$parameters.Headers = $tempHeader
 			# Scheme, host and path only: the query carries delta and skip tokens.
 			Write-PSFMessage -Level Verbose -String 'Request.Execute' -StringValues $Method, (Get-EntraLogUri -Uri $parameters.Uri)
-			try { $result = Invoke-RestMethod @parameters -ErrorAction Stop }
+			try {
+				$result = Invoke-EntraRetry -NotIdempotent:$requestNotIdempotent -ScriptBlock {
+					# A fresh header for every attempt: GetHeader() renews a token that expired while the request waited.
+					$requestTempHeader = $requestToken.GetHeader().Clone()
+					foreach ($requestPair in $requestHeader.GetEnumerator()) { $requestTempHeader[$requestPair.Key] = $requestPair.Value }
+					if ($requestMinimal) { $requestTempHeader['Prefer'] = 'return=minimal' }
+					$parameters.Headers = $requestTempHeader
+					Invoke-RestMethod @parameters -ErrorAction Stop
+				}
+			}
 			catch {
-				$letItBurn = $true
-				$failure = $_
-
-				if ($_.ErrorDetails.Message) {
-					$details = $_.ErrorDetails.Message | ConvertFrom-Json
-					if ($details.Error.Code -eq 'TooManyRequests') {
-						Write-PSFMessage -Level Verbose -String 'Request.Throttled' -StringValues $details.error.message
-						$delay = 1 + ($details.error.message -replace '^.+ (\d+) .+$', '$1' -as [int])
-						if ($delay -gt 5) { Write-PSFMessage -Level Warning -String 'Request.ThrottledWait' -StringValues $delay }
-						Start-Sleep -Seconds $delay
-						try {
-							$result = Invoke-RestMethod @parameters -ErrorAction Stop
-							$letItBurn = $false
-						}
-						catch {
-							$failure = $_
-						}
-					}
-				}
-
-				if ($letItBurn) {
-					Write-PSFMessage -Level Warning -String 'Request.Failed' -StringValues $Method, (Get-EntraLogUri -Uri $parameters.Uri)
-					$PSCmdlet.ThrowTerminatingError($failure)
-				}
+				Write-PSFMessage -Level Warning -String 'Request.Failed' -StringValues $Method, (Get-EntraLogUri -Uri $parameters.Uri)
+				$PSCmdlet.ThrowTerminatingError($_)
 			}
 			if (-not $Raw -and -not $tokenObject.RawOnly -and $result.PSObject.Properties.Where{ $_.Name -eq 'value' }) { $result.Value }
 			else { $result }

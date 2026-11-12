@@ -15,8 +15,6 @@ Describe 'Get-PSEntraIDContact filter escaping' -Tag 'Unit' {
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { if ($PSBoundParameters.ContainsKey('Fallback')) { $Fallback } else { $null } }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         # The begin block feeds these into New-TimeSpan, which rejects $null.
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Get-PSFLocalizedString { $Name }
         Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand { & $ScriptBlock }

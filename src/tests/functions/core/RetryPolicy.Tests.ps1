@@ -52,6 +52,22 @@ Describe 'Test-EntraRetryStatus' -Tag 'Unit' {
 	) {
 		InModuleScope PSMicrosoftEntraID -Parameters @{ Status = $Status } { param ($Status) Test-EntraRetryStatus -Status $Status -NotIdempotent } | Should -Be $Expected
 	}
+
+	It 'repeats a <Status> with the codes <Code> (not idempotent: <NotIdempotent>): <Expected>' -ForEach @(
+		@{ Status = 400; Code = @('Directory_ConcurrencyViolation'); NotIdempotent = $false; Expected = $true }
+		@{ Status = 400; Code = @('Directory_ConcurrencyViolation'); NotIdempotent = $true; Expected = $true }
+		@{ Status = 400; Code = @('Request_BadRequest', 'Directory_ConcurrencyViolation'); NotIdempotent = $true; Expected = $true }
+		@{ Status = 400; Code = @('Request_BadRequest'); NotIdempotent = $false; Expected = $false }
+		@{ Status = 400; Code = @(); NotIdempotent = $false; Expected = $false }
+		@{ Status = 400; Code = @('directory_concurrencyviolation_x'); NotIdempotent = $false; Expected = $false }
+		@{ Status = 409; Code = @('Directory_ConcurrencyViolation'); NotIdempotent = $false; Expected = $false }
+		@{ Status = 403; Code = @('Directory_ConcurrencyViolation'); NotIdempotent = $true; Expected = $false }
+	) {
+		InModuleScope PSMicrosoftEntraID -Parameters @{ Status = $Status; Code = $Code; NotIdempotent = $NotIdempotent } {
+			param ($Status, $Code, $NotIdempotent)
+			Test-EntraRetryStatus -Status $Status -ErrorCode $Code -NotIdempotent:$NotIdempotent
+		} | Should -Be $Expected
+	}
 }
 
 Describe 'Invoke-EntraRetry' -Tag 'Unit' {

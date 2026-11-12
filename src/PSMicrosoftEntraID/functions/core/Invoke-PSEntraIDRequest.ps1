@@ -137,8 +137,6 @@
         }
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Invoke-EntraRequest -Exclude Service
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
 
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
     }
@@ -146,7 +144,7 @@
     process {
         Invoke-PSFProtectedCommand -ActionString 'Request.Invoke' -ActionStringValues $Path -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
             Invoke-EntraRequest @param -Service $service -ErrorAction Stop
-        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
         if (Test-PSFFunctionInterrupt) { return }
     }
 

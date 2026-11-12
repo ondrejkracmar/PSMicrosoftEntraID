@@ -45,8 +45,6 @@
         [hashtable] $query = @{
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.SubscribedSku).Value -join ',')
         }
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
     process {
         $result = Invoke-PSFProtectedCommand -ActionString 'SubscribedSku.List' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
@@ -55,7 +53,7 @@
                 return $subscribedLicenses
             }
             Update-PSEntraIDSubscribedLicenseDisplayName -InputObject $subscribedLicenses
-        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
         if (Test-PSFFunctionInterrupt) { return }
         $result
     }

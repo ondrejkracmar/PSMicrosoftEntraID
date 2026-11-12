@@ -86,8 +86,6 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
         # Graph accepts at most 20 members@odata.bind entries per PATCH.
@@ -178,7 +176,7 @@
             [string] $path = 'groups/{0}' -f [uri]::EscapeDataString($differenceEntraIDGroup.Id)
             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync.Add' -ActionStringValues $chunk.Count, $targetName -Target $targetName -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
             if (Test-PSFFunctionInterrupt) { return }
         }
         foreach ($syncOperation in @($syncOperationList | Where-Object Crud -eq 'Delete')) {
@@ -188,7 +186,7 @@
             [string] $path = 'groups/{0}/members/{1}/$ref' -f [uri]::EscapeDataString($differenceEntraIDGroup.Id), [uri]::EscapeDataString($memberId)
             Invoke-PSFProtectedCommand -ActionString 'GroupMember.Sync.Remove' -ActionStringValues $memberId, $targetName -Target $targetName -ScriptBlock {
                 [void] (Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop)
-            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

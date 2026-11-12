@@ -123,7 +123,14 @@ Describe 'No secret in logs or output' -Tag 'Unit' {
             $script:calls = 0
             Mock Invoke-RestMethod -ModuleName PSMicrosoftEntraID {
                 $script:calls++
-                if ($script:calls -eq 1) { throw (New-TestHttpError -Body '{"error":{"code":"TooManyRequests","message":"Retry after 10 seconds please"}}') }
+                if ($script:calls -eq 1) {
+                    # A 429 as Invoke-RestMethod raises it: the answer (with its Retry-After) on the exception, the body in ErrorDetails.
+                    $answer = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]429)
+                    $null = $answer.Headers.TryAddWithoutValidation('Retry-After', '10')
+                    $record = [System.Management.Automation.ErrorRecord]::new([Microsoft.PowerShell.Commands.HttpResponseException]::new('Response status code does not indicate success: 429 (Too Many Requests).', $answer), 'WebCmdletWebResponseException', 'InvalidOperation', $null)
+                    $record.ErrorDetails = [System.Management.Automation.ErrorDetails]::new('{"error":{"code":"TooManyRequests","message":"Retry after 10 seconds please"}}')
+                    throw $record
+                }
                 [pscustomobject]@{ value = @([pscustomobject]@{ id = '1' }) }
             }
             $found = Find-TestSecret -Secret $script:secrets -ScriptBlock {

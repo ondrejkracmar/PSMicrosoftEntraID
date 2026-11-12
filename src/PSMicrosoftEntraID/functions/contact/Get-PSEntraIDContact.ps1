@@ -82,8 +82,6 @@
         }
 
         $header = @{ 'ConsistencyLevel' = 'eventual' }
-        $retryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $retryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
 
     process {
@@ -96,7 +94,7 @@
                     $query['$filter'] = "mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $contact)
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Get' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -107,7 +105,7 @@
                     $query['$filter'] = "startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}')" -f $contactEscaped
                     Invoke-PSFProtectedCommand -ActionString 'Contact.Name' -ActionStringValues $contact -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -117,7 +115,7 @@
                 $query['$filter'] = $filterString
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $CompanyName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue
                 if (Test-PSFFunctionInterrupt) { return }
             }
 
@@ -125,14 +123,14 @@
                 $query['$filter'] = $Filter
                 Invoke-PSFProtectedCommand -ActionString 'Contact.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Header $header -Method Get -ErrorAction Stop)
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue
                 if (Test-PSFFunctionInterrupt) { return }
             }
 
             'All' {
                 Invoke-PSFProtectedCommand -ActionString 'Contact.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     ConvertFrom-RestContact -InputObject (Invoke-EntraRequest -Service $service -Path 'contacts' -Query $query -Method Get -ErrorAction Stop)
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $retryCount -RetryWait $retryWait
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue
                 if (Test-PSFFunctionInterrupt) { return }
             }
         }

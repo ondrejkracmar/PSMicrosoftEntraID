@@ -45,10 +45,14 @@ namespace PSMicrosoftEntraID.Batch
                     entry.Status = statusCode;
                 }
 
-                if (TryGetProperty(response, "headers", out var headers) && headers.ValueKind == JsonValueKind.Object && TryGetProperty(headers, "Retry-After", out var retryAfter))
+                if (TryGetProperty(response, "headers", out var headers) && headers.ValueKind == JsonValueKind.Object)
                 {
-                    var text = retryAfter.ValueKind == JsonValueKind.String ? retryAfter.GetString() : retryAfter.GetRawText();
-                    entry.RetryAfter = RetryAfter.ParseSeconds(text);
+                    entry.Headers = headers.GetRawText();
+                    if (TryGetProperty(headers, "Retry-After", out var retryAfter))
+                    {
+                        var text = retryAfter.ValueKind == JsonValueKind.String ? retryAfter.GetString() : retryAfter.GetRawText();
+                        entry.RetryAfter = RetryAfter.ParseSeconds(text);
+                    }
                 }
 
                 if (TryGetProperty(response, "body", out var body) && body.ValueKind != JsonValueKind.Null)
@@ -73,9 +77,23 @@ namespace PSMicrosoftEntraID.Batch
                             entry.ItemCount = value.GetArrayLength();
                         }
 
-                        if (TryGetProperty(body, "error", out var error) && error.ValueKind == JsonValueKind.Object && TryGetProperty(error, "message", out var message) && message.ValueKind == JsonValueKind.String)
+                        if (TryGetProperty(body, "error", out var error) && error.ValueKind == JsonValueKind.Object)
                         {
-                            entry.ErrorMessage = message.GetString();
+                            if (TryGetProperty(error, "message", out var message) && message.ValueKind == JsonValueKind.String)
+                            {
+                                entry.ErrorMessage = message.GetString();
+                            }
+
+                            // The codes decide a retry (Test-EntraRetryStatus): a 400 Directory_ConcurrencyViolation is transient.
+                            if (TryGetProperty(error, "code", out var code) && code.ValueKind == JsonValueKind.String)
+                            {
+                                entry.ErrorCode = code.GetString();
+                            }
+
+                            if (TryGetProperty(error, "innerError", out var inner) && inner.ValueKind == JsonValueKind.Object && TryGetProperty(inner, "code", out var innerCode) && innerCode.ValueKind == JsonValueKind.String)
+                            {
+                                entry.InnerErrorCode = innerCode.GetString();
+                            }
                         }
                     }
                 }

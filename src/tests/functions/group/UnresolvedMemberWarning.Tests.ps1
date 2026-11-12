@@ -11,8 +11,6 @@ Describe 'Member and owner cmdlets warn about every identity they cannot resolve
     BeforeAll {
         Mock -ModuleName PSMicrosoftEntraID Get-PSFConfigValue {
             if ($FullName -like '*DefaultService') { return 'PSMicrosoftEntraID.Graph' }
-            if ($FullName -like '*RetryCount') { return 0 }
-            if ($FullName -like '*RetryWaitInSeconds') { return 0 }
         }
         Mock -ModuleName PSMicrosoftEntraID Assert-EntraConnection { }
         Mock -ModuleName PSMicrosoftEntraID Get-EntraService {

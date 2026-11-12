@@ -1,30 +1,28 @@
 ﻿function Get-PSEntraIDCommandRetry {
     <#
 .SYNOPSIS
-    Returns the current retry configuration values used in protected commands.
+    Returns how often the module sends a failed Graph request again.
 
 .DESCRIPTION
-    Loads the RetryCount and RetryWaitInSeconds from PSFramework configuration
-    and returns them as a hashtable.
+    Returns the retry settings of the module's one retry layer as a hashtable:
+    RetryCount (Settings.Request.RetryCount, repetitions of a single request) and
+    BatchRetryCount (Settings.Batch.RetryCount, repetitions of a $batch sub-request).
 
 .EXAMPLE
     Get-PSEntraIDCommandRetry
 
     Returns:
     @{
-        RetryCount = 3
-        RetryWaitInSeconds = 5
+        RetryCount      = 5
+        BatchRetryCount = 5
     }
 #>
     [OutputType([hashtable])]
     [CmdletBinding()]
     param ()
 
-    $retryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-    $retryWait = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName)
-
     return @{
-        RetryCount         = $retryCount
-        RetryWaitInSeconds = $retryWait
+        RetryCount      = [int](Get-PSFConfigValue -FullName ('{0}.Settings.Request.RetryCount' -f $script:ModuleName) -Fallback 5)
+        BatchRetryCount = [int](Get-PSFConfigValue -FullName ('{0}.Settings.Batch.RetryCount' -f $script:ModuleName) -Fallback 5)
     }
 }
