@@ -39,6 +39,12 @@ namespace PSMicrosoftEntraID.Batch
         /// <summary>Gets or sets the Graph error message of a failed sub-request.</summary>
         public string ErrorMessage { get; set; }
 
+        /// <summary>Gets or sets the Graph error code (error.code) of a failed sub-request.</summary>
+        public string ErrorCode { get; set; }
+
+        /// <summary>Gets or sets the inner Graph error code (error.innerError.code) of a failed sub-request.</summary>
+        public string InnerErrorCode { get; set; }
+
         /// <summary>
         /// Gets or sets the items of the page as typed objects, when the envelope was sent with an element type
         /// (<see cref="GraphBatchClient"/>); null otherwise, or when the page could not be converted.

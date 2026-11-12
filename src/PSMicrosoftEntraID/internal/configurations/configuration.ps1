@@ -47,6 +47,18 @@ Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.batchthrottlelimit' -Scri
 	$result.Value = [int]$number
 	$result
 }
+Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.batchstreamblocksize' -ScriptBlock {
+	param ($Value)
+	$result = [pscustomobject]@{ Success = $true; Value = $null; Message = '' }
+	[long] $number = 0
+	if (-not [long]::TryParse([string]$Value, [System.Globalization.NumberStyles]::Integer, [cultureinfo]::InvariantCulture, [ref]$number) -or $number -lt 1 -or $number -gt 1000) {
+		$result.Success = $false
+		$result.Message = "The batch stream block size must be a whole number of envelopes from 1 to 1000, not '$Value'."
+		return $result
+	}
+	$result.Value = [int]$number
+	$result
+}
 Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.retrycount' -ScriptBlock {
 	param ($Value)
 	$result = [pscustomobject]@{ Success = $true; Value = $null; Message = '' }
@@ -62,8 +74,9 @@ Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.retrycount' -ScriptBlock 
 # Graph throttles directory reads per app and tenant, not per mailbox as Exchange does: 4 envelopes of 20 in flight
 # is the safe default; more mostly buys more 429 answers.
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.ThrottleLimit' -Value 4 -Initialize -Validation 'PSMicrosoftEntraID.batchthrottlelimit' -Description "Number of Graph `$batch envelopes (20 sub-requests each) the batch engine keeps in flight at the same time, from 1 to 20. Graph throttles directory requests per application and tenant, so raising it mostly raises the number of 429 answers."
-Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often a throttled or unavailable batch sub-request (408, 429, 5xx except 501 and 505; a POST only on 429 and 503) is sent again before it is reported as failed, from 0 to 20."
-Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Request.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often Invoke-EntraRetry sends a failed request again (408, 429, 5xx except 501 and 505, no answer; a POST only on 429 and 503), from 0 to 20. The only retry of a single request: Invoke-EntraRequest sends each page at most this many times plus one. Set-PSEntraIDCommandRetry -RetryCount sets it."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.StreamBlockSize' -Value 20 -Initialize -Validation 'PSMicrosoftEntraID.batchstreamblocksize' -Description "How many `$batch envelopes (20 sub-requests each) Invoke-PSEntraIDBatchRequest collects from the pipeline before it sends them and writes their results, from 1 to 1000. The default 20 is five times the default ThrottleLimit: enough to keep every envelope slot busy, small enough that results start to flow while input is still arriving."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often a throttled or unavailable batch sub-request (408, 429, 5xx except 501 and 505; a POST only on 429 and 503; any method on a 400 Directory_ConcurrencyViolation) is sent again before it is reported as failed, from 0 to 20."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Request.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often Invoke-EntraRetry sends a failed request again (408, 429, 5xx except 501 and 505, no answer; a POST only on 429 and 503; any method on a 400 Directory_ConcurrencyViolation), from 0 to 20. The only retry of a single request: Invoke-EntraRequest sends each page at most this many times plus one. Set-PSEntraIDCommandRetry -RetryCount sets it."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Request.TimeoutSeconds' -Value 600 -Initialize -Validation 'PSMicrosoftEntraID.timeoutseconds' -Description "How long one `$batch envelope or one request of Invoke-EntraRequest may take, the whole answer included, in seconds, from 0 (no limit) to 4294967 (about 49.7 days). An envelope without an answer in time comes back as 504 and is retried like an unavailable one; a request is retried like one without an answer (not a POST). Ctrl+C cancels it at any time."
 
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $script:_DefaultService -Initialize -Validation 'string' -Description "What service name of Microsoft EntraID."

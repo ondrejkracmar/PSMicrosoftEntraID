@@ -61,6 +61,20 @@ public class GraphBatchReaderTests
     }
 
     [Fact]
+    public void ReadsTheErrorCodesOfAFailedSubResponse()
+    {
+        var responses = GraphBatchReader.Parse("""{"responses":[{"id":"1","status":400,"body":{"error":{"code":"Request_BadRequest","message":"Another object with the same value for property proxyAddresses already exists. Directory_ConcurrencyViolation","innerError":{"code":"Directory_ConcurrencyViolation"}}}},{"id":"2","status":400,"body":{"error":{"code":"Directory_ConcurrencyViolation","message":"Wait briefly and retry."}}},{"id":"3","status":200,"body":{"value":[]}}]}""");
+
+        Assert.Equal("Request_BadRequest", responses[0].ErrorCode);
+        Assert.Equal("Directory_ConcurrencyViolation", responses[0].InnerErrorCode);
+        Assert.Equal("Directory_ConcurrencyViolation", responses[1].ErrorCode);
+        Assert.Null(responses[1].InnerErrorCode);
+        Assert.Equal("Wait briefly and retry.", responses[1].ErrorMessage);
+        Assert.Null(responses[2].ErrorCode);
+        Assert.Null(responses[2].InnerErrorCode);
+    }
+
+    [Fact]
     public void ReadsPropertyNamesIgnoringCase()
     {
         var responses = GraphBatchReader.Parse("""{"Responses":[{"ID":"1","Status":503,"Headers":{"retry-after":"30"},"Body":{"Value":[{}]}}]}""");

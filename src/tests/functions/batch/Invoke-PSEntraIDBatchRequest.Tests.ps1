@@ -3,7 +3,10 @@
 	Invoke-PSEntraIDBatchRequest end to end on the parallel batch engine, against a local fake $batch server
 	(127.0.0.1, nothing leaves the machine): output shape and order, per-sub-request retry (only the failed ones),
 	Retry-After honoured and capped, no re-send of a POST after a 500, exactly one retry layer, one error record per
-	failed sub-request and one summary per run, -EnableException, -WhatIf, cancellation, the host guard.
+	failed sub-request and one summary per run, -EnableException, -WhatIf, cancellation, the host guard; a 400
+	Directory_ConcurrencyViolation sent again (only that sub-request), every other 400 once; the input streamed in blocks
+	of Settings.Batch.StreamBlockSize envelopes - results before the last input, input order across blocks, one summary
+	per run, no further block after Select-Object -First.
 
 .DESCRIPTION
 	The cmdlet sends through [PSMicrosoftEntraID.Batch.GraphBatchClient] directly - no mock catches it - so the default
@@ -20,6 +23,18 @@ BeforeAll {
 	$script:service = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.DefaultService'
 	$script:serviceBefore = InModuleScope PSMicrosoftEntraID -Parameters @{ Service = $script:service } { param ($Service) $script:_EntraTokens[$Service] }
 	$script:retryBefore = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount'
+	$script:blockBefore = Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize'
+
+	function Get-TestPayloadStream {
+		# A pipeline producer of -Count payloads of -Size requests (/users/s<n>-<id>); records 'yield <n>' in
+		# $script:events right before it hands payload n on.
+		param ([int]$Count, [int]$Size = 20)
+		foreach ($number in 1..$Count) {
+			$payload = New-TestPayload -Count $Size -Url { "/users/s$number-$_" }.GetNewClosure()
+			$script:events.Add("yield $number")
+			$payload
+		}
+	}
 
 	function New-TestPayload {
 		# A BatchRequestPayload of -Count requests with the ids 1..Count; -Url builds the URL of a request from its id.
@@ -56,6 +71,7 @@ BeforeAll {
 
 AfterAll {
 	Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount' -Value $script:retryBefore
+	Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value $script:blockBefore
 	InModuleScope PSMicrosoftEntraID -Parameters @{ Service = $script:service; Before = $script:serviceBefore } {
 		param ($Service, $Before)
 		if ($Before) { $script:_EntraTokens[$Service] = $Before } else { $script:_EntraTokens.Remove($Service) }
@@ -67,6 +83,7 @@ Describe 'Invoke-PSEntraIDBatchRequest' -Tag 'Unit' {
 
 	BeforeEach {
 		Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount' -Value 5
+		Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 20
 		$script:warnings = [System.Collections.Generic.List[object]]::new()
 		Mock -ModuleName PSMicrosoftEntraID Write-PSFMessage { if ($Level -eq 'Warning') { $script:warnings.Add([pscustomobject]@{ String = $String; Values = $StringValues }) } }
 		$script:server = New-TestBatchServer
@@ -194,6 +211,37 @@ Describe 'Invoke-PSEntraIDBatchRequest' -Tag 'Unit' {
 			$script:server.Hits('/groups/g1/members/$ref') | Should -Be 3
 		}
 
+		It 'sends again only the <Method> sub-request answered 400 Directory_ConcurrencyViolation: RetryCount + 1 attempts, the last one answered 200' -ForEach @(
+			@{ Method = 'GET' }
+			@{ Method = 'POST' }
+			@{ Method = 'PATCH' }
+		) {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount' -Value 3
+			$script:server.Plan('/groups/g2', [int[]]@(400, 400, 400), $null, 'Directory_ConcurrencyViolation')
+			$body = if ($Method -ne 'GET') { @{ displayName = 'x' } }
+			$errors = $null
+			$result = New-TestPayload -Count 3 -Url { "/groups/g$_" } -Method $Method -Body $body | Invoke-PSEntraIDBatchRequest -Force -ErrorVariable errors # Local test server
+			$result.Responses.Status | Should -Be @(200, 200, 200)
+			$script:server.Hits('/groups/g1') | Should -Be 1
+			$script:server.Hits('/groups/g2') | Should -Be 4
+			$script:server.Hits('/groups/g3') | Should -Be 1
+			@($errors).Count | Should -Be 0
+			$script:slept.Count | Should -BeGreaterOrEqual 3 -Because 'the same backoff as any transient failure'
+		}
+
+		It 'sends a plain 400 <Code> once' -ForEach @(
+			@{ Code = 'Request_BadRequest' }
+			@{ Code = 'Request_ResourceNotFound' }
+		) {
+			$script:server.Plan('/users/u2', [int[]]@(400), $null, $Code)
+			$errors = $null
+			$result = New-TestPayload -Count 3 | Invoke-PSEntraIDBatchRequest -Force -ErrorVariable errors -ErrorAction SilentlyContinue # Local test server
+			$result.Responses.Status | Should -Be @(200, 400, 200)
+			$result.Responses[1].Body.error.code | Should -Be $Code
+			$script:server.Hits('/users/u2') | Should -Be 1
+			@($errors).Count | Should -Be 1
+		}
+
 		It 'sends a sub-request that keeps failing exactly Settings.Batch.RetryCount + 1 times' {
 			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.RetryCount' -Value 2
 			$script:server.Plan('/users/u1', [int[]]@(503, 503, 503, 503, 503, 503, 503, 503), $null)
@@ -239,6 +287,74 @@ Describe 'Invoke-PSEntraIDBatchRequest' -Tag 'Unit' {
 			@($errors).Count | Should -Be 2
 			$errors[0].CategoryInfo.Category | Should -Be 'SecurityError'
 			$script:server.Envelopes | Should -Be 0
+		}
+	}
+
+	Context 'Streaming: blocks of Settings.Batch.StreamBlockSize envelopes' {
+
+		BeforeEach {
+			$script:events = [System.Collections.Generic.List[string]]::new()
+		}
+
+		It 'defaults to 20 envelopes and refuses <Value>' -ForEach @(@{ Value = 0 }, @{ Value = 1001 }, @{ Value = 'many' }) {
+			Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' | Should -Be 20
+			{ Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value $Value -EnableException } | Should -Throw
+			Get-PSFConfigValue -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' | Should -Be 20
+		}
+
+		It 'writes the results of the first block before the producer yields the last payload' {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 1
+			Get-TestPayloadStream -Count 4 | Invoke-PSEntraIDBatchRequest -Force | ForEach-Object { $script:events.Add('result ' + ([string]$_.Requests[0].Url -replace '^/users/s(\d+)-.*$', '$1')) } # Local test server
+			$script:events.IndexOf('result 1') | Should -BeGreaterThan -1
+			$script:events.IndexOf('result 1') | Should -BeLessThan $script:events.IndexOf('yield 4')
+			# One envelope per block: every payload's results are out before the next payload is taken.
+			$script:events | Should -Be @('yield 1', 'result 1', 'yield 2', 'result 2', 'yield 3', 'result 3', 'yield 4', 'result 4')
+			$script:server.Envelopes | Should -Be 4
+		}
+
+		It 'keeps the input order across blocks' {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 1
+			$sizes = 7, 15, 3, 20, 1, 12, 9
+			$payloads = for ($index = 0; $index -lt $sizes.Count; $index++) { New-TestPayload -Count $sizes[$index] -Url { "/users/o$index-$_" }.GetNewClosure() }
+			$results = @($payloads | Invoke-PSEntraIDBatchRequest -Force) # Local test server
+			$results.Count | Should -Be $sizes.Count
+			for ($index = 0; $index -lt $sizes.Count; $index++) {
+				$results[$index].Responses.Count | Should -Be $sizes[$index]
+				$results[$index].Responses | ForEach-Object { $_.Body.value[0].displayName | Should -Be "/users/o$index-$($_.Id)" }
+			}
+			# Blocks of at least 20 sub-requests: 7+15 | 3+20 | 1+12+9 - three blocks, two envelopes each.
+			$script:server.Envelopes | Should -Be 6
+		}
+
+		It 'writes one summary for the whole run, with the failures of every block' {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 1
+			$script:server.Plan('/users/s1-3', [int[]]@(404), $null)
+			$script:server.Plan('/users/s3-5', [int[]]@(403), $null)
+			$errors = $null
+			$results = @(Get-TestPayloadStream -Count 3 | Invoke-PSEntraIDBatchRequest -Force -ErrorVariable errors -ErrorAction SilentlyContinue) # Local test server
+			$results.Count | Should -Be 3
+			@($errors).Count | Should -Be 2
+			@($script:warnings | Where-Object String -EQ 'Batch.Summary').Count | Should -Be 1
+			$script:warnings.Count | Should -Be 1
+		}
+
+		It 'with -EnableException throws once at the end, after the results of every block' {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 1
+			$script:server.Plan('/users/s1-2', [int[]]@(404), $null)
+			$script:collected = [System.Collections.Generic.List[object]]::new()
+			{ Get-TestPayloadStream -Count 3 | Invoke-PSEntraIDBatchRequest -Force -EnableException | ForEach-Object { $script:collected.Add($_) } } | Should -Throw '*1 of 60*' # Local test server
+			$script:collected.Count | Should -Be 3
+			@($script:warnings | Where-Object String -EQ 'Batch.Summary').Count | Should -Be 1
+		}
+
+		It 'sends no further block once Select-Object -First stopped the pipeline' {
+			Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Batch.StreamBlockSize' -Value 1
+			$first = @(Get-TestPayloadStream -Count 5 | Invoke-PSEntraIDBatchRequest -Force | Select-Object -First 1) # Local test server
+			$first.Count | Should -Be 1
+			$first[0].Requests[0].Url | Should -Be '/users/s1-1'
+			$script:server.Envelopes | Should -Be 1
+			$script:server.Hits('/users/s2-1') | Should -Be 0
+			$script:events | Should -Not -Contain 'yield 3'
 		}
 	}
 

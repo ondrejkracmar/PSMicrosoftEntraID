@@ -304,7 +304,9 @@ Invoke-PSEntraIDRequest -Path 'users/john.doe@contoso.com/authentication/methods
 Every request is retried in one place, the request layer: throttling (429), 408 and server
 errors (5xx except 501 and 505) and requests without an answer are sent again after the
 `Retry-After` the service asks for (at most 5 minutes) or an exponential backoff with jitter;
-a POST only on 429 and 503. Batch sub-requests are retried one by one the same way.
+a POST only on 429 and 503. A 400 whose Graph error code is `Directory_ConcurrencyViolation`
+(a change that collided with another one) is retried for every method; every other 400 is
+final. Batch sub-requests are retried one by one the same way.
 
 ```powershell
 Set-PSEntraIDCommandRetry -RetryCount 5 -BatchRetryCount 5   # the defaults

@@ -8,7 +8,8 @@
     (Settings.Request.RetryCount) and the batch engine repeats a failed sub-request of a
     $batch (Settings.Batch.RetryCount). Repeated are throttling (429), 408 and server errors
     (5xx except 501 and 505) and requests without an answer; a POST only on 429 and 503,
-    where the service says it did not carry it out. The wait is the Retry-After the service
+    where the service says it did not carry it out; and, for every method, a 400 whose Graph
+    error code is Directory_ConcurrencyViolation. The wait is the Retry-After the service
     asks for (at most 5 minutes), otherwise 2^attempt seconds with jitter.
 
     Only the values that are passed are changed; a call without parameters changes nothing.

@@ -19,7 +19,7 @@
 		- every page is sent through the one retry policy of the module (Invoke-EntraRetry, Settings.Request.RetryCount,
 		  default 5): 408, 429 and 5xx except 501 and 505 and no answer at all are repeated for GET, PUT, PATCH, DELETE,
 		  HEAD and OPTIONS; any other method (a POST) only on 429 and 503, where the service says it did not carry the
-		  request out. The wait is the Retry-After of the answer (seconds or an HTTP date, at most 5 minutes), otherwise
+		  request out. A 400 whose Graph error code is Directory_ConcurrencyViolation is repeated for every method. The wait is the Retry-After of the answer (seconds or an HTTP date, at most 5 minutes), otherwise
 		  2^attempt seconds with jitter. A failed page is repeated on its own: the pages before it are not sent or
 		  emitted again. Nothing above this function retries, so a page is sent at most RetryCount + 1 times;
 		- every request may take Settings.Request.TimeoutSeconds (default 600, 0 = no limit).

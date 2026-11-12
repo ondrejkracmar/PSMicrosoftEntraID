@@ -6,6 +6,8 @@
 .DESCRIPTION
 	- 429 with Retry-After honoured (seconds and HTTP date) and capped at 5 minutes;
 	- a POST is repeated only on 429 and 503 - never after a 500;
+	- a 400 whose Graph error code (in the body, not the message text) is Directory_ConcurrencyViolation is repeated
+	  for every method; every other 400 is sent once;
 	- exactly one retry layer: a request that keeps failing is sent Settings.Request.RetryCount + 1 times, also
 	  through Invoke-PSEntraIDRequest and a cmdlet, which call Invoke-PSFProtectedCommand around it;
 	- a failed page is repeated on its own, the pages before it are not emitted again;
@@ -23,6 +25,17 @@ BeforeAll {
 		$response = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]$Status)
 		if ($RetryAfter) { $null = $response.Headers.TryAddWithoutValidation('Retry-After', $RetryAfter) }
 		[Microsoft.PowerShell.Commands.HttpResponseException]::new("Response status code does not indicate success: $Status.", $response)
+	}
+
+	function New-TestGraphFailure {
+		# An error record as Invoke-RestMethod raises it for a Graph error answer: the body in ErrorDetails.
+		[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Test helper: builds an error record, changes no state.')]
+		param ([int]$Status, [string]$Code, [string]$InnerCode, [string]$Message = 'Graph refused the request.')
+		$errorBody = [ordered]@{ code = $Code; message = $Message }
+		if ($InnerCode) { $errorBody.innerError = @{ code = $InnerCode } }
+		$record = [System.Management.Automation.ErrorRecord]::new((New-TestHttpFailure -Status $Status), 'WebCmdletWebResponseException', 'InvalidOperation', $null)
+		$record.ErrorDetails = [System.Management.Automation.ErrorDetails]::new((@{ error = $errorBody } | ConvertTo-Json -Depth 4 -Compress))
+		$record
 	}
 
 	function Set-TestAnswer {
@@ -74,9 +87,58 @@ Describe 'Invoke-EntraRequest retries through the one retry policy' -Tag 'Unit' 
 		Mock -ModuleName PSMicrosoftEntraID Invoke-RestMethod {
 			$script:sent.Add([pscustomobject]@{ Uri = [string]$Uri; Method = [string]$Method; Headers = $Headers.Clone(); TimeoutSec = [int]$(if (Test-Path variable:ConnectionTimeoutSeconds) { $ConnectionTimeoutSeconds } else { $TimeoutSec }) })
 			$answer = $script:answers[[Math]::Min($script:sent.Count, $script:answers.Count) - 1]
-			if ($answer -is [System.Exception]) { throw $answer }
+			if ($answer -is [System.Exception] -or $answer -is [System.Management.Automation.ErrorRecord]) { throw $answer }
 			$answer
 		}
+	}
+
+	It 'repeats <Method> answered 400 Directory_ConcurrencyViolation: RetryCount + 1 attempts, the last one answered 200' -ForEach @(
+		@{ Method = 'GET' }
+		@{ Method = 'POST' }
+		@{ Method = 'PATCH' }
+		@{ Method = 'DELETE' }
+	) {
+		Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Request.RetryCount' -Value 3
+		$conflict = New-TestGraphFailure -Status 400 -Code 'Directory_ConcurrencyViolation' -Message 'Wait briefly and retry.'
+		Set-TestAnswer -Answer @($conflict, $conflict, $conflict, [pscustomobject]@{ id = 'done' })
+		$result = InModuleScope PSMicrosoftEntraID -Parameters @{ Method = $Method } { param ($Method) Invoke-EntraRequest -Service RetryGraph -Path 'groups' -Method $Method -Body @{ displayName = 'x' } }
+		$result.id | Should -Be 'done'
+		$script:sent.Count | Should -Be 4
+		$script:slept.Count | Should -Be 3 -Because 'the same backoff as any transient failure'
+	}
+
+	It 'repeats a 400 whose inner error code is Directory_ConcurrencyViolation' {
+		Set-TestAnswer -Answer @((New-TestGraphFailure -Status 400 -Code 'Request_BadRequest' -InnerCode 'Directory_ConcurrencyViolation'), [pscustomobject]@{ id = 'done' })
+		$result = InModuleScope PSMicrosoftEntraID { Invoke-EntraRequest -Service RetryGraph -Path 'users/u1' -Method PATCH -Body @{ displayName = 'x' } }
+		$result.id | Should -Be 'done'
+		$script:sent.Count | Should -Be 2
+	}
+
+	It 'throws a Directory_ConcurrencyViolation that persists after RetryCount + 1 sends' {
+		Set-PSFConfig -FullName 'PSMicrosoftEntraID.Settings.Request.RetryCount' -Value 2
+		Set-TestAnswer -Answer @((New-TestGraphFailure -Status 400 -Code 'Directory_ConcurrencyViolation'))
+		{ InModuleScope PSMicrosoftEntraID { Invoke-EntraRequest -Service RetryGraph -Path 'groups' -Method POST -Body @{ displayName = 'x' } } } | Should -Throw
+		$script:sent.Count | Should -Be 3
+	}
+
+	It 'sends a plain 400 <Code> once, even when its message names the conflict' -ForEach @(
+		@{ Code = 'Request_BadRequest'; Message = 'Invalid value.' }
+		@{ Code = 'Request_BadRequest'; Message = 'Directory_ConcurrencyViolation is not the code here.' }
+		@{ Code = 'Request_ResourceNotFound'; Message = 'Not found.' }
+	) {
+		Set-TestAnswer -Answer @((New-TestGraphFailure -Status 400 -Code $Code -Message $Message), [pscustomobject]@{ id = 'done' })
+		{ InModuleScope PSMicrosoftEntraID { Invoke-EntraRequest -Service RetryGraph -Path 'users/u1' -Method PATCH -Body @{ displayName = 'x' } } } | Should -Throw
+		$script:sent.Count | Should -Be 1
+		$script:slept.Count | Should -Be 0
+	}
+
+	It 'does not repeat a 409 or 403 carrying the conflict code: only a 400 qualifies' -ForEach @(
+		@{ Status = 409 }
+		@{ Status = 403 }
+	) {
+		Set-TestAnswer -Answer @((New-TestGraphFailure -Status $Status -Code 'Directory_ConcurrencyViolation'), [pscustomobject]@{ id = 'done' })
+		{ InModuleScope PSMicrosoftEntraID { Invoke-EntraRequest -Service RetryGraph -Path 'users/u1' -Method PATCH -Body @{ displayName = 'x' } } } | Should -Throw
+		$script:sent.Count | Should -Be 1
 	}
 
 	It 'repeats a GET answered 429 after the Retry-After of the answer' {

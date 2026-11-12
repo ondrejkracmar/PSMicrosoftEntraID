@@ -7,7 +7,7 @@
 	- New-TestBatchServer starts a minimal HTTP/1.1 server on a free port of 127.0.0.1 (a TcpListener, no http.sys,
 	  no admin rights, no thread job). It answers every POST /v1.0/$batch either by echoing each sub-request as a
 	  200 page ({"value":[{"id":"<id>","url":"<url>"}]}) after -DelayMilliseconds, or - with -Hang - never. It counts
-	  the envelopes it received and the most that were open at the same time. Plan(url, statuses, retryAfter) makes
+	  the envelopes it received and the most that were open at the same time. Plan(url, statuses, retryAfter[, errorCode]) makes
 	  the sub-requests of that URL answer the given statuses in turn (with a Graph error body and the Retry-After
 	  header) before they are echoed as 200 again; Hits(url) counts how often a URL was asked for.
 	- Enable-TestHttpLoopback lists 127.0.0.1 in the private test hook of [PSMicrosoftEntraID.Batch.GraphBatchClient]
@@ -58,6 +58,13 @@ namespace PSMicrosoftEntraID.Tests
         private readonly ConcurrentDictionary<string, ConcurrentQueue<int>> plans = new ConcurrentDictionary<string, ConcurrentQueue<int>>();
         private readonly ConcurrentDictionary<string, string> retryAfter = new ConcurrentDictionary<string, string>();
         private readonly ConcurrentDictionary<string, int> hits = new ConcurrentDictionary<string, int>();
+        private readonly ConcurrentDictionary<string, string> errorCodes = new ConcurrentDictionary<string, string>();
+
+        public void Plan(string url, int[] statuses, string retryAfterValue, string errorCode)
+        {
+            Plan(url, statuses, retryAfterValue);
+            if (errorCode != null) errorCodes[url] = errorCode;
+        }
 
         public void Plan(string url, int[] statuses, string retryAfterValue)
         {
@@ -151,7 +158,9 @@ namespace PSMicrosoftEntraID.Tests
                     {
                         var headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" };
                         if (retryAfter.TryGetValue(url, out var wait)) headers["Retry-After"] = wait;
-                        responses.Add(new { id, status, headers, body = new { error = new { code = "Planned", message = "Planned answer " + status } } });
+                        var code = errorCodes.TryGetValue(url, out var planCode) ? planCode : "Planned";
+                        // The message never names the code: the retry decision must read the code, not the text.
+                        responses.Add(new { id, status, headers, body = new { error = new { code, message = "Planned answer " + status } } });
                         continue;
                     }
                     responses.Add(new { id, status = 200, headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" }, body = new { value = new[] { new { id = "item-" + id, displayName = url } } } });

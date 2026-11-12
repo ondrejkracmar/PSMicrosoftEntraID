@@ -73,7 +73,8 @@ CONFIGURATION
         Set-PSEntraIDCommandRetry -RetryCount 5 -BatchRetryCount 5
 
     RetryCount is how often a failed request is sent again (throttling, 408,
-    5xx except 501 and 505, no answer; a POST only on 429 and 503), after the
+    5xx except 501 and 505, no answer; a POST only on 429 and 503; any method on
+    a 400 Directory_ConcurrencyViolation), after the
     Retry-After of the answer or an exponential backoff. BatchRetryCount is the
     same for each sub-request of a $batch.
 

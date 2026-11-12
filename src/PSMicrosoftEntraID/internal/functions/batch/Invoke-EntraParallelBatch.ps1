@@ -13,7 +13,8 @@
 		- Every request carries its own method, URL, headers (ConsistencyLevel: eventual for advanced queries) and
 		  body. The Authorization header is taken from the connected token for every envelope, so long runs keep a
 		  fresh token.
-		- A sub-request answered with a status Test-EntraRetryStatus calls transient (408, 429, 5xx but 501 and 505;
+		- A sub-request answered with a status Test-EntraRetryStatus calls transient (408, 429, 5xx but 501 and 505, a
+		  400 Directory_ConcurrencyViolation for any method;
 		  a POST only 429 and 503) is sent again after its OWN Retry-After (seconds or an HTTP date, at most 5 minutes;
 		  without one 2^attempt seconds with a jitter of 0.8 to 1.2), up to Settings.Batch.RetryCount times; a 401 is
 		  sent once more with a fresh header. A waiting request waits on its own while the rest keeps flowing - the
@@ -193,7 +194,7 @@
 			$entry = $Entries[[int]$response.Id - 1]
 			[int] $status = $response.Status
 			# Transient as the status decision of the module says; a POST only when the service did not carry it out.
-			[bool] $transient = $status -ge 400 -and $entry.Attempt -lt $maxRetry -and (Test-EntraRetryStatus -Status $status -NotIdempotent:($entry.Method -eq 'POST'))
+			[bool] $transient = $status -ge 400 -and $entry.Attempt -lt $maxRetry -and (Test-EntraRetryStatus -Status $status -ErrorCode @($response.ErrorCode, $response.InnerErrorCode) -NotIdempotent:($entry.Method -eq 'POST'))
 			# 401 once: the token may have expired; the next envelope takes a fresh header.
 			[bool] $reauth = $status -eq 401 -and $entry.Attempt -lt 1
 			if ($transient -or $reauth) {

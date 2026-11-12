@@ -20,9 +20,12 @@
   a `TooManyRequests` message, plus the protected command's 0 by default) for a
   request, `Settings.Batch.RetryCount` (default 5) for a batch sub-request - and repeats only
   what the retry policy calls transient: 408, 429, 5xx except 501 and 505, no answer; a POST
-  only on 429 and 503. The old layer repeated every failure of every method (a 400, a 403, a
-  POST after a 500) when it was turned on; a 400 such as `Directory_ConcurrencyViolation` is no
-  longer retried at all. Scripts that set the removed keys with `Set-PSFConfig` set nothing.
+  only on 429 and 503; and, for every method, a 400 whose Graph error code (in the error body,
+  not the message text) is `Directory_ConcurrencyViolation` - the directory refused a change
+  that collided with another one, and asks to wait and retry. The old layer repeated every
+  failure of every method (a 400, a 403, a POST after a 500) when it was turned on; every
+  other 400 is no longer retried at all. Scripts that set the removed keys with `Set-PSFConfig`
+  set nothing.
 - **`Set-PSEntraIDCommandRetry` / `Get-PSEntraIDCommandRetry` set and read the request-layer
   retry.** `-RetryCount` (now 0-20) sets `Settings.Request.RetryCount`; the new
   `-BatchRetryCount` sets `Settings.Batch.RetryCount`. `-RetryWaitInSeconds` is accepted for
@@ -33,11 +36,15 @@
 - **`Invoke-PSEntraIDBatchRequest` runs on the parallel batch engine.** Parameters and the
   output type (`BatchResponsePayload` with `Requests` and `Responses`: `Id`, `Status`,
   `Headers`, `Body`) are unchanged, one result per payload in input order. What changed:
-  the payloads are collected and sent when the pipeline ends (`Settings.Batch.ThrottleLimit`
-  envelopes, default 4, in flight together), so results appear after the last input; a failed
+  the payloads are taken in blocks - once the buffered sub-requests fill
+  `Settings.Batch.StreamBlockSize` envelopes of 20 (new, default 20, 1-1000) the block is sent
+  (`Settings.Batch.ThrottleLimit` envelopes, default 4, in flight together) and its results are
+  written before more input is taken, the rest when the pipeline ends - so results flow while
+  input still arrives, and a `Select-Object -First` stop sends no further block; a failed
   sub-request is now also ONE non-terminating error record (its `Request` as the target) - so
   `-ErrorAction Stop` stops on it - and the run ends with ONE summary warning instead of a
-  warning per batch and per throttled pass; with `-EnableException` the command throws at the
+  warning per batch and per throttled pass (one for the whole run, across all blocks); with
+  `-EnableException` the command throws at the
   end, after all results were written, when any sub-request failed. Every throttled or
   unavailable sub-request is retried on its own `Retry-After` (seconds or HTTP date, capped at
   5 minutes); the envelope is never re-posted as a whole (before, a failed envelope was

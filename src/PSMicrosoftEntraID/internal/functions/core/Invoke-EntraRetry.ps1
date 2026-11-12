@@ -5,7 +5,8 @@
 
 	.DESCRIPTION
 		The single retry layer for one call. The call is repeated after a failure that repeating can help:
-		- an answer whose status Test-EntraRetryStatus calls transient (408, 429, 5xx except 501 and 505);
+		- an answer whose status Test-EntraRetryStatus calls transient (408, 429, 5xx except 501 and 505, and a 400
+		  whose Graph error code - read from the body in ErrorDetails - is Directory_ConcurrencyViolation);
 		- no answer at all (a network failure, a timeout).
 		A call that is not idempotent (-NotIdempotent: a POST) is repeated only on 429 and 503 - the service said it did
 		not carry it out; after a 500 or a lost answer it may have been done.
@@ -93,7 +94,17 @@
 				$entraRetryException = $entraRetryException.InnerException
 			}
 
-			[bool] $entraRetry = if ($entraRetryStatus -ge 0) { Test-EntraRetryStatus -Status $entraRetryStatus -NotIdempotent:$NotIdempotent }
+			# The Graph error codes of the answer's body (Invoke-RestMethod puts it into ErrorDetails): a 400
+			# Directory_ConcurrencyViolation is transient. Only the codes are read, never the message text.
+			[string[]] $entraRetryCodes = @()
+			if ($entraRetryStatus -eq 400 -and $entraRetryFailure.ErrorDetails -and $entraRetryFailure.ErrorDetails.Message) {
+				try {
+					$entraRetryBody = $entraRetryFailure.ErrorDetails.Message | ConvertFrom-Json -ErrorAction Stop
+					$entraRetryCodes = @($entraRetryBody.error.code, $entraRetryBody.error.innerError.code) | Where-Object { $_ -is [string] }
+				}
+				catch { $entraRetryCodes = @() }
+			}
+			[bool] $entraRetry = if ($entraRetryStatus -ge 0) { Test-EntraRetryStatus -Status $entraRetryStatus -ErrorCode $entraRetryCodes -NotIdempotent:$NotIdempotent }
 			elseif ($entraRetryNoAnswer) { -not $NotIdempotent }
 			else { $false }
 			if (-not $entraRetry -or $entraRetryAttempt -ge $entraRetryCount) { throw }

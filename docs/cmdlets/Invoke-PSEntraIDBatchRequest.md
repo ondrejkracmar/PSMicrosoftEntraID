@@ -37,12 +37,14 @@ produced by New-PSEntraIDBatchRequest).
 Each BatchRequestPayload contains up to 20
 sub-requests.
 
-The sub-requests of all payloads are sent through the module's batch engine: they are
-packed into Graph $batch envelopes of 20, and Settings.Batch.ThrottleLimit envelopes
-(default 4) are in flight at the same time.
-The payloads are collected while the
-pipeline delivers them and sent once it ends, so the first result appears only after
-the last payload arrived.
+The sub-requests are sent through the module's batch engine: they are packed into
+Graph $batch envelopes of 20, and Settings.Batch.ThrottleLimit envelopes (default 4) are
+in flight at the same time.
+The payloads are taken from the pipeline in blocks: once the
+buffered sub-requests fill Settings.Batch.StreamBlockSize envelopes (default 20), the
+block is sent and its results are written before more input is taken; the rest is sent
+when the pipeline ends.
+Results therefore flow while input is still arriving.
 
 Each sub-request is retried on its own: one answered 408, 429 or 5xx (except 501 and
 505) is sent again after its own Retry-After (at most 5 minutes; otherwise 2^attempt
@@ -50,21 +52,25 @@ seconds with jitter), up to Settings.Batch.RetryCount times (default 5).
 A POST
 sub-request is sent again only on 429 and 503, where Graph says it did not carry it
 out.
+A 400 whose Graph error code is Directory_ConcurrencyViolation (a change that
+collided with another one) is sent again for every method; every other 400 is final.
 The envelope itself is never sent again as a whole, and nothing else retries.
 
-For each payload one BatchResponsePayload is returned, in the order of the input:
+For each payload one BatchResponsePayload is returned, in the order of the input (across
+blocks too):
     Requests  = the sub-requests of the payload
     Responses = one response per sub-request, in the order of the requests (Id, Status,
                 Headers, Body)
 
 A sub-request that failed for good keeps its response (with its status) in the output
 and is also reported as ONE non-terminating error whose target is the request; the run
-ends with ONE warning summarising failures and re-sends.
-With -EnableException no error
-records are written and the command throws at the end, after all results were returned.
+ends with ONE warning summarising failures and re-sends of all blocks.
+With
+-EnableException no error records are written and the command throws at the end, after
+all results were returned.
 
 Ctrl+C or a pipeline stopped downstream (Select-Object -First) cancels every envelope
-still in flight.
+still in flight, and no further block is sent.
 
 ## EXAMPLES
 
