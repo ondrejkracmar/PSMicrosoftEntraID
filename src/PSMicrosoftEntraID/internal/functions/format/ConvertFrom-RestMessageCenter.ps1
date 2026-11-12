@@ -20,18 +20,5 @@
 	)
 	if (-not $InputObject) { return }
 
-	$jsonString = $InputObject | ConvertTo-Json -Depth 4
-
-	$type = if ($InputObject -is [array]) {
-		[PSMicrosoftEntraID.ServiceAnnouncement.Message[]]
-	}
-	else {
-		[PSMicrosoftEntraID.ServiceAnnouncement.Message]
-	}
-
-	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-	$stream = [System.IO.MemoryStream]::new($byteArray)
-	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
-	return $serializer.ReadObject($stream)
-
+	ConvertFrom-GraphResponse -InputObject $InputObject -Type ([PSMicrosoftEntraID.ServiceAnnouncement.Message])
 }

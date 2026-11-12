@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +11,6 @@ namespace PSMicrosoftEntraID.License
     /// Inherits from the abstract <see cref="ServicePlan"/> class and provides additional properties
     /// for provisioning status and applicable scope.
     /// </summary>
-    [DataContract]
     public class ServicePlanSubscriptionSku : ServicePlan
     {
         /// <summary>
@@ -25,19 +23,16 @@ namespace PSMicrosoftEntraID.License
         /// <summary>
         /// Gets or sets the provisioning status of the service plan.
         /// </summary>
-        [DataMember(Name = "provisioningStatus")]
         public string ProvisioningStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the applicable scope of the service plan (e.g., User or Organization).
         /// </summary>
-        [DataMember(Name = "appliesTo")]
         public string AppliesTo { get; set; }
 
         /// <summary>
         /// Gets or sets the friendly name for the service plan.
         /// </summary>
-        [DataMember(Name = "servicePlanFriendlyName")]
         public string ServicePlanFriendlyName { get; set; }
     }
 }

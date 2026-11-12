@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using PSMicrosoftEntraID.Delta;
 
 namespace PSMicrosoftEntraID.DirectoryManagement
@@ -13,7 +14,6 @@ namespace PSMicrosoftEntraID.DirectoryManagement
     /// change annotation. Objects Graph reports as removed arrive with only their id
     /// populated - Graph does not resend the rest for something that is gone.
     /// </remarks>
-    [DataContract]
     public class AdministrativeUnitDelta : AdministrativeUnit
     {
         /// <summary>
@@ -28,8 +28,21 @@ namespace PSMicrosoftEntraID.DirectoryManagement
         /// <summary>
         /// What happened to the object since the previous delta call.
         /// </summary>
-        [DataMember(Name = "changeType")]
         public DeltaChangeType ChangeType { get; set; }
+
+        /// <summary>
+        /// Receives Graph's "@removed" annotation while the object is deserialized and turns it into
+        /// <see cref="ChangeType"/>. Write-only by design: the annotation itself is not kept, and it is never
+        /// written back.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("@removed")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        internal JsonElement? RemovedAnnotation
+        {
+            get { return null; }
+            set { ChangeType = DeltaAnnotation.ToChangeType(value); }
+        }
 
         /// <summary>
         /// Membership changes since the previous delta call - who was added to or
@@ -37,7 +50,7 @@ namespace PSMicrosoftEntraID.DirectoryManagement
         /// without this property the converter had nowhere to put members@delta and the
         /// selected 'members' data was silently dropped.
         /// </summary>
-        [DataMember(Name = "members@delta")]
+        [JsonPropertyName("members@delta")]
         public PSMicrosoftEntraID.Groups.GroupMemberDelta[] MembersDelta { get; set; }
 
         /// <summary>

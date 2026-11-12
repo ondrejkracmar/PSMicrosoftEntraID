@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using PSMicrosoftEntraID.Delta;
 
 namespace PSMicrosoftEntraID.Devices
@@ -13,7 +14,6 @@ namespace PSMicrosoftEntraID.Devices
     /// change annotation. Objects Graph reports as removed arrive with only their id
     /// populated - Graph does not resend the rest for something that is gone.
     /// </remarks>
-    [DataContract]
     public class DeviceDelta : Device
     {
         /// <summary>
@@ -28,8 +28,21 @@ namespace PSMicrosoftEntraID.Devices
         /// <summary>
         /// What happened to the object since the previous delta call.
         /// </summary>
-        [DataMember(Name = "changeType")]
         public DeltaChangeType ChangeType { get; set; }
+
+        /// <summary>
+        /// Receives Graph's "@removed" annotation while the object is deserialized and turns it into
+        /// <see cref="ChangeType"/>. Write-only by design: the annotation itself is not kept, and it is never
+        /// written back.
+        /// </summary>
+        [JsonInclude]
+        [JsonPropertyName("@removed")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        internal JsonElement? RemovedAnnotation
+        {
+            get { return null; }
+            set { ChangeType = DeltaAnnotation.ToChangeType(value); }
+        }
 
         /// <summary>
         /// Prefixes the object's description with the change, so a removed object is not

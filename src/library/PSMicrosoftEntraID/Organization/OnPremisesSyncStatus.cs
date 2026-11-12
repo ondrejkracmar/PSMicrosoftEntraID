@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using PSMicrosoftEntraID.Serialization;
 
 namespace PSMicrosoftEntraID.Organization
 {
@@ -11,7 +12,6 @@ namespace PSMicrosoftEntraID.Organization
     /// Represents the synchronization status for on-premises directory in Microsoft Entra ID.
     /// This class provides properties for the attribute set name, sync state, and version.
     /// </summary>
-    [DataContract]
     public class OnPremisesSyncStatus
     {
         /// <summary>
@@ -24,19 +24,18 @@ namespace PSMicrosoftEntraID.Organization
         /// <summary>
         /// Gets or sets the name of the attribute set used for synchronization.
         /// </summary>
-        [DataMember(Name = "attributeSetName")]
         public string AttributeSetName { get; set; }
 
         /// <summary>
         /// Gets or sets the current state of the on-premises synchronization.
         /// </summary>
-        [DataMember(Name = "state")]
         public string State { get; set; }
 
         /// <summary>
-        /// Gets or sets the version of the on-premises synchronization configuration.
+        /// Gets or sets the version of the on-premises synchronization configuration. Kept as text: Graph sends a
+        /// number, which is read as its digits rather than failing the whole page.
         /// </summary>
-        [DataMember(Name = "version")]
+        [JsonConverter(typeof(StringOrValueConverter))]
         public string Version { get; set; }
     }
 }
