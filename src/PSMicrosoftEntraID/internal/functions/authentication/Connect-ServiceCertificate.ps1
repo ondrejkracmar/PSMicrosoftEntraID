@@ -80,12 +80,10 @@
         scope                 = '{0}/.default' -f $Resource
         grant_type            = 'client_credentials'
     }
-    $header = @{
-        Authorization = "Bearer $jwt"
-    }
     $uri = "$AuthenticationUrl/$TenantID/oauth2/v2.0/token"
 	
-    try { $authResponse = Invoke-RestMethod -Method Post -Uri $uri -Body $body -Headers $header -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
+    # The signed client assertion goes in the body only, as RFC 7523 has it - never as a bearer token in a header.
+    try { $authResponse = Invoke-RestMethod -Method Post -Uri $uri -Body $body -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
     catch { throw }
 	
     Read-AuthResponse -AuthResponse $authResponse

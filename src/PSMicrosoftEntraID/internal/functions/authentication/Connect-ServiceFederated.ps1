@@ -73,14 +73,15 @@
 			catch { Invoke-TerminatingException -Cmdlet $PSCmdlet -ErrorRecord $_ -Message "Failed to access a token from the federated identity provider! $_" }
 		}
 
+		# The v2.0 endpoint, as the certificate flow: the permissions of the resource are asked for as its .default scope.
 		$body = @{
-			resource              = $Resource
+			scope                 = '{0}/.default' -f $Resource.TrimEnd('/')
 			client_id             = $ClientID
 			client_assertion_type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
 			client_assertion      = $myAssertion
 			grant_type            = 'client_credentials'
 		}
-		try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/token" -Body $body -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
+		try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/v2.0/token" -Body $body -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
 		catch { throw }
 
 		Read-AuthResponse -AuthResponse $authResponse

@@ -17,6 +17,8 @@ Describe 'Invoke-EntraRequest delta handling' -Tag 'Unit' {
             # object exposes to refresh and hand over the auth header.
             $script:fakeToken = [pscustomobject]@{
                 Service = 'Graph'
+                # The token guard compares every request with the service URL of the token.
+                ServiceUrl = 'https://graph.microsoft.com/v1.0'
                 Query   = @{}
                 RawOnly = $false
             }

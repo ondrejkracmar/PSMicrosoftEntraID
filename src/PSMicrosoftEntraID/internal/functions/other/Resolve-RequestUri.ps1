@@ -5,7 +5,8 @@
 	
 	.DESCRIPTION
 		Resolves the actual Uri used for a request in Invoke-EntraRequest.
-		If the path provided is a full url, it will be returned as is.
+		If the path provided is a full url, it will be returned as is; Invoke-EntraRequest sends it only when it is
+		https on the host of the token's service URL (Assert-EntraAuthorizedUri), and refuses it otherwise.
 		Otherwise, any present parameters will be resolved in the base service url before merging it with the specified path.
 	
 	.PARAMETER TokenObject
@@ -46,6 +47,6 @@
 			$serviceUrlBase = $serviceUrlBase -replace "%$key%", $BoundParameters.$key
 		}
 
-		"$($serviceUrlBase.TrimEnd('/'))/$($Path.TrimStart('/'))"
+		"$($serviceUrlBase.TrimEnd('/'))/$(([string]$BoundParameters.Path).TrimStart('/'))"
 	}
 }
