@@ -59,6 +59,26 @@
   `.Where()` scan per item (3000 vs 2500 members: about 290 s before, a few seconds now) and no
   longer returns nothing under `-WhatIf`.
 
+- **`Add-PSEntraIDGroupMember` sent garbage for two or more members and dropped
+  members on a partial resolution.** The chunks for `members@odata.bind` were cast to
+  `[string[]]`, which joined every chunk of up to 20 member URLs into ONE
+  space-separated string, and `Step-Array` emitted an extra empty chunk for an exact
+  multiple of 20 - Graph received
+  `{"members@odata.bind":["https://.../1 https://.../2 ..."]}` followed by
+  `{"members@odata.bind":[""]}`. The endpoint was chosen by how many users were
+  requested rather than how many resolved, so `-User a,b` with `b` unknown sent
+  `PATCH groups/{id}` with an `@odata.id` body and `a` was not added either; unresolved
+  users were skipped without a word; and the request of one pipeline record was sent
+  again for the next record when that one did not resolve. `Step-Array` now writes
+  each chunk as one array and never an empty one, the cmdlet builds its requests per
+  record from the members that actually resolved (one -> `POST members/$ref`, more ->
+  `PATCH` in chunks of 20), and every unresolved user is reported with a warning.
+  `Remove-PSEntraIDGroupMember`, `Add-`/`Remove-PSEntraIDGroupOwner` and
+  `Add-`/`Remove-PSEntraIDAdministrativeUnitMember` skipped unresolved users, groups,
+  devices and administrative units just as silently and now warn as well. The tests
+  run the real `Step-Array` (the old one mocked it away) with 1, 19, 20, 21 and 40
+  members and assert the serialized body of every request.
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed
