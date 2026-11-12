@@ -26,6 +26,7 @@
 
 	'LicenseServicePlan.Enable'            = "Enable service plans '{0}' in subscription '{1}'"
 	'LicenseServicePlan.Disable'           = "Disable service plans '{0}' in subscription '{1}'"
+	'LicenseServicePlan.NotFound'          = "Service plans {0} were not found in subscription '{1}'; nothing was changed"
 	'License.Enable'                       = "Enable license '{0}'"
 	'License.Disable'                      = "Disable license '{0}'"
 
@@ -54,6 +55,10 @@
 	# nothing had been written to it.
 	'License.Sku.NotAssigned'              = "Subscription '{0}' is not assigned to '{1}'; nothing to change"
 	'License.Target.NotFound'              = "Target '{0}' could not be resolved; skipping"
+	# Enable-*LicenseServicePlan assigning a SKU the target does not hold: without the
+	# full plan list it would go out with every plan enabled, so these stop the command.
+	'LicenseServicePlan.Catalog.Failed'    = "The service plans of subscription '{0}' could not be read from the subscribed Sku catalog; nothing was changed"
+	'LicenseServicePlan.Catalog.Empty'     = "The subscribed Sku catalog lists no service plans for subscription '{0}'; assigning it would enable every plan, so nothing was changed"
 	'DirectoryObject.NoServiceUrl'         = "Service '{0}' has no ServiceUrl; falling back to the public Graph endpoint for the object binding"
 	'Delta.Get'                            = "Get changes from '{0}'"
 	'DeltaSession.Export'                  = "Save delta session to '{0}'"
@@ -74,7 +79,11 @@
 	#'GroupOwner.Add.Failed'        = "Add owners to the group '{0}' failed"
 	'GroupOwner.Delete'                    = "Remove owners '{0}'"
 	'GroupMember.List'                     = "List members from the group '{0}'"
-	'GroupMember.Sync'                     = "Sync members of group"
+	'GroupMember.Sync.Add'                 = "Add {0} member(s) to the group '{1}'"
+	'GroupMember.Sync.Remove'              = "Remove member '{0}' from the group '{1}'"
+	'GroupMember.Sync.ReadFailed'          = "Sync of group '{0}' aborted, no member was changed: reading {1} failed. {2}"
+	'GroupMember.Sync.Unresolved'          = "Sync of group '{0}' aborted, no member was changed: the reference identities {1} could not be resolved. Without them every such user still in the group would be removed."
+	'GroupMember.Sync.EmptyReference'      = "Sync of group '{0}' aborted, no member was changed: the reference is empty, which would remove all {1} member(s). Pass -AllowEmptyReference to empty the group deliberately."
 
 	'Device.Get'                           = "Get device '{0}'"
 	'Device.Get.Failed'                    = "Get device '{0}' failed"
