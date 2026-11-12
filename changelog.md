@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Security
+
+- `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
+  library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
+  GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
+
 ### Changed
 
 - **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
@@ -18,11 +24,24 @@
   and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
   patterns the git guard expects.
 
-### Security
+### Fixed
 
-- `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
-  library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
-  GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
+- **Piped records no longer inherit the previous record's properties.**
+  With `ValueFromPipelineByPropertyName`, `$PSBoundParameters` keeps a key bound by an
+  earlier pipeline record while the variable is reset to its default, so every cmdlet
+  that decided "was this property given?" from it wrote the previous record's properties,
+  with empty or default values, into the next object. Piping
+  `{Id; AccountEnabled = $true; Department = 'IT'}` then `{Id; JobTitle = 'Dev'}` into
+  `Set-PSEntraIDUser` sent `{"department":"","accountEnabled":false,"jobTitle":"Dev"}`
+  for the second user - disabling the account and clearing the department. Affected:
+  `Set-PSEntraIDUser`, `New-PSEntraIDUser` (also reset `forceChangePasswordNextSignIn`),
+  `New-PSEntraIDGroup`, `Set-PSEntraIDGroup`, `New-PSEntraIDAdministrativeUnit`,
+  `Set-PSEntraIDAdministrativeUnit` and `New-PSEntraIDInvitation`, which additionally
+  copied every earlier guest's CC recipients onto each later invitation. Each cmdlet now
+  drops the keys a record bound once that record is processed (new internal
+  `Clear-PipelineBoundParameter`, rule in `docs/internal/conventions.md`), and
+  `PipelineBoundParameters.Tests.ps1` asserts the serialized body of every record in a
+  mixed pipeline.
 
 ## 1.5.1 (2026-09-07)
 
