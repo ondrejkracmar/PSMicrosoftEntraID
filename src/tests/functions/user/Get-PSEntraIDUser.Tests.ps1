@@ -90,9 +90,14 @@ Describe 'Get-PSEntraIDUser' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 2 -Exactly
         }
 
-        It 'Should first try mail query to resolve user' {
+        It 'Should try the userPrincipalName lookup before mail' {
+            # Id, then UPN, then mail: mail first returned the wrong account when another
+            # user's mail equalled this UPN.
             Get-PSEntraIDUser -Identity 'john.doe@contoso.com'
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -ParameterFilter {
+                $Query.'$Filter' -eq "userPrincipalName eq 'john.doe@contoso.com'"
+            }
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-EntraRequest -Times 0 -Exactly -ParameterFilter {
                 $Query.'$Filter' -eq "mail eq 'john.doe@contoso.com'"
             }
         }

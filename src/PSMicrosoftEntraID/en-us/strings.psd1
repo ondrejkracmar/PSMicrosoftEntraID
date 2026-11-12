@@ -26,6 +26,7 @@
 
 	'LicenseServicePlan.Enable'            = "Enable service plans '{0}' in subscription '{1}'"
 	'LicenseServicePlan.Disable'           = "Disable service plans '{0}' in subscription '{1}'"
+	'LicenseServicePlan.NotFound'          = "Service plans {0} were not found in subscription '{1}'; nothing was changed"
 	'License.Enable'                       = "Enable license '{0}'"
 	'License.Disable'                      = "Disable license '{0}'"
 
