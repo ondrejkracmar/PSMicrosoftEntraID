@@ -1,5 +1,42 @@
 ﻿# Changelog
 
+## Unreleased
+
+### Fixed
+
+- **A misspelt service plan could assign a licence with every plan disabled.**
+  `Enable-PSEntraIDUserLicenseServicePlan` and `Enable-PSEntraIDGroupLicenseServicePlan`
+  resolved `-ServicePlanName` against the SKU and silently dropped what did not match;
+  for a target that did not hold the SKU yet the cmdlet starts from "every plan
+  disabled", so a typo assigned the licence with ALL plans disabled - a licence consumed
+  for nothing, and no error. An unknown `-SkuPartNumber` went the same way with an empty
+  `skuId`, and a `-ServicePlanId` the SKU does not have was never checked. All four
+  service-plan cmdlets (`Enable-`/`Disable-`, user and group) now resolve the SKU and
+  every requested plan once in `begin` (new internal `Resolve-LicenseServicePlan`) and
+  stop before sending anything when one does not resolve. A piped user object without
+  `AssignedLicenses` (a minimal delta, a custom selection) is read again instead of
+  being taken for "holds no licence": `Enable-*` used to overwrite the user's disabled
+  plans and `Disable-*` reported the SKU as not assigned.
+- **`Compare-PSEntraIDUserList` always answered "Not connected".** It asserted a
+  connection to a service named `graph`, which is never registered; it now checks the
+  configured default service like every other cmdlet.
+- **`Get-PSEntraIDUserMemberOf -Filter` was rejected by Graph.** The
+  `ConsistencyLevel: eventual` header was built and never passed on. An identity that
+  did not resolve was requested as `users//memberOf`; it is now skipped with a warning
+  (or stops the command with `-EnableException`).
+- **`Get-PSEntraIDUser` could return the wrong account.** The mail lookup ran before
+  the userPrincipalName, so when user B's mail equalled user A's UPN a request for A
+  returned B. The order is now object id (read directly, no lookup), userPrincipalName,
+  then mail - in `Get-PSEntraIDUserGuest` as well.
+- **Service plan tab completion threw.** The completer's loop variable `$servicePlan`
+  was its own `[switch] $ServicePlan` parameter (variables are case-insensitive), so the
+  first plan failed the switch conversion. It was also attached to the GUID parameter
+  `-ServicePlanId` of `Enable-PSEntraIDGroupLicenseServicePlan`, where it would have
+  offered names; that parameter keeps its id completion from the TEPP registration.
+- **`Get-PSEntraIDGroup -Identity` did not escape its fallback path.** Without a
+  mailNickName match the identity itself went into `groups/{0}` unescaped, so `#` cut
+  the request short.
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed
