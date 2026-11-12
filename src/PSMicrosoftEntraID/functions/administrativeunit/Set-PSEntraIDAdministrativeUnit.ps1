@@ -114,80 +114,88 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        switch ($PSCmdlet.ParameterSetName) {
-            'InputObject' {
-                foreach ($itemInputObject in $InputObject) {
-                    [hashtable] $body = @{}
-                    foreach ($param in $PSBoundParameters.Keys) {
-                        switch ($param) {
-                            'DisplayName' { $body['displayName'] = $DisplayName }
-                            'Description' { $body['description'] = $Description }
-                            'Visibility' { $body['visibility'] = $Visibility }
-                            'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
-                        }
-                    }
-
-
-                    [string] $path = ("directory/administrativeUnits/{0}" -f $itemInputObject.Id)
-
-                    if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{
-                            Method  = 'PATCH'
-                            Url     = ('/{0}' -f $path)
-                            Body    = $body
-                            Headers = $header
-                        }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
-                }
-            }
-            'Identity' {
-                foreach ($administrativeUnit in $Identity) {
-                    [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
-                    if ([object]::Equals($aADAdministrativeUnit, $null)) {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Set.Failed) -f $administrativeUnit)
-                        }
-                    }
-                    else {
+        try {
+            switch ($PSCmdlet.ParameterSetName) {
+                'InputObject' {
+                    foreach ($itemInputObject in $InputObject) {
                         [hashtable] $body = @{}
+                        foreach ($param in $PSBoundParameters.Keys) {
+                            switch ($param) {
+                                'DisplayName' { $body['displayName'] = $DisplayName }
+                                'Description' { $body['description'] = $Description }
+                                'Visibility' { $body['visibility'] = $Visibility }
+                                'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
+                            }
+                        }
 
-                    foreach ($param in $PSBoundParameters.Keys) {
-                        switch ($param) {
-                            'DisplayName' { $body['displayName'] = $DisplayName }
-                            'Description' { $body['description'] = $Description }
-                            'Visibility' { $body['visibility'] = $Visibility }
-                            'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
+
+                        [string] $path = ("directory/administrativeUnits/{0}" -f $itemInputObject.Id)
+
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'PATCH'
+                                Url     = ('/{0}' -f $path)
+                                Body    = $body
+                                Headers = $header
+                            }
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
-
-                    [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
-
-                    if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{
-                            Method  = 'PATCH'
-                            Url     = ('/{0}' -f $path)
-                            Body    = $body
-                            Headers = $header
+                }
+                'Identity' {
+                    foreach ($administrativeUnit in $Identity) {
+                        [PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit] $aADAdministrativeUnit = Get-PSEntraIDAdministrativeUnit -Identity $administrativeUnit
+                        if ([object]::Equals($aADAdministrativeUnit, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Set.Failed) -f $administrativeUnit)
+                            }
                         }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Set' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
+                        else {
+                            [hashtable] $body = @{}
+
+                        foreach ($param in $PSBoundParameters.Keys) {
+                            switch ($param) {
+                                'DisplayName' { $body['displayName'] = $DisplayName }
+                                'Description' { $body['description'] = $Description }
+                                'Visibility' { $body['visibility'] = $Visibility }
+                                'IsMemberManagementRestricted' { $body['isMemberManagementRestricted'] = $IsMemberManagementRestricted }
+                            }
+                        }
+
+                        [string] $path = ("directory/administrativeUnits/{0}" -f $aADAdministrativeUnit.Id)
+
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request]@{
+                                Method  = 'PATCH'
+                                Url     = ('/{0}' -f $path)
+                                Body    = $body
+                                Headers = $header
+                            }
+                        }
+                        else {
+                            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Set' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                            if (Test-PSFFunctionInterrupt) { return }
+                        }
+                        }
                     }
                 }
             }
+        }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
 
