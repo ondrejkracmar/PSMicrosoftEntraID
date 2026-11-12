@@ -17,6 +17,7 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand { & $ScriptBlock }
         Mock -ModuleName $script:ModuleName Test-PSFFunctionInterrupt { $false }
+        Mock -ModuleName $script:ModuleName Get-EntraService { [pscustomobject]@{ ServiceUrl = 'https://graph.microsoft.com/v1.0' } }
     }
 
     Context 'Deciding what to change' {
@@ -48,15 +49,17 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
                     $user
                 }
 
-                $script:added = [System.Collections.Generic.List[string]]::new()
-                $script:removed = [System.Collections.Generic.List[string]]::new()
-                Mock Add-PSEntraIDGroupMember { $script:added.Add([string]$User) }
-                Mock Remove-PSEntraIDGroupMember { $script:removed.Add([string]$User) }
+                # The writes go straight to the resolved group (see the safety tests for
+                # chunking); what matters here is WHICH members are written.
+                $script:requests = [System.Collections.Generic.List[string]]::new()
+                Mock Invoke-EntraRequest { $script:requests.Add(('{0} {1} {2}' -f $Method, $Path, ($Body | ConvertTo-Json -Compress -Depth 5))) }
 
                 Sync-PSEntraIDGroupMember -DifferenceIdentity 'target' -ReferenceUserIdentity 'a@contoso.com', 'b@contoso.com' -Force
 
-                $script:added | Should -Be @('a@contoso.com')
-                $script:removed | Should -Be @('c@contoso.com')
+                $script:requests | Should -Be @(
+                    'Patch groups/group-1 {"members@odata.bind":["https://graph.microsoft.com/v1.0/directoryObjects/a@contoso.com"]}'
+                    'Delete groups/group-1/members/c%40contoso.com/$ref null'
+                )
             }
         }
 
@@ -72,13 +75,11 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
                     $user.Id = $Identity
                     $user
                 }
-                Mock Add-PSEntraIDGroupMember { }
-                Mock Remove-PSEntraIDGroupMember { }
+                Mock Invoke-EntraRequest { }
 
                 Sync-PSEntraIDGroupMember -DifferenceIdentity 'target' -ReferenceUserIdentity 'a@contoso.com' -Force
 
-                Should -Invoke Add-PSEntraIDGroupMember -Times 0
-                Should -Invoke Remove-PSEntraIDGroupMember -Times 0
+                Should -Invoke Invoke-EntraRequest -Times 0
             }
         }
     }
@@ -97,8 +98,7 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
                     $user.Id = $Identity
                     $user
                 }
-                Mock Add-PSEntraIDGroupMember { }
-                Mock Remove-PSEntraIDGroupMember { }
+                Mock Invoke-EntraRequest { }
 
                 $view = @(Sync-PSEntraIDGroupMember -DifferenceIdentity 'target' -ReferenceUserIdentity 'a@contoso.com' -SyncView -Force)
 
@@ -106,8 +106,7 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
                 $view.Crud | Should -Contain 'Delete'
                 # -SyncView is the dry run; it exists precisely so an operator can look
                 # before anything is written.
-                Should -Invoke Add-PSEntraIDGroupMember -Times 0
-                Should -Invoke Remove-PSEntraIDGroupMember -Times 0
+                Should -Invoke Invoke-EntraRequest -Times 0
             }
         }
     }
@@ -118,14 +117,12 @@ Describe 'Sync-PSEntraIDGroupMember' -Tag 'Unit' {
             InModuleScope PSMicrosoftEntraID {
                 Mock Get-PSEntraIDGroup { $null }
                 Mock Get-PSEntraIDGroupMember { }
-                Mock Add-PSEntraIDGroupMember { }
-                Mock Remove-PSEntraIDGroupMember { }
+                Mock Invoke-EntraRequest { }
 
                 Sync-PSEntraIDGroupMember -DifferenceIdentity 'nope' -ReferenceUserIdentity 'a@contoso.com' -Force
 
                 Should -Invoke Get-PSEntraIDGroupMember -Times 0
-                Should -Invoke Add-PSEntraIDGroupMember -Times 0
-                Should -Invoke Remove-PSEntraIDGroupMember -Times 0
+                Should -Invoke Invoke-EntraRequest -Times 0
             }
         }
     }
