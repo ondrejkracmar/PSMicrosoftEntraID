@@ -67,11 +67,13 @@
             '$count' = 'true'
             '$top'   = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         }
+        [hashtable] $header = @{}
     }
 
     process {
         if (Test-PSFParameterBinding -ParameterName 'Filter') {
-            [hashtable] $header = @{}
+            # A memberOf $filter is an advanced query: without this header - which used to
+            # be built here and then never passed on - Graph rejects it.
             $header['ConsistencyLevel'] = 'eventual'
             $query['$Filter'] = $Filter
         }
@@ -79,16 +81,25 @@
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $itemInputObject.Id) -Query $query -Header $header -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
             'Identity' {
                 foreach ($user in $Identity) {
+                    # Resolved before the request: an identity that did not resolve used to
+                    # be sent as users//memberOf.
+                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                    if ([object]::Equals($aADUser, $null)) {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $user)
+                        }
+                        Write-PSFMessage -Level Warning -String 'User.Get.Failed' -StringValues $user
+                        continue
+                    }
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('users/{0}/memberOf' -f $aADUser.Id) -Query $query -Header $header -Method Get -ErrorAction Stop)
                     } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }

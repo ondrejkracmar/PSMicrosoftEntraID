@@ -67,9 +67,65 @@
   request and next link before anything is sent. A request may take
   `Settings.Request.TimeoutSeconds` (default 600, 0 = no limit). A page is sent at most
   `RetryCount + 1` times - there is no second layer above it.
+- **Typed model properties: dates are `DateTime`, flags are `bool`, counters are nullable.**
+  The output objects keep their type names and property names, but these properties change
+  type (`string` -> `Nullable[DateTime]` holds UTC, Kind `Utc`):
+  - `Users.User`, `Users.UserDelta`: `CreatedDateTime` (`DateTime?`), `AccountEnabled`
+    (`bool` -> `bool?`).
+  - `Users.UserGuest`: as `User`, plus `ExternalUserStateChangeDateTime` (`DateTime?`).
+  - `Groups.Group`, `Groups.GroupDelta`: `CreatedDateTime`, `DeletedDateTime`,
+    `ExpirationDateTime`, `RenewedDateTime` (`DateTime?`).
+  - `Groups.GroupAdditionalProperty`: `AllowExternalSenders`, `AutoSubscribeNewMembers`
+    (`string` -> `bool?`).
+  - `DirectoryManagement.AdministrativeUnit`, `...AdministrativeUnitDelta`: `CreatedDateTime`,
+    `DeletedDateTime` (`DateTime?`); `DirectoryManagement.Member.DeletedDateTime` (`DateTime?`).
+  - `Devices.Device`, `Devices.DeviceDelta`: `RegistrationDateTime`,
+    `ApproximateLastSignInDateTime` (`DateTime?`).
+  - `Organization.OrganizationDetail`: `CreatedDateTime`, `DeletedDateTime`,
+    `OnPremisesLastSyncDateTime`, `OnPremisesNextSyncDateTime` (`DateTime?`);
+    `IsMultipleDataLocationsForServicesEnabled` (`string` -> `bool?`); `PrivacyProfile`
+    (`string` -> new `Organization.PrivacyProfile` with `ContactEmail`, `StatementUrl`).
+  - `Organization.AssignedPlan.AssignedDateTime` (`DateTime?`);
+    `Organization.DirectorySizeQuota.Used`, `.Total` (`int` -> `long?`).
+  - `License.SubscriptionSku` / `SubscriptionSkuLicense.ConsumedUnits` and
+    `License.PrepaidUnit.Enabled`, `.Suspended`, `.Warning`, `.LockedOut` (`int` -> `int?`).
+  - `Users.Invitations.Invitation.ExpirationDateTime` (`DateTime?`).
+  - `ServiceAnnouncement.Message`: `LastModifiedDateTime`, `StartDateTime`, `EndDateTime`,
+    `ActionRequiredByDateTime` (`DateTime?`); `IsMajorChange`, `HasAttachments` (`bool` ->
+    `bool?`). `ServiceAnnouncement.ViewPoint.IsRead`, `.IsArchived`, `.IsFavorited` (`bool` ->
+    `bool?`).
+  - `DefenderEndpoint.Machine.FirstSeen`, `.LastSeen` (`DateTime?`).
+  - `[DataContract]`/`[DataMember]` are removed from these models (and from
+    `Delta.DeltaChangeType`); serialize them with `ConvertTo-Json` or System.Text.Json, not
+    `DataContractJsonSerializer`.
+
+  **Migration.** Compare and sort dates as dates: `$user.CreatedDateTime -lt (Get-Date).AddDays(-30)`
+  now compares instants (a string comparison happened to work for ISO text only). Where text is
+  needed, format it explicitly: `$user.CreatedDateTime.ToString('o')` (ISO 8601) - a bare
+  `"$($user.CreatedDateTime)"` uses the current culture. `[datetime]::Parse($x.StartDateTime)`
+  is no longer needed; `-eq 'true'` / `-eq 'True'` tests on `AllowExternalSenders`,
+  `AutoSubscribeNewMembers` and `IsMultipleDataLocationsForServicesEnabled` become `-eq $true`.
+  `$null` now means "Graph sent null or the property was not selected" for the nullable
+  booleans and counters, where it used to read as `$false` / `0`.
+- **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
+  the Claude Code hooks (analyzer, attribution, git guard) and reviewer, the Copilot
+  instructions, `.editorconfig`, `PSScriptAnalyzerSettings.psd1`, `SECURITY.md`,
+  `.github/CODEOWNERS`, the pull request template, `docs/adr/` and `docs/runbooks/`.
+  `.codexvault/packs.psd1` records the installation. Security reports now go through
+  GitHub's private vulnerability reporting.
+- **`.codexvault/public-export.psd1` declares what the public GitHub repository leaves
+  out**: the agent and standards tooling, `docs/internal/`, `docs/adr/`, `docs/runbooks/`,
+  `tools/`, the Azure DevOps pipeline and `src/build/`. Azure DevOps stays the source of
+  truth; GitHub receives the filtered source history.
+- The personal editor and container settings (`.vscode/settings.json`, `.devcontainer/`)
+  and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
+  patterns the git guard expects.
 
 ### Security
 
+- `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
+  library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
+  GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
 - **The access token went to any host.** An absolute `-Path` and every `@odata.nextLink` were
   sent with `Authorization: Bearer <token>`, whatever their host and scheme. Every request -
   the first and each next link - is now checked against the `ServiceUrl` of the token it would
@@ -87,29 +143,6 @@
   the host, not `Write-Host`, and not logged.
 - **The certificate sign-in no longer sends its signed client assertion as a bearer header** -
   the body carries it, as RFC 7523 has it.
-
-### Fixed
-
-- **A federated connection renewed itself as a managed identity.** The token object was
-  overwritten right after it was built, so the first renewal (after ~1 hour) tried a managed
-  identity sign-in. The connection now stays federated.
-- **Every `-AzToken` session died after about 55 minutes.** The token was taken as valid for one
-  hour from the connect, whatever its real expiry, and the renewal passed the token string where
-  the object was expected and threw. The expiry now comes from `ExpiresOn` or the token's `exp`
-  claim; a token of `Get-AzAccessToken` is renewed through Az.Accounts (same identity enforced),
-  any other source fails with a message asking for a new connect.
-- **Managed identity did not work on an Azure VM** and left `IDENTITY_ENDPOINT` set in the
-  process. The instance metadata service is now used directly (after a 2 s probe, with
-  Microsoft's retry schedule); the environment is never written.
-- **Device code sign-in:** `slow_down` from the token endpoint was a fatal error; it now waits
-  5 s longer per RFC 8628. An expired or declined code ends with a clear message; the prompt
-  goes through `Write-PSFMessage` instead of `Write-Host`.
-- **Client secret and federated sign-in use the v2.0 token endpoint** (`<resource>/.default`),
-  as the certificate flow already did.
-- **Token claims are decoded as UTF-8** (names with diacritics read as `?`), and the token
-  object keeps the authentication URL its constructor was given (`$AuthenticationUr` typo).
-- **`Connect-PSMicrosoftEntraID` names the cause when a connect fails** instead of only
-  "Establish a connection to ... failed".
 
 ### Added (internal)
 
@@ -135,6 +168,152 @@
   cap, POST, one layer, error records and summary, `-EnableException`, cancellation by Ctrl+C and
   `Select-Object -First`, the client's host refusal). `general/NoNetwork.Tests.ps1` also holds
   `Invoke-PSEntraIDBatchRequest` calls in function tests to the local server.
+
+### Fixed
+
+- **Nested data deeper than four levels was silently truncated by every `ConvertFrom-Rest*`.**
+  They turned the parsed response back into JSON with `ConvertTo-Json -Depth 3/4/6` and parsed it
+  again with `DataContractJsonSerializer`; deeper values (e.g. `assignedLicenses.disabledPlans`
+  of an invited user, `scopedRoleMembers.roleMemberInfo`) arrived as the text of the truncated
+  object. All of them now go through one helper, `ConvertFrom-GraphResponse`, which deserializes
+  with `PSMicrosoftEntraID.Serialization.GraphJson` (System.Text.Json): straight from the JSON
+  text when it has it, otherwise from the parsed objects re-serialized ONCE per page at
+  `-Depth 100` - an interim step until phase B makes `Invoke-EntraRequest` hand back the
+  response text.
+- **Mapping defects of the models**: `members@delta`, a member's `@odata.type` and `@removed`,
+  and `OrganizationDetail.TenantId` (`id`) are mapped by the models themselves
+  (`[JsonPropertyName]`), so `ConvertFrom-RestDelta` no longer patches them on afterwards; a
+  `null` `accountEnabled`, a boolean `allowExternalSenders` / `autoSubscribeNewMembers` /
+  `isMultipleDataLocationsForServicesEnabled` and the `privacyProfile` object no longer fail the
+  conversion of the whole page. `OrganizationDetail.OnPremisesSyncStatus` accepts the object or
+  a collection, and its `Version` a number.
+- `Get-PSEntraIDMessageCenter -PublishedAfter/-PublishedBefore` compare the typed `StartDateTime`
+  in UTC (a `Local` bound value is converted; `Unspecified` is taken as UTC, as documented)
+  instead of `[datetime]::Parse` of the text, which converted to local time.
+- The `OrganizationDetail` and `Machine` table views render `CreatedDateTime` / `LastSeen` as
+  `yyyy-MM-dd HH:mm` (UTC, culture-neutral) in their 16-character column.
+- **Piped records no longer inherit the previous record's properties.**
+  With `ValueFromPipelineByPropertyName`, `$PSBoundParameters` keeps a key bound by an
+  earlier pipeline record while the variable is reset to its default, so every cmdlet
+  that decided "was this property given?" from it wrote the previous record's properties,
+  with empty or default values, into the next object. Piping
+  `{Id; AccountEnabled = $true; Department = 'IT'}` then `{Id; JobTitle = 'Dev'}` into
+  `Set-PSEntraIDUser` sent `{"department":"","accountEnabled":false,"jobTitle":"Dev"}`
+  for the second user - disabling the account and clearing the department. Affected:
+  `Set-PSEntraIDUser`, `New-PSEntraIDUser` (also reset `forceChangePasswordNextSignIn`),
+  `New-PSEntraIDGroup`, `Set-PSEntraIDGroup`, `New-PSEntraIDAdministrativeUnit`,
+  `Set-PSEntraIDAdministrativeUnit` and `New-PSEntraIDInvitation`, which additionally
+  copied every earlier guest's CC recipients onto each later invitation. Each cmdlet now
+  drops the keys a record bound once that record is processed (new internal
+  `Clear-PipelineBoundParameter`, rule in `docs/internal/conventions.md`), and
+  `PipelineBoundParameters.Tests.ps1` asserts the serialized body of every record in a
+  mixed pipeline.
+- **`Sync-PSEntraIDGroupMember` no longer empties a group when a read fails.**
+  The member reads ran under `-Continue`: a transient 403/429/503 on the reference group
+  only warned and returned nothing, and an empty reference made the sync remove EVERY
+  member of the target group. A `-ReferenceUserIdentity` that did not resolve was
+  skipped silently, so that real member was removed too. Now every read runs with
+  `-EnableException` and any failure aborts the sync before anything is written; an
+  unresolved reference identity aborts it and names the identity; an empty reference
+  with a non-empty target is refused unless the new `-AllowEmptyReference` switch says
+  emptying the group is intended. Missing members are added straight to the resolved
+  group in chunks of 20 (`members@odata.bind`, one PATCH per chunk) instead of one
+  `Add-PSEntraIDGroupMember` call - about five requests - per member, and removals are a
+  direct `DELETE .../members/{id}/$ref`, which also works for members that are not
+  users. `Get-SyncDataOperation` pairs the two lists through a key index instead of a
+  `.Where()` scan per item (3000 vs 2500 members: about 290 s before, a few seconds now) and no
+  longer returns nothing under `-WhatIf`.
+- **`Add-PSEntraIDGroupMember` sent garbage for two or more members and dropped
+  members on a partial resolution.** The chunks for `members@odata.bind` were cast to
+  `[string[]]`, which joined every chunk of up to 20 member URLs into ONE
+  space-separated string, and `Step-Array` emitted an extra empty chunk for an exact
+  multiple of 20 - Graph received
+  `{"members@odata.bind":["https://.../1 https://.../2 ..."]}` followed by
+  `{"members@odata.bind":[""]}`. The endpoint was chosen by how many users were
+  requested rather than how many resolved, so `-User a,b` with `b` unknown sent
+  `PATCH groups/{id}` with an `@odata.id` body and `a` was not added either; unresolved
+  users were skipped without a word; and the request of one pipeline record was sent
+  again for the next record when that one did not resolve. `Step-Array` now writes
+  each chunk as one array and never an empty one, the cmdlet builds its requests per
+  record from the members that actually resolved (one -> `POST members/$ref`, more ->
+  `PATCH` in chunks of 20), and every unresolved user is reported with a warning.
+  `Remove-PSEntraIDGroupMember`, `Add-`/`Remove-PSEntraIDGroupOwner` and
+  `Add-`/`Remove-PSEntraIDAdministrativeUnitMember` skipped unresolved users, groups,
+  devices and administrative units just as silently and now warn as well. The tests
+  run the real `Step-Array` (the old one mocked it away) with 1, 19, 20, 21 and 40
+  members and assert the serialized body of every request.
+- **A misspelt service plan could assign a licence with every plan disabled.**
+  `Enable-PSEntraIDUserLicenseServicePlan` and `Enable-PSEntraIDGroupLicenseServicePlan`
+  resolved `-ServicePlanName` against the SKU and silently dropped what did not match;
+  for a target that did not hold the SKU yet the cmdlet starts from "every plan
+  disabled", so a typo assigned the licence with ALL plans disabled - a licence consumed
+  for nothing, and no error. An unknown `-SkuPartNumber` went the same way with an empty
+  `skuId`, and a `-ServicePlanId` the SKU does not have was never checked. All four
+  service-plan cmdlets (`Enable-`/`Disable-`, user and group) now resolve the SKU and
+  every requested plan once in `begin` (new internal `Resolve-LicenseServicePlan`) and
+  stop before sending anything when one does not resolve. A piped user object without
+  `AssignedLicenses` (a minimal delta, a custom selection) is read again instead of
+  being taken for "holds no licence": `Enable-*` used to overwrite the user's disabled
+  plans and `Disable-*` reported the SKU as not assigned.
+- **`Compare-PSEntraIDUserList` always answered "Not connected".** It asserted a
+  connection to a service named `graph`, which is never registered; it now checks the
+  configured default service like every other cmdlet.
+- **`Get-PSEntraIDUserMemberOf -Filter` was rejected by Graph.** The
+  `ConsistencyLevel: eventual` header was built and never passed on. An identity that
+  did not resolve was requested as `users//memberOf`; it is now skipped with a warning
+  (or stops the command with `-EnableException`).
+- **`Get-PSEntraIDUser` could return the wrong account.** The mail lookup ran before
+  the userPrincipalName, so when user B's mail equalled user A's UPN a request for A
+  returned B. The order is now object id (read directly, no lookup), userPrincipalName,
+  then mail - in `Get-PSEntraIDUserGuest` as well.
+- **Service plan tab completion threw.** The completer's loop variable `$servicePlan`
+  was its own `[switch] $ServicePlan` parameter (variables are case-insensitive), so the
+  first plan failed the switch conversion. It was also attached to the GUID parameter
+  `-ServicePlanId` of `Enable-PSEntraIDGroupLicenseServicePlan`, where it would have
+  offered names; that parameter keeps its id completion from the TEPP registration.
+- **`Get-PSEntraIDGroup -Identity` did not escape its fallback path.** Without a
+  mailNickName match the identity itself went into `groups/{0}` unescaped, so `#` cut
+  the request short.
+- **Piping group records into `Add-PSEntraIDGroupOwner` never worked.** `-Identity`
+  binds by property name, but the group was resolved in `begin`, where a piped
+  `Identity` is still empty - so `$records | Add-PSEntraIDGroupOwner` failed on parameter
+  validation before anything was sent. The group is now resolved per pipeline record in
+  `process` (and read only once while the identity stays the same, so piping users into
+  one `-Identity` still costs one group read); each record's owners go to that record's
+  group. `Remove-PSEntraIDGroupOwner`, `Add-`/`Remove-PSEntraIDGroupMember` and the
+  administrative-unit member cmdlets were checked: their `-Identity` is not
+  pipeline-bound (or is already resolved in `process`), so they were not affected.
+- **`Enable-*LicenseServicePlan` could assign a licence with every plan enabled.** For
+  a target that does not hold the SKU yet, the cmdlet assigns it with every plan
+  disabled except the requested ones, and "every plan" came from a subscribed-SKU
+  catalog read that ran non-terminating. A throttled or failed read (403, 429, 503) only
+  warned, an empty answer was taken at face value, and the licence went out with
+  `disabledPlans: []` - every plan on, silently. The read now stops on error
+  (`-EnableException`), and an empty plan list for the SKU stops the command (localized
+  `LicenseServicePlan.Catalog.Failed` / `.Empty`) before anything is written. The user
+  variant reads the catalog once per call instead of once per piped user (new internal
+  `Get-LicenseSkuServicePlanId`). The `Disable-*` counterparts do not build the full
+  plan list - a target without the SKU is skipped with a warning - and were not affected.
+- **A federated connection renewed itself as a managed identity.** The token object was
+  overwritten right after it was built, so the first renewal (after ~1 hour) tried a managed
+  identity sign-in. The connection now stays federated.
+- **Every `-AzToken` session died after about 55 minutes.** The token was taken as valid for one
+  hour from the connect, whatever its real expiry, and the renewal passed the token string where
+  the object was expected and threw. The expiry now comes from `ExpiresOn` or the token's `exp`
+  claim; a token of `Get-AzAccessToken` is renewed through Az.Accounts (same identity enforced),
+  any other source fails with a message asking for a new connect.
+- **Managed identity did not work on an Azure VM** and left `IDENTITY_ENDPOINT` set in the
+  process. The instance metadata service is now used directly (after a 2 s probe, with
+  Microsoft's retry schedule); the environment is never written.
+- **Device code sign-in:** `slow_down` from the token endpoint was a fatal error; it now waits
+  5 s longer per RFC 8628. An expired or declined code ends with a clear message; the prompt
+  goes through `Write-PSFMessage` instead of `Write-Host`.
+- **Client secret and federated sign-in use the v2.0 token endpoint** (`<resource>/.default`),
+  as the certificate flow already did.
+- **Token claims are decoded as UTF-8** (names with diacritics read as `?`), and the token
+  object keeps the authentication URL its constructor was given (`$AuthenticationUr` typo).
+- **`Connect-PSMicrosoftEntraID` names the cause when a connect fails** instead of only
+  "Establish a connection to ... failed".
 
 ## 1.5.1 (2026-09-07)
 

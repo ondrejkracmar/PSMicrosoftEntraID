@@ -229,80 +229,88 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        [hashtable] $body = @{}
-        if ($PSBoundParameters.ContainsKey('Mail')) { $body['mail'] = $Mail }
-        if ($PSBoundParameters.ContainsKey('DisplayName')) { $body['displayName'] = $DisplayName }
-        if ($PSBoundParameters.ContainsKey('GivenName')) { $body['givenName'] = $GivenName }
-        if ($PSBoundParameters.ContainsKey('Surname')) { $body['surname'] = $Surname }
-        if ($PSBoundParameters.ContainsKey('JobTitle')) { $body['jobTitle'] = $JobTitle }
-        if ($PSBoundParameters.ContainsKey('Department')) { $body['department'] = $Department }
-        if ($PSBoundParameters.ContainsKey('CompanyName')) { $body['companyName'] = $CompanyName }
-        if ($PSBoundParameters.ContainsKey('OfficeLocation')) { $body['officeLocation'] = $OfficeLocation }
-        if ($PSBoundParameters.ContainsKey('City')) { $body['city'] = $City }
-        if ($PSBoundParameters.ContainsKey('PostalCode')) { $body['postalCode'] = $PostalCode }
-        if ($PSBoundParameters.ContainsKey('State')) { $body['state'] = $State }
-        if ($PSBoundParameters.ContainsKey('Country')) { $body['country'] = $Country }
-        if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
-        if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
-        if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
-        if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
-        if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
-        if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
-        if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
-        if ($PSBoundParameters.ContainsKey('EmployeeId')) { $body['employeeId'] = $EmployeeId }
-        if ($PSBoundParameters.ContainsKey('UsageLocation')) { $body['usageLocation'] = $UsageLocation }
-        if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
-        if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }
-        if ($PSBoundParameters.ContainsKey('Password')) {
-            $body['passwordProfile'] = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
-            if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
-                $body['passwordProfile']['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
-            }
-            if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignInWithMfa')) {
-                $body['passwordProfile']['forceChangePasswordNextSignInWithMfa'] = $ForceChangePasswordNextSignInWithMfa
-            }
-        }
-
-        switch ($PSCmdlet.ParameterSetName) {
-            'InputObjectUpdateUser' {
-                foreach ($itemInputObject in $InputObject) {
-                    [string] $path = ("users/{0}" -f $itemInputObject.Id)
-                    if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
+        try {
+            [hashtable] $body = @{}
+            if ($PSBoundParameters.ContainsKey('Mail')) { $body['mail'] = $Mail }
+            if ($PSBoundParameters.ContainsKey('DisplayName')) { $body['displayName'] = $DisplayName }
+            if ($PSBoundParameters.ContainsKey('GivenName')) { $body['givenName'] = $GivenName }
+            if ($PSBoundParameters.ContainsKey('Surname')) { $body['surname'] = $Surname }
+            if ($PSBoundParameters.ContainsKey('JobTitle')) { $body['jobTitle'] = $JobTitle }
+            if ($PSBoundParameters.ContainsKey('Department')) { $body['department'] = $Department }
+            if ($PSBoundParameters.ContainsKey('CompanyName')) { $body['companyName'] = $CompanyName }
+            if ($PSBoundParameters.ContainsKey('OfficeLocation')) { $body['officeLocation'] = $OfficeLocation }
+            if ($PSBoundParameters.ContainsKey('City')) { $body['city'] = $City }
+            if ($PSBoundParameters.ContainsKey('PostalCode')) { $body['postalCode'] = $PostalCode }
+            if ($PSBoundParameters.ContainsKey('State')) { $body['state'] = $State }
+            if ($PSBoundParameters.ContainsKey('Country')) { $body['country'] = $Country }
+            if ($PSBoundParameters.ContainsKey('MobilePhone')) { $body['mobilePhone'] = $MobilePhone }
+            if ($PSBoundParameters.ContainsKey('BusinessPhones')) { $body['businessPhones'] = $BusinessPhones }
+            if ($PSBoundParameters.ContainsKey('ProxyAddresses')) { $body['proxyAddresses'] = $ProxyAddresses }
+            if ($PSBoundParameters.ContainsKey('UserPrincipalName')) { $body['userPrincipalName'] = $UserPrincipalName }
+            if ($PSBoundParameters.ContainsKey('MailNickname')) { $body['mailNickname'] = $MailNickname }
+            if ($PSBoundParameters.ContainsKey('FaxNumber')) { $body['faxNumber'] = $FaxNumber }
+            if ($PSBoundParameters.ContainsKey('OtherMails')) { $body['otherMails'] = $OtherMails }
+            if ($PSBoundParameters.ContainsKey('EmployeeId')) { $body['employeeId'] = $EmployeeId }
+            if ($PSBoundParameters.ContainsKey('UsageLocation')) { $body['usageLocation'] = $UsageLocation }
+            if ($PSBoundParameters.ContainsKey('PreferredLanguage')) { $body['preferredLanguage'] = $PreferredLanguage }
+            if ($PSBoundParameters.ContainsKey('AccountEnabled')) { $body['accountEnabled'] = $AccountEnabled }
+            if ($PSBoundParameters.ContainsKey('Password')) {
+                $body['passwordProfile'] = @{ password = ($Password | ConvertFrom-SecureString -AsPlainText) }
+                if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignIn')) {
+                    $body['passwordProfile']['forceChangePasswordNextSignIn'] = $ForceChangePasswordNextSignIn
+                }
+                if ($PSBoundParameters.ContainsKey('ForceChangePasswordNextSignInWithMfa')) {
+                    $body['passwordProfile']['forceChangePasswordNextSignInWithMfa'] = $ForceChangePasswordNextSignInWithMfa
                 }
             }
-            'IdentityUpdateUser' {
-                foreach ($user in $Identity) {
-                    [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
-                    if ([object]::Equals($aADUser, $null)) {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
-                        }
-                    }
-                    else {
-                        [string] $path = ("users/{0}" -f $aADUser.Id)
+
+            switch ($PSCmdlet.ParameterSetName) {
+                'InputObjectUpdateUser' {
+                    foreach ($itemInputObject in $InputObject) {
+                        [string] $path = ("users/{0}" -f $itemInputObject.Id)
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $itemInputObject.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
                             } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
                 }
+                'IdentityUpdateUser' {
+                    foreach ($user in $Identity) {
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $user
+                        if ([object]::Equals($aADUser, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $User)
+                            }
+                        }
+                        else {
+                            [string] $path = ("users/{0}" -f $aADUser.Id)
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                Invoke-PSFProtectedCommand -ActionString 'User.Set' -ActionStringValues $aADUser.UserPrincipalName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
+                        }
+                    }
+                }
             }
+        }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
     end {}

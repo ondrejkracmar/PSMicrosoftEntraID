@@ -103,58 +103,68 @@
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [string] $path = 'invitations'
-        [System.Collections.Generic.List[object]] $cCRecipientList = [System.Collections.Generic.List[object]]::new()
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        [hashtable] $body = @{}
-        $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
+        try {
+            [hashtable] $body = @{}
+            # Per record: created once in begin, the list collected every earlier record's CC
+            # recipients and copied them onto each later invitation.
+            [System.Collections.Generic.List[object]] $cCRecipientList = [System.Collections.Generic.List[object]]::new()
+            $body['invitedUserEmailAddress'] = $InvitedUserEmailAddress
 
-        if (Test-PSFParameterBinding -ParameterName 'InvitedUserDisplayName') {
-            $body['invitedUserDisplayName'] = $InvitedUserDisplayName
-        }
+            if ($PSBoundParameters.ContainsKey('InvitedUserDisplayName')) {
+                $body['invitedUserDisplayName'] = $InvitedUserDisplayName
+            }
 
-        if (Test-PSFParameterBinding -ParameterName 'InviteRedirectUrl') {
-            $body['inviteRedirectUrl'] = $InviteRedirectUrl
-        }
+            if ($PSBoundParameters.ContainsKey('InviteRedirectUrl')) {
+                $body['inviteRedirectUrl'] = $InviteRedirectUrl
+            }
 
-        if (Test-PSFParameterBinding -ParameterName 'SendInvitationMessage') {
-            $body['sendInvitationMessage'] = [bool] $SendInvitationMessage
-        }
-        else {
-            $body['sendInvitationMessage'] = $false
-        }
+            if ($PSBoundParameters.ContainsKey('SendInvitationMessage')) {
+                $body['sendInvitationMessage'] = [bool] $SendInvitationMessage
+            }
+            else {
+                $body['sendInvitationMessage'] = $false
+            }
 
-        if (Test-PSFParameterBinding -ParameterName 'MessageLanguage') {
-            $body['messageLanguage'] = $MessageLanguage
-        }
-        else {
-            $body['messageLanguage'] = $null
-        }
+            if ($PSBoundParameters.ContainsKey('MessageLanguage')) {
+                $body['messageLanguage'] = $MessageLanguage
+            }
+            else {
+                $body['messageLanguage'] = $null
+            }
 
-        if (Test-PSFParameterBinding -ParameterName 'CCRecipient') {
-            foreach ($itemCCRecipient in $CCRecipient) {
-                [void] $cCRecipientList.Add($itemCCRecipient)
+            if ($PSBoundParameters.ContainsKey('CCRecipient')) {
+                foreach ($itemCCRecipient in $CCRecipient) {
+                    [void] $cCRecipientList.Add($itemCCRecipient)
+                }
+            }
+
+            $body['invitedUserMessageInfo'] = @{
+                messageLanguage       = $MessageLanguage
+                ccRecipients          = $cCRecipientList
+                customizedMessageBody = $InviteMessage
+            }
+            if ($PassThru.IsPresent) {
+                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+            }
+            else {
+                Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    ConvertFrom-RestInvitation -InputObject (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+                if (Test-PSFFunctionInterrupt) { return }
             }
         }
-
-        $body['invitedUserMessageInfo'] = @{
-            messageLanguage       = $MessageLanguage
-            ccRecipients          = $cCRecipientList
-            customizedMessageBody = $InviteMessage
-        }
-        if ($PassThru.IsPresent) {
-            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-        }
-        else {
-            Invoke-PSFProtectedCommand -ActionString 'User.Invitation' -ActionStringValues $InvitedUserEmailAddress -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                ConvertFrom-RestInvitation -InputObject (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-            if (Test-PSFFunctionInterrupt) { return }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
     end {}

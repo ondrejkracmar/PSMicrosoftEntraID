@@ -96,37 +96,45 @@
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
         [string] $path = "directory/administrativeUnits"
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        [hashtable] $body = @{
-            'displayName'                  = $DisplayName
-            'isMemberManagementRestricted' = $IsMemberManagementRestricted
-        }
+        try {
+            [hashtable] $body = @{
+                'displayName'                  = $DisplayName
+                'isMemberManagementRestricted' = $IsMemberManagementRestricted
+            }
 
-        if ($PSBoundParameters.ContainsKey('Description')) {
-            $body['description'] = $Description
-        }
+            if ($PSBoundParameters.ContainsKey('Description')) {
+                $body['description'] = $Description
+            }
 
-        if ($PSBoundParameters.ContainsKey('Visibility')) {
-            $body['visibility'] = $Visibility
-        }
+            if ($PSBoundParameters.ContainsKey('Visibility')) {
+                $body['visibility'] = $Visibility
+            }
 
 
-        if ($PassThru.IsPresent) {
-            [PSMicrosoftEntraID.Batch.Request]@{
-                Method  = 'POST'
-                Url     = ('/{0}' -f $path)
-                Body    = $body
-                Headers = $header
+            if ($PassThru.IsPresent) {
+                [PSMicrosoftEntraID.Batch.Request]@{
+                    Method  = 'POST'
+                    Url     = ('/{0}' -f $path)
+                    Body    = $body
+                    Headers = $header
+                }
+            }
+            else {
+                Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Create' -ActionStringValues $DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+
+                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+                if (Test-PSFFunctionInterrupt) { return }
             }
         }
-        else {
-            Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnit.Create' -ActionStringValues $DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-
-            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-            if (Test-PSFFunctionInterrupt) { return }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
 

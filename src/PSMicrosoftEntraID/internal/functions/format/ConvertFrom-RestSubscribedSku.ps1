@@ -21,19 +21,7 @@
 
 	if (-not $InputObject) { return }
 
-	$jsonString = $InputObject | ConvertTo-Json -Depth 3
-
-	$type = if ($InputObject -is [array]) {
-		[PSMicrosoftEntraID.License.SubscriptionSkuLicense[]]
-	}
-	else {
-		[PSMicrosoftEntraID.License.SubscriptionSkuLicense]
-	}
-
-	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-	$stream = [System.IO.MemoryStream]::new($byteArray)
-	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
-	return $serializer.ReadObject($stream)
+	ConvertFrom-GraphResponse -InputObject $InputObject -Type ([PSMicrosoftEntraID.License.SubscriptionSkuLicense])
 }
 
 

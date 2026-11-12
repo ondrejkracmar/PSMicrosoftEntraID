@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +11,6 @@ namespace PSMicrosoftEntraID.Groups.LicenseManagement
     /// This class provides properties to hold the service plan's unique ID, name, 
     /// applicable assignments, and provisioning status.
     /// </summary>
-    [DataContract]
     public class ServicePlan
     {
         /// <summary>
@@ -26,32 +24,27 @@ namespace PSMicrosoftEntraID.Groups.LicenseManagement
         /// <summary>
         /// Gets or sets the unique identifier of the service plan.
         /// </summary>
-        [DataMember(Name = "servicePlanId")]
         public string ServicePlanId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the service plan.
         /// </summary>
-        [DataMember(Name = "servicePlanName")]
         public string ServicePlanName { get; set; }
 
         /// <summary>
         /// Gets or sets the friendly name of the service plan.
         /// </summary>
-        [DataMember(Name = "servicePlanFriendlyName")]
         public string ServicePlanFriendlyName { get; set; }
 
 
         /// <summary>
         /// Gets or sets the target object to which the service plan can be assigned.
         /// </summary>
-        [DataMember(Name = "appliesTo")]
         public string AppliesTo { get; set; }
 
         /// <summary>
         /// Gets or sets the provisioning status of the service plan.
         /// </summary>
-        [DataMember(Name = "provisioningStatus")]
         public string ProvisioningStatus { get; set; }
     }
 }

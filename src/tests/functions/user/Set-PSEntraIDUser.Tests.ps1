@@ -1,4 +1,7 @@
-﻿BeforeAll {
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'A fixed fake password for mocked Graph calls; the tests never reach a tenant.')]
+param()
+
+BeforeAll {
     $script:ModuleName = 'PSMicrosoftEntraID'
 
     # Import here rather than relying on whichever test file happened to run first:

@@ -163,23 +163,9 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($user in $Identity) {
-                    [hashtable] $mailQuery = @{
-                        #'$count'  = 'true'
-                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
-                    }
-                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $user))
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.UserGuest[]] $userMail = ConvertFrom-RestUserGuest -InputObject (
-                            Invoke-EntraRequest -Service $service -Path 'users' -Query $mailQuery -Method Get -ErrorAction Stop
-                        )
-
-                        if (-not $userMail) {
-                            $userId = $user
-                        }
-                        else {
-                            $userId = $userMail[0].Id
-                        }
+                        # Id, then userPrincipalName, then mail - see Get-PSEntraIDUser.
+                        [string] $userId = Resolve-UserLookupId -Identity $user -Service $service
 
                         # Escaped because a guest's UPN always contains '#EXT#', and an
                         # unescaped '#' starts the URI fragment - the path is silently

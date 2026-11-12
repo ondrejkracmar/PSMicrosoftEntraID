@@ -229,7 +229,8 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         It 'Should call Get-PSEntraIDSubscribedSku to resolve names' {
             Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuPartNumber $script:TestSkuPartNumber -ServicePlanName $script:TestServicePlanName1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedSku -Times 2 -Exactly
+            # One read: the SKU and its plan names resolve from the same catalog copy.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedSku -Times 1 -Exactly
         }
 
         It 'Should handle SkuPartNumber with forward slash' {
@@ -289,10 +290,13 @@ Describe 'Enable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
             }
         }
 
-        It 'Should call Get-PSEntraIDSubscribedLicense when user has no license' {
+        It 'Should call Get-PSEntraIDSubscribedLicense, fail-hard, when user has no license' {
             Enable-PSEntraIDUserLicenseServicePlan -InputObject $script:UserWithoutSku -SkuId $script:TestSkuId -ServicePlanId $script:TestServicePlanId1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedLicense -Times 1 -Exactly
+            # -EnableException: a failed read used to warn and return nothing, and the
+            # licence then went out with every plan enabled. LicenseServicePlanCatalog.Tests.ps1
+            # covers what happens when this read fails or comes back empty.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedLicense -Times 1 -Exactly -ParameterFilter { $EnableException.IsPresent }
         }
 
         It 'assigns the SKU with everything but the requested plan disabled' {

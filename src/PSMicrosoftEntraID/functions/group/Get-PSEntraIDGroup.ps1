@@ -99,7 +99,9 @@
                         else {
                             [string] $groupId = $group
                         }
-                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $groupId) -Query $query -Method Get  -ErrorAction Stop)
+                        # Escaped: without a mailNickName match the caller's identity itself
+                        # lands in the URL path, where '#' would start the fragment.
+                        ConvertFrom-RestGroup -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f [uri]::EscapeDataString($groupId)) -Query $query -Method Get  -ErrorAction Stop)
                     } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }

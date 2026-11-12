@@ -98,21 +98,11 @@
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($user in $Identity) {
-                    [hashtable] $mailQuery = @{
-                        #'$count'  = 'true'
-                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
-                    }
-                    $mailQuery['$Filter'] = ("mail eq '{0}'" -f (ConvertTo-ODataFilterString -Value $user))
                     Invoke-PSFProtectedCommand -ActionString 'User.Get' -ActionStringValues $user -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftEntraID.Users.User[]] $userMail = ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $mailQuery -Method Get  -ErrorAction Stop)
-                        if (-not([object]::Equals($userMail, $null))) {
-                            [string] $userId = $userMail[0].Id
-
-                        }
-                        else {
-                            [string] $userId = $user
-                        }
+                        # Id, then userPrincipalName, then mail. Mail used to be looked up
+                        # first, and returned another account whenever its mail equalled
+                        # the UPN asked for.
+                        [string] $userId = Resolve-UserLookupId -Identity $user -Service $service
                         # The identity is escaped because it lands in the URL PATH, and a
                         # guest's userPrincipalName always contains '#EXT#'. Unescaped,
                         # '#' starts the URI fragment and everything after it is silently

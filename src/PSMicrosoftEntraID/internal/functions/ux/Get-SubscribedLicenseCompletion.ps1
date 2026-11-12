@@ -34,16 +34,18 @@
 			if ($null -eq $subscribedLicense) { continue }
 
 			if ($ServicePlan.IsPresent) {
-				foreach ($servicePlan in @($subscribedLicense.ServicePlans)) {
-					if ($null -eq $servicePlan) { continue }
-					if ($servicePlan.ServicePlanName -notlike "$($wordToComplete)*") { continue }
+				# NOT $servicePlan: variables are case-insensitive, so that is the [switch]
+				# parameter $ServicePlan, and assigning a plan to it threw.
+				foreach ($planItem in @($subscribedLicense.ServicePlans)) {
+					if ($null -eq $planItem) { continue }
+					if ($planItem.ServicePlanName -notlike "$($wordToComplete)*") { continue }
 
-					$text = if ($servicePlan.ServicePlanName -notmatch '\s') { $servicePlan.ServicePlanName } else { "'$($servicePlan.ServicePlanName)'" }
+					$text = if ($planItem.ServicePlanName -notmatch '\s') { $planItem.ServicePlanName } else { "'$($planItem.ServicePlanName)'" }
 					[System.Management.Automation.CompletionResult]::new(
 						$text,
 						$text,
 						'ParameterValue',
-						$servicePlan.ServicePlanFriendlyName
+						$planItem.ServicePlanFriendlyName
 					)
 				}
 				continue

@@ -174,77 +174,85 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        [hashtable] $body = @{}
-        switch -Regex ($PSCmdlet.ParameterSetName) {
-            '\wUpdateGroupCommon' {
-                foreach ($param in $PSBoundParameters.Keys) {
-                    switch ($param) {
-                        'Displayname' { $body['displayName'] = $Displayname }
-                        'Description' { $body['description'] = $Description }
-                        'MailNickname' { $body['mailNickName'] = $MailNickname }
-                        'GroupTypes' { $body['groupTypes'] = @($GroupTypes) }
-                        'Visibility' { $body['visibility'] = $Visibility }
-                    }
-                }
-            }
-            '\wAllowExternalSenders' {
-                $body['allowExternalSenders'] = $AllowExternalSenders
-            }
-            '\wAutoSubscribeNewMembers' {
-                $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
-            }
-            '\wHideFromAddressLists' {
-                $body['hideFromAddressLists'] = $HideFromAddressLists
-            }
-            '\wHideFromOutlookClients' {
-                $body['hideFromOutlookClients'] = $HideFromOutlookClients
-            }
-            '\wUpdateDynamicGroup' {
-                $body['membershipRule'] = $MembershipRule
-                $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-            }
-        }
-
-        switch -Regex  ($PSCmdlet.ParameterSetName) {
-            'InputObject\w' {
-                foreach ($itemInputObject in $InputObject) {
-                    [string] $path = ("groups/{0}" -f $itemInputObject.Id)
-                    if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
-                        } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
-                }
-            }
-            'Identity\w' {
-                foreach ($group in $Identity) {
-                    [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group
-                    if ([object]::Equals($aADGroup, $null)) {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Set.Failed) -f $group)
+        try {
+            [hashtable] $body = @{}
+            switch -Regex ($PSCmdlet.ParameterSetName) {
+                '\wUpdateGroupCommon' {
+                    foreach ($param in $PSBoundParameters.Keys) {
+                        switch ($param) {
+                            'Displayname' { $body['displayName'] = $Displayname }
+                            'Description' { $body['description'] = $Description }
+                            'MailNickname' { $body['mailNickName'] = $MailNickname }
+                            'GroupTypes' { $body['groupTypes'] = @($GroupTypes) }
+                            'Visibility' { $body['visibility'] = $Visibility }
                         }
                     }
-                    else {
-                        [string] $path = ("groups/{0}" -f $aADGroup.Id)
+                }
+                '\wAllowExternalSenders' {
+                    $body['allowExternalSenders'] = $AllowExternalSenders
+                }
+                '\wAutoSubscribeNewMembers' {
+                    $body['autoSubscribeNewMembers'] = $AutoSubscribeNewMembers
+                }
+                '\wHideFromAddressLists' {
+                    $body['hideFromAddressLists'] = $HideFromAddressLists
+                }
+                '\wHideFromOutlookClients' {
+                    $body['hideFromOutlookClients'] = $HideFromOutlookClients
+                }
+                '\wUpdateDynamicGroup' {
+                    $body['membershipRule'] = $MembershipRule
+                    $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+                }
+            }
+
+            switch -Regex  ($PSCmdlet.ParameterSetName) {
+                'InputObject\w' {
+                    foreach ($itemInputObject in $InputObject) {
+                        [string] $path = ("groups/{0}" -f $itemInputObject.Id)
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
                             } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
                 }
+                'Identity\w' {
+                    foreach ($group in $Identity) {
+                        [PSMicrosoftEntraID.Groups.Group] $aADGroup = Get-PSEntraIDGroup -Identity $group
+                        if ([object]::Equals($aADGroup, $null)) {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Set.Failed) -f $group)
+                            }
+                        }
+                        else {
+                            [string] $path = ("groups/{0}" -f $aADGroup.Id)
+                            if ($PassThru.IsPresent) {
+                                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'PATCH'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            }
+                            else {
+                                Invoke-PSFProtectedCommand -ActionString 'Group.Set' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -ErrorAction Stop)
+                                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+                                if (Test-PSFFunctionInterrupt) { return }
+                            }
+                        }
+                    }
+                }
             }
+        }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
     end {}

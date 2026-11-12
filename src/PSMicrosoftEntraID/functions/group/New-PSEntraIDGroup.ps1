@@ -138,85 +138,93 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Keys bound on the command line; everything else in $PSBoundParameters was bound
+        # by the current pipeline record and is dropped after it (docs/internal/conventions.md).
+        [string[]] $commandLineParameter = @($PSBoundParameters.Keys)
     }
 
     process {
-        [hashtable] $body = @{}
+        try {
+            [hashtable] $body = @{}
 
-        Switch ($PSCmdlet.ParameterSetName) {
-            'CreateGroup' {
-                $body['displayName'] = $Displayname
-                $body['mailNickName'] = $MailNickname
-                $body['mailEnabled'] = $MailEnabled
-                $body['securityEnabled'] = $SecurityEnabled
-                $body['groupTypes'] = @($GroupTypes)
+            Switch ($PSCmdlet.ParameterSetName) {
+                'CreateGroup' {
+                    $body['displayName'] = $Displayname
+                    $body['mailNickName'] = $MailNickname
+                    $body['mailEnabled'] = $MailEnabled
+                    $body['securityEnabled'] = $SecurityEnabled
+                    $body['groupTypes'] = @($GroupTypes)
 
-                if ($PSBoundParameters.ContainsKey('Description')) {
-                    $body['description'] = $Description
-                }
+                    if ($PSBoundParameters.ContainsKey('Description')) {
+                        $body['description'] = $Description
+                    }
 
-                if ($PSBoundParameters.ContainsKey('Visibility')) {
-                    $body['visibility'] = $Visibility
-                }
+                    if ($PSBoundParameters.ContainsKey('Visibility')) {
+                        $body['visibility'] = $Visibility
+                    }
 
-                if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
-                    $body['isAssignableToRole'] = $IsAssignableToRole
-                }
-                if (Test-PSFParameterBinding -ParameterName 'Classification') {
-                    $body['classification'] = $Classification
-                }
+                    if ($PSBoundParameters.ContainsKey('IsAssignableToRole')) {
+                        $body['isAssignableToRole'] = $IsAssignableToRole
+                    }
+                    if ($PSBoundParameters.ContainsKey('Classification')) {
+                        $body['classification'] = $Classification
+                    }
 
-                if ($PSBoundParameters.ContainsKey('Owners')) {
-                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
-                    foreach ($owner in $Owners) {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
-                        if ([object]::Equals($aADUser, $null)) {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $owner)
+                    if ($PSBoundParameters.ContainsKey('Owners')) {
+                        $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
+                        foreach ($owner in $Owners) {
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $owner
+                            if ([object]::Equals($aADUser, $null)) {
+                                if ($EnableException.IsPresent) {
+                                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $owner)
+                                }
+                            }
+                            else {
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                $body['owners@odata.bind'] = [array]$userIdUriPathList
                             }
                         }
-                        else {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                            $body['owners@odata.bind'] = [array]$userIdUriPathList
-                        }
                     }
-                }
-                if ($PSBoundParameters.ContainsKey('Members')) {
-                    $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
-                    foreach ($member in $Members) {
-                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
-                        if ([object]::Equals($aADUser, $null)) {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $member)
+                    if ($PSBoundParameters.ContainsKey('Members')) {
+                        $userIdUriPathList = [System.Collections.Generic.List[object]]::new()
+                        foreach ($member in $Members) {
+                            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $member
+                            if ([object]::Equals($aADUser, $null)) {
+                                if ($EnableException.IsPresent) {
+                                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $member)
+                                }
+                            }
+                            else {
+                                [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
+                                $body['members@odata.bind'] = [array]$userIdUriPathList
                             }
                         }
-                        else {
-                            [void]$userIdUriPathList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))
-                            $body['members@odata.bind'] = [array]$userIdUriPathList
-                        }
                     }
-                }
-                if ($PSBoundParameters.ContainsKey('MembershipRule')) {
-                    $body['membershipRule'] = $MembershipRule
-                    $body['membershipRuleProcessingState'] = 'On'
-                    $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
-                }
-                if ($PSBoundParameters.ContainsKey('MembershipRuleProcessingState')) {
-                    $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-                }
-                if ($PSBoundParameters.ContainsKey('ResourceBehaviorOptions')) {
-                    $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
+                    if ($PSBoundParameters.ContainsKey('MembershipRule')) {
+                        $body['membershipRule'] = $MembershipRule
+                        $body['membershipRuleProcessingState'] = 'On'
+                        $body['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
+                    }
+                    if ($PSBoundParameters.ContainsKey('MembershipRuleProcessingState')) {
+                        $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+                    }
+                    if ($PSBoundParameters.ContainsKey('ResourceBehaviorOptions')) {
+                        $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
+                    }
                 }
             }
+            if ($PassThru.IsPresent) {
+                [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+            }
+            else {
+                Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+                if (Test-PSFFunctionInterrupt) { return }
+            }
         }
-        if ($PassThru.IsPresent) {
-            [PSMicrosoftEntraID.Batch.Request]@{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
-        }
-        else {
-            Invoke-PSFProtectedCommand -ActionString 'Group.New' -ActionStringValues $Displayname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-            } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-            if (Test-PSFFunctionInterrupt) { return }
+        finally {
+            Clear-PipelineBoundParameter -BoundParameters $PSBoundParameters -CommandLineParameter $commandLineParameter
         }
     }
     end {

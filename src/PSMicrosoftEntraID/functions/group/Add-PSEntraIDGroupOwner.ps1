@@ -83,13 +83,22 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
-        [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
-        if ([object]::Equals($group, $null)) {
-            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
-        }
+        # The group is resolved in process, not here: -Identity binds by property name, and
+        # a piped Identity is still empty in begin - so piping group records failed outright
+        # on parameter validation. The last resolution is remembered so that piping users
+        # into one -Identity still reads the group only once.
+        [string] $resolvedGroupIdentity = $null
+        [PSMicrosoftEntraID.Groups.Group] $group = $null
     }
 
     process {
+        if ([object]::Equals($group, $null) -or $resolvedGroupIdentity -cne $Identity) {
+            [PSMicrosoftEntraID.Groups.Group] $group = Get-PSEntraIDGroup -Identity $Identity
+            [string] $resolvedGroupIdentity = $Identity
+            if ([object]::Equals($group, $null)) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $Identity)
+            }
+        }
         [System.Collections.Generic.List[object]] $ownerUrlList = [System.Collections.Generic.List[object]]::new()
         [System.Collections.Generic.List[object]] $ownerObjectIdList = [System.Collections.Generic.List[object]]::new()
         [System.Collections.Generic.List[object]] $ownerUserPrincipalNameList = [System.Collections.Generic.List[object]]::new()
@@ -118,6 +127,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
+                        Write-PSFMessage -Level Warning -String 'User.Get.Failed' -StringValues $itemUser
                     }
                     else {
                         [void] $ownerUrlList.Add(('{0}/users/{1}' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id))

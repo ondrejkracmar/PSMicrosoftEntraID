@@ -170,18 +170,19 @@
                 }
 
                 # Local filter: PublishedAfter / PublishedBefore
+                # StartDateTime is a DateTime (UTC) now - no string parsing. A bound
+                # value of Kind Local (Get-Date) is moved to UTC so both sides of the
+                # comparison mean the same instant; Unspecified is taken as UTC, as
+                # the help says.
                 if ($PublishedAfter -or $PublishedBefore) {
+                    $after = if ($PublishedAfter -and $PublishedAfter.Kind -eq [System.DateTimeKind]::Local) { $PublishedAfter.ToUniversalTime() } else { $PublishedAfter }
+                    $before = if ($PublishedBefore -and $PublishedBefore.Kind -eq [System.DateTimeKind]::Local) { $PublishedBefore.ToUniversalTime() } else { $PublishedBefore }
                     $messageList = $messageList | Where-Object {
-                        try {
-                            $published = [datetime]::Parse($_.StartDateTime)
-                            (
-                            (-not $PublishedAfter -or $published -ge $PublishedAfter) -and
-                            (-not $PublishedBefore -or $published -le $PublishedBefore)
-                            )
-                        }
-                        catch {
-                            $false
-                        }
+                        if ($null -eq $_.StartDateTime) { return $false }
+                        $published = $_.StartDateTime
+                        if ($published.Kind -eq [System.DateTimeKind]::Local) { $published = $published.ToUniversalTime() }
+                        (-not $after -or $published -ge $after) -and
+                        (-not $before -or $published -le $before)
                     }
                 }
                 return $messageList

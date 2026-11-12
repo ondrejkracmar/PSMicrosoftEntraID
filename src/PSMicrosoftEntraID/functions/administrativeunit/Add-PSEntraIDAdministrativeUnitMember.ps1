@@ -127,6 +127,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($userObject in $InputObject) {
@@ -157,6 +158,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($groupObject in $InputObjectGroup) {
@@ -187,6 +189,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($deviceObject in $InputObjectDevice) {
@@ -217,6 +220,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($userIdentity in $User) {
@@ -246,6 +250,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userIdentity)
                         }
+                        Write-PSFMessage -Level Warning -String 'User.Get.Failed' -StringValues $userIdentity
                     }
                 }
             }
@@ -255,6 +260,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($groupIdentity in $Group) {
@@ -284,6 +290,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $groupIdentity)
                         }
+                        Write-PSFMessage -Level Warning -String 'Group.Get.Failed' -StringValues $groupIdentity
                     }
                 }
             }
@@ -293,6 +300,7 @@
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name AdministrativeUnit.Get.Failed) -f $Identity)
                     }
+                    Write-PSFMessage -Level Warning -String 'AdministrativeUnit.Get.Failed' -StringValues $Identity
                     return
                 }
                 foreach ($deviceIdentity in $Device) {

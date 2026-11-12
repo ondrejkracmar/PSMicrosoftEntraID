@@ -122,40 +122,45 @@
             'Content-Type' = 'application/json'
         }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
+        # Every plan of the SKU, read on the first target that does not hold it.
+        [string[]] $skuServicePlanIdList = $null
         # Branched on $PSBoundParameters, NOT on $PSCmdlet.ParameterSetName. With
         # pipeline input the set is not resolved until the first object arrives in
         # process, so the switch that lived here matched nothing and $bodySkuId stayed
         # empty for every piped user - see Disable-PSEntraIDUserLicenseServicePlan for
         # the full account. These four parameters are never pipeline-bound, so
         # $PSBoundParameters answers in begin what ParameterSetName cannot.
-        if ($PSBoundParameters.ContainsKey('SkuId')) {
-            [string] $bodySkuId = $SkuId
-            [string] $skuTarget = $SkuId
+        [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = @(Get-PSEntraIDSubscribedSku)
+        # One read of the catalog, and anything in it that does not resolve STOPS the
+        # command: a misspelt plan name used to resolve to nothing, which for a target
+        # without the SKU assigned the licence with every plan disabled. See
+        # Resolve-LicenseServicePlan.
+        [hashtable] $resolveParameters = @{ Cmdlet = $PSCmdlet; SubscribedSku = $subscribedSkus }
+        foreach ($parameterName in 'SkuId', 'SkuPartNumber', 'ServicePlanId', 'ServicePlanName') {
+            if ($PSBoundParameters.ContainsKey($parameterName)) { $resolveParameters[$parameterName] = $PSBoundParameters[$parameterName] }
         }
-        else {
-            # Materialised, NOT piped into Select-Object -First 1: that stops the
-            # pipeline and the protected read reports a failure, leaving $matchedSku
-            # empty and every lookup that depends on $bodySkuId finding nothing.
-            [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = @(Get-PSEntraIDSubscribedSku)
-            [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = @($subscribedSkus | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber })[0]
-            [string] $bodySkuId = $matchedSku.SkuId
-            [string] $skuTarget = $SkuPartNumber
-        }
-        if ($PSBoundParameters.ContainsKey('ServicePlanId')) {
-            [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = $ServicePlanId
-        }
-        else {
-            [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                Select-Object -ExpandProperty ServicePlans |
-                Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId
-        }
+        [hashtable] $resolvedLicense = Resolve-LicenseServicePlan @resolveParameters
+        [string] $bodySkuId = $resolvedLicense.SkuId
+        [string] $skuTarget = $resolvedLicense.SkuTarget
+        [string] $servicePlanTarget = $resolvedLicense.ServicePlanTarget
+        [string[]] $bodyServicePlanId = $resolvedLicense.ServicePlanId
     }
     process {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
+                    # No AssignedLicenses at all (a minimal delta, a custom selection) means
+                    # "unknown", not "no licence": taken for the latter, Enable-* assigned the
+                    # SKU with every other plan disabled over the plans the user had, and
+                    # Disable-* reported the SKU as not assigned. Read the user again.
+                    if ([object]::Equals($itemInputObject.AssignedLicenses, $null) -and -not [string]::IsNullOrWhiteSpace($itemInputObject.Id)) {
+                        [string] $sparseUserId = $itemInputObject.Id
+                        $itemInputObject = Get-PSEntraIDUser -Identity $sparseUserId -EnableException:$EnableException
+                        if ([object]::Equals($itemInputObject, $null)) {
+                            Write-PSFMessage -Level Warning -String 'License.Target.NotFound' -StringValues $sparseUserId
+                            continue
+                        }
+                    }
                     # Reset PER ITERATION. The old shape only replaced this when the
                     # current user had a value and only defaulted it when it was null -
                     # so on pipeline input, a user with nothing to disable inherited the
@@ -178,10 +183,14 @@
                     else {
                         # The user does not hold the SKU: enabling a plan implies
                         # assigning the licence with everything ELSE disabled, so the
-                        # starting list is every plan the subscription has.
-                        [string[]] $existingDisabledServicePlanList = (Get-PSEntraIDSubscribedLicense |
-                            Where-Object -Property SkuId -Value $bodySkuId -EQ |
-                            Select-Object -ExpandProperty ServicePlans).ServicePlanId
+                        # starting list is every plan the subscription has. Read once,
+                        # and a failed read or an empty list STOPS the command: either
+                        # used to leave this list empty, which assigned the licence with
+                        # every plan enabled.
+                        if ([object]::Equals($skuServicePlanIdList, $null)) {
+                            [string[]] $skuServicePlanIdList = @(Get-LicenseSkuServicePlanId -Cmdlet $PSCmdlet -SkuId $bodySkuId -SkuTarget $skuTarget)
+                        }
+                        [string[]] $existingDisabledServicePlanList = $skuServicePlanIdList
                     }
                     if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
                         # @() around the PIPELINE, not around the variable later. A pipe
@@ -243,9 +252,12 @@
                         [string[]] $existingDisabledServicePlanList = @($assignedLicense.DisabledPlans | ForEach-Object { [string]$_ })
                     }
                     else {
-                        [string[]] $existingDisabledServicePlanList = (Get-PSEntraIDSubscribedLicense |
-                            Where-Object -Property SkuId -Value $bodySkuId -EQ |
-                            Select-Object -ExpandProperty ServicePlans).ServicePlanId
+                        # Same as the InputObject branch: read once, stop on failure or
+                        # on an empty list.
+                        if ([object]::Equals($skuServicePlanIdList, $null)) {
+                            [string[]] $skuServicePlanIdList = @(Get-LicenseSkuServicePlanId -Cmdlet $PSCmdlet -SkuId $bodySkuId -SkuTarget $skuTarget)
+                        }
+                        [string[]] $existingDisabledServicePlanList = $skuServicePlanIdList
                     }
                     if (-not [object]::Equals($existingDisabledServicePlanList, $null)) {
                         # @() around the PIPELINE, not around the variable later. A pipe

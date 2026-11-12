@@ -136,35 +136,37 @@
         #
         # SkuId/SkuPartNumber/ServicePlanId/ServicePlanName are never pipeline-bound, so
         # $PSBoundParameters answers in begin what ParameterSetName cannot.
-        if ($PSBoundParameters.ContainsKey('SkuId')) {
-            [string] $bodySkuId = $SkuId
-            [string] $skuTarget = $SkuId
+        [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = @(Get-PSEntraIDSubscribedSku)
+        # One read of the catalog, and anything in it that does not resolve STOPS the
+        # command: a misspelt plan name used to resolve to nothing, which for a target
+        # without the SKU assigned the licence with every plan disabled. See
+        # Resolve-LicenseServicePlan.
+        [hashtable] $resolveParameters = @{ Cmdlet = $PSCmdlet; SubscribedSku = $subscribedSkus }
+        foreach ($parameterName in 'SkuId', 'SkuPartNumber', 'ServicePlanId', 'ServicePlanName') {
+            if ($PSBoundParameters.ContainsKey($parameterName)) { $resolveParameters[$parameterName] = $PSBoundParameters[$parameterName] }
         }
-        else {
-            # Materialised, NOT piped into Select-Object -First 1: that stops the
-            # pipeline, the protected read inside reports a failed action, and
-            # $matchedSku comes back empty. The same hazard is documented in this
-            # module's own help.
-            [PSMicrosoftEntraID.License.SubscriptionSku[]] $subscribedSkus = @(Get-PSEntraIDSubscribedSku)
-            [PSMicrosoftEntraID.License.SubscriptionSku] $matchedSku = @($subscribedSkus | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber })[0]
-            [string] $bodySkuId = $matchedSku.SkuId
-            [string] $skuTarget = $SkuPartNumber
-        }
-        if ($PSBoundParameters.ContainsKey('ServicePlanId')) {
-            [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = $ServicePlanId
-        }
-        else {
-            [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = (Get-PSEntraIDSubscribedSku | Where-Object -Property SkuId -EQ -Value $bodySkuId |
-                Select-Object -ExpandProperty ServicePlans |
-                Where-Object { $ServicePlanName -Contains $PSItem.ServicePlanName }).ServicePlanId
-        }
+        [hashtable] $resolvedLicense = Resolve-LicenseServicePlan @resolveParameters
+        [string] $bodySkuId = $resolvedLicense.SkuId
+        [string] $skuTarget = $resolvedLicense.SkuTarget
+        [string] $servicePlanTarget = $resolvedLicense.ServicePlanTarget
+        [string[]] $bodyServicePlanId = $resolvedLicense.ServicePlanId
     }
     process {
         switch -Regex ($PSCmdlet.ParameterSetName) {
             'InputObject\w' {
                 foreach ($itemInputObject in  $InputObject) {
+                    # No AssignedLicenses at all (a minimal delta, a custom selection) means
+                    # "unknown", not "no licence": taken for the latter, Enable-* assigned the
+                    # SKU with every other plan disabled over the plans the user had, and
+                    # Disable-* reported the SKU as not assigned. Read the user again.
+                    if ([object]::Equals($itemInputObject.AssignedLicenses, $null) -and -not [string]::IsNullOrWhiteSpace($itemInputObject.Id)) {
+                        [string] $sparseUserId = $itemInputObject.Id
+                        $itemInputObject = Get-PSEntraIDUser -Identity $sparseUserId -EnableException:$EnableException
+                        if ([object]::Equals($itemInputObject, $null)) {
+                            Write-PSFMessage -Level Warning -String 'License.Target.NotFound' -StringValues $sparseUserId
+                            continue
+                        }
+                    }
                     [System.Collections.Generic.List[object]] $bodyDisabledServicePlanList = [System.Collections.Generic.List[object]]::new()
 
                     # Existing disabled plans come from assignedLicenses.disabledPlans -

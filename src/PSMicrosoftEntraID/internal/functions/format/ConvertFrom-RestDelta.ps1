@@ -18,21 +18,17 @@
         That becomes the DeltaChangeType enum so callers switch on a name instead of
         probing for an annotation.
 
-        PERFORMANCE. A delta page can hold thousands of objects, so this serializes the
-        whole page ONCE and deserializes it ONCE, then walks the raw entries alongside
-        the typed results to stamp the change type. The obvious per-object implementation
-        costs three JSON round-trips each, which is minutes rather than seconds on a
-        large tenant.
-
-        The annotations are left in the JSON rather than stripped: DataContract ignores
-        members it does not know, so removing them would only cost another copy of every
-        object.
+        The typed delta models map all of it themselves (GraphJson, [JsonPropertyName]):
+        "@removed" sets ChangeType, "members@delta" fills MembersDelta, a member's
+        "@odata.type" fills ObjectType and its own "@removed" sets Removed. This function
+        only unwraps the page and hands the whole set to ConvertFrom-GraphResponse - one
+        serialization and one deserialization per page, whatever its size.
 
         A removed object arrives with little more than its id - Graph does not resend the
         rest of something that is gone. Expected, not a conversion failure.
 
     .PARAMETER InputObject
-        The parsed delta response, or the individual value entries from one.
+        The delta response: its JSON text, the parsed page, or the individual value entries from one.
 
     .PARAMETER TargetType
         The delta type to produce, e.g. [PSMicrosoftEntraID.Users.UserDelta].
@@ -52,45 +48,6 @@
 
     if (-not $InputObject) { return }
 
-    $entries = if ($InputObject.PSObject.Properties['value']) { @($InputObject.value) } else { @($InputObject) }
-    $entries = @($entries | Where-Object { $_ })
-    if ($entries.Count -eq 0) { return }
-
-    # One serialize, one deserialize, for the whole page.
-    # The unary comma keeps a single-entry page an array so the [] type still binds.
-    $jsonString = , $entries | ConvertTo-Json -Depth 6
-    $arrayType = ($TargetType.MakeArrayType())
-    $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-    $stream = [System.IO.MemoryStream]::new($byteArray)
-    $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($arrayType)
-    $converted = @($serializer.ReadObject($stream))
-
-    $hasMembers = $TargetType.GetProperty('MembersDelta')
-
-    for ($i = 0; $i -lt $converted.Count; $i++) {
-        $typed = $converted[$i]
-        $raw = $entries[$i]
-
-        if ($raw.PSObject.Properties['@removed']) {
-            # See the reason mapping above - Graph's naming is inverted from intuition.
-            $typed.ChangeType = if ([string]$raw.'@removed'.reason -eq 'deleted') { 'Purged' } else { 'Deleted' }
-        }
-
-        # members@delta cannot round-trip through DataContract: '@odata.type' does not
-        # survive its naming rules. Built directly instead, and only for the one type
-        # that has the property.
-        if ($hasMembers -and $raw.PSObject.Properties['members@delta']) {
-            $typed.MembersDelta = [PSMicrosoftEntraID.Groups.GroupMemberDelta[]] @(
-                foreach ($member in @($raw.'members@delta')) {
-                    if (-not $member) { continue }
-                    [PSMicrosoftEntraID.Groups.GroupMemberDelta]@{
-                        Id         = [string]$member.id
-                        ObjectType = [string]$member.'@odata.type'
-                        Removed    = [bool]$member.PSObject.Properties['@removed']
-                    }
-                })
-        }
-
-        $typed
-    }
+    $entries = if ($InputObject -isnot [string] -and $InputObject.PSObject.Properties['value']) { $InputObject.value } else { $InputObject }
+    ConvertFrom-GraphResponse -InputObject $entries -Type $TargetType
 }
