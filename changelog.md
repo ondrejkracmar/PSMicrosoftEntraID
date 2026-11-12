@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0 (2026-11-12)
+
 ### Breaking
 
 - **The user name and password sign-in (`Connect-PSMicrosoftEntraID -Credential`, ROPC) is
@@ -150,6 +152,7 @@
 
 ### Security
 
+- **`src/azFunctionResources/local.settings.json` is no longer tracked** and is ignored by `.gitignore`; the public export excludes it from the whole history.
 - `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
   library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
   GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
