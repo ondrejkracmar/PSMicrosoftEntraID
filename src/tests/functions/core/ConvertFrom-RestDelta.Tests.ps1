@@ -110,8 +110,8 @@ Describe 'ConvertFrom-RestDelta' -Tag 'Unit' {
                 $left = $result[0].MembersDelta | Where-Object { $_.Removed }
                 $joined.Id | Should -Be 'u-joined'
                 $left.Id | Should -Be 'u-left'
-                # '@odata.type' cannot round-trip through DataContract, so it is mapped
-                # by hand - this asserts that it actually arrives.
+                # '@odata.type' differs from the property name beyond case; the model maps
+                # it with [JsonPropertyName] - this asserts that it actually arrives.
                 $joined.ObjectType | Should -Be '#microsoft.graph.user'
             }
         }

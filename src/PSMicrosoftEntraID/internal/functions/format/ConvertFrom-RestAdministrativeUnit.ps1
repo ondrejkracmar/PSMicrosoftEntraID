@@ -27,17 +27,6 @@
 	)
 
 	if (-not $InputObject) { return }
-	$jsonString = $InputObject | ConvertTo-Json -Depth 3
 
-	$type = if ($InputObject -is [array]) {
-		[PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit[]]
-	}
-	else {
-		[PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit]
-	}
-
-	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-	$stream = [System.IO.MemoryStream]::new($byteArray)
-	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
-	return $serializer.ReadObject($stream)
+	ConvertFrom-GraphResponse -InputObject $InputObject -Type ([PSMicrosoftEntraID.DirectoryManagement.AdministrativeUnit])
 }

@@ -12,10 +12,11 @@ using Xunit;
 namespace PSMicrosoftEntraID.Tests;
 
 /// <summary>
-/// GraphJson against Graph-shaped JSON (fake contoso data) and the module's existing [DataContract] models.
-/// System.Text.Json ignores [DataMember(Name)]: a property maps when its own name equals the JSON name ignoring
-/// case. The tests pin both what maps and the known gaps (a DataMember name that differs beyond case, a string
-/// property Graph fills with a boolean) so phase C sees them before it moves a cmdlet onto typed pages.
+/// GraphJson against Graph-shaped JSON (fake contoso data) and the module's typed models. A property maps when its
+/// own name equals the JSON name ignoring case, or by [JsonPropertyName] where the wire name differs beyond case.
+/// The former model gaps (names that differ beyond case, strings Graph fills with a boolean or an object,
+/// non-nullable values Graph sends as null, dates held as text) are asserted fixed here; the per-model round
+/// trips are in ModelRoundTripTests.
 /// </summary>
 public class GraphJsonTests
 {
@@ -71,14 +72,15 @@ public class GraphJsonTests
         var adele = users[0];
         Assert.Equal("6e7b768e-07e2-4810-8459-485f84f8f204", adele.Id);
         Assert.Equal("AdeleV@contoso.com", adele.UserPrincipalName);
-        Assert.Equal("2024-01-15T08:30:00Z", adele.CreatedDateTime);
+        Assert.Equal(new DateTime(2024, 1, 15, 8, 30, 0, DateTimeKind.Utc), adele.CreatedDateTime);
+        Assert.Equal(DateTimeKind.Utc, adele.CreatedDateTime.Value.Kind);
         Assert.True(adele.AccountEnabled);
         Assert.Equal(new[] { "SMTP:AdeleV@contoso.com", "smtp:adele@contoso.onmicrosoft.com" }, adele.ProxyAddresses);
         Assert.Equal("+1 425 555 0109", Assert.Single(adele.BusinessPhones));
         Assert.Empty(adele.OtherMails);
         Assert.Null(adele.MobilePhone);
-        // page > value > user > assignedLicenses > license > disabledPlans: deeper than the -Depth 4 of the
-        // ConvertTo-Json round trip in ConvertFrom-Rest*, which would hand the converter a truncated string here.
+        // page > value > user > assignedLicenses > license > disabledPlans: deeper than the -Depth 4 the
+        // ConvertTo-Json round trip of ConvertFrom-Rest* used to have, which handed the converter a truncated string.
         var license = Assert.Single(adele.AssignedLicenses);
         Assert.Equal("c7df2760-2c81-4ef7-b578-5b5392b571df", license.SkuId);
         Assert.Equal(2, license.DisabledPlans.Length);
@@ -117,6 +119,7 @@ public class GraphJsonTests
         Assert.False(group.SecurityEnabled);
         Assert.Null(group.IsAssignableToRole);
         Assert.Null(group.ExpirationDateTime);
+        Assert.Equal(new DateTime(2023, 5, 1, 10, 0, 0, DateTimeKind.Utc), group.CreatedDateTime);
         Assert.Equal(new[] { "Unified", "DynamicMembership" }, group.GroupTypes);
         Assert.Equal("Confidential", Assert.Single(group.AssignedLabels).DisplayName);
         Assert.Equal("a23b959c-7ce8-4e57-9140-b90eb88a9e97", Assert.Single(Assert.Single(group.AssignedLicenses).DisabledPlans));
@@ -180,7 +183,8 @@ public class GraphJsonTests
         Assert.True(device.AccountEnabled);
         Assert.True(device.IsManaged);
         Assert.Null(device.IsCompliant);
-        Assert.Equal("2025-02-03T09:15:00Z", device.RegistrationDateTime);
+        Assert.Equal(new DateTime(2025, 2, 3, 9, 15, 0, DateTimeKind.Utc), device.RegistrationDateTime);
+        Assert.Equal(new DateTime(2026, 11, 10, 7, 0, 0, DateTimeKind.Utc), device.ApproximateLastSignInDateTime);
         Assert.Equal("Finance", device.ExtensionAttributes.ExtensionAttribute1);
         Assert.Null(device.ExtensionAttributes.ExtensionAttribute15);
     }
@@ -197,37 +201,60 @@ public class GraphJsonTests
         Assert.Equal("Adele Vance", Assert.Single(unit.ScopedRoleMembers).RoleMemberInfo.DisplayName);
     }
 
-    // Known gaps of the existing models under System.Text.Json, pinned so they are fixed on purpose (phase C), not
-    // discovered in production. ConvertFrom-Rest* (DataContractJsonSerializer) is unchanged by this PR.
+    // The former gaps of the models under System.Text.Json (pinned as gaps by PR 1321), now asserted fixed.
 
     [Fact]
-    public void DoesNotMapADataMemberNameThatDiffersBeyondCase()
+    public void MapsTheWireNamesThatDifferBeyondCase()
     {
         const string page = """
-            {"value":[{"id":"g1","displayName":"Sales","members@delta":[{"@odata.type":"#microsoft.graph.user","id":"u1"}]}]}
+            {"value":[{"id":"g1","displayName":"Sales","members@delta":[
+              {"@odata.type":"#microsoft.graph.user","id":"u1"},
+              {"@odata.type":"#microsoft.graph.group","id":"g9","@removed":"deleted"}]}]}
             """;
 
         var group = Assert.Single(Assert.IsType<GroupDelta[]>(GraphJson.DeserializeCollection(page, typeof(GroupDelta))));
 
         Assert.Equal("Sales", group.DisplayName);
-        // [DataMember(Name = "members@delta")] on MembersDelta: not read by System.Text.Json.
-        Assert.Null(group.MembersDelta);
+        Assert.Equal(2, group.MembersDelta.Length);
+        Assert.Equal("u1", group.MembersDelta[0].Id);
+        Assert.Equal("#microsoft.graph.user", group.MembersDelta[0].ObjectType);
+        Assert.False(group.MembersDelta[0].Removed);
+        Assert.Equal("g9", group.MembersDelta[1].Id);
+        Assert.Equal("#microsoft.graph.group", group.MembersDelta[1].ObjectType);
+        Assert.True(group.MembersDelta[1].Removed);
 
-        // [DataMember(Name = "id")] on OrganizationDetail.TenantId: not read either.
         var organization = (OrganizationDetail)GraphJson.Deserialize("""{"id":"48a80680-7326-48cd-9935-b556b81d3a4e","displayName":"Contoso"}""", typeof(OrganizationDetail));
         Assert.Equal("Contoso", organization.DisplayName);
-        Assert.Null(organization.TenantId);
+        Assert.Equal("48a80680-7326-48cd-9935-b556b81d3a4e", organization.TenantId);
+    }
+
+    [Fact]
+    public void ReadsTheValuesThatUsedToFailTheWholePage()
+    {
+        var additional = (GroupAdditionalProperty)GraphJson.Deserialize("""{"id":"g1","allowExternalSenders":false,"autoSubscribeNewMembers":true,"hideFromAddressLists":null}""", typeof(GroupAdditionalProperty));
+        Assert.False(additional.AllowExternalSenders);
+        Assert.True(additional.AutoSubscribeNewMembers);
+        Assert.Null(additional.HideFromAddressLists);
+
+        var organization = (OrganizationDetail)GraphJson.Deserialize("""{"id":"t1","isMultipleDataLocationsForServicesEnabled":true,"privacyProfile":{"contactEmail":"privacy@contoso.com","statementUrl":"https://contoso.com/privacy"}}""", typeof(OrganizationDetail));
+        Assert.True(organization.IsMultipleDataLocationsForServicesEnabled);
+        Assert.Equal("privacy@contoso.com", organization.PrivacyProfile.ContactEmail);
+        Assert.Equal("https://contoso.com/privacy", organization.PrivacyProfile.StatementUrl);
+        Assert.Equal("https://contoso.com/privacy", organization.PrivacyProfile.ToString());
+
+        // accountEnabled is null for some accounts (and absent when not selected): no longer a failed page.
+        Assert.Null(((User)GraphJson.Deserialize("""{"id":"u1","accountEnabled":null}""", typeof(User))).AccountEnabled);
+        Assert.Null(((UserDelta)GraphJson.Deserialize("""{"id":"u1","accountEnabled":null}""", typeof(UserDelta))).AccountEnabled);
+        Assert.Null(((UserGuest)GraphJson.Deserialize("""{"id":"u1","accountEnabled":null}""", typeof(UserGuest))).AccountEnabled);
     }
 
     [Theory]
-    [InlineData(typeof(GroupAdditionalProperty), """{"id":"g1","allowExternalSenders":false}""")]
-    [InlineData(typeof(OrganizationDetail), """{"id":"t1","isMultipleDataLocationsForServicesEnabled":true}""")]
-    [InlineData(typeof(OrganizationDetail), """{"id":"t1","privacyProfile":{"contactEmail":"privacy@contoso.com","statementUrl":"https://contoso.com/privacy"}}""")]
-    [InlineData(typeof(User), """{"id":"u1","accountEnabled":null}""")]
-    public void RefusesAValueOfAnotherJsonTypeThanTheModelProperty(Type type, string json)
+    [InlineData(typeof(User), """{"id":"u1","createdDateTime":"yesterday"}""")]
+    [InlineData(typeof(GroupAdditionalProperty), """{"id":"g1","allowExternalSenders":"maybe"}""")]
+    public void StillRefusesAValueThatIsNotOfThePropertyType(Type type, string json)
     {
-        // A string property Graph fills with a boolean or an object, and a non-nullable bool Graph sends as null:
-        // System.Text.Json does not coerce, the whole page fails. GraphBatchClient reports it as ConversionError.
+        // System.Text.Json does not guess: a date that is no ISO 8601 date and a bool that is no bool fail the
+        // conversion (GraphBatchClient reports it as ConversionError) rather than silently becoming null.
         Assert.ThrowsAny<JsonException>(() => GraphJson.Deserialize(json, type));
     }
 

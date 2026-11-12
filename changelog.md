@@ -13,6 +13,47 @@
   than the connected service, or over http** (`SecurityError`, before anything is sent). Pass a
   path relative to the service, or a URL on the service's own host.
 
+- **Typed model properties: dates are `DateTime`, flags are `bool`, counters are nullable.**
+  The output objects keep their type names and property names, but these properties change
+  type (`string` -> `Nullable[DateTime]` holds UTC, Kind `Utc`):
+  - `Users.User`, `Users.UserDelta`: `CreatedDateTime` (`DateTime?`), `AccountEnabled`
+    (`bool` -> `bool?`).
+  - `Users.UserGuest`: as `User`, plus `ExternalUserStateChangeDateTime` (`DateTime?`).
+  - `Groups.Group`, `Groups.GroupDelta`: `CreatedDateTime`, `DeletedDateTime`,
+    `ExpirationDateTime`, `RenewedDateTime` (`DateTime?`).
+  - `Groups.GroupAdditionalProperty`: `AllowExternalSenders`, `AutoSubscribeNewMembers`
+    (`string` -> `bool?`).
+  - `DirectoryManagement.AdministrativeUnit`, `...AdministrativeUnitDelta`: `CreatedDateTime`,
+    `DeletedDateTime` (`DateTime?`); `DirectoryManagement.Member.DeletedDateTime` (`DateTime?`).
+  - `Devices.Device`, `Devices.DeviceDelta`: `RegistrationDateTime`,
+    `ApproximateLastSignInDateTime` (`DateTime?`).
+  - `Organization.OrganizationDetail`: `CreatedDateTime`, `DeletedDateTime`,
+    `OnPremisesLastSyncDateTime`, `OnPremisesNextSyncDateTime` (`DateTime?`);
+    `IsMultipleDataLocationsForServicesEnabled` (`string` -> `bool?`); `PrivacyProfile`
+    (`string` -> new `Organization.PrivacyProfile` with `ContactEmail`, `StatementUrl`).
+  - `Organization.AssignedPlan.AssignedDateTime` (`DateTime?`);
+    `Organization.DirectorySizeQuota.Used`, `.Total` (`int` -> `long?`).
+  - `License.SubscriptionSku` / `SubscriptionSkuLicense.ConsumedUnits` and
+    `License.PrepaidUnit.Enabled`, `.Suspended`, `.Warning`, `.LockedOut` (`int` -> `int?`).
+  - `Users.Invitations.Invitation.ExpirationDateTime` (`DateTime?`).
+  - `ServiceAnnouncement.Message`: `LastModifiedDateTime`, `StartDateTime`, `EndDateTime`,
+    `ActionRequiredByDateTime` (`DateTime?`); `IsMajorChange`, `HasAttachments` (`bool` ->
+    `bool?`). `ServiceAnnouncement.ViewPoint.IsRead`, `.IsArchived`, `.IsFavorited` (`bool` ->
+    `bool?`).
+  - `DefenderEndpoint.Machine.FirstSeen`, `.LastSeen` (`DateTime?`).
+  - `[DataContract]`/`[DataMember]` are removed from these models (and from
+    `Delta.DeltaChangeType`); serialize them with `ConvertTo-Json` or System.Text.Json, not
+    `DataContractJsonSerializer`.
+
+  **Migration.** Compare and sort dates as dates: `$user.CreatedDateTime -lt (Get-Date).AddDays(-30)`
+  now compares instants (a string comparison happened to work for ISO text only). Where text is
+  needed, format it explicitly: `$user.CreatedDateTime.ToString('o')` (ISO 8601) - a bare
+  `"$($user.CreatedDateTime)"` uses the current culture. `[datetime]::Parse($x.StartDateTime)`
+  is no longer needed; `-eq 'true'` / `-eq 'True'` tests on `AllowExternalSenders`,
+  `AutoSubscribeNewMembers` and `IsMultipleDataLocationsForServicesEnabled` become `-eq $true`.
+  `$null` now means "Graph sent null or the property was not selected" for the nullable
+  booleans and counters, where it used to read as `$false` / `0`.
+
 ### Security
 
 - `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
@@ -68,6 +109,28 @@
   patterns the git guard expects.
 
 ### Fixed
+
+- **Nested data deeper than four levels was silently truncated by every `ConvertFrom-Rest*`.**
+  They turned the parsed response back into JSON with `ConvertTo-Json -Depth 3/4/6` and parsed it
+  again with `DataContractJsonSerializer`; deeper values (e.g. `assignedLicenses.disabledPlans`
+  of an invited user, `scopedRoleMembers.roleMemberInfo`) arrived as the text of the truncated
+  object. All of them now go through one helper, `ConvertFrom-GraphResponse`, which deserializes
+  with `PSMicrosoftEntraID.Serialization.GraphJson` (System.Text.Json): straight from the JSON
+  text when it has it, otherwise from the parsed objects re-serialized ONCE per page at
+  `-Depth 100` - an interim step until phase B makes `Invoke-EntraRequest` hand back the
+  response text.
+- **Mapping defects of the models**: `members@delta`, a member's `@odata.type` and `@removed`,
+  and `OrganizationDetail.TenantId` (`id`) are mapped by the models themselves
+  (`[JsonPropertyName]`), so `ConvertFrom-RestDelta` no longer patches them on afterwards; a
+  `null` `accountEnabled`, a boolean `allowExternalSenders` / `autoSubscribeNewMembers` /
+  `isMultipleDataLocationsForServicesEnabled` and the `privacyProfile` object no longer fail the
+  conversion of the whole page. `OrganizationDetail.OnPremisesSyncStatus` accepts the object or
+  a collection, and its `Version` a number.
+- `Get-PSEntraIDMessageCenter -PublishedAfter/-PublishedBefore` compare the typed `StartDateTime`
+  in UTC (a `Local` bound value is converted; `Unspecified` is taken as UTC, as documented)
+  instead of `[datetime]::Parse` of the text, which converted to local time.
+- The `OrganizationDetail` and `Machine` table views render `CreatedDateTime` / `LastSeen` as
+  `yyyy-MM-dd HH:mm` (UTC, culture-neutral) in their 16-character column.
 
 - **Piped records no longer inherit the previous record's properties.**
   With `ValueFromPipelineByPropertyName`, `$PSBoundParameters` keeps a key bound by an

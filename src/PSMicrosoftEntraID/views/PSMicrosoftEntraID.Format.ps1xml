@@ -680,6 +680,7 @@
 						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
+						<Label>CreatedDateTime</Label>
 						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
@@ -702,7 +703,8 @@
 								<PropertyName>TenantType</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>CreatedDateTime</PropertyName>
+								<!-- A DateTime (UTC) since the typed models: a fixed, sortable, culture-neutral form that fits the 16-wide column. -->
+								<ScriptBlock>if ($null -ne $_.CreatedDateTime) { $_.CreatedDateTime.ToString('yyyy-MM-dd HH:mm', [cultureinfo]::InvariantCulture) }</ScriptBlock>
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>DefaultUsageLocation</PropertyName>
@@ -854,7 +856,7 @@
 				<TableColumnHeader><Width>12</Width></TableColumnHeader>
 				<TableColumnHeader><Width>16</Width></TableColumnHeader>
 				<TableColumnHeader><Width>24</Width></TableColumnHeader>
-				<TableColumnHeader><Width>22</Width></TableColumnHeader>
+				<TableColumnHeader><Label>LastSeen</Label><Width>16</Width></TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
 				<TableRowEntry>
@@ -867,7 +869,7 @@
 					<TableColumnItem><PropertyName>ExposureLevel</PropertyName></TableColumnItem>
 					<TableColumnItem><PropertyName>RbacGroupName</PropertyName></TableColumnItem>
 					<TableColumnItem><PropertyName>MachineTags</PropertyName></TableColumnItem>
-					<TableColumnItem><PropertyName>LastSeen</PropertyName></TableColumnItem>
+					<TableColumnItem><ScriptBlock>if ($null -ne $_.LastSeen) { $_.LastSeen.ToString('yyyy-MM-dd HH:mm', [cultureinfo]::InvariantCulture) }</ScriptBlock></TableColumnItem>
 					</TableColumnItems>
 				</TableRowEntry>
 				</TableRowEntries>

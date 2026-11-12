@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace PSMicrosoftEntraID.Users
 {
     /// <summary>
@@ -12,7 +10,6 @@ namespace PSMicrosoftEntraID.Users
     /// Mirrors https://learn.microsoft.com/en-us/graph/api/resources/objectidentity
     /// (Microsoft Graph v1.0). The resource has exactly these three properties.
     /// </remarks>
-    [DataContract]
     public class ObjectIdentity
     {
         /// <summary>
@@ -21,7 +18,6 @@ namespace PSMicrosoftEntraID.Users
         /// identifier comes from an external issuer in a format that issuer chose. Any
         /// custom string is also allowed.
         /// </summary>
-        [DataMember(Name = "signInType")]
         public string SignInType { get; set; }
 
         /// <summary>
@@ -30,7 +26,6 @@ namespace PSMicrosoftEntraID.Users
         /// organization the domain of that organization, for a social account the provider
         /// (for example <c>facebook.com</c>). 512 character limit.
         /// </summary>
-        [DataMember(Name = "issuer")]
         public string Issuer { get; set; }
 
         /// <summary>
@@ -38,7 +33,6 @@ namespace PSMicrosoftEntraID.Users
         /// <see cref="Issuer"/> and this value is unique within the organization.
         /// 64 character limit.
         /// </summary>
-        [DataMember(Name = "issuerAssignedId")]
         public string IssuerAssignedId { get; set; }
 
         /// <summary>

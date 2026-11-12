@@ -97,9 +97,9 @@ Describe 'User identities collection' -Tag 'Unit' {
     }
 
     Context 'Deserialization' {
-        # ConvertFrom-RestUserGuest serializes the REST object back to JSON at a fixed
-        # depth and reads it through DataContractJsonSerializer. identities is one level
-        # deeper than any scalar property, so a depth regression would silently blank it.
+        # ConvertFrom-RestUserGuest serializes the parsed REST object back to JSON once and
+        # reads it with GraphJson. identities is one level deeper than any scalar property,
+        # so a depth regression would silently blank it.
         It 'maps the identities array off a Graph response' {
             InModuleScope PSMicrosoftEntraID {
                 $response = [pscustomobject]@{

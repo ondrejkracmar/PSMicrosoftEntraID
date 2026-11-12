@@ -28,11 +28,9 @@
     }
     process {
         [string] $licenseIdentifiers = Resolve-PSEntraIDLicenseIdentifierPath
-        [string] $jsonString = Get-Content -Path $licenseIdentifiers -Raw
-        [byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-        [System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-        [System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftEntraID.License.LicenseIdentifier[]])
-        return $serializer.ReadObject($stream)
+        [string] $jsonString = Get-Content -Path $licenseIdentifiers -Raw -Encoding utf8
+        # Straight from the file text with GraphJson, like every Graph response in this module.
+        return [PSMicrosoftEntraID.Serialization.GraphJson]::Deserialize($jsonString, [PSMicrosoftEntraID.License.LicenseIdentifier[]])
     }
     end
     {}

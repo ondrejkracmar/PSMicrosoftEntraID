@@ -5,10 +5,11 @@
 
 	.DESCRIPTION
 		Converts an MDE machines API response into
-		PSMicrosoftEntraID.DefenderEndpoint.Machine via the same
-		DataContractJsonSerializer round-trip every other ConvertFrom-Rest*
-		converter uses. Unknown members in the payload are ignored by the
-		serializer, so API additions never break the conversion.
+		PSMicrosoftEntraID.DefenderEndpoint.Machine through
+		ConvertFrom-GraphResponse (GraphJson), like every other ConvertFrom-Rest*
+		converter. Unknown members in the payload are ignored by the
+		deserializer, so API additions never break the conversion; firstSeen
+		and lastSeen become DateTime.
 
 	.PARAMETER InputObject
 		The rest response representing a machine.
@@ -24,17 +25,5 @@
 	)
 	if (-not $InputObject) { return }
 
-	$jsonString = $InputObject | ConvertTo-Json -Depth 4
-
-	$type = if ($InputObject -is [array]) {
-		[PSMicrosoftEntraID.DefenderEndpoint.Machine[]]
-	}
-	else {
-		[PSMicrosoftEntraID.DefenderEndpoint.Machine]
-	}
-
-	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-	$stream = [System.IO.MemoryStream]::new($byteArray)
-	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
-	return $serializer.ReadObject($stream)
+	ConvertFrom-GraphResponse -InputObject $InputObject -Type ([PSMicrosoftEntraID.DefenderEndpoint.Machine])
 }

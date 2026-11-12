@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace PSMicrosoftEntraID.Users
 {
@@ -9,20 +8,17 @@ namespace PSMicrosoftEntraID.Users
     /// This class extends the User class and includes additional properties 
     /// related to Guest user invitations.
     /// </summary>
-    [DataContract]
     public class UserGuest : User
     {
         /// <summary>
         /// The external state of the user (e.g., PendingAcceptance, Accepted).
         /// </summary>
-        [DataMember(Name = "externalUserState")]
         public string ExternalUserState { get; set; }
 
         /// <summary>
         /// The date and time when the external user state last changed.
         /// </summary>
-        [DataMember(Name = "externalUserStateChangeDateTime")]
-        public string ExternalUserStateChangeDateTime { get; set; }
+        public DateTime? ExternalUserStateChangeDateTime { get; set; }
 
         /// <summary>
         /// A derived property that represents the invitation status.

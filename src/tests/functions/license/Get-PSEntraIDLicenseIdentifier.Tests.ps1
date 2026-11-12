@@ -154,11 +154,12 @@ Describe "Get-PSEntraIDLicenseIdentifier" -Tag 'Unit' {
     }
 
     Context 'JSON Deserialization' {
-        It 'Should deserialize JSON using DataContractJsonSerializer' {
+        It 'Should deserialize the catalog JSON into LicenseIdentifier objects' {
             $result = Get-PSEntraIDLicenseIdentifier
 
             $result | Should -Not -BeNullOrEmpty
-            $result | Should -BeOfType [Object]
+            $result[0] | Should -BeOfType [PSMicrosoftEntraID.License.LicenseIdentifier]
+            @($result.Where({ $_.ServicePlans.Count -gt 0 }))[0].ServicePlans[0] | Should -BeOfType [PSMicrosoftEntraID.License.ServicePlanIdentifier]
         }
 
         It 'Should handle UTF-8 encoding' {
