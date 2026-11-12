@@ -20,6 +20,52 @@ Set-PSFConfig -Module $script:ModuleName -Name 'Import.IndividualFiles' -Value $
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryWaitInSeconds' -Value 0 -Initialize -Validation 'integer' -Description "Value of parameter RetryWait in the Invoke-PSFProtectedCommand."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Command.RetryCount' -Value 0 -Initialize -Validation 'integer' -Description "Value of parameter RetryCount in the Invoke-PSFProtectedCommand."
 
+# ---- Batch engine and request retry (phase A: read by Invoke-EntraParallelBatch and Invoke-EntraRetry only) -----
+# Whole numbers in a range, read invariantly: a value outside it is refused when it is set, not when a run uses it.
+Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.timeoutseconds' -ScriptBlock {
+	param ($Value)
+	$result = [pscustomobject]@{ Success = $true; Value = $null; Message = '' }
+	# 4294967 seconds (about 49.7 days) is the longest timeout .NET can arm ([PSMicrosoftEntraID.Http.RequestTimeout]::MaxSeconds).
+	[long] $seconds = 0
+	if (-not [long]::TryParse([string]$Value, [System.Globalization.NumberStyles]::Integer, [cultureinfo]::InvariantCulture, [ref]$seconds) -or $seconds -lt 0 -or $seconds -gt 4294967) {
+		$result.Success = $false
+		$result.Message = "The timeout must be a whole number of seconds from 0 (no limit) to 4294967 (about 49.7 days), not '$Value'."
+		return $result
+	}
+	$result.Value = [int]$seconds
+	$result
+}
+Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.batchthrottlelimit' -ScriptBlock {
+	param ($Value)
+	$result = [pscustomobject]@{ Success = $true; Value = $null; Message = '' }
+	[long] $number = 0
+	if (-not [long]::TryParse([string]$Value, [System.Globalization.NumberStyles]::Integer, [cultureinfo]::InvariantCulture, [ref]$number) -or $number -lt 1 -or $number -gt 20) {
+		$result.Success = $false
+		$result.Message = "The batch throttle limit must be a whole number from 1 to 20, not '$Value'."
+		return $result
+	}
+	$result.Value = [int]$number
+	$result
+}
+Register-PSFConfigValidation -Name 'PSMicrosoftEntraID.retrycount' -ScriptBlock {
+	param ($Value)
+	$result = [pscustomobject]@{ Success = $true; Value = $null; Message = '' }
+	[long] $number = 0
+	if (-not [long]::TryParse([string]$Value, [System.Globalization.NumberStyles]::Integer, [cultureinfo]::InvariantCulture, [ref]$number) -or $number -lt 0 -or $number -gt 20) {
+		$result.Success = $false
+		$result.Message = "The retry count must be a whole number from 0 to 20, not '$Value'."
+		return $result
+	}
+	$result.Value = [int]$number
+	$result
+}
+# Graph throttles directory reads per app and tenant, not per mailbox as Exchange does: 4 envelopes of 20 in flight
+# is the safe default; more mostly buys more 429 answers.
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.ThrottleLimit' -Value 4 -Initialize -Validation 'PSMicrosoftEntraID.batchthrottlelimit' -Description "Number of Graph `$batch envelopes (20 sub-requests each) the batch engine keeps in flight at the same time, from 1 to 20. Graph throttles directory requests per application and tenant, so raising it mostly raises the number of 429 answers."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Batch.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often a throttled or unavailable batch sub-request (408, 429, 5xx except 501 and 505; a POST only on 429 and 503) is sent again before it is reported as failed, from 0 to 20."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Request.RetryCount' -Value 5 -Initialize -Validation 'PSMicrosoftEntraID.retrycount' -Description "How often Invoke-EntraRetry sends a failed request again (408, 429, 5xx except 501 and 505, no answer; a POST only on 429 and 503), from 0 to 20. Separate from Settings.Command.RetryCount, which Invoke-PSFProtectedCommand reads."
+Set-PSFConfig -Module $script:ModuleName -Name 'Settings.Request.TimeoutSeconds' -Value 600 -Initialize -Validation 'PSMicrosoftEntraID.timeoutseconds' -Description "How long one `$batch envelope may take, the whole answer included, in seconds, from 0 (no limit) to 4294967 (about 49.7 days). An envelope without an answer in time comes back as 504 and is retried like an unavailable one. Ctrl+C cancels it at any time."
+
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultService' -Value $script:_DefaultService -Initialize -Validation 'string' -Description "What service name of Microsoft EntraID."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceEndpoint' -Value 'PSMicrosoftEntraID.Endpoint' -Initialize -Validation 'string' -Description "Default service name for Microsoft Defender for Endpoint requests."
 Set-PSFConfig -Module $script:ModuleName -Name 'Settings.DefaultServiceSecurity' -Value 'PSMicrosoftEntraID.Security' -Initialize -Validation 'string' -Description "Default service name for Microsoft Defender XDR (security.microsoft.com) requests."

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Unit tests of the C# library: Retry-After parsing, the $batch answer reader (GraphBatchReader), the $batch client
+    (GraphBatchClient, against an in-process fake handler - no test reaches the network) and the typed Graph JSON
+    deserialization (GraphJson). Not yet run by CI (src/azure-pipelines.yml is unchanged);
+    locally: dotnet test src/library/PSMicrosoftEntraID.Tests
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>PSMicrosoftEntraID.Tests</RootNamespace>
+    <AssemblyName>PSMicrosoftEntraID.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Needed at test run time: the library references it with PrivateAssets=all, so it does not flow to this
+         project. Keep it in step with the net8.0 reference in PSMicrosoftEntraID.csproj. -->
+    <PackageReference Include="System.Management.Automation" Version="7.4.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PSMicrosoftEntraID\PSMicrosoftEntraID.csproj" />
+  </ItemGroup>
+
+</Project>

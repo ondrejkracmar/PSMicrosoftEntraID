@@ -37,6 +37,20 @@
 - **The certificate sign-in no longer sends its signed client assertion as a bearer header** -
   the body carries it, as RFC 7523 has it.
 
+### Added (internal)
+
+- **Parallel Graph `$batch` engine and a single retry policy, ported from PSExchangeOnline -
+  not yet wired into any cmdlet (phase A).** `Invoke-EntraParallelBatch` keeps
+  `Settings.Batch.ThrottleLimit` (default 4) envelopes of 20 in flight, retries each
+  sub-request on its own `Retry-After`, follows next links per key (refusing a link to
+  another host) and can return typed objects straight from the JSON text
+  (`-ElementType`, `PSMicrosoftEntraID.Serialization.GraphJson`, no `-Depth 4` round trip).
+  `Invoke-EntraRetry` / `Test-EntraRetryStatus` are the one retry layer phase B moves
+  `Invoke-EntraRequest` onto. New settings `Settings.Batch.ThrottleLimit`,
+  `Settings.Batch.RetryCount`, `Settings.Request.RetryCount`, `Settings.Request.TimeoutSeconds`.
+  New xUnit project `src/library/PSMicrosoftEntraID.Tests` (not run by CI yet). See
+  `docs/internal/batch-engine.md`.
+
 ### Changed
 
 - **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,

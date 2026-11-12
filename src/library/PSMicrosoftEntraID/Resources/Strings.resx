@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="JsonEmpty" xml:space="preserve"><value>The JSON text is empty.</value></data>
+  <data name="BatchResponsesMissing" xml:space="preserve"><value>The answer has no "responses" array: it is not a Graph $batch response.</value></data>
+  <data name="BatchNoServiceUrl" xml:space="preserve"><value>The envelope was not sent: no service URL was given to authorize it against.</value></data>
+  <data name="BatchInvalidUrl" xml:space="preserve"><value>The envelope was not sent: its URL is not an absolute URL without user information.</value></data>
+  <data name="BatchNotHttps" xml:space="preserve"><value>The envelope was not sent: {0} is not an https URL.</value></data>
+  <data name="BatchForeignHost" xml:space="preserve"><value>The envelope was not sent: {0} is not on the host of the service ({1}).</value></data>
+  <data name="BatchCancelled" xml:space="preserve"><value>The request was cancelled.</value></data>
+  <data name="BatchInvalidAnswer" xml:space="preserve"><value>The answer is not a valid $batch response ({0})</value></data>
+  <data name="BatchInvalidAnswerAt" xml:space="preserve"><value>The answer is not a valid $batch response ({0} at line {1}, byte {2})</value></data>
+  <data name="ConversionFailed" xml:space="preserve"><value>The page could not be converted to {0} ({1} at {2})</value></data>
+</root>

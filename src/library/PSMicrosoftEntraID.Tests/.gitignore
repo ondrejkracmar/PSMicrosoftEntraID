@@ -1,0 +1,4 @@
+# Test build output (the library itself builds into the module folder).
+bin/
+obj/
+TestResults/

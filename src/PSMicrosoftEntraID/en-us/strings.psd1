@@ -113,6 +113,19 @@
 	'Contact.List'                         = "List contacts '{0}'"
 	'Contact.Name'                         = "List contacts by name '{0}'"
 
+	'Request.Retry'                        = "The request failed ({0}); trying again in {1}s (retry {2} of {3})"
+	'Batch.Parallel.Throttled'             = "Every pending sub-request waits for its Retry-After; waiting {0}s for the earliest one"
+	'Batch.Parallel.Resend'                = "Sub-request of {0} answered {1}; sending it again in {2}s (retry {3} of {4})"
+	'Batch.NextLinkRefused'                = "The next link of the page is not followed. {0}"
+	'Batch.NextLinkNotUnderService'        = "The link is not under the service URL {0}."
+	'Batch.Summary'                        = "The batch run finished with problems. {0}"
+	'Batch.Summary.Failed'                 = "{0} of {1} sub-request(s) failed. Affected: {2}."
+	'Batch.Summary.More'                   = "{0} and {1} more"
+	'Batch.Summary.Resent'                 = "{0} sub-request(s) were throttled or temporarily unavailable and sent again, {1} of them got through; the longest pause was {2} seconds."
+	'Batch.Summary.ItemFailed'             = "{0} input item(s) failed; each has its own error record."
+	'Batch.ItemFailed'                     = "{0} failed with status {1}: {2}"
+	'Batch.ItemFailed.NoStatus'            = "{0} failed: {1}"
+
 	# ---- Request layer (Invoke-EntraRequest): URLs are logged by scheme, host and path only ----------------
 	'Request.Execute'                      = 'Executing request: {0} -> {1}'
 	'Request.Throttled'                    = 'Throttling: {0}'
