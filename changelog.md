@@ -1,5 +1,29 @@
 ﻿# Changelog
 
+## Unreleased
+
+### Changed
+
+- **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
+  the Claude Code hooks (analyzer, attribution, git guard) and reviewer, the Copilot
+  instructions, `.editorconfig`, `PSScriptAnalyzerSettings.psd1`, `SECURITY.md`,
+  `.github/CODEOWNERS`, the pull request template, `docs/adr/` and `docs/runbooks/`.
+  `.codexvault/packs.psd1` records the installation. Security reports now go through
+  GitHub's private vulnerability reporting.
+- **`.codexvault/public-export.psd1` declares what the public GitHub repository leaves
+  out**: the agent and standards tooling, `docs/internal/`, `docs/adr/`, `docs/runbooks/`,
+  `tools/`, the Azure DevOps pipeline and `src/build/`. Azure DevOps stays the source of
+  truth; GitHub receives the filtered source history.
+- The personal editor and container settings (`.vscode/settings.json`, `.devcontainer/`)
+  and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
+  patterns the git guard expects.
+
+### Security
+
+- `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
+  library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
+  GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed
