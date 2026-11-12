@@ -3,8 +3,8 @@
   <!--
     Unit tests of the C# library: Retry-After parsing, the $batch answer reader (GraphBatchReader), the $batch client
     (GraphBatchClient, against an in-process fake handler - no test reaches the network) and the typed Graph JSON
-    deserialization (GraphJson). Not yet run by CI (src/azure-pipelines.yml is unchanged);
-    locally: dotnet test src/library/PSMicrosoftEntraID.Tests
+    deserialization (GraphJson). CI runs it on Linux, Windows and macOS (dotnetTestProjects in
+    src/azure-pipelines.yml), before the stamped library build; locally: dotnet test src/library/PSMicrosoftEntraID.Tests
   -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

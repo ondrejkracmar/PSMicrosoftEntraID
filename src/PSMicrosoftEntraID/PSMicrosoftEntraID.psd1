@@ -174,9 +174,9 @@
 			# A URL to the main website for this project.
 			ProjectUri   = 'https://github.com/ondrejkracmar/PSMicrosoftEntraID'
 
-			# Served from the public GitHub mirror: vsts-publishToGitHub.ps1 copies docs/
-			# wholesale (minus docs/internal/), so docs/icon.png rides along on every
-			# release with no extra pipeline step. The URL must resolve for a stranger,
+			# Served from the public GitHub repository: the public export of every
+			# release (.codexvault/public-export.psd1) carries docs/ minus docs/internal/,
+			# so docs/icon.png rides along with no extra pipeline step. The URL must resolve for a stranger,
 			# which rules out the private DevOps repository.
 			IconUri      = 'https://raw.githubusercontent.com/ondrejkracmar/PSMicrosoftEntraID/main/docs/icon.png'
 

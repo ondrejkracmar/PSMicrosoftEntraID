@@ -59,6 +59,33 @@
 
 ### Changed
 
+- **The pipeline is the shared CodexVault.Build template.** `src/azure-pipelines.yml` (pipeline
+  34) no longer carries its own stages: it extends `templates/ci.yml` of PSModules/CodexVault.Build
+  from `refs/heads/main` (repository resource `build`), like the other modules of the family. A
+  pull request and a `v*` tag run the same Build stage: the build-script drift guard, GitVersion,
+  the xUnit tests of the C# library (`dotnetTestProjects`), the library build for net8.0 and
+  net10.0, the dependency scan, the licence catalog check (`buildSteps`), the standards gate
+  (Report mode) and the Pester suite with code coverage, the package, SBOM and provenance, and the
+  Windows and macOS test legs. On a stable `v*` tag the Publish stage pushes to the internal feed,
+  then to the PowerShell Gallery (`psGallery`, unsigned as before: `allowUnsigned: true`), then
+  exports the public GitHub repository (`publicExport`, mode `source`): the filtered history of
+  `main` and the stable tags instead of the curated copy of the compiled module.
+  **`publicExport.allowForce` is `true` for the first release only - set it back to `false` after
+  the first release** (the GitHub history was exported by hand, so the first export is not a
+  fast-forward). See `docs/runbooks/release.md`.
+- **`src/build` holds exactly the canonical CodexVault.Build scripts** (`vsts-build.ps1`,
+  `vsts-build-library.ps1`, `vsts-prerequisites.ps1`, `vsts-publishNuGetPackage.ps1`,
+  `vsts-validate.ps1`), byte for byte. Gone, replaced by the template: `vsts-publishToGitHub.ps1`,
+  `vsts-publishToPSGallery.ps1` and `vsts-syncRepository.ps1` (the old mirror, which put a token
+  into the remote URL); gone, unused: `vsts-createFunctionClientModule.ps1` and
+  `vsts-packageFunction.ps1`. Moved to `tools/`: `Update-LicenseIdentifiers.ps1` (the pipeline's
+  licence catalog check calls it) and `vsts-createDocumentation.ps1`, now
+  `tools/Update-CmdletDocumentation.ps1` (run by hand before a release whose help changed; the
+  public repository gets the committed `docs/cmdlets`).
+- `src/tests/pester.ps1` takes the template's parameters: `-EnableCodeCoverage` (writes
+  `TestResults/coverage.xml`), `-CodeCoveragePath` and `-TestIntegration`.
+- `.codexvault/public-export.psd1` drops its `Mode` key, which the template's export script
+  refuses as unknown; the mode is the pipeline parameter `publicExport.mode`.
 - **`Invoke-EntraRequest` sends every page through the one retry policy** (`Invoke-EntraRetry`)
   instead of a single regex-driven retry on a `TooManyRequests` message: the `Retry-After`
   header is honoured (seconds or HTTP date, capped at 300 s, otherwise exponential backoff with
