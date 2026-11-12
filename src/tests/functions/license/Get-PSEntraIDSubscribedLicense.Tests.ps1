@@ -10,8 +10,6 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
             param($FullName)
             switch ($FullName) {
                 'PSMicrosoftEntraID.Settings.DefaultService' { return 'PSMicrosoftEntraID.Graph' }
-                'PSMicrosoftEntraID.Settings.Command.RetryCount' { return 3 }
-                'PSMicrosoftEntraID.Settings.Command.RetryWaitInSeconds' { return 5 }
             }
         }
 
@@ -303,20 +301,10 @@ Describe "Get-PSEntraIDSubscribedLicense" -Tag 'Unit' {
     }
 
     Context 'Retry Configuration' {
-        It 'Should configure retry count from configuration' {
+        It 'Should leave retrying to the request layer (no retry in the protected command)' {
             Get-PSEntraIDSubscribedLicense
 
-            Should -Invoke Get-PSFConfigValue -ModuleName PSMicrosoftEntraID -ParameterFilter {
-                $FullName -like '*RetryCount'
-            } -Times 1 -Scope It
-        }
-
-        It 'Should configure retry wait time from configuration' {
-            Get-PSEntraIDSubscribedLicense
-
-            Should -Invoke Get-PSFConfigValue -ModuleName PSMicrosoftEntraID -ParameterFilter {
-                $FullName -like '*RetryWaitInSeconds'
-            } -Times 1 -Scope It
+            Should -Invoke -ModuleName PSMicrosoftEntraID -CommandName Invoke-PSFProtectedCommand -ParameterFilter { $RetryCount -gt 0 } -Times 0 -Exactly -Scope It
         }
     }
 }

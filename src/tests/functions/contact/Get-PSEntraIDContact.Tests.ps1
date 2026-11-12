@@ -17,8 +17,6 @@ Describe 'Get-PSEntraIDContact' -Tag 'Unit' {
         # Mock dependencies
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 999 } -ParameterFilter { $FullName -like '*PageSize' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Get-PSFConfig { 
             [PSCustomObject]@{ Value = @('id', 'displayName', 'mail', 'givenName', 'surname', 'companyName') }
         } -ParameterFilter { $Name -eq 'Settings.GraphApiQuery.Select.Contact' }
@@ -314,20 +312,10 @@ Describe 'Get-PSEntraIDContact' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Test-PSFFunctionInterrupt -Times 1 -Exactly
         }
 
-        It 'Should include retry count in protected command' {
+        It 'Should leave retrying to the request layer (no retry in the protected command)' {
             Get-PSEntraIDContact -Identity 'john.doe@contoso.com'
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -ParameterFilter {
-                $RetryCount -eq 5
-            }
-        }
-
-        It 'Should include retry wait in protected command' {
-            Get-PSEntraIDContact -Identity 'john.doe@contoso.com'
-
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -ParameterFilter {
-                $null -ne $RetryWait
-            }
+            Should -Invoke -ModuleName PSMicrosoftEntraID -CommandName Invoke-PSFProtectedCommand -ParameterFilter { $RetryCount -gt 0 } -Times 0 -Exactly -Scope It
         }
     }
 

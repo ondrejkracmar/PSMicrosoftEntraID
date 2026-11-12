@@ -12,6 +12,8 @@
 	The one exception: a line marked with the comment '# Local test server', in a file that really calls (not only
 	names) New-TestBatchServer and Assert-TestLocalService - read from the syntax tree, so a comment or a string that
 	mentions them does not count. Such a file points the service at a fake $batch server on 127.0.0.1.
+	Invoke-PSEntraIDBatchRequest sends through the engine with the configured ThrottleLimit, so a function test may
+	call it only on such a marked line of such a file.
 	The client itself is the second layer: it refuses, before opening a connection, any URI that is not https on the
 	authorized host; plain http only for a loopback host the private test hook lists.
 #>
@@ -68,5 +70,20 @@ Describe 'Function tests stay off the network' {
 			}
 		}
 		$offending | Should -BeNullOrEmpty -Because 'a throttle limit above 1 sends real HTTPS requests to Graph'
+	}
+
+	It 'calls Invoke-PSEntraIDBatchRequest only against the local test server in <Name>' -ForEach @(
+		Get-ChildItem -Path (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '..' -AdditionalChildPath 'functions')).Path -Recurse -Filter '*.Tests.ps1' | ForEach-Object { @{ Name = $_.Name; Path = $_.FullName } }
+	) {
+		[string[]] $lines = [System.IO.File]::ReadAllLines($Path)
+		$ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$null)
+		[string[]] $called = @($ast.FindAll({ param ($node) $node -is [System.Management.Automation.Language.CommandAst] }, $true) | ForEach-Object { $_.GetCommandName() })
+		[bool] $localServer = ($called -contains 'New-TestBatchServer') -and ($called -contains 'Assert-TestLocalService')
+		$calls = $ast.FindAll({ param ($node) $node -is [System.Management.Automation.Language.CommandAst] -and $node.GetCommandName() -eq 'Invoke-PSEntraIDBatchRequest' }, $true)
+		$offending = foreach ($call in $calls) {
+			[string] $line = $lines[$call.Extent.StartLineNumber - 1]
+			if (-not ($localServer -and $line -match '# Local test server\s*$')) { $line.Trim() }
+		}
+		$offending | Should -BeNullOrEmpty -Because 'the batch cmdlet sends real HTTPS requests to Graph unless the service points at the local server'
 	}
 }

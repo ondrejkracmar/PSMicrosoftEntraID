@@ -7,7 +7,9 @@
 	- New-TestBatchServer starts a minimal HTTP/1.1 server on a free port of 127.0.0.1 (a TcpListener, no http.sys,
 	  no admin rights, no thread job). It answers every POST /v1.0/$batch either by echoing each sub-request as a
 	  200 page ({"value":[{"id":"<id>","url":"<url>"}]}) after -DelayMilliseconds, or - with -Hang - never. It counts
-	  the envelopes it received and the most that were open at the same time.
+	  the envelopes it received and the most that were open at the same time. Plan(url, statuses, retryAfter) makes
+	  the sub-requests of that URL answer the given statuses in turn (with a Graph error body and the Retry-After
+	  header) before they are echoed as 200 again; Hits(url) counts how often a URL was asked for.
 	- Enable-TestHttpLoopback lists 127.0.0.1 in the private test hook of [PSMicrosoftEntraID.Batch.GraphBatchClient]
 	  (reached through reflection only), so the client accepts the plain-http loopback server; -Disable empties it.
 	- Set-TestBatchService points a fake token of the module at a URL; Assert-TestLocalService refuses to go on
@@ -17,6 +19,7 @@
 if (-not ('PSMicrosoftEntraID.Tests.FakeBatchServer' -as [type])) {
 	Add-Type -TypeDefinition @'
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -52,6 +55,17 @@ namespace PSMicrosoftEntraID.Tests
         public int Open => Volatile.Read(ref open);
         public int MaxOpen => Volatile.Read(ref maxOpen);
         public List<string> Bodies { get; } = new List<string>();
+        private readonly ConcurrentDictionary<string, ConcurrentQueue<int>> plans = new ConcurrentDictionary<string, ConcurrentQueue<int>>();
+        private readonly ConcurrentDictionary<string, string> retryAfter = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, int> hits = new ConcurrentDictionary<string, int>();
+
+        public void Plan(string url, int[] statuses, string retryAfterValue)
+        {
+            plans[url] = new ConcurrentQueue<int>(statuses);
+            if (retryAfterValue != null) retryAfter[url] = retryAfterValue;
+        }
+
+        public int Hits(string url) => hits.TryGetValue(url, out var count) ? count : 0;
 
         private async Task AcceptAsync()
         {
@@ -123,7 +137,7 @@ namespace PSMicrosoftEntraID.Tests
             }
         }
 
-        private static string Echo(string body)
+        private string Echo(string body)
         {
             var responses = new List<object>();
             using (var document = JsonDocument.Parse(body))
@@ -132,7 +146,15 @@ namespace PSMicrosoftEntraID.Tests
                 {
                     var id = request.GetProperty("id").GetString();
                     var url = request.GetProperty("url").GetString();
-                    responses.Add(new { id, status = 200, body = new { value = new[] { new { id = "item-" + id, displayName = url } } } });
+                    hits.AddOrUpdate(url, 1, (_, count) => count + 1);
+                    if (plans.TryGetValue(url, out var planned) && planned.TryDequeue(out var status))
+                    {
+                        var headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" };
+                        if (retryAfter.TryGetValue(url, out var wait)) headers["Retry-After"] = wait;
+                        responses.Add(new { id, status, headers, body = new { error = new { code = "Planned", message = "Planned answer " + status } } });
+                        continue;
+                    }
+                    responses.Add(new { id, status = 200, headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" }, body = new { value = new[] { new { id = "item-" + id, displayName = url } } } });
                 }
             }
             return JsonSerializer.Serialize(new { responses });

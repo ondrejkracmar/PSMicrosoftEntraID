@@ -17,8 +17,6 @@ Describe 'Get-PSEntraIDAdministrativeUnitMember' -Tag 'Unit' {
         # Mock dependencies
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 999 } -ParameterFilter { $FullName -like '*PageSize' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Get-PSFConfig { 
             [PSCustomObject]@{ Value = @('id', 'userPrincipalName', 'displayName') }
         } -ParameterFilter { $Name -eq 'Settings.GraphApiQuery.Select.User' }
@@ -229,7 +227,7 @@ Describe 'Get-PSEntraIDAdministrativeUnitMember' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Invoke-PSFProtectedCommand -Times 1 -Exactly
         }
 
-        It 'Should use retry configuration' {
+        It 'Should leave retrying to the request layer (no retry in the protected command)' {
             Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand {
                 param($ScriptBlock)
                 & $ScriptBlock
@@ -237,13 +235,7 @@ Describe 'Get-PSEntraIDAdministrativeUnitMember' -Tag 'Unit' {
 
             Get-PSEntraIDAdministrativeUnitMember -InputObject $script:MockAU
 
-                Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSFConfigValue -ParameterFilter {
-                    $FullName -like '*RetryCount'
-                } -Times 1 -Scope It
-
-                Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSFConfigValue -ParameterFilter {
-                    $FullName -like '*RetryWaitInSeconds'
-                } -Times 1 -Scope It
+            Should -Invoke -ModuleName PSMicrosoftEntraID -CommandName Invoke-PSFProtectedCommand -ParameterFilter { $RetryCount -gt 0 } -Times 0 -Exactly -Scope It
         }
 
         It 'Should check for function interrupts' {

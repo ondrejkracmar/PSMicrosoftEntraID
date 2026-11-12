@@ -4,7 +4,7 @@
 		Runs many independent Graph requests through $batch, several envelopes at a time.
 
 	.DESCRIPTION
-		The batch engine (phase A: not yet called by any cmdlet - see docs/internal/batch-engine.md).
+		The batch engine (see docs/internal/batch-engine.md); Invoke-PSEntraIDBatchRequest sends through it.
 		- Packs ready requests into $batch envelopes of 20 and keeps up to -ThrottleLimit envelopes in flight at all
 		  times as asynchronous .NET tasks on one shared HttpClient ([PSMicrosoftEntraID.Batch.GraphBatchClient]): the
 		  connections stay open between envelopes, the moment an envelope is answered its pages are emitted and the
@@ -28,8 +28,8 @@
 		  and is retried like an unavailable one. The envelopes of a run share one cancellation: when the run ends early
 		  - Ctrl+C, a stopped pipeline, an error - every envelope still in flight is cancelled.
 		Emits one object per final page, as it arrives: Key, Status, Succeeded, Body (raw JSON of the Graph body; null
-		with -ElementType), Items (typed objects with -ElementType), NextLink, DeltaLink, ItemCount, Error (message when
-		the page failed). The -Report hashtable collects the run for one summary (Write-EntraBatchSummary).
+		with -ElementType), Items (typed objects with -ElementType), Headers (raw JSON of the sub-response headers),
+		NextLink, DeltaLink, ItemCount, Error (message when the page failed). The -Report hashtable collects the run for one summary (Write-EntraBatchSummary).
 
 	.PARAMETER Request
 		The requests: objects with Key (any caller identifier; pages of one key share it), Url (relative to the version
@@ -179,6 +179,7 @@
 			Succeeded = $succeeded
 			Body      = $(if ($Response -and -not $itemType) { $Response.Body })
 			Items     = $(if ($Response -and $itemType) { $Response.Items })
+			Headers   = $(if ($Response) { $Response.Headers })
 			NextLink  = $(if ($Response) { $Response.NextLink })
 			DeltaLink = $(if ($Response) { $Response.DeltaLink })
 			ItemCount = $(if ($Response) { $Response.ItemCount } else { 0 })

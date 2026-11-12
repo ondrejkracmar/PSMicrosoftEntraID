@@ -9,8 +9,6 @@ Describe 'Get-PSEntraIDMachine' -Tag 'Unit' {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true; 'PSMicrosoftEntraID.Endpoint' = $true } -Scope Script -Force
 
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Endpoint' } -ParameterFilter { $FullName -like '*DefaultServiceEndpoint' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Invoke-EntraRequest {
             [PSCustomObject]@{
@@ -97,8 +95,6 @@ Describe 'Add-PSEntraIDMachineTag / Remove-PSEntraIDMachineTag' -Tag 'Unit' {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Endpoint' = $true } -Scope Script -Force
 
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Endpoint' } -ParameterFilter { $FullName -like '*DefaultServiceEndpoint' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Invoke-EntraRequest { [PSCustomObject]@{ id = 'hashA'; machineTags = @('vip') } }
         Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand { & $ScriptBlock }

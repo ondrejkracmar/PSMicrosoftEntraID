@@ -12,6 +12,54 @@
 - **`Invoke-PSEntraIDRequest` / `Invoke-EntraRequest` refuse an absolute URL on another host
   than the connected service, or over http** (`SecurityError`, before anything is sent). Pass a
   path relative to the service, or a URL on the service's own host.
+- **One retry layer: the protected-command retry is gone, and so are its settings.**
+  `Settings.Command.RetryCount` and `Settings.Command.RetryWaitInSeconds` are removed; the
+  cmdlets call `Invoke-PSFProtectedCommand` without `-RetryCount`/`-RetryWait` (still for the
+  action string, `-EnableException`, `-WhatIf` and the confirm splat). Retrying lives in the
+  request layer only - `Settings.Request.RetryCount` (default **5**; before, a single retry on
+  a `TooManyRequests` message, plus the protected command's 0 by default) for a
+  request, `Settings.Batch.RetryCount` (default 5) for a batch sub-request - and repeats only
+  what the retry policy calls transient: 408, 429, 5xx except 501 and 505, no answer; a POST
+  only on 429 and 503. The old layer repeated every failure of every method (a 400, a 403, a
+  POST after a 500) when it was turned on; a 400 such as `Directory_ConcurrencyViolation` is no
+  longer retried at all. Scripts that set the removed keys with `Set-PSFConfig` set nothing.
+- **`Set-PSEntraIDCommandRetry` / `Get-PSEntraIDCommandRetry` set and read the request-layer
+  retry.** `-RetryCount` (now 0-20) sets `Settings.Request.RetryCount`; the new
+  `-BatchRetryCount` sets `Settings.Batch.RetryCount`. `-RetryWaitInSeconds` is accepted for
+  old scripts, ignored and warned about: the wait is the `Retry-After` of the answer (at most
+  5 minutes) or `2^attempt` seconds with jitter. A call without parameters changes nothing (it
+  used to reset both values to 0). `Get-PSEntraIDCommandRetry` returns `RetryCount` and
+  `BatchRetryCount`; the `RetryWaitInSeconds` key is gone.
+- **`Invoke-PSEntraIDBatchRequest` runs on the parallel batch engine.** Parameters and the
+  output type (`BatchResponsePayload` with `Requests` and `Responses`: `Id`, `Status`,
+  `Headers`, `Body`) are unchanged, one result per payload in input order. What changed:
+  the payloads are collected and sent when the pipeline ends (`Settings.Batch.ThrottleLimit`
+  envelopes, default 4, in flight together), so results appear after the last input; a failed
+  sub-request is now also ONE non-terminating error record (its `Request` as the target) - so
+  `-ErrorAction Stop` stops on it - and the run ends with ONE summary warning instead of a
+  warning per batch and per throttled pass; with `-EnableException` the command throws at the
+  end, after all results were written, when any sub-request failed. Every throttled or
+  unavailable sub-request is retried on its own `Retry-After` (seconds or HTTP date, capped at
+  5 minutes); the envelope is never re-posted as a whole (before, a failed envelope was
+  re-posted with all 20 sub-requests, POSTs included). A sub-request the client refuses or
+  that gets no answer comes back with a synthetic status (421, 0, 502, 503, 504) and a
+  `Body.error` of code `PSMicrosoftEntraID.BatchClient`.
+- **Removed configuration keys that nothing read:** `Settings.GraphApiQuery.Warning`,
+  `Settings.GraphApiQuery.Format`, `Settings.GraphApiQuery.Query.Level`,
+  `Settings.GraphApiQuery.Query.AdvancedQueryCapabilities.ConsistencyLevel ` (with a trailing
+  space in its name; the cmdlets set `ConsistencyLevel: eventual` themselves) and
+  `Settings.Organization.OnPremisesSyncPeriod`.
+
+### Changed
+
+- **`Invoke-EntraRequest` sends every page through the one retry policy** (`Invoke-EntraRetry`)
+  instead of a single regex-driven retry on a `TooManyRequests` message: the `Retry-After`
+  header is honoured (seconds or HTTP date, capped at 300 s, otherwise exponential backoff with
+  jitter), a failed page is repeated on its own (the pages before it are not sent or emitted
+  again), the header is rebuilt for every attempt, and the token host guard still checks every
+  request and next link before anything is sent. A request may take
+  `Settings.Request.TimeoutSeconds` (default 600, 0 = no limit). A page is sent at most
+  `RetryCount + 1` times - there is no second layer above it.
 
 ### Security
 
@@ -69,6 +117,17 @@
   `Settings.Batch.RetryCount`, `Settings.Request.RetryCount`, `Settings.Request.TimeoutSeconds`.
   New xUnit project `src/library/PSMicrosoftEntraID.Tests` (not run by CI yet). See
   `docs/internal/batch-engine.md`.
+- **Phase B wires it in.** `Invoke-EntraRequest` and `Invoke-PSEntraIDBatchRequest` use it
+  (see Breaking and Changed); `Invoke-BatchWithThrottleRetry` is removed. A sub-response's
+  headers are kept as raw JSON (`BatchSubResponse.Headers`, the engine's page `Headers`). New
+  tests run through the real code path with only the HTTP layer faked:
+  `functions/core/RequestRetry.Tests.ps1` (Retry-After honoured and capped, no POST retry after
+  500, exactly RetryCount + 1 sends through `Invoke-PSEntraIDRequest` and a cmdlet, page-wise
+  retry, timeout, host guard) and a rewritten `functions/batch/Invoke-PSEntraIDBatchRequest.Tests.ps1`
+  against the local fake `$batch` server (mixed sub-responses with only the failed ones re-sent,
+  cap, POST, one layer, error records and summary, `-EnableException`, cancellation by Ctrl+C and
+  `Select-Object -First`, the client's host refusal). `general/NoNetwork.Tests.ps1` also holds
+  `Invoke-PSEntraIDBatchRequest` calls in function tests to the local server.
 
 ## 1.5.1 (2026-09-07)
 

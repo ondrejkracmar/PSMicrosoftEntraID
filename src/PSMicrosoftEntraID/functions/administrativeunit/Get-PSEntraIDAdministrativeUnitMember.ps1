@@ -83,8 +83,6 @@
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = 'directory/administrativeUnits'
     }
 
@@ -100,12 +98,12 @@
                         $header['ConsistencyLevel'] = 'eventual'
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $administrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $administrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
-                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $administrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $administrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
-                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     }
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -128,12 +126,12 @@
                             $header['ConsistencyLevel'] = 'eventual'
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -Header $header -ErrorAction Stop)
-                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'AdministrativeUnitMember.List' -ActionStringValues $aADAdministrativeUnit.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                                 ConvertFrom-RestUser -InputObject (Invoke-EntraRequest -Service $service -Path ('{0}/{1}/members' -f $path, $aADAdministrativeUnit.Id) -Query $query -Method Get -ErrorAction Stop)
-                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                         }
                         if (Test-PSFFunctionInterrupt) { return }
                     }

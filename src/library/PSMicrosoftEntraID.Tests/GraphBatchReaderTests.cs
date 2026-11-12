@@ -47,6 +47,20 @@ public class GraphBatchReaderTests
     }
 
     [Fact]
+    public void KeepsTheHeadersOfASubResponseAsRawJson()
+    {
+        var responses = GraphBatchReader.Parse("""{"responses":[{"id":"1","status":201,"headers":{"Location":"https://graph.microsoft.com/v1.0/groups/g1","Retry-After":"3"},"body":{}},{"id":"2","status":204}]}""");
+
+        using (var headers = JsonDocument.Parse(responses[0].Headers))
+        {
+            Assert.Equal("https://graph.microsoft.com/v1.0/groups/g1", headers.RootElement.GetProperty("Location").GetString());
+        }
+
+        Assert.Equal(3, responses[0].RetryAfter);
+        Assert.Null(responses[1].Headers);
+    }
+
+    [Fact]
     public void ReadsPropertyNamesIgnoringCase()
     {
         var responses = GraphBatchReader.Parse("""{"Responses":[{"ID":"1","Status":503,"Headers":{"retry-after":"30"},"Body":{"Value":[{}]}}]}""");

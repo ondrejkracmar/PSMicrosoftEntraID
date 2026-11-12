@@ -54,8 +54,6 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
 
         [object[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense -EnableException:$EnableException)
         [object[]] $licenseIdentifiers = @(Get-PSEntraIDLicenseIdentifier -EnableException:$EnableException)
@@ -276,7 +274,7 @@
                     [string] $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
                     $result = Invoke-PSFProtectedCommand -ActionString 'Group.License.List' -ActionStringValues $groupTarget -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertTo-GroupAssignedLicenseDetail -GroupObject $groupObject
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $result
                 }
@@ -294,7 +292,7 @@
                     [string] $groupTarget = if (-not [string]::IsNullOrWhiteSpace($groupObject.DisplayName)) { $groupObject.DisplayName } else { $groupObject.Id }
                     $result = Invoke-PSFProtectedCommand -ActionString 'Group.License.List' -ActionStringValues $groupTarget -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertTo-GroupAssignedLicenseDetail -GroupObject $groupObject
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                     $result
                 }

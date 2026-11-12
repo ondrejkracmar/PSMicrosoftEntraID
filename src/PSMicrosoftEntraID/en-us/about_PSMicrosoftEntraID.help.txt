@@ -70,7 +70,12 @@ CONFIGURATION
 
     The most useful are the retry behaviour, which also has its own cmdlets:
 
-        Set-PSEntraIDCommandRetry -RetryCount 5 -RetryWaitInSeconds 2
+        Set-PSEntraIDCommandRetry -RetryCount 5 -BatchRetryCount 5
+
+    RetryCount is how often a failed request is sent again (throttling, 408,
+    5xx except 501 and 505, no answer; a POST only on 429 and 503), after the
+    Retry-After of the answer or an exponential backoff. BatchRetryCount is the
+    same for each sub-request of a $batch.
 
     and the property sets each read cmdlet asks Graph for, under
     Settings.GraphApiQuery.Select.*.

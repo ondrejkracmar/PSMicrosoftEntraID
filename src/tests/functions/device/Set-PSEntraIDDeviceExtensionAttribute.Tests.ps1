@@ -9,8 +9,6 @@ Describe 'Set-PSEntraIDDeviceExtensionAttribute' -Tag 'Unit' {
         Set-Variable -Name '_EntraTokens' -Value @{ 'PSMicrosoftEntraID.Graph' = $true } -Scope Script -Force
 
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 0 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Invoke-EntraRequest { }
         Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand { & $ScriptBlock }

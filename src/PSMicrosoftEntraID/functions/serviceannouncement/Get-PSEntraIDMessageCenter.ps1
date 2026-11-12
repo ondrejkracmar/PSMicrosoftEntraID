@@ -148,8 +148,6 @@
             $query['$filter'] = $filterParts -join ' and '
         }
 
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [timespan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
 
     process {
@@ -188,7 +186,7 @@
                 }
                 return $messageList
 
-            } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+            } -EnableException:$EnableException -Continue -PSCmdlet $PSCmdlet -WhatIf:$false
             if (Test-PSFFunctionInterrupt) { return }
         }
     }

@@ -12,8 +12,6 @@ Describe "Get-PSEntraIDUserLicenseDetail" -Tag 'Unit' {
             switch ($FullName) {
                 'PSMicrosoftEntraID.Settings.DefaultService' { return 'PSMicrosoftEntraID.Graph' }
                 'PSMicrosoftEntraID.Settings.GraphApiQuery.PageSize' { return 100 }
-                'PSMicrosoftEntraID.Settings.Command.RetryCount' { return 3 }
-                'PSMicrosoftEntraID.Settings.Command.RetryWaitInSeconds' { return 5 }
             }
         }
 

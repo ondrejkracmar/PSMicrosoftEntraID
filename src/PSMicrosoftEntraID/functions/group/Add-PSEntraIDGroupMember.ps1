@@ -76,8 +76,6 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [int] $nextLoop = 20
         [hashtable] $header = @{
             'Content-Type' = 'application/json'
@@ -196,7 +194,7 @@
                     $userActionString = ($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues $userActionString -Target $group.DisplayName -ScriptBlock {
                         [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
-                    } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -215,7 +213,7 @@
                     $userActionString = ($requestHash.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
                     Invoke-PSFProtectedCommand -ActionString 'GroupMember.Add' -ActionStringValues $userActionString -Target $group.DisplayName -ScriptBlock {
                         [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
-                    } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException:$EnableException @cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
                     if (Test-PSFFunctionInterrupt) { return }
 
                 }

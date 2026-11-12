@@ -72,7 +72,7 @@
                             }
                             ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
                         }
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount 0 -RetryWait ([TimeSpan]::Zero) -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 }
             }
             'Identity' {
@@ -98,7 +98,7 @@
                             }
                             ConvertFrom-GroupLicenseDetailSubscriptionSku -LicenseDetail $assignedLicense
                         }
-                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount 0 -RetryWait ([TimeSpan]::Zero) -WhatIf:$false
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
                 }
             }
         }

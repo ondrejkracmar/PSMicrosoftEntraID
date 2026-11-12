@@ -45,10 +45,14 @@ namespace PSMicrosoftEntraID.Batch
                     entry.Status = statusCode;
                 }
 
-                if (TryGetProperty(response, "headers", out var headers) && headers.ValueKind == JsonValueKind.Object && TryGetProperty(headers, "Retry-After", out var retryAfter))
+                if (TryGetProperty(response, "headers", out var headers) && headers.ValueKind == JsonValueKind.Object)
                 {
-                    var text = retryAfter.ValueKind == JsonValueKind.String ? retryAfter.GetString() : retryAfter.GetRawText();
-                    entry.RetryAfter = RetryAfter.ParseSeconds(text);
+                    entry.Headers = headers.GetRawText();
+                    if (TryGetProperty(headers, "Retry-After", out var retryAfter))
+                    {
+                        var text = retryAfter.ValueKind == JsonValueKind.String ? retryAfter.GetString() : retryAfter.GetRawText();
+                        entry.RetryAfter = RetryAfter.ParseSeconds(text);
+                    }
                 }
 
                 if (TryGetProperty(response, "body", out var body) && body.ValueKind != JsonValueKind.Null)

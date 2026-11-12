@@ -285,11 +285,13 @@ $requests = @(
 # Graph's own limit, so a list of any length is fine.
 $results = $requests | New-PSEntraIDBatchRequest | Invoke-PSEntraIDBatchRequest
 
-$results | Where-Object Status -ge 400
+$results.Responses | Where-Object Status -ge 400
 ```
 
-Sub-requests that Graph throttles are re-sent rather than dropped, and any that fail for
-another reason come back with their status rather than passing silently.
+The payloads are sent together, `Settings.Batch.ThrottleLimit` envelopes (default 4) at a time.
+Sub-requests that Graph throttles are re-sent one by one rather than dropped, and any that fail
+for another reason come back with their status - and as one error record each, with one summary
+warning for the run - rather than passing silently.
 
 ### Anything not wrapped yet
 
@@ -299,8 +301,13 @@ Invoke-PSEntraIDRequest -Path 'users/john.doe@contoso.com/authentication/methods
 
 ### Retry behaviour
 
+Every request is retried in one place, the request layer: throttling (429), 408 and server
+errors (5xx except 501 and 505) and requests without an answer are sent again after the
+`Retry-After` the service asks for (at most 5 minutes) or an exponential backoff with jitter;
+a POST only on 429 and 503. Batch sub-requests are retried one by one the same way.
+
 ```powershell
-Set-PSEntraIDCommandRetry -RetryCount 5 -RetryWaitInSeconds 2
+Set-PSEntraIDCommandRetry -RetryCount 5 -BatchRetryCount 5   # the defaults
 Get-PSEntraIDCommandRetry
 ```
 

@@ -13,9 +13,10 @@
 		most 5 minutes; otherwise 2^attempt seconds with a jitter of 0.8 to 1.2, also at most 5 minutes, so many callers
 		throttled at once do not come back at the same moment.
 		The number of repetitions is Settings.Request.RetryCount (or -RetryCount). The last failure is thrown as it is.
-		Phase A: nothing calls this yet. Phase B moves Invoke-EntraRequest onto it and removes the second retry layer
-		(Invoke-PSFProtectedCommand -RetryCount and the throttle retry inside Invoke-EntraRequest), so a call is sent at
-		most RetryCount + 1 times.
+		Invoke-EntraRequest sends every page through this; nothing above it retries (the cmdlets call
+		Invoke-PSFProtectedCommand without -RetryCount), so a request is sent at most RetryCount + 1 times.
+		Every variable of this function starts with entraRetry: the script block runs in a scope below this one, and a
+		name it reads from its caller (a parameter $Header, say) must not be shadowed by one of these.
 
 	.PARAMETER ScriptBlock
 		The call. It throws its failure (Invoke-RestMethod -ErrorAction Stop or an exception whose Response carries the
@@ -70,14 +71,14 @@
 			[bool] $entraRetryNoAnswer = $false
 			$entraRetryException = $entraRetryFailure.Exception
 			while ($entraRetryException) {
-				$response = $null
-				if ($entraRetryException.PSObject.Properties['Response']) { $response = $entraRetryException.Response }
-				if ($response -and $response.PSObject.Properties['StatusCode']) {
-					$entraRetryStatus = [int]$response.StatusCode
-					if ($response.PSObject.Properties['Headers'] -and $response.Headers -and $response.Headers.PSObject.Properties['RetryAfter']) {
-						$header = $response.Headers.RetryAfter
-						if ($header -and $header.Delta) { $entraRetryAfter = $header.Delta.TotalSeconds }
-						elseif ($header -and $header.Date) { $entraRetryAfter = ($header.Date - [DateTimeOffset]::UtcNow).TotalSeconds }
+				$entraRetryResponse = $null
+				if ($entraRetryException.PSObject.Properties['Response']) { $entraRetryResponse = $entraRetryException.Response }
+				if ($entraRetryResponse -and $entraRetryResponse.PSObject.Properties['StatusCode']) {
+					$entraRetryStatus = [int]$entraRetryResponse.StatusCode
+					if ($entraRetryResponse.PSObject.Properties['Headers'] -and $entraRetryResponse.Headers -and $entraRetryResponse.Headers.PSObject.Properties['RetryAfter']) {
+						$entraRetryHeader = $entraRetryResponse.Headers.RetryAfter
+						if ($entraRetryHeader -and $entraRetryHeader.Delta) { $entraRetryAfter = $entraRetryHeader.Delta.TotalSeconds }
+						elseif ($entraRetryHeader -and $entraRetryHeader.Date) { $entraRetryAfter = ($entraRetryHeader.Date - [DateTimeOffset]::UtcNow).TotalSeconds }
 					}
 					break
 				}

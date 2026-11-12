@@ -59,8 +59,7 @@
 	'DeltaSession.Export'                  = "Save delta session to '{0}'"
 	'DeltaSession.Import'                  = "Load delta session from '{0}'"
 	'DeltaSession.NotFound'                = "No delta session at '{0}' yet; starting from scratch and tracking from now on"
-	'Batch.Throttled'                      = "Graph throttled {0} sub-request(s); waiting {1}s before retry {2} of {3}"
-	'Batch.SubRequestFailed'               = "{0} of {1} sub-request(s) failed: {2}. The batch itself succeeded - Graph returns HTTP 200 for the envelope regardless."
+
 	'Group.Filter'                         = "List groups with filter '{0}'"
 	'Group.List'                           = "List groups '{0}'"
 	'Group.New'                            = "Create new group '{0}'"
@@ -116,11 +115,13 @@
 	'Batch.Summary.ItemFailed'             = "{0} input item(s) failed; each has its own error record."
 	'Batch.ItemFailed'                     = "{0} failed with status {1}: {2}"
 	'Batch.ItemFailed.NoStatus'            = "{0} failed: {1}"
+	'Batch.Request.Label'                  = "Request {1} of batch {0}"
+	'Batch.Failed'                         = "{0} of {1} sub-request(s) of the batch run failed."
+	'CommandRetry.WaitIgnored'             = "RetryWaitInSeconds ({0}) is no longer used and was ignored: the wait before a retry is the Retry-After of the answer or an exponential backoff."
 
 	# ---- Request layer (Invoke-EntraRequest): URLs are logged by scheme, host and path only ----------------
 	'Request.Execute'                      = 'Executing request: {0} -> {1}'
-	'Request.Throttled'                    = 'Throttling: {0}'
-	'Request.ThrottledWait'                = 'Request is being throttled for {0} seconds'
+
 	'Request.Failed'                       = 'Request failed: {0} -> {1}'
 	'Request.DeltaLinkNoToken'             = 'Delta link returned without a usable token, keeping the previous one: {0}'
 	'Request.UriInvalid'                   = 'The request URL is not an absolute URL without user info; the access token is not sent with it.'

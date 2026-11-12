@@ -24,6 +24,9 @@ namespace PSMicrosoftEntraID.Batch
         /// <summary>Gets or sets the body as raw JSON, null when the sub-response has none.</summary>
         public string Body { get; set; }
 
+        /// <summary>Gets or sets the headers object of the sub-response as raw JSON, null when it has none.</summary>
+        public string Headers { get; set; }
+
         /// <summary>Gets or sets the @odata.nextLink of a collection page.</summary>
         public string NextLink { get; set; }
 

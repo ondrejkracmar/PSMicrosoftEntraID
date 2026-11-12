@@ -16,8 +16,6 @@ Describe 'New-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
 
         # Mock dependencies
         Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 'PSMicrosoftEntraID.Graph' } -ParameterFilter { $FullName -like '*DefaultService' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 5 } -ParameterFilter { $FullName -like '*RetryCount' }
-        Mock -ModuleName $script:ModuleName Get-PSFConfigValue { 30 } -ParameterFilter { $FullName -like '*RetryWaitInSeconds' }
         Mock -ModuleName $script:ModuleName Assert-EntraConnection { }
         Mock -ModuleName $script:ModuleName Invoke-EntraRequest { }
         Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand {
@@ -206,7 +204,7 @@ Describe 'New-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
             Should -Invoke -ModuleName $script:ModuleName -CommandName Assert-EntraConnection -Times 1 -Exactly
         }
 
-        It 'Should use retry configuration' {
+        It 'Should leave retrying to the request layer (no retry in the protected command)' {
             Mock -ModuleName $script:ModuleName Invoke-PSFProtectedCommand {
                 param($ScriptBlock)
                 & $ScriptBlock
@@ -214,13 +212,7 @@ Describe 'New-PSEntraIDAdministrativeUnit' -Tag 'Unit' {
 
             New-PSEntraIDAdministrativeUnit -DisplayName 'Test AU' -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSFConfigValue -ParameterFilter {
-                $FullName -like '*RetryCount'
-            } -Times 1 -Scope It
-
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSFConfigValue -ParameterFilter {
-                $FullName -like '*RetryWaitInSeconds'
-            } -Times 1 -Scope It
+            Should -Invoke -ModuleName PSMicrosoftEntraID -CommandName Invoke-PSFProtectedCommand -ParameterFilter { $RetryCount -gt 0 } -Times 0 -Exactly -Scope It
         }
 
         It 'Should use Force switch correctly' {

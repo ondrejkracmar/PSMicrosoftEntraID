@@ -4,7 +4,7 @@ external help file: PSMicrosoftEntraID-Help.xml
 HelpUri: ''
 Locale: en-US
 Module Name: PSMicrosoftEntraID
-ms.date: 08.17.2026
+ms.date: 11.12.2026
 PlatyPS schema version: 2024-05-01
 title: Invoke-PSEntraIDBatchRequest
 ---
@@ -13,8 +13,8 @@ title: Invoke-PSEntraIDBatchRequest
 
 ## SYNOPSIS
 
-Invokes a Microsoft Graph batch request using an array of BatchRequestPayload objects,
-then returns a combined object with both the requests and responses.
+Invokes Microsoft Graph batch requests from BatchRequestPayload objects and returns
+the requests together with their responses.
 
 ## SYNTAX
 
@@ -32,19 +32,39 @@ This cmdlet has the following aliases,
 
 ## DESCRIPTION
 
-This function expects pipeline input of BatchRequestPayload objects
-(such as those produced by New-PSEntraIDBatchRequest).
-Each BatchRequestPayload contains up to 20 sub-requests (ID=1..20).
+This function expects pipeline input of BatchRequestPayload objects (such as those
+produced by New-PSEntraIDBatchRequest).
+Each BatchRequestPayload contains up to 20
+sub-requests.
 
-For each batch payload, this function can validate the requests (Test-PSMicrosoftEntraIDBatchRequest),
-then send them to the Graph batch endpoint (via Invoke-EntraRequest).
-It captures the Graph response (which typically has a 'responses' array)
-and outputs a combined PSCustomObject with:
-    requests   = the sub-requests
-    responses  = the sub-responses from Graph
+The sub-requests of all payloads are sent through the module's batch engine: they are
+packed into Graph $batch envelopes of 20, and Settings.Batch.ThrottleLimit envelopes
+(default 4) are in flight at the same time.
+The payloads are collected while the
+pipeline delivers them and sent once it ends, so the first result appears only after
+the last payload arrived.
 
-This allows a subsequent cmdlet (e.g.
-Invoke-PSMicrosoftEntraIDBatchResponse) to correlate them by id.
+Each sub-request is retried on its own: one answered 408, 429 or 5xx (except 501 and
+505) is sent again after its own Retry-After (at most 5 minutes; otherwise 2^attempt
+seconds with jitter), up to Settings.Batch.RetryCount times (default 5).
+A POST
+sub-request is sent again only on 429 and 503, where Graph says it did not carry it
+out.
+The envelope itself is never sent again as a whole, and nothing else retries.
+
+For each payload one BatchResponsePayload is returned, in the order of the input:
+    Requests  = the sub-requests of the payload
+    Responses = one response per sub-request, in the order of the requests (Id, Status,
+                Headers, Body)
+
+A sub-request that failed for good keeps its response (with its status) in the output
+and is also reported as ONE non-terminating error whose target is the request; the run
+ends with ONE warning summarising failures and re-sends.
+With -EnableException no error
+records are written and the command throws at the end, after all results were returned.
+
+Ctrl+C or a pipeline stopped downstream (Select-Object -First) cancels every envelope
+still in flight.
 
 ## EXAMPLES
 
@@ -112,9 +132,7 @@ HelpMessage: ''
 
 ### -Force
 
-The Force switch instructs the command to stop processing before any changes are made
-and prompt for confirmation (depending on your logic in the code).
-When used, you can step through changes to ensure only specific objects are modified.
+Sends the batches without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter

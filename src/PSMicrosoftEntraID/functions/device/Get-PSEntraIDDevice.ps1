@@ -65,8 +65,6 @@
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $listQuery = @{
             '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Device).Value -join ',')
         }
@@ -78,7 +76,7 @@
             [string] $actionValue = if ($PSBoundParameters.ContainsKey('Filter')) { $Filter } else { '*' }
             $output = Invoke-PSFProtectedCommand -ActionString 'Device.List' -ActionStringValues $actionValue -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                 ConvertFrom-RestDevice -InputObject (Invoke-EntraRequest -Service $service -Path 'devices' -Query $listQuery -Method Get -ErrorAction Stop)
-            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
             if (Test-PSFFunctionInterrupt) { return }
             $output
             return
@@ -112,7 +110,7 @@
                 else {
                     ConvertFrom-RestDevice -InputObject $deviceDetails
                 }
-            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+            } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -WhatIf:$false
 
             if (Test-PSFFunctionInterrupt) { return }
             $output
