@@ -43,6 +43,9 @@
 	# Workflow: Az.Accounts
 	[string]$ShowDialog
 
+	# Workflow: AzToken - whether the token came from Get-AzAccessToken, which can be asked again (Request-ServiceAzToken)
+	[bool]$AzTokenRenewable
+
 	# Workflow: Federated
 	[PSMicrosoftEntraID.FederationProvider]$FederationProvider
 
@@ -114,12 +117,13 @@
 		$this.Type = 'KeyVault'
 	}
 
-	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
+	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUrl, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.AccessToken = $AccessToken
 		$this.TenantID = $TenantID
 		$this.Scopes = $Scopes
 		$this.ServiceUrl = $ServiceUrl
+		$this.AuthenticationUrl = $AuthenticationUrl
 		$this.Type = $IdentityType
 
 		if ($IdentityID) {
@@ -149,6 +153,15 @@
 	EntraToken() {}
 	#endregion Constructors
 
+	# The claims of a JWT: its payload, base64url without padding, as UTF-8 JSON (a name claim can hold any character;
+	# ASCII turned them into '?').
+	static [PSObject]ReadTokenData([string]$Token) {
+		$tokenPayload = $Token.Split(".")[1].Replace('-', '+').Replace('_', '/')
+		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
+		$bytes = [System.Convert]::FromBase64String($tokenPayload)
+		return ([System.Text.Encoding]::UTF8.GetString($bytes) | ConvertFrom-Json)
+	}
+
 	[void]SetTokenMetadata([PSObject] $AuthToken) {
 		$this.AccessToken = $AuthToken.AccessToken
 		$this.ValidAfter = $AuthToken.ValidAfter
@@ -156,10 +169,7 @@
 		$this.Scopes = $AuthToken.Scopes
 		if ($AuthToken.RefreshToken) { $this.RefreshToken = $AuthToken.RefreshToken }
 
-		$tokenPayload = $AuthToken.AccessToken.Split(".")[1].Replace('-', '+').Replace('_', '/')
-		while ($tokenPayload.Length % 4) { $tokenPayload += "=" }
-		$bytes = [System.Convert]::FromBase64String($tokenPayload)
-		$localData = [System.Text.Encoding]::ASCII.GetString($bytes) | ConvertFrom-Json
+		$localData = [EntraToken]::ReadTokenData($AuthToken.AccessToken)
 
 		if ($localData.roles) { $this.Scopes = $localData.roles }
 		elseif ($localData.scp) { $this.Scopes = $localData.scp -split " " }
@@ -251,7 +261,8 @@
 				$this.SetTokenMetadata($result)
 			}
 			AzToken {
-				$result = Connect-ServiceAzToken -AzToken $this.AccessToken
+				# Get-AzAccessToken is asked again; any other source cannot be renewed and fails with a clear message.
+				$result = Request-ServiceAzToken -Token $this
 				$this.SetTokenMetadata($result)
 			}
 			Federated {

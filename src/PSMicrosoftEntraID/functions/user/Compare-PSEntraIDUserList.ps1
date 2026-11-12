@@ -31,7 +31,10 @@
     )
 
     begin {
-        Assert-EntraConnection -Service 'graph' -Cmdlet $PSCmdlet
+        # The configured default service, like every other cmdlet: 'graph' is not a
+        # registered service name, so this answered "Not connected" to everyone.
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [System.Collections.ArrayList] $changeUserList = [System.Collections.ArrayList]::New()
     }
 

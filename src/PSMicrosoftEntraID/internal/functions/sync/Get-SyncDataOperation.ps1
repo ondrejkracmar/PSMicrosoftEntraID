@@ -18,20 +18,6 @@
     .PARAMETER DiferenceObjectUniqueKeyName
         Friendly name Office 365 product of subscribedSku.
 
-    .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
-        dly, but allows catching exceptions in calling scripts.
-
-    .PARAMETER WhatIf
-        Enables the function to simulate what it will do instead of actually executing.
-
-    .PARAMETER Confirm
-        Prompts for confirmation before the command makes a change. -Confirm:$false
-        suppresses that prompt.
-
-        Left unbound, the decision belongs to this command's ConfirmImpact and the
-        session ConfirmPreference, which is the PowerShell default behaviour.
-
     .EXAMPLE
             PS C:\> Get-SyncDataOperation -ReferenceObjectList $referenceMemberList -DiferenceObjectList $differenceMemberList -MatchProperty Id -DiferenceObjectUniqueKeyName Id
 
@@ -40,18 +26,20 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'The rule fires on the nested New-Result factory, which builds a result object and changes nothing. The outer function is a Get that computes a diff in memory.')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'Compare-Hashtable and New-Result are function-local helpers called positionally within the same screenful of code; naming their two arguments adds noise, not safety.')]
-    [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true, PositionalBinding = $false, HelpUri = 'http://www.microsoft.com/', ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName = 'Default', PositionalBinding = $false)]
     [Alias()]
-    [OutputType([String])]
+    [OutputType([pscustomobject])]
     Param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ValueFromRemainingArguments = $false, Position = 0, ParameterSetName = 'Default')]
         [AllowNull()]
+        [AllowEmptyCollection()]
         [Alias("Rol")]
         [Array]
         $ReferenceObjectList,
         [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ValueFromRemainingArguments = $false, Position = 1, ParameterSetName = 'Default')]
         [AllowNull()]
+        [AllowEmptyCollection()]
         [Alias("Dol")]
         [Array]
         $DiferenceObjectList,
@@ -148,78 +136,71 @@
             $Results
         }
 
-        $compareList = Compare-Object -ReferenceObject @($ReferenceObjectList | Select-Object) -DifferenceObject @($DiferenceObjectList | Select-Object) -Property $MatchProperty -IncludeEqual
-
+        # Index both sides by the match key once. The old code ran Compare-Object and then,
+        # for EVERY compared item, scanned the whole other list with .Where() to find its
+        # partner - O(n*m), minutes for a few thousand members. Lookups are now O(1).
+        # Case-insensitive, as Compare-Object was; the first object per key wins, as
+        # .Where()[0] did, so a duplicate no longer produces a second operation.
+        function ConvertTo-KeyIndex ([object[]] $List, [string] $KeyProperty) {
+            $index = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::OrdinalIgnoreCase)
+            foreach ($item in $List) {
+                if ($null -eq $item) { continue }
+                [string] $key = $item.$($KeyProperty)
+                if (-not $index.Contains($key)) { $index.Add($key, $item) }
+            }
+            , $index
+        }
     }
     Process {
-        if ($pscmdlet.ShouldProcess("Target", "Operation")) {
-            [System.Collections.ArrayList]$changeList = [System.Collections.ArrayList]::new()
-            foreach ($compareItem in $compareList) {
-                switch ($compareItem.SideIndicator) {
-                    '==' {
-                        $differenceObject = ($DiferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
-                        $referenceObject = ($ReferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
-                        $compareProperties = Compare-Hashtable $referenceObject $differenceObject
+        # No ShouldProcess here: this computes a diff in memory. Gated on ShouldProcess it
+        # returned NOTHING under the caller's -WhatIf - so Sync-PSEntraIDGroupMember
+        # -WhatIf reported that nothing would change - and prompted under -Confirm.
+        $referenceIndex = ConvertTo-KeyIndex -List @($ReferenceObjectList) -KeyProperty $MatchProperty
+        $differenceIndex = ConvertTo-KeyIndex -List @($DiferenceObjectList) -KeyProperty $MatchProperty
 
-                        # Compare-Hashtable emits NOTHING when the two sides are identical,
-                        # and identical is the ordinary case here - every member that is
-                        # already in both groups lands in this branch. Reaching straight
-                        # for .GetType() on that result turned "nothing to do" into
-                        # "You cannot call a method on a null-valued expression", so the
-                        # branch could only survive as long as it was unreachable.
-                        [System.Collections.ArrayList]$comparePropertyList = [System.Collections.ArrayList]::new()
-                        foreach ($compareProperty in @($compareProperties)) {
-                            if ($null -ne $compareProperty) {
-                                [void]$comparePropertyList.Add($compareProperty)
-                            }
-                        }
+        foreach ($key in $referenceIndex.Keys) {
+            $referenceObject = $referenceIndex[$key] | ConvertTo-HashtableFromPsCustomObject
+            if ($differenceIndex.Contains($key)) {
+                $differenceObject = $differenceIndex[$key] | ConvertTo-HashtableFromPsCustomObject
+                $compareProperties = Compare-Hashtable $referenceObject $differenceObject
 
-                        $propertyHash = @{}
-                        foreach ($property in $comparePropertyList) {
-                            if ($property.side -eq '!=') {
-                                [void]($propertyHash.Add($property.Key, $property.lvalue))
-                            }
-                        }
-
-                        if ($propertyHash.Count -gt 0) {
-                            $changeObject = [pscustomobject]@{
-                                Crud          = 'Update'
-                                IdentityValue = $differenceObject.$($DiferenceObjectUniqueKeyName)
-                                IdentityName  = $DiferenceObjectUniqueKeyName
-                                Fields        = $propertyHash
-
-                            }
-                            [void]($changeList.Add($changeObject))
-                        }
+                # Compare-Hashtable emits NOTHING when the two sides are identical, and
+                # identical is the ordinary case - every member already in both groups.
+                $propertyHash = @{}
+                foreach ($property in @($compareProperties)) {
+                    if ($null -ne $property -and $property.side -eq '!=') {
+                        [void]($propertyHash.Add($property.Key, $property.lvalue))
                     }
-                    '<=' {
-                        $referenceObject = ($ReferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
-                        $propertyHash = @{}
-
-                        $changeObject = [pscustomobject]@{
-                            Crud          = 'Create'
-                            IdentityValue = "-1"
-                            IdentityName  = $DiferenceObjectUniqueKeyName
-                            Fields        = $referenceObject
-                        }
-                        [void]($changeList.Add($changeObject))
+                }
+                if ($propertyHash.Count -gt 0) {
+                    [pscustomobject]@{
+                        Crud          = 'Update'
+                        IdentityValue = $differenceObject.$($DiferenceObjectUniqueKeyName)
+                        IdentityName  = $DiferenceObjectUniqueKeyName
+                        Fields        = $propertyHash
                     }
-                    '=>' {
-                        $differenceObject = ($DiferenceObjectList.Where({ $_.$($MatchProperty) -eq $compareItem.$($MatchProperty) })[0]) | ConvertTo-HashtableFromPsCustomObject
-                        $changeObject = [pscustomobject]@{
-                            Crud          = 'Delete'
-                            IdentityValue = $differenceObject.$($DiferenceObjectUniqueKeyName)
-                            IdentityName  = $DiferenceObjectUniqueKeyName
-                            Fields        = @{}
-                        }
-                        [void]($changeList.Add($changeObject))
-                    }
-                    Default {}
+                }
+            }
+            else {
+                [pscustomobject]@{
+                    Crud          = 'Create'
+                    IdentityValue = "-1"
+                    IdentityName  = $DiferenceObjectUniqueKeyName
+                    Fields        = $referenceObject
+                }
+            }
+        }
+        foreach ($key in $differenceIndex.Keys) {
+            if (-not $referenceIndex.Contains($key)) {
+                [pscustomobject]@{
+                    Crud          = 'Delete'
+                    IdentityValue = $differenceIndex[$key].$($DiferenceObjectUniqueKeyName)
+                    IdentityName  = $DiferenceObjectUniqueKeyName
+                    Fields        = @{}
                 }
             }
         }
     }
     End {
-        $changeList
     }
 }

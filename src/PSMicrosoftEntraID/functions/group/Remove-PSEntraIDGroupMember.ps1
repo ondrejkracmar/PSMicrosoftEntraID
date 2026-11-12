@@ -94,6 +94,7 @@
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
+                        Write-PSFMessage -Level Warning -String 'User.Get.Failed' -StringValues $itemUser
                     }
                     else {
                         [string] $path = ('groups/{0}/members/{1}/$ref' -f $group.Id, $aADUser.Id)

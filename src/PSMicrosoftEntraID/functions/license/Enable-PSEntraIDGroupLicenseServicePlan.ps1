@@ -81,7 +81,6 @@
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumberPlanName')]
         [ValidateNotNullOrEmpty()]
         [string] $SkuPartNumber,
-        [ArgumentCompleter({ Get-SubscribedLicenseCompletion $args -ServicePlan })]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuPartNumberPlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'InputObjectSkuIdServicePlanId')]
         [Parameter(Mandatory = $true, ParameterSetName = 'IdentitySkuPartNumberPlanId')]
@@ -110,31 +109,33 @@
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
         [hashtable] $cmdLetConfirm = Resolve-PSEntraIDConfirmPreference -BoundParameters $PSBoundParameters -Force:$Force -Confirm:$Confirm
 
-        [PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense)
+        # -EnableException and a terminating catch: this read is where "every plan" comes
+        # from for a group that does not hold the SKU yet, and a failed read used to warn
+        # and carry on with an empty list - which assigned the licence with every plan on.
+        try {
+            [PSMicrosoftEntraID.License.SubscriptionSkuLicense[]] $subscribedLicenses = @(Get-PSEntraIDSubscribedLicense -EnableException -ErrorAction Stop)
+        }
+        catch {
+            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name LicenseServicePlan.Catalog.Failed) -f $(if ($PSBoundParameters.ContainsKey('SkuId')) { $SkuId } else { $SkuPartNumber })) -ErrorRecord $_
+        }
         # $PSBoundParameters, not $PSCmdlet.ParameterSetName: with pipeline input the
         # set is not resolved until the first object arrives in process, so a switch on
         # it here matches nothing and $bodySkuId stays empty for every piped target.
         # None of these four parameters is pipeline-bound, so this is decidable in begin.
-        if ($PSBoundParameters.ContainsKey('SkuId')) {
-            [string] $bodySkuId = $SkuId
-            [string] $skuTarget = $SkuId
+        # One read of the catalog, and anything in it that does not resolve STOPS the
+        # command: a misspelt plan name used to resolve to nothing, which for a target
+        # without the SKU assigned the licence with every plan disabled. See
+        # Resolve-LicenseServicePlan.
+        [hashtable] $resolveParameters = @{ Cmdlet = $PSCmdlet; SubscribedSku = $subscribedLicenses }
+        foreach ($parameterName in 'SkuId', 'SkuPartNumber', 'ServicePlanId', 'ServicePlanName') {
+            if ($PSBoundParameters.ContainsKey($parameterName)) { $resolveParameters[$parameterName] = $PSBoundParameters[$parameterName] }
         }
-        else {
-            [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $matchedSku = @($subscribedLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber })[0]
-            [string] $bodySkuId = $matchedSku.SkuId
-            [string] $skuTarget = $SkuPartNumber
-        }
-
-        [PSMicrosoftEntraID.License.SubscriptionSkuLicense] $targetSubscribedLicense = @($subscribedLicenses | Where-Object { $_.SkuId -eq $bodySkuId })[0]
-        if ($PSBoundParameters.ContainsKey('ServicePlanId')) {
-            [string] $servicePlanTarget = ($ServicePlanId | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = $ServicePlanId
-        }
-        else {
-            [string] $servicePlanTarget = ($ServicePlanName | ForEach-Object { "'{0}'" -f $_ } | Join-String -Separator ',')
-            [string[]] $bodyServicePlanId = @($targetSubscribedLicense.ServicePlans | Where-Object { $ServicePlanName -contains $PSItem.ServicePlanName } | ForEach-Object { $_.ServicePlanId })
-        }
-        [string[]] $allServicePlanIds = @($targetSubscribedLicense.ServicePlans | ForEach-Object { $_.ServicePlanId })
+        [hashtable] $resolvedLicense = Resolve-LicenseServicePlan @resolveParameters
+        [string] $bodySkuId = $resolvedLicense.SkuId
+        [string] $skuTarget = $resolvedLicense.SkuTarget
+        [string] $servicePlanTarget = $resolvedLicense.ServicePlanTarget
+        [string[]] $bodyServicePlanId = $resolvedLicense.ServicePlanId
+        [string[]] $allServicePlanIds = $resolvedLicense.AllServicePlanId
     }
 
     process {
@@ -151,6 +152,10 @@
                     }
                     $assignedLicense = @($groupObject.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId }) | Select-Object -First 1
                     if ([object]::Equals($assignedLicense, $null)) {
+                        # No plan list means the SKU would go out with every plan enabled.
+                        if (@($allServicePlanIds | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }).Count -eq 0) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name LicenseServicePlan.Catalog.Empty) -f $skuTarget)
+                        }
                         [string[]] $existingDisabledServicePlanList = $allServicePlanIds
                     }
                     else {
@@ -183,6 +188,10 @@
                     else {
                         $assignedLicense = @($aADGroup.AssignedLicenses | Where-Object { ([string]$PSItem.SkuId) -eq $bodySkuId }) | Select-Object -First 1
                         if ([object]::Equals($assignedLicense, $null)) {
+                            # No plan list means the SKU would go out with every plan enabled.
+                            if (@($allServicePlanIds | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }).Count -eq 0) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name LicenseServicePlan.Catalog.Empty) -f $skuTarget)
+                            }
                             [string[]] $existingDisabledServicePlanList = $allServicePlanIds
                         }
                         else {

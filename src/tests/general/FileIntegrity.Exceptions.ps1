@@ -29,9 +29,11 @@ $global:BannedCommands = @(
 #>
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $global:MayContainCommand = @{
-	"Write-Host"  = @('Connect-ServiceBrowser.ps1','Connect-ServiceDeviceCode.ps1')
-	"Write-Verbose" = @('Disconnect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1','Connect-ServiceBrowser.ps1','Connect-ServiceIdentity.ps1','Invoke-EntraRequest.ps1')
-	"Write-Warning" = @('assembly.ps1','Connect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1','Invoke-EntraRequest.ps1','Assert-ServiceName.ps1','federationproviders.ps1')
+	# The sign-in flows and the request layer write through Write-PSFMessage only (localized, and the request URL
+	# without its query): they are no longer exceptions here, so a Write-* that comes back fails this test.
+	"Write-Host"  = @()
+	"Write-Verbose" = @('Disconnect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1')
+	"Write-Warning" = @('assembly.ps1','Connect-PSMicrosoftEntraID.ps1','Connect-EntraService.ps1','Assert-ServiceName.ps1','federationproviders.ps1')
 	"Write-Error"  = @()
 	"Write-Output" = @()
 	"Write-Information" = @()
