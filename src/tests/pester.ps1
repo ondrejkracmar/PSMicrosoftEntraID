@@ -73,12 +73,18 @@ if ($EnableCodeCoverage)
 	$config.CodeCoverage.Enabled = $true
 	$config.CodeCoverage.Path = $CodeCoveragePath
 	$config.CodeCoverage.OutputFormat = 'JaCoCo'
+	# The profiler-based tracer, not a breakpoint per command: every Invoke-Pester below sets the breakpoints for the
+	# whole module again, which added 25 to 45 seconds per test file (an hour for the suite).
+	$config.CodeCoverage.UseBreakpoints = $false
 	# Overwritten by every run; the merged report is written at the end.
 	$config.CodeCoverage.OutputPath = Join-Path $PSScriptRoot '..' '..' 'TestResults' 'coverage.partial.xml'
 }
 #endregion Code coverage setup
 
 #region Run General Tests
+# The general tests check the files (help, analyzer, manifest, encoding), they do not exercise the functions: no
+# coverage for them, which would only cost time.
+$config.CodeCoverage.Enabled = $false
 if ($TestGeneral)
 {
 	Write-PSFMessage -Level Important -Message "Modules imported, proceeding with general tests"
@@ -122,17 +128,24 @@ if ($TestGeneral)
 $global:__pester_data.ScriptAnalyzer | Out-Host
 
 #region Test Commands
+$config.CodeCoverage.Enabled = [bool]$EnableCodeCoverage
 if ($TestFunctions)
 {
 	Write-PSFMessage -Level Important -Message "Proceeding with individual tests"
-	foreach ($file in (Get-ChildItem (Join-Path $PSScriptRoot 'functions') -Recurse -File | Where-Object Name -like "*Tests.ps1"))
+	$functionTests = @(Get-ChildItem (Join-Path $PSScriptRoot 'functions') -Recurse -File | Where-Object Name -like "*Tests.ps1" |
+		Where-Object { $_.Name -like $Include -and -not ($Exclude -and $_.Name -like $Exclude) })
+	# One Invoke-Pester per file, each with its own result file. With code coverage every Invoke-Pester instruments the
+	# whole module again (40 seconds per file on a workstation, close to an hour for the suite), so the function tests then
+	# run in ONE Invoke-Pester (TEST-functions.xml): instrumented once, the same tests and results. Every test file imports
+	# the module itself in its BeforeAll, because Pester runs all files in one runspace either way.
+	$runs = if ($EnableCodeCoverage) { , [pscustomobject]@{ Name = 'functions'; Path = @($functionTests.FullName) } }
+	else { foreach ($file in $functionTests) { [pscustomobject]@{ Name = $file.BaseName; Path = @($file.FullName) } } }
+	foreach ($run in @($runs))
 	{
-		if ($file.Name -notlike $Include) { continue }
-		if ($file.Name -like $Exclude) { continue }
-		
-		Write-PSFMessage -Level Significant -Message "  Executing $($file.Name)"
-		$config.TestResult.OutputPath = Join-Path $PSScriptRoot '..' '..' 'TestResults' "TEST-$($file.BaseName).xml"
-		$config.Run.Path = $file.FullName
+		if (-not $run.Path) { continue }
+		Write-PSFMessage -Level Significant -Message "  Executing $($run.Name)$(if ($run.Path.Count -gt 1) { " ($($run.Path.Count) files)" })"
+		$config.TestResult.OutputPath = Join-Path $PSScriptRoot '..' '..' 'TestResults' "TEST-$($run.Name).xml"
+		$config.Run.Path = $run.Path
 		$config.Run.PassThru = $true
 		$config.Output.Verbosity = $Output
 		$results = Invoke-Pester -Configuration $config
@@ -156,7 +169,7 @@ if ($TestFunctions)
 			}
 			$totalSkipped += $result.SkippedCount
 			$result.Tests | Where-Object Result -eq 'Skipped' | ForEach-Object {
-				$skippedTests += '{0}: It {1}' -f $file.BaseName, $_.Name
+				$skippedTests += '{0}: It {1}' -f $run.Name, $_.Name
 			}
 		}
 	}
