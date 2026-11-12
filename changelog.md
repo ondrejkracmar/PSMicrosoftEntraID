@@ -112,6 +112,27 @@
   mailNickName match the identity itself went into `groups/{0}` unescaped, so `#` cut
   the request short.
 
+- **Piping group records into `Add-PSEntraIDGroupOwner` never worked.** `-Identity`
+  binds by property name, but the group was resolved in `begin`, where a piped
+  `Identity` is still empty - so `$records | Add-PSEntraIDGroupOwner` failed on parameter
+  validation before anything was sent. The group is now resolved per pipeline record in
+  `process` (and read only once while the identity stays the same, so piping users into
+  one `-Identity` still costs one group read); each record's owners go to that record's
+  group. `Remove-PSEntraIDGroupOwner`, `Add-`/`Remove-PSEntraIDGroupMember` and the
+  administrative-unit member cmdlets were checked: their `-Identity` is not
+  pipeline-bound (or is already resolved in `process`), so they were not affected.
+- **`Enable-*LicenseServicePlan` could assign a licence with every plan enabled.** For
+  a target that does not hold the SKU yet, the cmdlet assigns it with every plan
+  disabled except the requested ones, and "every plan" came from a subscribed-SKU
+  catalog read that ran non-terminating. A throttled or failed read (403, 429, 503) only
+  warned, an empty answer was taken at face value, and the licence went out with
+  `disabledPlans: []` - every plan on, silently. The read now stops on error
+  (`-EnableException`), and an empty plan list for the SKU stops the command (localized
+  `LicenseServicePlan.Catalog.Failed` / `.Empty`) before anything is written. The user
+  variant reads the catalog once per call instead of once per piped user (new internal
+  `Get-LicenseSkuServicePlanId`). The `Disable-*` counterparts do not build the full
+  plan list - a target without the SKU is skipped with a warning - and were not affected.
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed
