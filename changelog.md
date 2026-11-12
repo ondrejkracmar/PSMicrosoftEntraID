@@ -43,6 +43,22 @@
   `PipelineBoundParameters.Tests.ps1` asserts the serialized body of every record in a
   mixed pipeline.
 
+- **`Sync-PSEntraIDGroupMember` no longer empties a group when a read fails.**
+  The member reads ran under `-Continue`: a transient 403/429/503 on the reference group
+  only warned and returned nothing, and an empty reference made the sync remove EVERY
+  member of the target group. A `-ReferenceUserIdentity` that did not resolve was
+  skipped silently, so that real member was removed too. Now every read runs with
+  `-EnableException` and any failure aborts the sync before anything is written; an
+  unresolved reference identity aborts it and names the identity; an empty reference
+  with a non-empty target is refused unless the new `-AllowEmptyReference` switch says
+  emptying the group is intended. Missing members are added straight to the resolved
+  group in chunks of 20 (`members@odata.bind`, one PATCH per chunk) instead of one
+  `Add-PSEntraIDGroupMember` call - about five requests - per member, and removals are a
+  direct `DELETE .../members/{id}/$ref`, which also works for members that are not
+  users. `Get-SyncDataOperation` pairs the two lists through a key index instead of a
+  `.Where()` scan per item (3000 vs 2500 members: about 290 s before, a few seconds now) and no
+  longer returns nothing under `-WhatIf`.
+
 ## 1.5.1 (2026-09-07)
 
 ### Fixed
