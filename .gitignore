@@ -33,3 +33,17 @@ tools/*.result.json
 # the .csproj, so the binaries do not belong in git. bin/assembly.ps1 is source and is kept.
 **/bin/
 **/obj/
+
+# Protected-file patterns of the Read deny rules (standards pack 1.9.0): the git guard blocks a
+# sweep (git add -A) while such a file is not ignored.
+.claude/settings.local.json
+*.env
+.env
+.env.*
+*.key
+*.p12
+*.pem
+*.pfx
+*.ppk
+secrets/
+.secrets/

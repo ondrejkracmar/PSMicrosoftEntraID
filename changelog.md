@@ -2,7 +2,82 @@
 
 ## Unreleased
 
+### Security
+
+- `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
+  library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
+  GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
+
+### Changed
+
+- **The repository follows the CodexVault standards pack 1.9.0.** `AGENTS.md`, `CLAUDE.md`,
+  the Claude Code hooks (analyzer, attribution, git guard) and reviewer, the Copilot
+  instructions, `.editorconfig`, `PSScriptAnalyzerSettings.psd1`, `SECURITY.md`,
+  `.github/CODEOWNERS`, the pull request template, `docs/adr/` and `docs/runbooks/`.
+  `.codexvault/packs.psd1` records the installation. Security reports now go through
+  GitHub's private vulnerability reporting.
+- **`.codexvault/public-export.psd1` declares what the public GitHub repository leaves
+  out**: the agent and standards tooling, `docs/internal/`, `docs/adr/`, `docs/runbooks/`,
+  `tools/`, the Azure DevOps pipeline and `src/build/`. Azure DevOps stays the source of
+  truth; GitHub receives the filtered source history.
+- The personal editor and container settings (`.vscode/settings.json`, `.devcontainer/`)
+  and the inactive `src/editorconfig` are gone; `.gitignore` covers the protected-file
+  patterns the git guard expects.
+
 ### Fixed
+
+- **Piped records no longer inherit the previous record's properties.**
+  With `ValueFromPipelineByPropertyName`, `$PSBoundParameters` keeps a key bound by an
+  earlier pipeline record while the variable is reset to its default, so every cmdlet
+  that decided "was this property given?" from it wrote the previous record's properties,
+  with empty or default values, into the next object. Piping
+  `{Id; AccountEnabled = $true; Department = 'IT'}` then `{Id; JobTitle = 'Dev'}` into
+  `Set-PSEntraIDUser` sent `{"department":"","accountEnabled":false,"jobTitle":"Dev"}`
+  for the second user - disabling the account and clearing the department. Affected:
+  `Set-PSEntraIDUser`, `New-PSEntraIDUser` (also reset `forceChangePasswordNextSignIn`),
+  `New-PSEntraIDGroup`, `Set-PSEntraIDGroup`, `New-PSEntraIDAdministrativeUnit`,
+  `Set-PSEntraIDAdministrativeUnit` and `New-PSEntraIDInvitation`, which additionally
+  copied every earlier guest's CC recipients onto each later invitation. Each cmdlet now
+  drops the keys a record bound once that record is processed (new internal
+  `Clear-PipelineBoundParameter`, rule in `docs/internal/conventions.md`), and
+  `PipelineBoundParameters.Tests.ps1` asserts the serialized body of every record in a
+  mixed pipeline.
+
+- **`Sync-PSEntraIDGroupMember` no longer empties a group when a read fails.**
+  The member reads ran under `-Continue`: a transient 403/429/503 on the reference group
+  only warned and returned nothing, and an empty reference made the sync remove EVERY
+  member of the target group. A `-ReferenceUserIdentity` that did not resolve was
+  skipped silently, so that real member was removed too. Now every read runs with
+  `-EnableException` and any failure aborts the sync before anything is written; an
+  unresolved reference identity aborts it and names the identity; an empty reference
+  with a non-empty target is refused unless the new `-AllowEmptyReference` switch says
+  emptying the group is intended. Missing members are added straight to the resolved
+  group in chunks of 20 (`members@odata.bind`, one PATCH per chunk) instead of one
+  `Add-PSEntraIDGroupMember` call - about five requests - per member, and removals are a
+  direct `DELETE .../members/{id}/$ref`, which also works for members that are not
+  users. `Get-SyncDataOperation` pairs the two lists through a key index instead of a
+  `.Where()` scan per item (3000 vs 2500 members: about 290 s before, a few seconds now) and no
+  longer returns nothing under `-WhatIf`.
+
+- **`Add-PSEntraIDGroupMember` sent garbage for two or more members and dropped
+  members on a partial resolution.** The chunks for `members@odata.bind` were cast to
+  `[string[]]`, which joined every chunk of up to 20 member URLs into ONE
+  space-separated string, and `Step-Array` emitted an extra empty chunk for an exact
+  multiple of 20 - Graph received
+  `{"members@odata.bind":["https://.../1 https://.../2 ..."]}` followed by
+  `{"members@odata.bind":[""]}`. The endpoint was chosen by how many users were
+  requested rather than how many resolved, so `-User a,b` with `b` unknown sent
+  `PATCH groups/{id}` with an `@odata.id` body and `a` was not added either; unresolved
+  users were skipped without a word; and the request of one pipeline record was sent
+  again for the next record when that one did not resolve. `Step-Array` now writes
+  each chunk as one array and never an empty one, the cmdlet builds its requests per
+  record from the members that actually resolved (one -> `POST members/$ref`, more ->
+  `PATCH` in chunks of 20), and every unresolved user is reported with a warning.
+  `Remove-PSEntraIDGroupMember`, `Add-`/`Remove-PSEntraIDGroupOwner` and
+  `Add-`/`Remove-PSEntraIDAdministrativeUnitMember` skipped unresolved users, groups,
+  devices and administrative units just as silently and now warn as well. The tests
+  run the real `Step-Array` (the old one mocked it away) with 1, 19, 20, 21 and 40
+  members and assert the serialized body of every request.
 
 - **A misspelt service plan could assign a licence with every plan disabled.**
   `Enable-PSEntraIDUserLicenseServicePlan` and `Enable-PSEntraIDGroupLicenseServicePlan`
