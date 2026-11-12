@@ -6,11 +6,23 @@
 	.DESCRIPTION
 		Executes a web request against an entra-based service
 		Handles all the authentication details once connected using Connect-EntraService.
+
+		Vendored from EntraAuth, with changes of this module - keep them when syncing with upstream
+		(docs/internal/entraauth-divergence.md):
+		- the access token goes only over https and only to the host of the service the token belongs to: every
+		  URL - a relative path, an absolute -Path, each @odata.nextLink - is checked before it is sent
+		  (Assert-EntraAuthorizedUri), and another host or http stops the request with a SecurityError before
+		  anything is sent;
+		- request URLs are logged without their query (Get-EntraLogUri), since they carry delta and skip tokens,
+		  and the messages use this module's localized strings (Write-PSFMessage -String);
+		- the delta token is parsed pair by pair and decoded (see the comments below).
 	
 	.PARAMETER Path
 		The relative path of the endpoint to query.
 		For example, to retrieve Microsoft Graph users, it would be a plain "users".
 		To access details on a particular defender for endpoint machine instead it would look thus: "machines/1e5bc9d7e413ddd7902c2932e418702b84d0cc07"
+		An absolute URL is accepted only when it is https on the host of the token's service URL; any other is
+		refused before anything is sent.
 	
 	.PARAMETER Body
 		Any body content needed for the request.
@@ -169,6 +181,9 @@
 			Uri    = Resolve-RequestUri -TokenObject $tokenObject -ServiceObject $serviceObject -BoundParameters $PSBoundParameters
 		}
 		$originalUri = $parameters.Uri
+		# The URL the token belongs to, its parameters resolved as Resolve-RequestUri does: every request of this call -
+		# the first, each next link - must stay on its scheme, host and port.
+		[string] $authorizedUrl = Resolve-EntraServiceUrl -TokenObject $tokenObject -ServiceObject $serviceObject -BoundParameters $PSBoundParameters
 		
 		if ($PSBoundParameters.Keys -contains 'Body') {
 			if ($Body -is [string]) {
@@ -191,11 +206,15 @@
 		$parameters.Uri += ConvertTo-QueryString -QueryHash $queryClone -DefaultQuery $tokenObject.Query
 
 		do {
+			# Before the header is built: an absolute -Path or a next link on another host, or over http, never gets
+			# the token. A terminating SecurityError.
+			Assert-EntraAuthorizedUri -Uri $parameters.Uri -ServiceUrl $authorizedUrl -Cmdlet $PSCmdlet
 			$tempHeader = $tokenObject.GetHeader().Clone() # GetHeader() automatically refreshes expired tokens
 			foreach ($pair in $Header.GetEnumerator()) { $tempHeader[$pair.Key] = $pair.Value }
 			if ($MinimalDelta) { $tempHeader['Prefer'] = 'return=minimal' }
 			$parameters.Headers = $tempHeader
-			Write-Verbose "Executing Request: $($Method) -> $($parameters.Uri)"
+			# Scheme, host and path only: the query carries delta and skip tokens.
+			Write-PSFMessage -Level Verbose -String 'Request.Execute' -StringValues $Method, (Get-EntraLogUri -Uri $parameters.Uri)
 			try { $result = Invoke-RestMethod @parameters -ErrorAction Stop }
 			catch {
 				$letItBurn = $true
@@ -204,9 +223,9 @@
 				if ($_.ErrorDetails.Message) {
 					$details = $_.ErrorDetails.Message | ConvertFrom-Json
 					if ($details.Error.Code -eq 'TooManyRequests') {
-						Write-Verbose "Throttling: $($details.error.message)"
+						Write-PSFMessage -Level Verbose -String 'Request.Throttled' -StringValues $details.error.message
 						$delay = 1 + ($details.error.message -replace '^.+ (\d+) .+$', '$1' -as [int])
-						if ($delay -gt 5) { Write-Warning "Request is being throttled for $delay seconds" }
+						if ($delay -gt 5) { Write-PSFMessage -Level Warning -String 'Request.ThrottledWait' -StringValues $delay }
 						Start-Sleep -Seconds $delay
 						try {
 							$result = Invoke-RestMethod @parameters -ErrorAction Stop
@@ -219,7 +238,7 @@
 				}
 
 				if ($letItBurn) {
-					Write-Warning "Request failed: $($Method) -> $($parameters.Uri)"
+					Write-PSFMessage -Level Warning -String 'Request.Failed' -StringValues $Method, (Get-EntraLogUri -Uri $parameters.Uri)
 					$PSCmdlet.ThrowTerminatingError($failure)
 				}
 			}
@@ -265,7 +284,8 @@
 					# Keep whatever token we already had rather than replacing it with
 					# nothing: losing it costs a full re-read, and an empty one guarantees
 					# that re-read happens on every run from here on.
-					Write-Warning "Delta link returned without a usable token, keeping the previous one: $($result.'@odata.deltaLink')"
+					# The link by scheme, host and path only: whatever its query carries is a token.
+					Write-PSFMessage -Level Warning -String 'Request.DeltaLinkNoToken' -StringValues (Get-EntraLogUri -Uri ([string]$result.'@odata.deltaLink'))
 				}
 			}
 		}

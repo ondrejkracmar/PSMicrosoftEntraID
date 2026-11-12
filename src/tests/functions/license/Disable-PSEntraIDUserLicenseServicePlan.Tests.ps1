@@ -293,7 +293,8 @@ Describe 'Disable-PSEntraIDUserLicenseServicePlan' -Tag 'Unit' {
         It 'Should call Get-PSEntraIDSubscribedSku to resolve names' {
             Disable-PSEntraIDUserLicenseServicePlan -InputObject $script:TestUser -SkuPartNumber $script:TestSkuPartNumber -ServicePlanName $script:TestServicePlanName1 -Confirm:$false
 
-            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedSku -Times 2 -Exactly
+            # One read: the SKU and its plan names resolve from the same catalog copy.
+            Should -Invoke -ModuleName $script:ModuleName -CommandName Get-PSEntraIDSubscribedSku -Times 1 -Exactly
         }
 
         It 'Should handle SkuPartNumber with forward slash' {
