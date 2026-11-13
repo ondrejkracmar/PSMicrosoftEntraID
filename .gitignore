@@ -47,3 +47,6 @@ tools/*.result.json
 *.ppk
 secrets/
 .secrets/
+
+# Azure Functions local settings carry app secrets; never tracked.
+local.settings.json

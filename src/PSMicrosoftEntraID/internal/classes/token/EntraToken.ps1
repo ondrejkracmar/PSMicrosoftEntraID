@@ -47,7 +47,10 @@
 	[bool]$AzTokenRenewable
 
 	# Workflow: Federated
-	[PSMicrosoftEntraID.FederationProvider]$FederationProvider
+	# A [PSMicrosoftEntraID.FederationProvider]. Typed [object]: PowerShell resolves the types of a class when it
+	# PARSES the file, and the compiled module is one .psm1 parsed before bin/assembly.ps1 has loaded the library -
+	# a library type here made the built module fail to import ("Unable to find type").
+	[object]$FederationProvider
 
 	# Workflow: Custom Token
 	[scriptblock]$HeaderCode
@@ -66,7 +69,11 @@
 		$this.Type = 'ClientSecret'
 	}
 
-	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [PSMicrosoftEntraID.FederationProvider]$Provider, [string]$ServiceUrl, [string]$AuthenticationUrl) {
+	EntraToken([string]$Service, [string]$ClientID, [string]$TenantID, [object]$Provider, [string]$ServiceUrl, [string]$AuthenticationUrl) {
+		# [object] for the parse-time reason above; the type is still enforced, at run time.
+		if ($null -eq $Provider -or $Provider.GetType().FullName -ne 'PSMicrosoftEntraID.FederationProvider') {
+			throw [System.ArgumentException]::new('Provider must be a [PSMicrosoftEntraID.FederationProvider].', 'Provider')
+		}
 		$this.Service = $Service
 		$this.ClientID = $ClientID
 		$this.TenantID = $TenantID

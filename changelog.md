@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0 (2026-11-12)
+
 ### Breaking
 
 - **The user name and password sign-in (`Connect-PSMicrosoftEntraID -Credential`, ROPC) is
@@ -59,6 +61,7 @@
 
 ### Changed
 
+- The pipeline installs **Pester 6.2.0** (`buildToolVersionOverrides`) instead of the family's 5.6.1: the suite is written for Pester 6.
 - **The pipeline is the shared CodexVault.Build template.** `src/azure-pipelines.yml` (pipeline
   34) no longer carries its own stages: it extends `templates/ci.yml` of PSModules/CodexVault.Build
   from `refs/heads/main` (repository resource `build`), like the other modules of the family. A
@@ -150,6 +153,7 @@
 
 ### Security
 
+- **`src/azFunctionResources/local.settings.json` is no longer tracked** and is ignored by `.gitignore`; the public export excludes it from the whole history.
 - `System.Security.Cryptography.Pkcs`, a transitive reference-only dependency of the
   library, is pinned to 8.0.2 (net8.0) and 10.0.13 (net10.0), which fix
   GHSA-846f-f764-76mx (high) and GHSA-2fmv-rv2c-59x7 (moderate).
@@ -198,6 +202,8 @@
 
 ### Fixed
 
+- **The built module failed to import** (`Unable to find type [PSMicrosoftEntraID.FederationProvider]`): the compiled `.psm1` is parsed before the library loads, so `EntraToken` now types the federation provider as `[object]` and enforces the type at run time, as PSExchangeOnline does.
+- `Connect-PSMicrosoftEntraID`: the `'organizations'` default of `-TenantID` (browser sign-in only) is set in `begin` instead of the param block, so PSScriptAnalyzer 1.22 no longer reports `PSAvoidDefaultValueForMandatoryParameter`. Behaviour is unchanged.
 - **Nested data deeper than four levels was silently truncated by every `ConvertFrom-Rest*`.**
   They turned the parsed response back into JSON with `ConvertTo-Json -Depth 3/4/6` and parsed it
   again with `DataContractJsonSerializer`; deeper values (e.g. `assignedLicenses.disabledPlans`
