@@ -61,6 +61,7 @@
 
 ### Changed
 
+- The pipeline installs **Pester 6.2.0** (`buildToolVersionOverrides`) instead of the family's 5.6.1: the suite is written for Pester 6.
 - **The pipeline is the shared CodexVault.Build template.** `src/azure-pipelines.yml` (pipeline
   34) no longer carries its own stages: it extends `templates/ci.yml` of PSModules/CodexVault.Build
   from `refs/heads/main` (repository resource `build`), like the other modules of the family. A
