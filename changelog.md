@@ -202,6 +202,7 @@
 
 ### Fixed
 
+- `Connect-PSMicrosoftEntraID`: the `'organizations'` default of `-TenantID` (browser sign-in only) is set in `begin` instead of the param block, so PSScriptAnalyzer 1.22 no longer reports `PSAvoidDefaultValueForMandatoryParameter`. Behaviour is unchanged.
 - **Nested data deeper than four levels was silently truncated by every `ConvertFrom-Rest*`.**
   They turned the parsed response back into JSON with `ConvertTo-Json -Depth 3/4/6` and parsed it
   again with `DataContractJsonSerializer`; deeper values (e.g. `assignedLicenses.disabledPlans`

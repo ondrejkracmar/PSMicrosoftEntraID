@@ -16,6 +16,7 @@
 
 	.PARAMETER TenantID
 		The ID of the tenant/directory to connect to.
+		Optional only for the interactive browser sign-in, where it defaults to 'organizations' (any work or school account).
 
 	.PARAMETER Scopes
 		Any scopes to include in the request.
@@ -255,7 +256,7 @@
 		[Parameter(Mandatory = $true, ParameterSetName = 'KeyVault')]
 		[Parameter(Mandatory = $true, ParameterSetName = 'Federated')]
 		[string]
-		$TenantID = 'organizations',
+		$TenantID,
 
 		[Parameter(ParameterSetName = 'Browser')]
 		[Parameter(ParameterSetName = 'DeviceCode')]
@@ -411,6 +412,9 @@
 		$AuthenticationUrl
 	)
 	begin {
+		# The browser sign-in is the only parameter set where TenantID is optional. The default is set here, not in the
+		# param block, because a default on a parameter that is mandatory in other sets is a PSScriptAnalyzer finding.
+		if (-not $TenantID) { $TenantID = 'organizations' }
 		[string[]] $service = $Service
 		if (-not $service) { [string[]] $service = $script:_DefaultService }
 		# Each connected service updates the default-service setting of its own family, resolved
